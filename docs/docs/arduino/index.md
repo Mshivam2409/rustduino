@@ -1,6 +1,6 @@
 ---
 id: index
-slug: /embedded
+slug: /arduino
 title: Installation
 ---
 

@@ -25,6 +25,11 @@ module.exports = {
         'embedded/memory-mapped-io',
         'embedded/data-protocols'
       ]
+    },
+    {
+      type: 'category',
+      label: 'Arduino',
+      items: ['arduino/index', 'arduino/atmega328p', 'arduino/atmega4809p']
     }
   ]
 }
