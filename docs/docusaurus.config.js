@@ -8,27 +8,7 @@ const baseUrl = '/'
 
 const links = [
   {
-    to: 'https://www.ory.sh/',
-    label: `Home`,
-    position: 'left'
-  },
-  {
-    href: 'https://www.ory.sh/blog',
-    label: 'Blog',
-    position: 'left'
-  },
-  {
-    href: `https://github.com/ory/${githubRepoName}/discussions`,
-    label: 'Discussions',
-    position: 'right'
-  },
-  {
-    href: 'https://www.ory.sh/chat',
-    label: 'Slack',
-    position: 'right'
-  },
-  {
-    href: `https://github.com/ory/${githubRepoName}`,
+    href: `https://github.com/mshivam2409/${githubRepoName}`,
     label: 'GitHub',
     position: 'right'
   }
@@ -107,16 +87,16 @@ module.exports = {
       darkTheme: require('prism-react-renderer/themes/dracula'),
       additionalLanguages: ['pug', 'shell-session']
     },
-    announcementBar: {
-      id: 'supportus',
-      content:
-        config.projectSlug === 'docs'
-          ? `Sign up for <a href="${config.newsletter}">important security announcements</a> and if you like the ${config.projectName} give us some ⭐️ on <a target="_blank" rel="noopener noreferrer" href="https://github.com/ory">GitHub</a>!`
-          : `Sign up for <a href="${config.newsletter}">important security announcements</a> and if you like ${config.projectName} give it a ⭐️ on <a target="_blank" rel="noopener noreferrer" href="https://github.com/ory/${githubRepoName}">GitHub</a>!`
-    },
+    // announcementBar: {
+    //   id: 'supportus',
+    //   content:
+    //     config.projectSlug === 'docs'
+    //       ? `Sign up for <a href="${config.newsletter}">important security announcements</a> and if you like the ${config.projectName} give us some ⭐️ on <a target="_blank" rel="noopener noreferrer" href="https://github.com/ory">GitHub</a>!`
+    //       : `Sign up for <a href="${config.newsletter}">important security announcements</a> and if you like ${config.projectName} give it a ⭐️ on <a target="_blank" rel="noopener noreferrer" href="https://github.com/ory/${githubRepoName}">GitHub</a>!`
+    // },
     algolia: {
-      apiKey: '8463c6ece843b377565726bb4ed325b0',
-      indexName: 'ory',
+      apiKey: 'ae30a1a864916e8926b323444bf608d3',
+      indexName: 'rustduino',
       contextualSearch: true,
       searchParameters: {
         facetFilters: [[`tags:${config.projectSlug}`, `tags:docs`]]
@@ -126,12 +106,8 @@ module.exports = {
       hideOnScroll: true,
       logo: {
         alt: config.projectName,
-        src: `img/logo-${config.projectSlug}.svg`,
-        srcDark: `img/logo-${config.projectSlug}.svg`,
-        href:
-          config.projectSlug === 'docs'
-            ? `https://www.ory.sh`
-            : `https://www.ory.sh/${config.projectSlug}`
+        src: `img/rust-logo-blk.svg`,
+        srcDark: `img/rust-logo-blk.svg.svg`
       },
       items: [
         ...links,
@@ -150,26 +126,7 @@ module.exports = {
     },
     footer: {
       style: 'dark',
-      copyright: `Copyright © ${new Date().getFullYear()} ORY GmbH`,
-      links: [
-        {
-          title: 'Company',
-          items: [
-            {
-              label: 'Imprint',
-              href: 'https://www.ory.sh/imprint'
-            },
-            {
-              label: 'Privacy',
-              href: 'https://www.ory.sh/privacy'
-            },
-            {
-              label: 'Terms',
-              href: 'https://www.ory.sh/tos'
-            }
-          ]
-        }
-      ]
+      copyright: `Copyright © ${new Date().getFullYear()} Electronics Club, IIT Kanpur`
     }
   },
   plugins: [
@@ -180,8 +137,7 @@ module.exports = {
           config.projectSlug === 'docusaurus-template'
             ? 'contrib/docs'
             : 'docs',
-        sidebarPath: require.resolve('./contrib/sidebar.js'),
-        editUrl: `https://github.com/ory/${githubRepoName}/edit/master/docs`,
+        sidebarPath: require.resolve('./sidebar.js'),
         routeBasePath: '/',
         showLastUpdateAuthor: true,
         showLastUpdateTime: true,

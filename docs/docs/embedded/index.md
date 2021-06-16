@@ -1,5 +1,7 @@
 ---
 id: index
-slug: /
+slug: /embedded
 title: Introduction
 ---
+
+hi
