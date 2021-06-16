@@ -37,9 +37,9 @@ module.exports = {
       items: [
         'core/index',
         'core/watchdog',
-        'core/gating',
+        'core/power',
         'core/gpio',
-        'core/port'
+        'core/ports'
       ]
     }
   ]
