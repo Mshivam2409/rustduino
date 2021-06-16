@@ -4,7 +4,7 @@ const fs = require('fs')
 const githubRepoName =
   config.projectSlug === 'ecosystem' ? 'docs' : config.projectSlug
 
-const baseUrl = config.baseUrl ? config.baseUrl : `/${config.projectSlug}/docs/`
+const baseUrl = '/'
 
 const links = [
   {
