@@ -107,7 +107,7 @@ module.exports = {
       logo: {
         alt: config.projectName,
         src: `img/rust-logo-blk.svg`,
-        srcDark: `img/rust-logo-blk.svg.svg`
+        srcDark: `img/rust-logo-blk.svg`
       },
       items: [
         ...links,
