@@ -30,6 +30,17 @@ module.exports = {
       type: 'category',
       label: 'Arduino',
       items: ['arduino/index', 'arduino/atmega328p', 'arduino/atmega4809p']
+    },
+    {
+      type: 'category',
+      label: 'Core Concepts',
+      items: [
+        'core/index',
+        'core/watchdog',
+        'core/power',
+        'core/gpio',
+        'core/ports'
+      ]
     }
   ]
 }
