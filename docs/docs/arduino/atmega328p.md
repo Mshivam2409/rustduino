@@ -26,7 +26,7 @@ the Arduino Uno, but in a different package
 
 ## Compiling and Linking
 
-```bash
+```ruby
 $ cargo +nightly build -Z build-std=core --release --target avr-atmega328p.json
 $ cargo +nightly build --release
 ```
