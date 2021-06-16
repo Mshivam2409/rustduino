@@ -27,12 +27,6 @@ the Arduino Uno, but in a different package
 ## Compiling and Linking
 
 ```bash
-{css,echo=false}
-.watch-out {
-    background-color : skateblue;
-    
-
-}
 $ cargo +nightly build -Z build-std=core --release --target avr-atmega328p.json
 $ cargo +nightly build --release
 ```
