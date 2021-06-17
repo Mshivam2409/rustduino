@@ -41,6 +41,11 @@ module.exports = {
         'core/gpio',
         'core/ports'
       ]
+    },
+    {
+      type: 'category',
+      label: 'Guides',
+      items: ['guides/blink']
     }
   ]
 }
