@@ -19,21 +19,21 @@ title: Watchdog
   computer and associated hardware in a safe state and invoking a computer
   reboot.
 
-  # Function Definitions
+# Function Definitions
 
-  WatchDog Represents a struct containing the regoister definition for watchdog
-  timer.
+WatchDog Represents a struct containing the regoister definition for watchdog
+timer.
 
-  ```rust
-  pub struct WatchDog { /* fields omitted */ }
-  ```
+```rust
+pub struct WatchDog { /* fields omitted */ }
+```
 
-  # Implementations
+# Implementations
 
-  ## Impl `new` for `Watchdog`
+## Impl `new` for `Watchdog`
 
-  ```rust
-  pub unsafe fn new() -> &'static mut Watchdog
-  ```
+```rust
+pub unsafe fn new() -> &'static mut Watchdog
+```
 
-  Return a struct containing register definition of the watchdog timer.
+Return a struct containing register definition of the watchdog timer.
