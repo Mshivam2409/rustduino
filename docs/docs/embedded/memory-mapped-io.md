@@ -20,11 +20,11 @@ Memory-mapped I/O uses the same address space to address both memory and I/O dev
 
 Memory-mapped I/O gives us a unified address space for both, memory and I/O
 
-###### ADVANTAGES OF MEMORY-MAPPED I/O
+##### Advantages of memory-mapped I/O
 
 Merits of memory-mapped I/O is that, by discarding the extra complexity that port I/O brings, a CPU requires less internal logic and is thus cheaper, faster, easier to build, consumes less power, and can be physically smaller; this follows the basic tenets of reduced instruction set computing and is also advantageous in embedded systems. The other advantage is that, because regular memory instructions are used to address devices, all of the CPU's addressing modes are available for the I/O as well as the memory, and instructions that perform an ALU operation directly on a memory operand (loading an operand from a memory location, storing the result to a memory location, or both) can be used with I/O device registers as well.
 
-###### Memory-mapped I/O in Processors
+##### Memory-mapped I/O in Processors
 
 The most common place you see memory-mapped IO is inside a processor. A great example is the **PORT** registers of an ATmega microcontroller (the ones used by Arduino). When you write code for these processors, you can write something like the following.
 *1 PORTB = 0xAA;*
