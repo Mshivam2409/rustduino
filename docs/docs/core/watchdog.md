@@ -19,7 +19,7 @@ title: Watchdog
   computer and associated hardware in a safe state and invoking a computer
   reboot.
 
-# Function Definitions
+## Function Definitions
 
 WatchDog Represents a struct containing the regoister definition for watchdog
 timer.
@@ -28,9 +28,9 @@ timer.
 pub struct WatchDog { /* fields omitted */ }
 ```
 
-# Implementations
+## Implementations
 
-## Impl `new` for `Watchdog`
+### Impl `new` for `Watchdog`
 
 ```rust
 pub unsafe fn new() -> &'static mut Watchdog
