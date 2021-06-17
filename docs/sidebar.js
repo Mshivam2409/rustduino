@@ -18,6 +18,14 @@ module.exports = {
     },
     {
       type: 'category',
+      label: 'Rust',
+      items: [
+        'rust/rust',
+        'rust/why-rust'
+      ]
+    },
+    {
+      type: 'category',
       label: 'Embedded',
       items: [
         'embedded/index',
