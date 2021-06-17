@@ -7,7 +7,7 @@ The SIM(System Integration Module) is another piece of hardware we need for our 
 
 In this part we have enabled clock gate to Port C.
 
-![clock gate](https://github.com/Mshivam2409/RustDuino-Docs/blob/master/docs/core/images/clock gate.jpg?raw=true)
+![gating](https://github.com/Mshivam2409/RustDuino-Docs/blob/master/docs/core/images/gating.jpg?raw=true)
 
                   Fig.  Memory representation of System Clock Gating Control Register 5 
 Function definitions
