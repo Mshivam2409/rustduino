@@ -14,7 +14,7 @@ Function definitions
 Structure Sim represents a block of memory using structures representing registers in SIM.
 
 pub struct Sim {/* fields omitted */}
-Function to enable clock gate in the memory location corre .
+Function to enable clock gate to the corresponding port by writing in the corresponding bit.
 
 pub fn enable_clock(&mut self, clock: Clock) {
         unsafe {/*feilds omitted*/}
