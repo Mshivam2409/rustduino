@@ -34,13 +34,7 @@ module.exports = {
     {
       type: 'category',
       label: 'Core Concepts',
-      items: [
-        'core/index',
-        'core/watchdog',
-        'core/power',
-        'core/gpio',
-        'core/ports'
-      ]
+      items: ['core/watchdog', 'core/power', 'core/gpio', 'core/ports']
     },
     {
       type: 'category',

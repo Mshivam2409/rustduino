@@ -25,7 +25,7 @@ function Version() {
     (version) => version !== latestVersion && version.name !== 'current'
   )
   const repoUrl = `https://github.com/${siteConfig.organizationName}/${siteConfig.projectName}`
-  const project = `ORY ${capitalizeFirstLetter(siteConfig.projectName)}`
+  const project = `${capitalizeFirstLetter(siteConfig.projectName)}`
 
   return (
     <Layout
