@@ -11,16 +11,17 @@ The SIM(System Integration Module) is another piece of hardware we need for our 
 ```rust
 pub struct Sim {/* fields omitted */}
 ```
-- Function to enable clock gate to the corresponding port by writing in the corresponding bit.
 
-```rust
-pub fn enable_clock(&mut self, clock: Clock) {
-        unsafe {/*feilds omitted*/}
-        }
-```        
 ## Implementation
-### Impl `new` for `Sim`
+### - Impl `new` for `Sim`
 ```rust
 pub unsafe fn new() -> &'static mut Sim
 ```
 Return a struct containing register definition of the Sim.
+
+### - Impl `enable_clock` to enable `clock gate`.
+
+```rust
+pub fn enable_clock(&mut self, clock: Clock) 
+```        
+Enable clock gate by changing the corresponding memory location.
