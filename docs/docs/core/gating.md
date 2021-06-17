@@ -19,7 +19,7 @@ pub fn enable_clock(&mut self, clock: Clock) {
         }
 ```        
 ## Implementation
-### Impl new for sim
+### Impl `new` for `Sim`
 ```rust
 pub unsafe fn new() -> &'static mut Sim
 ```
