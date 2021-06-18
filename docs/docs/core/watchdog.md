@@ -40,7 +40,7 @@ Return a struct containing register definition of the watchdog timer.
 
 #### `disable` for `Watchdog`
 
-```
+```rust
 pub fn disable(&mut self)
 ```
 
