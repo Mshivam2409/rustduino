@@ -23,6 +23,8 @@ fn main() {
 }
 ```
 
+----
+
 ## Rust's Ownership: A quick glance
 
 Rust's central feature is ownership.

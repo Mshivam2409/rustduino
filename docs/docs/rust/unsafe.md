@@ -8,11 +8,11 @@ title: Unsafe Rust
 
 ----
 
-Unsafe rust is perhaps best thought of as an entirely new programming language, hidden in the dark depth of the Rust.
+*Unsafe rust is perhaps best thought of as an entirely new programming language, hidden in the dark depth of the Rust.
 Unsafe Rust is like a superset of Rust; it allows you to do all things Rust can do, as well as a few other things that are too wild for the compiler to verify.
-Unsafe Rust unleashes indescribable horrors that shatter your psyche and set your mind adrift in the unknowingly infinite cosmos.
+Unsafe Rust unleashes indescribable horrors that shatter your psyche and set your mind adrift in the unknowingly infinite cosmos.*
 
-That said Unsafe Rust does not disable the ownership system or any of Rust's safety checks.
+With that said Unsafe Rust does not disable the ownership system or any of Rust's safety checks.
 It only gives you five additional superpowers that Rust doesn't have:
 
 * Dereference a raw pointer
