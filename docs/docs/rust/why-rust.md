@@ -4,6 +4,10 @@ slug: /why-rust
 title: Why Rust?
 ---
 
+*High performance, memory safety; who doesn't want that?*
+
+----
+
 * **High performance**: Rust is blazing fast and memory-efficient, with no runtime or garbage collector. Embedded devices are low resource devices, they cannot handle heavy runtime and garbage collection. Rust helps us write fast and efficient programs making it a good choice for embedded programming.
 
 * **Safety**: Embedded devices are mission-critical and must perform correctly and must not perform incorrectly. Well you don't want your toaster to behave like a vacuum cleaner. Rust’s rich type-system and ownership model guarantees memory-safety and thread-safety, both of which are essential for a program to function correctly.

@@ -4,6 +4,10 @@ slug: /rust
 title: Intro to Rust
 ---
 
+*The most loved programming language*
+
+----
+
 Rust is a programming language designed for performance, safety, and especially safe concurrency.
 Rust is statically and strongly typed systems programming language.
 The biggest difference between Rust and other programming languages like C/C++ is that Rust offers safety by default.
