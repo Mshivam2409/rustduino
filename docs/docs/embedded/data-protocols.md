@@ -50,7 +50,7 @@ The timing dependency is one of the big drawbacks of UART, and the solution is U
 - Signals needed by a third party DMA controller 
 - Integrated bus mastering DMA controller 
 
-![dp3](https://github.com/Mshivam2409/RustDuino-Docs/blob/master/docs/embedded/images/data_protocols/dp_uart1.png?raw=true)
+![dp_uart1](https://github.com/Mshivam2409/RustDuino-Docs/blob/master/docs/embedded/images/data_protocols/dp_uart1.png?raw=true)
 
 For long-distance communication, the 5V UART is not very reliable, that's why it's converted to a higher voltage, typically +12 V for a "0" and -12 V for a "1". The data format remains the same.
 
@@ -92,3 +92,31 @@ I2C operates in 2 modes –
 - Slave mode
 
 Each data bit transferred on the SDA line is synchronized by a high to the low pulse of each clock on the SCL line.
+
+![dp3](https://github.com/Mshivam2409/RustDuino-Docs/blob/master/docs/embedded/images/data_protocols/dp3.png?raw=true)
+
+According to **I2C protocols**, the data line can not change when the clock line is high, it can change only when the clock line is low. The 2 lines are open drain, hence a pull-up resistor is required so that the lines are high since the devices on the I2C bus are active low. The data is transmitted in the form of packets which comprise 9 bits. 
+
+The sequence of these bits are –
+
+1. **Start Condition** - 1 bit
+2. **Slave Address** - 8 bit
+3. **Acknowledge** - 1 bit
+
+**Advantages :**
+
+- Can be configured in multi-master mode.
+- Complexity is reduced because it uses only 2 bi-directional lines (unlike SPI Communication).
+- Cost-efficient.
+- It uses the ACK / NACK feature due to which it has improved error handling capabilities.
+
+#### SPI Protocol
+
+SPI stands for the serial peripheral interface. It is one of the serial communication protocol developed by Motorola. Sometimes SPI protocol is also called a 4-wire protocol. It requires four wires MOSI, MISO, SS, and SCLK.SPI protocol used to communicate the master and slave devices. The master first configures the clock using a frequency.
+
+The master then selects the particular slave device for communication by pulling the chip select button. That particular device is selected and starts the communication between the master and that particular slave. The master selects only one slave at a time. It is a full-duplex communication protocol. Not limited to 8-bit words in the case of bit transferring.
+
+#### CAN Protocol
+
+CAN stands for the controller area network. It is a serial communication protocol. It requires two wires CAN High (H+) and CAN low (H-). It was developed by the Robert bosh company in 1985 for in-vehicle networks. It is based on a message-oriented transmission protocol.
+
