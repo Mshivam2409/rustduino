@@ -45,11 +45,11 @@ unsafe fn dangerous() {
 
 ## Unsafe Rust in Embedded
 
-In embedded programming you interact with hardware by writing to specific memory addresses.
-Unfortunately Rust doesn't allow writing to arbitrary memory addresses; so, we have to use Unsafe Rust.
+In embedded programming, you interact with hardware by writing to specific memory addresses.
+Unfortunately, Rust doesn't allow writing to arbitrary memory addresses; so, we have to use Unsafe Rust.
 One of our goals in this project is to provide safe APIs (Application Programming Interfaces) for these unsafe memory accesses; hence isolating unsafe code as much as possible within safe abstractions.
 
-In addition, `unsafe` code isn't necessarily dangerous or definitely have memory safety problems.
-The intent is that the programmer should ensure that all the `unsafe` code accesses memory in a valid way.
+In addition, `unsafe` code isn't necessarily dangerous or has memory safety problems.
+The intent is that the programmer should ensure that all the `unsafe` code validly accesses memory.
 It is trickier to get `unsafe` code correct because the compiler cannot uphold memory safety.
 Separating `unsafe` code from safe code makes it easier to track down the source of bugs faster when discovered.
