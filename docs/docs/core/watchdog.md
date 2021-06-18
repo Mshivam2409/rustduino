@@ -11,15 +11,16 @@ title: Watchdog
 - A watchdog timer sometimes called a computer operating properly or COP timer,
   or simply a watchdog is an electronic or software timer that is used to detect
   and recover from computer malfunctions.
-- During normal operation, the computer regularly restarts the watchdog timer to
-  prevent it from elapsing, or "timing out". If, due to a hardware fault or
-  program error, the computer fails to restart the watchdog, the timer will
+- During normal operation, the application regularly restarts the watchdog timer
+  to prevent it from elapsing, or "timing out". If, due to a hardware fault or
+  program error, the application fails to restart the watchdog, the timer will
   elapse and generate a timeout signal. The timeout signal is used to initiate
   corrective actions. The corrective actions typically include placing the
   computer and associated hardware in a safe state and invoking a computer
   reboot.
+- It is recommended to disable the watchdog timer, in case of non continous use.
 
-## Function Definitions
+## Structure Definitions
 
 WatchDog Represents a struct containing the register definition for watchdog
 timer.
@@ -28,7 +29,7 @@ timer.
 pub struct WatchDog { /* fields omitted */ }
 ```
 
-## Implementations
+## Trait Implementations
 
 ### Impl `new` for `Watchdog`
 

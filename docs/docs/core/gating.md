@@ -5,8 +5,8 @@ title: Power
 ---
 
 The SIM(System Integration Module) is another piece of hardware we need for our
-microcontroller setup. Here, we have used a SIM to enable the appropriate clock
-gate to enable our I/O port.
+microcontroller setup. Here, we use a SIM to enable the appropriate clock gate
+to enable our I/O port.
 
 ## Function definitions
 

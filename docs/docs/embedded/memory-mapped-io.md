@@ -14,22 +14,28 @@ allotted to them :
    lines.
 3. Have a common bus (data, address, and control) for I/O and memory.
 
-**The first case is simply because both have a different set of address space
-and instruction but require more buses.** **Isolated I/O –** Then we have
-Isolated I/O in which we have a common bus(data and address) for I/O and memory
-but separate read and write control lines for I/O. So when CPU decodes the
-instruction, then if data is for I/O, it places the address on the address line
-and sets I/O to read or write control line on due to which data transfer occurs
-between CPU and I/O. As the address space of memory and I/O is isolated, and the
-name is so. The address for I/O here is called ports. Here we have different
-read-write instructions for both I/O and memory.
- **Memory Mapped I/O –**
+In first case it is simple because both have different set of address space and
+instruction but require more buses.
+
+### Isolated I/O –
+
+Then we have Isolated I/O in which we have a common bus(data and address) for
+I/O and memory but separate read and write control lines for I/O. So when CPU
+decodes the instruction, then if data is for I/O, it places the address on the
+address line and sets I/O to read or write control line on due to which data
+transfer occurs between CPU and I/O. As the address space of memory and I/O is
+isolated, and the name is so. The address for I/O here is called ports. Here we
+have different read-write instructions for both I/O and memory.
+
+## Memory Mapped I/O –
+
 Memory-mapped I/O uses the same address space to address both memory and I/O
 devices. The memory and registers of the I/O devices are mapped to (associated
 with) address values. So when the CPU accesses an address, it may refer to a
-portion of physical RAM, or it can instead refer to memory of the I/O device. Memory-mapped I/O gives us a unified address space for both, memory and I/O
+portion of physical RAM, or it can instead refer to memory of the I/O device.
+Memory-mapped I/O gives us a unified address space for both, memory and I/O
 
-##### Advantages of memory-mapped I/O
+### Advantages of memory-mapped I/O
 
 Merits of memory-mapped I/O is that, by discarding the extra complexity that
 port I/O brings, a CPU requires less internal logic and is thus cheaper, faster,
@@ -42,7 +48,7 @@ perform an ALU operation directly on a memory operand (loading an operand from a
 memory location, storing the result to a memory location, or both) can be used
 with I/O device registers as well.
 
-##### Memory-mapped I/O in Processors
+### Memory-mapped I/O in Processors
 
 The most common place you see memory-mapped IO is inside a processor. A great
 example is the **PORT** registers of an ATmega microcontroller (the ones used by

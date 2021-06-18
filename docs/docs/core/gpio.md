@@ -4,6 +4,8 @@ slug: /gpio
 title: GPIO
 ---
 
+## Introduction
+
 - A general-purpose input/output (GPIO) is an uncommitted digital signal pin on
   an integrated circuit or electronic circuit board which may be used as an
   input or output, or both, and is controllable by the user at runtime. GPIOs
@@ -18,7 +20,7 @@ title: GPIO
 - In order to use a specific pin or port, you should first open and obtain a
   GPIO Pin or GPIO Port instance for the pin or port you want to use.
 
-#### IMPLEMENTATION:
+### IMPLEMENTATION:
 
 GPIO interfaces are simple—a group of pins that can switch as a group to either
 input or output. A GPIO port is a group of GPIO pins arranged in a group and

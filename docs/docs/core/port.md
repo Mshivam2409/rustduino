@@ -21,7 +21,7 @@ owning module can mutate its pins. This follows Rust’s one-owner rule for pins
 but would require that each pin be able to mutate its settings in the Port
 register block.
 
-## Function Definitions -
+## Struct Definitions
 
 Port represents a struct containing the register definition for a Port.
 
@@ -35,7 +35,7 @@ Pin represents struct corresponding to a pin
   pub struct Pin {/*feilds ommited*/}
 ```
 
-## Implementations
+## Trait Implementations
 
 ### Impl `new` for `Port`
 
