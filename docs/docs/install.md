@@ -6,6 +6,10 @@ title: Install
 
 ## Application Setup
 
+*Get your tools*
+
+----
+
 We’ll start by creating a new application with cargo, and setting it to use
 nightly Rust.
 
