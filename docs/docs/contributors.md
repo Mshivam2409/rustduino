@@ -6,7 +6,7 @@ title: Contributors
 
 The project would never have been possible without our awesome contributors.
 
-- Akshit
+- Akshit Verma
 - Aniket Sharma
 - Ayush Agarwal
 - Devansh Kumar Jha
@@ -18,7 +18,7 @@ The project would never have been possible without our awesome contributors.
 - Sahil
 - Samarth Tripathi
 - Sanmati Pande
-- Satender
+- Satender Kumar Yadav
 - Saurabh Singh
 - Shivam Malhotra
 - Tulika Shukla
