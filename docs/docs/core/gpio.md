@@ -10,17 +10,17 @@ GPIOs have no predefined purpose and are unused by default. If used, the purpose
 - In order to use a specific pin or port, an application should first open and obtain a GPIO Pin or GPIOPort instance for the pin or port it wants to use, using its numerical ID, name, type (interface), or properties.
 
 #### IMPLEMENTATION:
-GPIO interfaces vary widely. In some cases, they are simple—a group of pins that can switch as a group to either input or output. In others, each pin can be set up to accept or source different logic voltages, with configurable drive strengths and pull ups/downs. Input and output voltages are usually, but not always, limited to the device's supply voltage with the GPIOs, and may be damaged by greater voltages.
-A GPIO pin's state may be exposed to the software developer through a number of different interfaces, such as a memory-mapped I/O peripheral or through dedicated IO port instructions. 
-A GPIO port is a group of GPIO pins (usually 8 GPIO pins) arranged in a group and controlled as a group.
+GPIO interfaces vary widely. they are simple—a group of pins that can switch as a group to either input or output.
+A GPIO pin's state are exposed to developer through a number of different interfaces, such as a memory-mapped I/O peripheral or through dedicated IO port instructions. 
+A GPIO port is a group of GPIO pins arranged in a group but pins can be contolled individually also.
 GPIO abilities may include:
-GPIO pins can be configured to be input or output
-GPIO pins can be enabled/disabled
-Input values are readable (usually high or low)
-Output values are writable/readable
-Input values can often be used as IRQs (usually for wakeup events)
+- GPIO pins can be configured to be input or output
+- GPIO pins can be enabled/disabled
+- Input values are readable (usually high or low)
+- Output values are writable/readable
+![EXAMPLES of GPIO REGISTERS of ARDUINO 380p](https://github.com/Mshivam2409/RustDuino-Docs/blob/master/docs/core/images/gpio.png?raw=true)
 
-# Function Definitions:
+## Function Definitions:
 - GPIO struct basically represents a single pin and GPIObitband where pin and gpiobitband itself are structs.
 
 ```rust 
@@ -30,14 +30,14 @@ pub struct Gpio {
 }
 ```
 ### Implementations:
-### Impl `make_gpio` for `GPIO`
+### Impl `make_gpio` for `Pin`
 
 ```rust
 impl Pin {
     pub fn make_gpio(self) -> Gpio {
-        unsafe {
+    
          // {some fields}
-        }
+        
     }
 }
 ```

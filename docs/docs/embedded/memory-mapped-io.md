@@ -22,7 +22,8 @@ instruction, then if data is for I/O, it places the address on the address line
 and sets I/O to read or write control line on due to which data transfer occurs
 between CPU and I/O. As the address space of memory and I/O is isolated, and the
 name is so. The address for I/O here is called ports. Here we have different
-read-write instructions for both I/O and memory. **Memory Mapped I/O –**
+read-write instructions for both I/O and memory.
+ **Memory Mapped I/O –**
 Memory-mapped I/O uses the same address space to address both memory and I/O
 devices. The memory and registers of the I/O devices are mapped to (associated
 with) address values. So when the CPU accesses an address, it may refer to a
