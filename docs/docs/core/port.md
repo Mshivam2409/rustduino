@@ -4,6 +4,9 @@ slug: /ports
 title: Ports and Pins
 ---
 
+
+----
+
 In computer programming a port is a communication endpoint. It completes the
 destination or origination network address of a message. Specific port numbers
 are reserved to identify specific services so that an arriving packet can be
