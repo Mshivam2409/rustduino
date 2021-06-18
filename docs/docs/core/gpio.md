@@ -18,6 +18,8 @@ GPIO abilities may include:
 - GPIO pins can be enabled/disabled
 - Input values are readable (usually high or low)
 - Output values are writable/readable
+
+#### EXAMPLES of GPIO REGISTERS of ARDUINO 380p
 ![EXAMPLES of GPIO REGISTERS of ARDUINO 380p](https://github.com/Mshivam2409/RustDuino-Docs/blob/master/docs/core/images/gpio.png?raw=true)
 
 ## Function Definitions:
