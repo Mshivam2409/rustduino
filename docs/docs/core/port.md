@@ -1,5 +1,56 @@
 ---
 id: ports
 slug: /ports
-title: Ports
+title: Ports and Pins
 ---
+
+# Introduction
+
+In computer programming a port is a communication endpoint. It completes the destination or origination network address of a message. Specific port numbers are reserved to identify specific services so that an arriving packet can be easily forwarded to a running application. 
+
+Every microcontroller has pins in it to attach power connections, input and output connections, and communications connections. Every microcontroller has different configurations for its pins, and often one pin will have more than one function.
+
+Pins are grouped into ports, and all of a pin’s settings are controlled from the port’s register block. We’d like each pin to be a self-contained struct, so that ownership of it can be passed from one software module to another, and only the owning module can mutate its pins. This follows Rust’s one-owner rule for pins, but would require that each pin be able to mutate its settings in the Port register block. 
+
+\## Function Definitions - Port represents a struct containing the register definition for  a Port.
+
+```
+  pub struct Port {/*feilds ommited*/}
+ 
+```
+
+\- Pin represents struct corresponding to a pin
+
+```
+  pub struct Pin {/*feilds ommited*/}
+```
+
+\## Implementations ### Impl `new` for `Port` Return a struct containing register definition of the Port.
+
+```
+pub fn new(name: PortName) -> &'static mut Port
+```
+
+\### Impl `set_pin_mode` for `Port` Sets the pin mode
+
+```
+   pub fn set_pin_mode(&mut self, p: usize, mut mode: u32)
+```
+
+\### Impl `pin ` for `Port` Returns a pin struct
+
+```
+  pub fn pin(&mut self, p: usize) -> Pin
+```
+
+\### Impl `name` for `Port` Returns PortName if the address is correct
+
+```
+      pub fn name(&self) -> PortName 
+```
+
+\### Impl `make_gpio` for `Pin` Sets pin to GPIO mode
+
+```
+      pub fn make_gpio(self) -> Gpio 
+```
