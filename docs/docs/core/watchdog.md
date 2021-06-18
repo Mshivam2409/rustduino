@@ -44,5 +44,5 @@ Return a struct containing register definition of the watchdog timer.
 pub fn disable(&mut self)
 ```
 
-2. Disables the watchdog timer.
+Disables the watchdog timer.
 
