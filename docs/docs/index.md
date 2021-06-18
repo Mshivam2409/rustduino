@@ -4,6 +4,10 @@ slug: /
 title: Introduction
 ---
 
+*Let's Begin RustDuino*
+
+----
+
 **RustDuino** is a one of the 4 projects offered by Electronics Club in summer 2021 for Y20 batch students which introduces the concepts of Embedded programming using **Rust Language** and also covers **Arduino Architecture** from the very basics. The project is oriented towards making our own IoT Hemisphere for Arduino.
 
 We will be making optimizations along the way in this project, especially because what currently happens is that C/C++ program is converted into an arduino language and then into binaries. We'll be directly interfacing them so that these multiple conversions are not needed.
