@@ -4,6 +4,9 @@ slug: /watchdog
 title: Watchdog
 ---
 
+
+----
+
 - A watchdog timer (WDT) is a hardware timer that automatically generates a
   system reset if the main program neglects to periodically service it. It is
   often used to automatically reset an embedded device that hangs because of a
