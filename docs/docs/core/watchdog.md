@@ -45,5 +45,5 @@ pub fn disable(&mut self)
 ```
 
 1. Unlock the watchdog for modification.
-2. Disables the watchdog.
+2. Disables the watchdog timer.
 
