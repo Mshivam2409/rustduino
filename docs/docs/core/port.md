@@ -35,7 +35,9 @@ Pin represents struct corresponding to a pin
   pub struct Pin {/*feilds ommited*/}
 ```
 
-## Implementations ### Impl `new` for `Port`
+## Implementations
+
+### Impl `new` for `Port`
 
 ```rust
 pub fn new(name: PortName) -> &'static mut Port
