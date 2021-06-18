@@ -50,6 +50,10 @@ The timing dependency is one of the big drawbacks of UART, and the solution is U
 - Signals needed by a third party DMA controller 
 - Integrated bus mastering DMA controller 
 
+![dp3](https://github.com/Mshivam2409/RustDuino-Docs/blob/master/docs/embedded/images/data_protocols/dp_uart1.png?raw=true)
+
+For long-distance communication, the 5V UART is not very reliable, that's why it's converted to a higher voltage, typically +12 V for a "0" and -12 V for a "1". The data format remains the same.
+
 #### USART Protocol
 
 USART stands for a "universal synchronous and asynchronous transmitter and receiver". It is a serial communication of a two-wire protocol. The data cable signal lines are labelled as Rx and TX. This protocol is used to transmitting and receiving the data byte by byte along with the clock pulses. It is a full-duplex protocol that means *transmitting and receiving data simultaneously* to different board rates. Different devices communicate with microcontroller to this protocol.
@@ -64,8 +68,27 @@ The Intra system protocol is used to communicate the two devices within the circ
 
 ![dp2](https://github.com/Mshivam2409/RustDuino-Docs/blob/master/docs/embedded/images/data_protocols/dp2.png?raw=true)
 
+The different categories of intrasystem protocol mainly include the following.
 
+- I2C Protocol
+- SPI Protocol
+- CAN Protocol
 
+#### I2C Protocol
 
+**I2C** stands for **Inter-Integrated Circuit.** It is a bus interface connection protocol incorporated into devices for serial communication. It was originally designed by Philips Semiconductor in 1982. Recently, it is a widely used protocol for short-distance communication. It is also known as Two Wired Interface(TWI).
 
-Integrated bus mastering DMA controller ![img](https://lh4.googleusercontent.com/lrao-n5b3qUAAsYDnWVtXxR8_oPTS1MQ_hGH7wTzUeeD6SEs1t-ZK0QDcHgbK0dseflmay_CIE4HlNHgSMC7ruBRkP-__QfbrO8t1_-lADCOAhfS-zVkw805qYGKdPi0QOxMV38c) 
+**Working of I2C Communication Protocol :**
+
+It uses only 2 bi-directional open-drain lines for data communication called SDA and SCL. Both these lines are pulled high.
+
+**Serial Data (SDA) –** Transfer of data takes place through this pin.
+
+**Serial Clock (SCL) –** It carries the clock signal. 
+
+I2C operates in 2 modes –
+
+- Master mode
+- Slave mode
+
+Each data bit transferred on the SDA line is synchronized by a high to the low pulse of each clock on the SCL line.
