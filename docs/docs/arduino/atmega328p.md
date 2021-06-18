@@ -4,6 +4,10 @@ slug: /atmega328p
 title: AtMega328P
 ---
 
+*Our First Chip*
+
+----
+
 The high-performance Microchip picoPower® 8-bit AVR® RISC-based microcontroller **AtMega328p** ([datasheet](http://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-7810-Automotive-Microcontrollers-ATmega328P_Datasheet.pdf))
 combines 32 KB ISP Flash memory with read-while-write capabilities, 1024B
 EEPROM, 2 KB SRAM, 23 general purpose I/O lines, 32 general purpose working

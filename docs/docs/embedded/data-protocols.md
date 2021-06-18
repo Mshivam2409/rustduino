@@ -4,6 +4,9 @@ slug: /data-protocols
 title: Data Protocols
 ---
 
+## Introduction
+----
+
 The proper descriptions of digital message formats as well as rules are known
 communication protocols. The implementation of these protocols can be done
 within hardware as well as software. So communications protocols are available
@@ -22,6 +25,7 @@ There are two types of communication protocols which are classified below:
 - Intra System Protocol
 
 ## Inter System Protocol
+----
 
 The inter-system protocol using to communicate the two different devices. Like
 communication between computer to microcontroller kit. The communication is done
@@ -34,6 +38,7 @@ The different categories of intersystem protocol mainly include the following.
 - USB Protocol
 
 ### UART Protocol
+----
 
 **UART**, for **Universal Asynchronous Receiver Transmitter**, is one of the
 most used serial protocols. It's almost as old as I am, and very simple. Most
@@ -85,6 +90,7 @@ it's converted to a higher voltage, typically +12 V for a "0" and -12 V for a
 "1". The data format remains the same.
 
 ### USART Protocol
+----
 
 USART stands for a "universal synchronous and asynchronous transmitter and
 receiver". It is a serial communication of a two-wire protocol. The data cable
@@ -95,6 +101,7 @@ to different board rates. Different devices communicate with microcontroller to
 this protocol.
 
 ### USB Protocol
+----
 
 USB stands for universal serial bus. Again it is a serial communication of
 two-wire protocol. The data cable signal lines are labelled D+ and D-. This
@@ -107,6 +114,7 @@ communicating with USB protocol. Like a computer to communicate with an ARM
 controller using USB.
 
 ## Intra System Protocol
+----
 
 The Intra system protocol is used to communicate the two devices within the
 circuit board. While using these intra system protocols, without going to
@@ -122,6 +130,7 @@ The different categories of intrasystem protocol mainly include the following.
 - CAN Protocol
 
 ### I2C Protocol
+----
 
 **I2C** stands for **Inter-Integrated Circuit.** It is a bus interface
 connection protocol incorporated into devices for serial communication. It was
@@ -168,6 +177,7 @@ The sequence of these bits are –
   capabilities.
 
 ### SPI Protocol
+----
 
 SPI stands for the serial peripheral interface. It is one of the serial
 communication protocol developed by Motorola. Sometimes SPI protocol is also
@@ -182,6 +192,7 @@ only one slave at a time. It is a full-duplex communication protocol. Not
 limited to 8-bit words in the case of bit transferring.
 
 ### CAN Protocol
+----
 
 CAN stands for the controller area network. It is a serial communication
 protocol. It requires two wires CAN High (H+) and CAN low (H-). It was developed

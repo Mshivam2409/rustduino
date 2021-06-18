@@ -15,6 +15,7 @@ title: Why Rust?
 * **Powerful static analysis**: Rust’s type system prevents data races at compile time. The type system can also be used to check other properties at compile-time; reducing the need for checks at runtime in some cases. When applied to embedded programs these static checks can be used, for example, to enforce that configuration of I/O is done properly. The ownership model can be used to ensure that only certain parts of a program can modify a peripheral.
 
 * **Fearless concurrency**: Simply put concurrency is the ability of different parts of a program to be executed at the same time or out of order. In an embedded context, this includes:
+
   * interrupt handlers,
   * multi-threading,
   * multiple-core microprocessors.
@@ -22,3 +23,4 @@ title: Why Rust?
   Since many embedded systems have to deal with interrupts, concurrency will come up sooner or later, and it’s where many subtle and difficult bugs can occur. Rust provides several abstractions and safety guarantees that help us write correct code.
 
 * **Portability**: In embedded environments portability is an important topic. Every vendor and even each family from a single manufacturer offers different capabilities and similarly, the ways to interact with peripherals will vary. A common way to deal with this is by building Hardware Abstraction Layers (HALs).
+

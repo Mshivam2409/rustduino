@@ -4,6 +4,9 @@ slug: /memory-mapped-io
 title: Memory Mapped I/O
 ---
 
+## Introduction -
+----
+
 As a CPU needs to communicate with the various memory and input-output devices
 (I/O), and as we know, data between the processor and these devices flow with
 the help of the system bus. There are three ways in which system bus can be
@@ -18,6 +21,7 @@ In first case it is simple because both have different set of address space and
 instruction but require more buses.
 
 ### Isolated I/O –
+----
 
 Then we have Isolated I/O in which we have a common bus(data and address) for
 I/O and memory but separate read and write control lines for I/O. So when CPU
@@ -28,6 +32,7 @@ isolated, and the name is so. The address for I/O here is called ports. Here we
 have different read-write instructions for both I/O and memory.
 
 ## Memory Mapped I/O –
+----
 
 Memory-mapped I/O uses the same address space to address both memory and I/O
 devices. The memory and registers of the I/O devices are mapped to (associated
@@ -36,6 +41,7 @@ portion of physical RAM, or it can instead refer to memory of the I/O device.
 Memory-mapped I/O gives us a unified address space for both, memory and I/O
 
 ### Advantages of memory-mapped I/O
+----
 
 Merits of memory-mapped I/O is that, by discarding the extra complexity that
 port I/O brings, a CPU requires less internal logic and is thus cheaper, faster,
@@ -49,6 +55,7 @@ memory location, storing the result to a memory location, or both) can be used
 with I/O device registers as well.
 
 ### Memory-mapped I/O in Processors
+----
 
 The most common place you see memory-mapped IO is inside a processor. A great
 example is the **PORT** registers of an ATmega microcontroller (the ones used by
