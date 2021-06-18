@@ -39,8 +39,7 @@ pins in that can't be contolled individually. GPIO abilities may include:
 
 ---
 
-GPIO structrepresents a single pin and GPIObitband where pin and gpiobitband
-itself are structs.
+GPIO struct represents a single pin and GPIObitband _( ARM Bit Band Technology)_
 
 ```rust
 pub struct Gpio {
