@@ -21,13 +21,15 @@ owning module can mutate its pins. This follows Rust’s one-owner rule for pins
 but would require that each pin be able to mutate its settings in the Port
 register block.
 
-## Function Definitions - Port represents a struct containing the register definition for a Port.
+## Function Definitions -
+
+Port represents a struct containing the register definition for a Port.
 
 ```rust
   pub struct Port {/*feilds ommited*/}
 ```
 
-- Pin represents struct corresponding to a pin
+Pin represents struct corresponding to a pin
 
 ```rust
   pub struct Pin {/*feilds ommited*/}
@@ -52,23 +54,23 @@ Sets the pin mode, given the pin and requested mode.
 ### Impl `pin ` for `Port`
 
 ```rust
-  pub fn pin(&mut self, p: usize) -> Pin
+pub fn pin(&mut self, p: usize) -> Pin
 ```
 
 Returns a pin struct for given pin.
 
 ### Impl `name` for `Port`
 
-```
-      pub fn name(&self) -> PortName
+```rust
+pub fn name(&self) -> PortName
 ```
 
 Returns Port struct with the corresponding port address.
 
 ### Impl `make_gpio` for `Pin`
 
-```
-      pub fn make_gpio(self) -> Gpio
+```rust
+pub fn make_gpio(self) -> Gpio
 ```
 
 Sets pin to GPIO mode
