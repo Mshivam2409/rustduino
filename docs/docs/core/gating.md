@@ -11,11 +11,15 @@ The SIM(System Integration Module) is another piece of hardware we need for our 
 ```rust
 pub struct Sim {/* fields omitted */}
 ```
+- Helper struct containing register definiton to control clock gating for different ports
+```rust
+pub enum Clock {/*feilds ommited/*}
+```
 
-## Implementation
+## Implementations
 ### - Impl `new` for `Sim`
 ```rust
-pub unsafe fn new() -> &'static mut Sim
+pub fn new() -> &'static mut Sim
 ```
 Return a struct containing register definition of the Sim.
 
