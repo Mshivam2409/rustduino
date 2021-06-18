@@ -21,8 +21,6 @@ There are two types of communication protocols which are classified below:
 
 The inter-system protocol using to communicate the two different devices. Like communication between computer to microcontroller kit. The communication is done through an inter bus system.
 
-![dp1](https://github.com/Mshivam2409/RustDuino-Docs/blob/master/docs/embedded/images/data_protocols/dp1.png?raw=true)
-
 The different categories of intersystem protocol mainly include the following.
 
 - UART Protocol
@@ -50,8 +48,6 @@ The timing dependency is one of the big drawbacks of UART, and the solution is U
 - Signals needed by a third party DMA controller 
 - Integrated bus mastering DMA controller 
 
-![dp_uart1](https://github.com/Mshivam2409/RustDuino-Docs/blob/master/docs/embedded/images/data_protocols/dp_uart1.png?raw=true)
-
 For long-distance communication, the 5V UART is not very reliable, that's why it's converted to a higher voltage, typically +12 V for a "0" and -12 V for a "1". The data format remains the same.
 
 #### USART Protocol
@@ -65,8 +61,6 @@ USB stands for universal serial bus. Again it is a serial communication of two-w
 ### Intra System Protocol
 
 The Intra system protocol is used to communicate the two devices within the circuit board. While using these intra system protocols, without going to intrasystem protocols we will expand the peripherals of the microcontroller. The circuit complexity and power consumption will be increased by using the intrasystem protocol. Using intra system protocols circuit complexity and power consumption, the cost is decreased and it is very secure to accessing the data.
-
-![dp2](https://github.com/Mshivam2409/RustDuino-Docs/blob/master/docs/embedded/images/data_protocols/dp2.png?raw=true)
 
 The different categories of intrasystem protocol mainly include the following.
 
@@ -92,8 +86,6 @@ I2C operates in 2 modes –
 - Slave mode
 
 Each data bit transferred on the SDA line is synchronized by a high to the low pulse of each clock on the SCL line.
-
-![dp3](https://github.com/Mshivam2409/RustDuino-Docs/blob/master/docs/embedded/images/data_protocols/dp3.png?raw=true)
 
 According to **I2C protocols**, the data line can not change when the clock line is high, it can change only when the clock line is low. The 2 lines are open drain, hence a pull-up resistor is required so that the lines are high since the devices on the I2C bus are active low. The data is transmitted in the form of packets which comprise 9 bits. 
 

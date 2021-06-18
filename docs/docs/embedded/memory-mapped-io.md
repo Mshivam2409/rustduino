@@ -27,13 +27,7 @@ read-write instructions for both I/O and memory.
 Memory-mapped I/O uses the same address space to address both memory and I/O
 devices. The memory and registers of the I/O devices are mapped to (associated
 with) address values. So when the CPU accesses an address, it may refer to a
-portion of physical RAM, or it can instead refer to memory of the I/O device.
-
-![mio1](https://github.com/Mshivam2409/RustDuino-Docs/blob/master/docs/embedded/images/memory_mapped_io/mio1.png?raw=true)
-
-![mio2](https://github.com/Mshivam2409/RustDuino-Docs/blob/master/docs/embedded/images/memory_mapped_io/mio2.jpg?raw=true)
-
-Memory-mapped I/O gives us a unified address space for both, memory and I/O
+portion of physical RAM, or it can instead refer to memory of the I/O device. Memory-mapped I/O gives us a unified address space for both, memory and I/O
 
 ##### Advantages of memory-mapped I/O
 
@@ -59,11 +53,3 @@ and is a pointer to a special memory address. This address in memory doesn't
 simply map to RAM but also maps to an IO peripheral that takes the value and
 outputs it to the IO pins. Without memory-mapped IO, the microcontroller would
 have no way to input or output any data!.
-
-**DATA MEMORY MAP OF ATMEGA380P**
-
-![mio3](https://github.com/Mshivam2409/RustDuino-Docs/blob/master/docs/embedded/images/memory_mapped_io/mio3.png?raw=true)
-
-**SYSTEM MEMORY MAP OF ATMEGA4809P**
-
-![mio4](https://github.com/Mshivam2409/RustDuino-Docs/blob/master/docs/embedded/images/memory_mapped_io/mio4.png?raw=true)
