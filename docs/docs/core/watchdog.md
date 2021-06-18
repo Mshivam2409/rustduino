@@ -21,7 +21,7 @@ title: Watchdog
 
 ## Function Definitions
 
-WatchDog Represents a struct containing the regoister definition for watchdog
+WatchDog Represents a struct containing the register definition for watchdog
 timer.
 
 ```rust
@@ -37,3 +37,12 @@ pub unsafe fn new() -> &'static mut Watchdog
 ```
 
 Return a struct containing register definition of the watchdog timer.
+
+```fn disable``` for ```Watchdog``` 
+
+```
+pub fn disable(&mut self)
+```
+
+1. Unlock the watchdog for modification.
+2. Disables the watchdog.
