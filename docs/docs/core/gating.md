@@ -9,6 +9,7 @@ microcontroller setup. Here, we use a SIM to enable the appropriate clock gate
 to enable our I/O port.
 
 ## Function definitions
+----
 
 - Structure Sim represents a block of memory using structures representing
   registers in SIM.
@@ -25,6 +26,7 @@ pub enum Clock {/*feilds ommited/*}
 ```
 
 ## Implementations
+----
 
 ### - Impl `new`
 
