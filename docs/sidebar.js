@@ -19,11 +19,7 @@ module.exports = {
     {
       type: 'category',
       label: 'Rust',
-      items: [
-        'rust/rust',
-        'rust/why-rust',
-        'rust/unsafe'
-      ]
+      items: ['rust/rust', 'rust/why-rust', 'rust/unsafe']
     },
     {
       type: 'category',
@@ -43,12 +39,17 @@ module.exports = {
     {
       type: 'category',
       label: 'Core Concepts',
-      items: ['core/watchdog', 'core/power', 'core/gpio', 'core/ports']
+      items: ['core/watchdog', 'core/power', 'core/ports', 'core/gpio']
     },
     {
       type: 'category',
       label: 'Guides',
       items: ['guides/blink']
+    },
+    {
+      type: 'doc',
+      label: 'Contributors',
+      id: 'contributors'
     }
   ]
 }

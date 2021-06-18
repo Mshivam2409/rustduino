@@ -38,11 +38,10 @@ pub unsafe fn new() -> &'static mut Watchdog
 
 Return a struct containing register definition of the watchdog timer.
 
-#### `disable` for `Watchdog`
+### Impl `disable` for `Watchdog`
 
 ```rust
 pub fn disable(&mut self)
 ```
 
 Disables the watchdog timer.
-

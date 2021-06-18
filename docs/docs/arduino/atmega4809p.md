@@ -12,11 +12,11 @@ EEPROM in 48-pin packages. The series uses the latest Core Independent
 Peripherals with low-power features, including an Event System, intelligent
 analog, and advanced peripherals.
 
-**Arduino Nano Every** is a tiny powerful board that is based on the **ATMega4809 AVR**
-processor. The Arduino Nano Every is almost similar to the Arduino Nano board
-with the addition of a more powerful processor like Atmega4809. This board comes
-with more program memory compared to Arduino Uno and RAM is 200% bigger, helping
-us create a lot of variables.
+**Arduino Nano Every** is a tiny powerful board that is based on the
+**ATMega4809 AVR** processor. The Arduino Nano Every is almost similar to the
+Arduino Nano board with the addition of a more powerful processor like
+Atmega4809. This board comes with more program memory compared to Arduino Uno
+and RAM is 200% bigger, helping us create a lot of variables.
 
 ## Compiling and Linking
 
@@ -28,5 +28,5 @@ $ cargo +nightly build --release
 Then, to upload it to a device, assuming that you have avrdude installed, run:
 
 ```bash
-$ avrdude -v -patmega328p -carduino -P/dev/ttyACM0 -b115200 -D -Uflash:w:target/avr-atmega4809p/release/examples/serial.elf:e
+$ avrdude -v -patmega4809p -carduino -P/dev/ttyACM0 -b115200 -D -Uflash:w:target/avr-atmega4809p/release/examples/serial.elf:e
 ```

@@ -48,7 +48,7 @@ Return a struct containing register definition of the Port.
 ### Impl `set_pin_mode` for `Port`
 
 ```rust
-   pub fn set_pin_mode(&mut self, p: usize, mut mode: u32)
+pub fn set_pin_mode(&mut self, p: usize, mut mode: u32)
 ```
 
 Sets the pin mode, given the pin and requested mode.

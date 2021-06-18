@@ -4,6 +4,7 @@ slug: /arduino
 title: Installation
 ---
 
-The crate will support the AtMega328p ( Arduino Uno, Arduino Nano) and
-Atmega4809p ( Arduino Every ). Head over the respective chip for installation
-instructions.
+The crate currently supports the following AVR chips:
+
+- [Atmega328p](atmega328p.md)
+- [Atmega4809p](atmega4809p.md)
