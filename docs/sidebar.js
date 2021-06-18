@@ -21,7 +21,8 @@ module.exports = {
       label: 'Rust',
       items: [
         'rust/rust',
-        'rust/why-rust'
+        'rust/why-rust',
+        'rust/unsafe'
       ]
     },
     {
