@@ -21,7 +21,7 @@ There are two types of communication protocols which are classified below:
 
 The inter-system protocol using to communicate the two different devices. Like communication between computer to microcontroller kit. The communication is done through an inter bus system.
 
-![dp1](https://github.com/Mshivam2409/RustDuino-Docs/blob/master/docs/embedded/dp1.png?raw=true)
+![dp1](https://github.com/Mshivam2409/RustDuino-Docs/blob/master/docs/embedded/images/data_protocols/dp1.png?raw=true)
 
 The different categories of intersystem protocol mainly include the following.
 
@@ -62,7 +62,7 @@ USB stands for universal serial bus. Again it is a serial communication of two-w
 
 The Intra system protocol is used to communicate the two devices within the circuit board. While using these intra system protocols, without going to intrasystem protocols we will expand the peripherals of the microcontroller. The circuit complexity and power consumption will be increased by using the intrasystem protocol. Using intra system protocols circuit complexity and power consumption, the cost is decreased and it is very secure to accessing the data.
 
-![dp2](https://github.com/Mshivam2409/RustDuino-Docs/blob/master/docs/embedded/dp2.png?raw=true)
+![dp2](https://github.com/Mshivam2409/RustDuino-Docs/blob/master/docs/embedded/images/data_protocols/dp2.png?raw=true)
 
 
 
