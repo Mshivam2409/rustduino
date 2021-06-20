@@ -1,15 +1,12 @@
-/target/**
-./vscode/**
-
 # Dependencies
-**/node_modules/**
+./node_modules/**
 
 # Production
-**/build
+./build
 
 # Generated files
-**/.docusaurus
-**/.cache-loader
+.docusaurus
+.cache-loader
 
 # Misc
 .DS_Store
