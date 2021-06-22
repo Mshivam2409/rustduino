@@ -15,6 +15,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+      - name: Update toolchain
+        run: bash toolchain.sh
       - name: ATMEGA328P
         run: AVR_CPU_FREQUENCY_HZ=16000000 cargo +nightly-2021-01-07 build -Z build-std=core --target avr-chips/avr-atmega328p.json
       - name: ATMEGA2560
