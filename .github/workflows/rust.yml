@@ -2,21 +2,20 @@ name: Rust
 
 on:
   push:
-    branches: [ master ]
+    branches: [master]
   pull_request:
-    branches: [ master ]
+    branches: [master]
 
 env:
   CARGO_TERM_COLOR: always
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Build
-      run: cargo build --verbose
-    - name: Run tests
-      run: cargo test --verbose
+      - uses: actions/checkout@v2
+      - name: ATMEGA328P
+        run: AVR_CPU_FREQUENCY_HZ=16000000 cargo +nightly-2021-01-07 build -Z build-std=core --target avr-chips/avr-atmega328p.json
+      - name: ATMEGA2560
+        run: AVR_CPU_FREQUENCY_HZ=16000000 cargo +nightly-2021-01-07 build -Z build-std=core  --target avr-chips/avr-atmega2560.json
