@@ -1,9 +1,10 @@
 #![no_std]
+#![deny(warnings)]
 
+/// Library for ATmega328P chip.
 pub mod atmega328p {
-    //! Library for ATmega328P chip
+    /// Hardware Abstraction Library (HAL).
     pub mod hal {
-        //! Hardware Abstraction Library (HAL)
         pub mod port;
     }
 }
