@@ -50,6 +50,7 @@ impl Port {
     }
 
     /// Returns PortName of the port based on its address.
+    /// Panics if Port has invalid address.
     ///
     /// Section 13.4 of ATmega328P datasheet.
     pub fn name(&self) -> PortName {
@@ -107,18 +108,15 @@ impl Pin {
     ///
     /// Section 13.2 of ATmega328P datasheet.
     pub fn set_mode(&mut self, io_mode: IOMode) {
-        // Check if pin is valid
+        // Check if pin number is valid
         if self.pin >= 8 {
             return;
         }
 
-        // Get address of data direction register (DDR).
-        let ddr_mut = unsafe { &mut (*self.port).ddr };
+        // Read the DDRxn register.
+        let mut ddr_val = unsafe { read_volatile(&mut (*self.port).ddr) };
 
-        // Read the DDR register.
-        let mut ddr_val = unsafe { read_volatile(ddr_mut) };
-
-        // Calculate the value to write to DDR register.
+        // Calculate the value to write to DDRxn register.
         ddr_val &= !(0x1 << self.pin);
 
         ddr_val |= match io_mode {
@@ -126,33 +124,30 @@ impl Pin {
             IOMode::Output => 0x1 << self.pin,
         };
 
-        // Write the value to DDR register.
-        unsafe { write_volatile(ddr_mut, ddr_val) }
+        // Write the value to DDRxn register.
+        unsafe { write_volatile(&mut (*self.port).ddr, ddr_val) }
     }
 
     /// Toggles value of PORTxn, independent of value of DDRxn.
     pub fn toggle(&mut self) {
-        // Check if pin is valid
+        // Check if pin number is valid
         if self.pin >= 8 {
             return;
         }
 
-        // Write one at the the byte specified by pin number
+        // Set the bit at offset self.pin in PINxn register
         unsafe { write_volatile(&mut (*self.port).pin, 0x1 << self.pin) }
     }
 
     /// Set pin to high.
     pub fn high(&mut self) {
-        // Check if pin is valid.
+        // Check if pin number is valid.
         if self.pin >= 8 {
             return;
         }
 
-        // Get value of PORTxn register.
-        let port_mut = unsafe { &mut (*self.port).port };
-
         // Get value of PORTxn register
-        let port_val = unsafe { read_volatile(port_mut) };
+        let port_val = unsafe { read_volatile(&mut (*self.port).port) };
 
         // Check if value of PORTxn is already high, toggle if it isn't.
         if port_val & (1 << self.pin) == 0 {
@@ -162,16 +157,13 @@ impl Pin {
 
     /// Set pin to low.
     pub fn low(&mut self) {
-        // Check if pin is valid.
+        // Check if pin number is valid.
         if self.pin >= 8 {
             return;
         }
 
-        // Get value of PORTxn register.
-        let port_mut = unsafe { &mut (*self.port).port };
-
         // Get value of PORTxn register
-        let port_val = unsafe { read_volatile(port_mut) };
+        let port_val = unsafe { read_volatile(&mut (*self.port).port) };
 
         // Check if value of PORTxn is already low, toggle if it isn't.
         if port_val & (1 << self.pin) != 0 {
