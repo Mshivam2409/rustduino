@@ -1,6 +1,6 @@
 //! General Digital I/O Implementation.
 
-use core::ptr::{addr_of_mut, read_volatile, write_volatile};
+use core::ptr::{read_volatile, write_volatile};
 
 /// Represents name of Port, can be either B, C, or D.
 pub enum PortName {
@@ -113,7 +113,7 @@ impl Pin {
         }
 
         // Get address of data direction register (DDR).
-        let ddr_mut = unsafe { addr_of_mut!((*self.port).ddr) };
+        let ddr_mut = unsafe { &mut (*self.port).ddr };
 
         // Read the DDR register.
         let mut ddr_val = unsafe { read_volatile(ddr_mut) };
@@ -138,7 +138,7 @@ impl Pin {
         }
 
         // Write one at the the byte specified by pin number
-        unsafe { write_volatile(addr_of_mut!((*self.port).pin), 0x1 << self.pin) }
+        unsafe { write_volatile(&mut (*self.port).pin, 0x1 << self.pin) }
     }
 
     /// Set pin to high.
@@ -149,7 +149,7 @@ impl Pin {
         }
 
         // Get value of PORTxn register.
-        let port_mut = unsafe { addr_of_mut!((*self.port).port) };
+        let port_mut = unsafe { &mut (*self.port).port };
 
         // Get value of PORTxn register
         let port_val = unsafe { read_volatile(port_mut) };
@@ -168,7 +168,7 @@ impl Pin {
         }
 
         // Get value of PORTxn register.
-        let port_mut = unsafe { addr_of_mut!((*self.port).port) };
+        let port_mut = unsafe { &mut (*self.port).port };
 
         // Get value of PORTxn register
         let port_val = unsafe { read_volatile(port_mut) };
