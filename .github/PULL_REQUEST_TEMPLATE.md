@@ -1,7 +1,7 @@
 Make sure these boxes are checked! 📦✅
 
 - [ ] You ran `toolchain.sh` to install correct rust `nightly-2021-01-07`
-- [ ] You have the latest version of `rustfmt` and installed
+- [ ] You have the latest version of `rustfmt` installed
 ```bash
 $ rustup component add rustfmt
 ```
