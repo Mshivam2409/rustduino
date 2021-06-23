@@ -1,46 +1,44 @@
-use core;
 use crate::atmega328p::hal::interrupt;
+use core;
 
 /// Struct to control the watchdog timer 10.9 of the manual.
 /// Consists of two 8 bit registers
-pub struct Watchdog { 
-   mcusr: u8,
-   wdtcsr: u8, 
+pub struct Watchdog {
+    mcusr: u8,
+    _pad: [u8; 10],
+    wdtcsr: u8,
 }
 
 impl Watchdog {
     pub fn new() -> &'static mut Watchdog {
+        unsafe { &mut *(0x55 as *mut Watchdog) }
+    }
+
+    pub fn reset_watchdog(&mut self) {
         unsafe {
-            &mut *(0x55 as *mut Watchdog)
+            // let mut watchdog = new();
+            let mut ctrl_mcusr = core::ptr::read_volatile(&self.mcusr);
+            ctrl_mcusr &= 0x7;
+            core::ptr::write_volatile(&mut self.mcusr, ctrl_mcusr);
         }
     }
 
-    // pub fn reset_watchdog(&mut self) {
-    //     unsafe {
-    //         // let mut watchdog = new();
-    //         let mut ctrl_mcusr = core::ptr::read_volatile(&self.mcusr);
-    //         ctrl_mcusr &= 0x7;
-    //         core::ptr::write_volatile(&mut self.mcusr, ctrl_mcusr);
-    //     }
-        
-    // }
-
-    /// disabling interrupt 
+    /// disabling interrupt
     /// reseting watchdog timer
     /// disabling watchdog
     /// enabling interrupts again
     pub fn disable(&mut self) {
         unsafe {
             interrupt::Interrupt::disable(&mut interrupt::Interrupt::get());
-            // reset_watchdog(); 
-            let mut ctrl_mcusr = core::ptr::read_volatile(&self.mcusr);
-            ctrl_mcusr &= 0x7;
-            core::ptr::write_volatile(&mut self.mcusr, ctrl_mcusr);
+            Watchdog::reset_watchdog(&mut Watchdog::new());
+            // let mut ctrl_mcusr = core::ptr::read_volatile(&self.mcusr);
+            // ctrl_mcusr &= 0x7;
+            // core::ptr::write_volatile(&mut self.mcusr, ctrl_mcusr);
             // let mut watchdog = new();
             let mut ctrl_wdtcsr = core::ptr::read_volatile(&self.wdtcsr);
             ctrl_wdtcsr |= 0x18;
             core::ptr::write_volatile(&mut self.wdtcsr, ctrl_wdtcsr);
-            core::ptr::write_volatile(&mut self.wdtcsr, 0x00); 
+            core::ptr::write_volatile(&mut self.wdtcsr, 0x00);
             interrupt::Interrupt::enable(&mut interrupt::Interrupt::get());
         }
     }
