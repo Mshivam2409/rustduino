@@ -8,5 +8,9 @@ pub mod atmega328p {
         pub mod port;
 
         pub mod pins;
+
+        pub mod watchdog;
+
+        pub mod interrupt;
     }
 }
