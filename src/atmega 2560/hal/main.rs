@@ -57,7 +57,6 @@ pub static _FLASHCONFIG : [u8 ; 16] = [
 	0xFF, 0xFF, 0xFF, 0xFF, 0xDE, 0xF9, 0xFF, 0xFF
 ];
 */
-
 #[panic_handler]
 fn teensy_panic(_pi: &core::panic::PanicInfo) -> ! {
     loop {}
