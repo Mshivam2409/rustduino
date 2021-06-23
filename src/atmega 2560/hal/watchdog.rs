@@ -3,7 +3,6 @@ use core;
 mod interrupts;
 //use interrupts to enable/disable global interrupts
 
-
 //struct for Watchdog
 #[repr(C,packed)]
 pub struct WatchDog {  
