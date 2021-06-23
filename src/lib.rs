@@ -14,3 +14,11 @@ pub mod atmega328p {
         pub mod interrupt;
     }
 }
+
+pub fn delay_ms(ms: u32) {
+    avr_delay::delay_ms(ms);
+}
+
+pub fn delay_us(us: u32) {
+    avr_delay::delay_us(us);
+}
