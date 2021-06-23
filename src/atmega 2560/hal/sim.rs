@@ -10,3 +10,18 @@ pub struct Sim {
     osccal:u8
 }
 
+impl Sim {
+    pub unsafe fn new() -> &'static mut Sim {
+        // Creates a reference to the mutable structure to control the hardware of SIM.
+        &mut *(0x61 as *mut Sim)
+    }
+
+    pub fn enable_clock(&mut self) {
+        unsafe {
+            // Creates a new instance for the Sim structure.
+            Sim *ptr = new();
+            
+            
+        }
+    }
+}

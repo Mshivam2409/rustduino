@@ -9,15 +9,12 @@
 mod port;
 mod sim;
 mod watchdog;
-mod interrupt;
 
 pub extern "C" fn main() {
 
     // Watchdog disabled by the program
     let wdog = watchdog::WatchDog::new();
-    wdog.interrupt_toggle();
     wdog.disable();
-    wdog.interrupt_toggle();
 
     // Enabling Clock Gating in the program
     let sim = sim::Sim::new();
