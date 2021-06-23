@@ -7,4 +7,9 @@ edition = "2018"
 
 [dependencies]
 rustduino = { path = "../../../../rustduino" }
-avr_delay = { git = "https://github.com/avr-rust/delay" }
+
+[profile.dev]
+panic = "abort"
+
+[profile.release]
+panic = "abort"

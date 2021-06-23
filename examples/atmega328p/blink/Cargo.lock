@@ -23,7 +23,6 @@ dependencies = [
 name = "blink"
 version = "0.1.0"
 dependencies = [
- "avr_delay",
  "rustduino",
 ]
 
