@@ -1,37 +1,43 @@
 use core;
-use core::arch::arm::__nop;
 
-#[repr(C, packed)]
-pub struct Watchdog {
-   char mcusr,
-       //memory address is not clear, padding needs to be added
-   char wdtcsr,
+/// struct to control the watchdog timer
+/// consists of two 8 bit registers
 
-    
+pub struct Watchdog { 
+   MCUSR: u8,
+   WDTCSR: u8,
 }
 
 impl Watchdog {
     pub unsafe fn new() -> &'static mut Watchdog {
 
-        &mut *(0x35 as *mut Watchdog)
+        &mut *(0x55 as *mut Watchdog)
+    }
+
+    fn reset_watchdog() {
+        unsafe (
+            let mut watchdog = new();
+            let mut ctrl_mcusr = core::ptr::read_volatile(watchdog.MCUSR);
+            ctrl_mcusr &= 0x7;
+            core::ptr::write_volatile(watchdog.MCUSR, ctrl_mcusr);
+        )
+        
     }
 
     pub fn disable(&mut self) {
         unsafe {
-            cortex_m::interrupt::disable; //disable interrupts
-
-            let mut ctrl_mcusr = core::ptr::read_volatile(&self.mcusr); //  clear wdrf of mcusr
-            core::ptr::write_volatile(&mut self.mcusr, ctrl_mcusr & ~(1 << 3) );
-        
-
-            let mut ctrl_wdtcsr = core::ptr::read_volatile(&self.wdtcsr);
-            core::ptr::write_volatile(&mut self.wdtcsr,ctrl_wdtcsr| (1<<4));
-
-            let mut ctrl_wdtcsr = core::ptr::read_volatile(&self.wdtcsr);
-            core::ptr::write_volatile(&mut self.wdtcsr,ctrl_wdtcsr| (1<<3));
-
-            core::ptr::write_volatile(&mut self.wdtcsr, 0x00);
-            cortex_m::interrupt::enable; //enable interrupts
+            /// disabling interrupt 
+            Interrupt::disable(); 
+            /// reseting watchdog timer
+            reset_watchdog();
+            /// disabling watchdog
+            let mut watchdog = new();
+            let mut ctrl_wdtcsr = core::ptr::read_volatile(watchdog.WDTCSR);
+            ctrl_wdtcsr |= 0x18;
+            core::ptr::write_volatile(watchdog.WDTCSR, ctrl_wdtcsr);
+            core::ptr::write_volatile(watchdog.wdtcsr, 0x00);
+            /// enabling interrupts again
+            Interrupt::enable();
         }
     }
 }
