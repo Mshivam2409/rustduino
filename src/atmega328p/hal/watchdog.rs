@@ -9,8 +9,10 @@ pub struct Watchdog {
 }
 
 impl Watchdog {
-    pub unsafe fn new() -> &'static mut Watchdog {
-        &mut *(0x55 as *mut Watchdog)
+    pub fn new() -> &'static mut Watchdog {
+        unsafe {
+            &mut *(0x55 as *mut Watchdog)
+        }
     }
 
     // pub fn reset_watchdog(&mut self) {
