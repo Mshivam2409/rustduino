@@ -25,6 +25,7 @@ impl MCUSR {
        unsafe{
              let mut mcusr=core::ptr::read_volatile(&self.mcusr);
              mcusr &= !(1<<3);
+             core::ptr::write_volatile(&mut self.mcusr,mcusr & !(1<<3));
        }
     }
 }
