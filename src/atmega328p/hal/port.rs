@@ -170,4 +170,11 @@ impl Pin {
             self.toggle();
         }
     }
+
+    /// Change pin mode to output by changing the DDR bit of that pin to 1.
+    ///
+    /// Section 13.2 of ATmega328P datasheet.
+    pub fn set_output(&mut self) {
+        self.set_mode(IOMode::Output);
+    }
 }
