@@ -1,10 +1,12 @@
+use core;
+
 #[repr(C,packed)]
 pub struct Watchdog {
-   mcusr:u8,
+   MCUSR:u8,
    // memory addresses not clear from the Manual as of now
    // padding is not correct surely
    pad_1:[char;4],
-   wdtcsr:u8
+   WDTCSR:u8
 }
 
 /*
@@ -26,6 +28,7 @@ impl MCUSr {
 }*/
 
 use core::arch::arm::__nop;
+mod interrupt;
 
 impl Watchdog {
     pub unsafe fn new() -> &'static mut Watchdog {
@@ -48,34 +51,18 @@ impl Watchdog {
            // new code
            
            Watchdog *ptr = new();
-           // First disable the interrupt feature
-           ptr.interrupt_toggle();
-
            // First we set WDCE bit of wdtcsr register as 1
-           let wdtcsr = core::ptr::read_volatile(&mut self.wdtcsr);
+           let wdtcsr = core::ptr::read_volatile(&mut self.WDTCSR);
            wdtcsr = wdtcsr | 0x10;
-           core::ptr::write_volatile(&mut self.wdtcsr,wdtcsr );
+           core::ptr::write_volatile(&mut self.WDTCSR,wdtcsr );
            // Then we change the WDRF bit of mcusr register as 0
-           let mcusr = core::ptr::read_volatile(&mut self.mcusr);
+           let mcusr = core::ptr::read_volatile(&mut self.MCUSR);
            mcusr = mcusr & 0xF7;
-           core::ptr::write_volatile(&mut self.mcusr,mcusr );
+           core::ptr::write_volatile(&mut self.MCUSR,mcusr );
            // Then we have to change the WDE bit of wdtcsr register to 0
            wdtcsr = wdtcsr & 0xF7
-           core::ptr::write_volatile(&mut self.wdtcsr,wdtcsr);
-
-           // Enable the interrupt feature
-           ptr.interrupt_toggle();
+           core::ptr::write_volatile(&mut self.WDTCSR,wdtcsr);
 
         }
-    }
-
-    pub fn interrupt_toggle(&mut self) {
-        // If the WDIE bit is enabled it will be disabled otherwise enabled
-        let wdtcsr = core::ptr::read_volatile(&mut self.wdtcsr);
-        
-        if wdtcsr & 0xBF == wdtcsr { wdtcsr = wdtcsr | 0x40; }
-        else { wdtcsr = wdtcsr & 0xBF }
-        
-        core::ptr::write_volatile(&mut self.wdtcsr,wdtcsr);
     }
 }
