@@ -1,0 +1,10 @@
+language: rust
+sudo: false
+
+matrix:
+  include:
+    # tests pass
+    - rust: nightly-2021-01-07
+      script:
+        - rustup component add rustfmt-preview
+        - cargo fmt --all -- --check
