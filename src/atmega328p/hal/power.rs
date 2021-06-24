@@ -118,3 +118,9 @@ pub fn enable_mode(mode: SleepMode) {
         SleepMode::ExtStandby => Sleep::ext_standby(&mut Sleep::get()),
     }
 }
+//disable the sleep mode by changing 0th bit to 0
+pub fn disable_mode(&mut self){
+    unsafe{
+        core::ptr::write_volatile(&mut self.smcr, 0x0);
+    }
+}
