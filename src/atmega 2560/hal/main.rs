@@ -11,6 +11,7 @@ mod prescalar;
 mod sleep_mode;
 mod watchdog;
 mod interrupt;
+mod power;
 
 pub extern "C" fn main() {
 

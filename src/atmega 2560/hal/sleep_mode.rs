@@ -1,17 +1,12 @@
 use core;
 use core::arch::arm::__nop;
 
-// Section 11.10 of the manual
-// Also references from Section 11.4 and 11.8
+// Section 11.10.1 of the manual
+// Also references from Section 11.4
 
 #[repr(C, packed)]
 pub struct Sleep { 
     SMCR:u8,
-    // memory addresses not clear from the Manual as of now
-    // padding is not correct surely
-    pad_1:[char;16],
-    PRR0:u8,
-    PRR1:u8
 }
 
 // mod interrupts;
