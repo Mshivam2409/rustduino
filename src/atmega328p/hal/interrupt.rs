@@ -7,7 +7,7 @@ pub struct Interrupt {
 }
 
 impl Interrupt {
-    pub unsafe fn get() -> &'static mut Interrupt {
+    pub unsafe fn new() -> &'static mut Interrupt {
         &mut *(0x5F as *mut Interrupt)
     }
 

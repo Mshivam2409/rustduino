@@ -64,7 +64,7 @@ pub struct Sleep {
 
 impl Sleep {
     /// Returns mutable reference to `Sleep` struct to control power management.
-    pub fn get() -> &'static mut Self {
+    pub fn new() -> &'static mut Self {
         unsafe { &mut *(0x53 as *mut Self) }
     }
 
@@ -117,12 +117,12 @@ impl Sleep {
 
 pub fn enable_mode(mode: SleepMode) {
     match mode {
-        SleepMode::Idle => Sleep::idle(&mut Sleep::get()),
-        SleepMode::ADCNR => Sleep::adcnr(&mut Sleep::get()),
-        SleepMode::PowerDown => Sleep::power_down(&mut Sleep::get()),
-        SleepMode::PowerSave => Sleep::power_save(&mut Sleep::get()),
-        SleepMode::Standby => Sleep::standby(&mut Sleep::get()),
-        SleepMode::ExtStandby => Sleep::ext_standby(&mut Sleep::get()),
-        SleepMode::Disable => Sleep::disable(&mut Sleep::get()),
+        SleepMode::Idle => Sleep::idle(&mut Sleep::new()),
+        SleepMode::ADCNR => Sleep::adcnr(&mut Sleep::new()),
+        SleepMode::PowerDown => Sleep::power_down(&mut Sleep::new()),
+        SleepMode::PowerSave => Sleep::power_save(&mut Sleep::new()),
+        SleepMode::Standby => Sleep::standby(&mut Sleep::new()),
+        SleepMode::ExtStandby => Sleep::ext_standby(&mut Sleep::new()),
+        SleepMode::Disable => Sleep::disable(&mut Sleep::new()),
     }
 }

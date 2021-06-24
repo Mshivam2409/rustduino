@@ -140,6 +140,9 @@ impl Pin {
     }
 
     /// Set pin to high.
+    ///
+    /// This function checks if the pin is already high or not by reading
+    /// PINxn register. If it is not high then it calls `Pin::toggle`.
     pub fn high(&mut self) {
         // Check if pin number is valid.
         if self.pin >= 8 {
@@ -156,6 +159,9 @@ impl Pin {
     }
 
     /// Set pin to low.
+    ///
+    /// This function checks if the pin is already low or not by reading
+    /// PINxn register. If it is not low then it calls `Pin::toggle`.
     pub fn low(&mut self) {
         // Check if pin number is valid.
         if self.pin >= 8 {

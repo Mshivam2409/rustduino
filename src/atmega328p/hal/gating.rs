@@ -16,7 +16,7 @@ pub struct Power {
 }
 ///returns mutable reference to Power struct
 impl Power {
-    pub fn get() -> &'static mut Self {
+    pub fn new() -> &'static mut Self {
         unsafe { &mut *(0x64 as *mut Self) }
     }
 
@@ -79,13 +79,13 @@ impl Power {
     ///disable_clock function disables the mode as per requirement
     pub fn disable_clock(mode: Peripherals) {
         match mode {
-            Peripherals::TWI => Power::twi(&mut Power::get()),
-            Peripherals::Timer2 => Power::timer2(&mut Power::get()),
-            Peripherals::Timer0 => Power::timer0(&mut Power::get()),
-            Peripherals::Timer1 => Power::timer1(&mut Power::get()),
-            Peripherals::SPI => Power::spi(&mut Power::get()),
-            Peripherals::USART0 => Power::usart0(&mut Power::get()),
-            Peripherals::ADC => Power::adc(&mut Power::get()),
+            Peripherals::TWI => Power::twi(&mut Power::new()),
+            Peripherals::Timer2 => Power::timer2(&mut Power::new()),
+            Peripherals::Timer0 => Power::timer0(&mut Power::new()),
+            Peripherals::Timer1 => Power::timer1(&mut Power::new()),
+            Peripherals::SPI => Power::spi(&mut Power::new()),
+            Peripherals::USART0 => Power::usart0(&mut Power::new()),
+            Peripherals::ADC => Power::adc(&mut Power::new()),
         }
     }
 }

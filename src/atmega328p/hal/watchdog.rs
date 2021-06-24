@@ -29,7 +29,7 @@ impl Watchdog {
     /// enabling interrupts again
     pub fn disable(&mut self) {
         unsafe {
-            interrupt::Interrupt::disable(&mut interrupt::Interrupt::get());
+            interrupt::Interrupt::disable(&mut interrupt::Interrupt::new());
             Watchdog::reset_watchdog(&mut Watchdog::new());
             // let mut ctrl_mcusr = core::ptr::read_volatile(&self.mcusr);
             // ctrl_mcusr &= 0x7;
@@ -39,7 +39,7 @@ impl Watchdog {
             ctrl_wdtcsr |= 0x18;
             core::ptr::write_volatile(&mut self.wdtcsr, ctrl_wdtcsr);
             core::ptr::write_volatile(&mut self.wdtcsr, 0x00);
-            interrupt::Interrupt::enable(&mut interrupt::Interrupt::get());
+            interrupt::Interrupt::enable(&mut interrupt::Interrupt::new());
         }
     }
 }

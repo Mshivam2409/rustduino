@@ -1,19 +1,19 @@
-//! Pins implementation
+//! Pins implementation.
 
 use crate::atmega328p::hal::port::*;
 
-/// All pins inside a single struct
+/// All pins inside a single struct.
 pub struct Pins {
-    /// All five analog pins
+    /// All five analog pins.
     pub analog: [Pin; 5],
 
-    /// All 14 digital I/O pins
+    /// All 14 digital I/O pins.
     pub digital: [Pin; 14],
 }
 
 impl Pins {
-    /// Returns all pins at once as single struct
-    pub fn get() -> Pins {
+    /// Returns all pins at once as a single struct.
+    pub fn new() -> Pins {
         Pins {
             analog: [
                 Pin::new(PortName::C, 0).unwrap(),

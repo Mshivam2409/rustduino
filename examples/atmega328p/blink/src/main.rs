@@ -10,6 +10,7 @@ pub extern "C" fn main() {
     let wdog = arduino_uno::watchdog::Watchdog::new();
     wdog.disable();
 
+<<<<<<< HEAD
     let mut pins = arduino_uno::pins::Pins::get();
 
     pins.digital[13].set_output();
@@ -20,7 +21,25 @@ pub extern "C" fn main() {
         rustduino::delay_ms(1000); // adding a delay between high and low to 1s
 
         pins.digital[13].low(); // setting pin to 0
+=======
+    // Get all pins at once
+    let mut pins = arduino_uno::pins::Pins::new();
 
+    //Set the digital pin 13 as an output pin.
+    pins.digital[13].set_output();
+
+    loop {
+        // Turn on the LED
+        pins.digital[13].high();
+
+        // Wait for one second
+        rustduino::delay_ms(1000);
+
+        // Turn off the LED
+        pins.digital[13].low();
+>>>>>>> e74c4e8 (#16 improve documentation, rename get() functions to new() for uniformity)
+
+        // Wait for one second
         rustduino::delay_ms(1000);
     }
 } //toggling the LED periodically
