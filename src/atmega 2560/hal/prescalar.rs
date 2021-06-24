@@ -5,7 +5,7 @@ use core::arch::arm::__nop;
 // Also references from Section 10.12 and 10.7
 
 #[repr(C, packed)]
-pub struct Sim { 
+pub struct Prescalar { 
     CLKPR:u8,
     // memory addresses not clear from the Manual as of now
     // padding is not correct surely
@@ -15,16 +15,16 @@ pub struct Sim {
 
 mod interrupts;
 
-impl Sim {
-    pub unsafe fn new() -> &'static mut Sim {
+impl Prescalar {
+    pub unsafe fn new() -> &'static mut Prescalar {
         // Creates a reference to the mutable structure to control the hardware of SIM.
-        &mut *(0x61 as *mut Sim)
+        &mut *(0x61 as *mut Prescalar)
     }
 
     pub fn enable_clock(&mut self,freq:u32) {
         unsafe {
-            // Creates a new instance for the Sim structure.
-            Sim *ptr = new();
+            // Creates a new instance for the Prescalar structure.
+            Prescalar *ptr = new();
             // Control of the clock Gating in ATMEGA2560P
 
             // First global interrupts are disabled
@@ -51,7 +51,7 @@ impl Sim {
             else if freq == 64 { core::ptr::write_volatile(&mut self.CLKPR,0x06); }
             else if freq == 128 { core::ptr::write_volatile(&mut self.CLKPR,0x07); }
             else if freq == 256 { core::ptr::write_volatile(&mut self.CLKPR,0x08); }
-            else unreachable!();
+            else { unreachable!(); }
 
             // Read the power usage and sleep modes etc...
             // Try to figure out how to control each and every clock of the chip
