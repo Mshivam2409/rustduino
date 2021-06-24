@@ -1,6 +1,8 @@
 use core;
 use core::arch::arm::__nop;
 
+// Section 7.4 of the manual
+
 // WE NEED TO DISABLE THE GLOBAL INTERRUPTS NOT THE INTERRUPTS RELATED TO WATCHDOG
 /*
 #[repr(C,packed)]

@@ -1,11 +1,14 @@
 use core;
 
+// Section 12.5 of manual
+
 #[repr(C,packed)]
 pub struct Watchdog {
    MCUSR:u8,
    // memory addresses not clear from the Manual as of now
    // padding is not correct surely
-   pad_1:[char;4],
+   pad_1:[char;10],
+   SREG:u8,            // This is the status register to be used in global interrupts
    WDTCSR:u8
 }
 
@@ -33,7 +36,7 @@ mod interrupt;
 
 impl Watchdog {
     pub unsafe fn new() -> &'static mut Watchdog {
-        &mut *(0x55 as *mut Watchdog)    // memory address to check
+        &mut *(0x54 as *mut Watchdog)    // memory address to check
         // &mut *(0x60 as *mut Watchdog)
     }
 

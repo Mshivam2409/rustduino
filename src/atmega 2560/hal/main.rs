@@ -9,6 +9,7 @@
 mod port;
 mod sim;
 mod watchdog;
+mod interrupt;
 
 pub extern "C" fn main() {
 
@@ -16,10 +17,9 @@ pub extern "C" fn main() {
     let wdog = watchdog::WatchDog::new();
     wdog.disable();
 
-    // Enabling Clock Gating in the program
+    // Enabling Clock Gating in the program at 32 cycles as an example
     let sim = sim::Sim::new();
-    clock = sim::Clock::PortC;
-    sim.enable_clock(clock);
+    sim.enable_clock(32);
 
     // setting up of Pin 5 as a GPIO pin
     p = port::PortName::C;
@@ -40,7 +40,7 @@ extern "C" {
 #[no_mangle]
 pub static _VECTORS: [unsafe extern "C" fn(); 2] = [_stack_top, main];
 
-#[link_section = ".flashconfig"]
+// #[link_section = ".flashconfig"]
 #[no_mangle]
 
 // This part is not confirmed as of now
