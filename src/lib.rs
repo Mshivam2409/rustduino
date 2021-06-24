@@ -14,6 +14,8 @@ pub mod atmega328p {
         pub mod watchdog;
 
         pub mod interrupt;
+
+        pub mod power;
     }
 }
 
