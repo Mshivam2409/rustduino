@@ -3,7 +3,7 @@ use core;
 use crate::atmega2560p::hal::interrupts;
 
 ///use interrupts to enable/disable global interrupts
-
+///section 28.6 from manual
 ///struct for WatchDog
 pub struct WatchDog {  
     mcusr:u8,

@@ -6,5 +6,8 @@ pub mod atmega2560p {
     /// Hardware Abstraction Library (HAL).
     pub mod hal {
         pub mod watchdog;
+        pub mod interrupts;
+        pub mod sim;
+        pub mod port;
     }
 }
