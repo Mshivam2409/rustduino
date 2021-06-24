@@ -1,6 +1,4 @@
-//! Power management for ATmega328p chip using sleep modes.
-
-// use std::fs::read_to_string;
+/// Power management for ATmega328p chip using sleep modes.
 
 /// Contains sleep modes.
 ///
@@ -59,6 +57,10 @@ pub enum SleepMode {
 pub struct Sleep {
     /// The sleep mode control register contains control bits for power management.
     smcr: u8,
+    _pad1: u8,
+    mcucr: u8,
+    _pad2: [u8; 14],
+    prr: u8,
 }
 
 impl Sleep {
