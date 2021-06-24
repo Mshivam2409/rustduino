@@ -9,5 +9,6 @@ pub mod atmega2560p {
         pub mod interrupts;
         pub mod sim;
         pub mod port;
+        pub mod sleep_mode;
     }
 }

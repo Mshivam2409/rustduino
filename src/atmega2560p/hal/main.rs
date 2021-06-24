@@ -7,7 +7,8 @@
 #![allow(clippy::empty_loop)]
 
 mod port;
-mod sim;
+// mod sim;
+mod sleep_mode;
 mod watchdog;
 mod interrupt;
 
@@ -19,9 +20,27 @@ pub extern "C" fn main() {
     wdog.disable();
     wdog.interrupt_toggle();
 
-    // Enabling Clock Gating in the program
+    /*
+    // Enabling Clock Gating in the program at 32 cycles as an example
     let sim = sim::Sim::new();
     sim.enable_clock(32);
+    */
+
+    // Enabling sleep mode and setting the required sleep mode further it is disabled
+    // The various sleep modes which could be used in the program are
+        // Idle          // ADC Noise Reduction
+        // Power-down    // Power-save
+        // Standby       // Extended Standby
+
+    let sleep = sleep_mode::Sleep::new();
+    sleep.select_mode("Power-Save");
+
+    /* Your device is running with sleep mode enabled in Power-Save mode now 
+       You can work under sleep mode here in any mode you want 
+       To work further on sleep mode comment the sleep.disable() command below 
+    */
+
+    sleep.disable();
 
     // setting up of Pin 5 as a GPIO pin
     p = port::PortName::C;
