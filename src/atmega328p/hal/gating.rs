@@ -1,7 +1,7 @@
 /// Power reduction for ATmega328p chip
 pub enum Peripherals {
-    TWI, 
-    Timer2, 
+    TWI,
+    Timer2,
     Timer0,
     Timer1,
     SPI, //serial peripheral interface
@@ -9,6 +9,7 @@ pub enum Peripherals {
     ADC,
 }
 ///registers controlling power management
+/// Section 9.11 of ATmega328p Datasheet
 pub struct Power {
     //power reduction register control bits for power management.
     prr: u8,
@@ -18,7 +19,7 @@ impl Power {
     pub fn get() -> &'static mut Self {
         unsafe { &mut *(0x64 as *mut Self) }
     }
-    
+
     pub fn twi(&mut self) {
         unsafe {
             let mut ctrl_twi = core::ptr::read_volatile(&mut self.prr);
@@ -31,7 +32,7 @@ impl Power {
         unsafe {
             let mut ctrl_timer2 = core::ptr::read_volatile(&mut self.prr);
             ctrl_timer2 |= 0x40;
-            //setting 6th bit shuts down the Timer/Counter2 module in synchronous mode 
+            //setting 6th bit shuts down the Timer/Counter2 module in synchronous mode
             core::ptr::write_volatile(&mut self.prr, ctrl_timer2);
         }
     }
@@ -75,7 +76,7 @@ impl Power {
             core::ptr::write_volatile(&mut self.prr, ctrl_adc);
         }
     }
- ///disable_clock function disables the mode as per requirement
+    ///disable_clock function disables the mode as per requirement
     pub fn disable_clock(mode: Peripherals) {
         match mode {
             Peripherals::TWI => Power::twi(&mut Power::get()),
