@@ -49,6 +49,9 @@ pub enum SleepMode {
     /// the oscillator is kept running. From extended standby mode, the device
     /// wakes up in six clock cycles.
     ExtStandby,
+
+    /// Disables the sleep mode.
+    Disable,
 }
 
 /// Contains registers controlling power management.
@@ -108,6 +111,12 @@ impl Sleep {
             core::ptr::write_volatile(&mut self.smcr, 0xF);
         }
     }
+
+    pub fn disable(&mut self){
+        unsafe{
+            core::ptr::write_volatile(&mut self.smcr, 0x0);
+        }
+    }
 }
 
 pub fn enable_mode(mode: SleepMode) {
@@ -118,11 +127,7 @@ pub fn enable_mode(mode: SleepMode) {
         SleepMode::PowerSave => Sleep::power_save(&mut Sleep::get()),
         SleepMode::Standby => Sleep::standby(&mut Sleep::get()),
         SleepMode::ExtStandby => Sleep::ext_standby(&mut Sleep::get()),
+        SleepMode::Disable => Sleep::disable(&mut Sleep::get())
     }
 }
-//disable the sleep mode by changing 0th bit to 0
-pub fn disable_mode(&mut self){
-    unsafe{
-        core::ptr::write_volatile(&mut self.smcr, 0x0);
-    }
-}
+
