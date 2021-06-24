@@ -1,5 +1,7 @@
 //! Power management for ATmega328p chip using sleep modes.
 
+// use std::fs::read_to_string;
+
 /// Contains sleep modes.
 ///
 /// Section 9.1 of ATmega328p datasheet.
@@ -69,7 +71,50 @@ impl Sleep {
     ///
     /// Writes logic one to `SE` bit to make `MCU` enter sleep mode when a `SLEEP`
     /// instruction is executed.
-    pub fn enable(&mut self) {
-        unsafe { core::ptr::write_volatile(&mut self.smcr, 1) }
+    pub fn idle(&mut self) {
+        unsafe {
+            core::ptr::write_volatile(&mut self.smcr, 0x1);
+        }
+    }
+
+    pub fn adcnr(&mut self) {
+        unsafe {
+            core::ptr::write_volatile(&mut self.smcr, 0x3);
+        }
+    }
+
+    pub fn power_down(&mut self) {
+        unsafe {
+            core::ptr::write_volatile(&mut self.smcr, 0x5);
+        }
+    }
+
+    pub fn power_save(&mut self) {
+        unsafe {
+            core::ptr::write_volatile(&mut self.smcr, 0x7);
+        }
+    }
+
+    pub fn standby(&mut self) {
+        unsafe {
+            core::ptr::write_volatile(&mut self.smcr, 0xD);
+        }
+    }
+
+    pub fn ext_standby(&mut self) {
+        unsafe {
+            core::ptr::write_volatile(&mut self.smcr, 0xF);
+        }
+    }
+}
+
+pub fn enable_mode(mode: SleepMode) {
+    match mode {
+        SleepMode::Idle => Sleep::idle(&mut Sleep::get()),
+        SleepMode::ADCNR => Sleep::adcnr(&mut Sleep::get()),
+        SleepMode::PowerDown => Sleep::power_down(&mut Sleep::get()),
+        SleepMode::PowerSave => Sleep::power_save(&mut Sleep::get()),
+        SleepMode::Standby => Sleep::standby(&mut Sleep::get()),
+        SleepMode::ExtStandby => Sleep::ext_standby(&mut Sleep::get()),
     }
 }
