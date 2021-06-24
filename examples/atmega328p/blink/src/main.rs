@@ -6,24 +6,24 @@ use rustduino::atmega328p::hal as arduino_uno;
 
 #[no_mangle]
 pub extern "C" fn main() {
-    // Disable the watchdog
+    // Disable watchdog
     let wdog = arduino_uno::watchdog::Watchdog::new();
     wdog.disable();
-    // Get a mutable reference to the Pins struct
+
     let mut pins = arduino_uno::pins::Pins::get();
-    //Set the digital pin 13 as an output pin.
+
     pins.digital[13].set_output();
-    // Iterative function to make the LED blink.
+
     loop {
-        pins.digital[13].high();
+        pins.digital[13].high(); // setting digital portpin13 to 1(high)
 
-        rustduino::delay_ms(1000);
+        rustduino::delay_ms(1000); // adding a delay between high and low to 1s
 
-        pins.digital[13].low();
+        pins.digital[13].low(); // setting pin to 0
 
         rustduino::delay_ms(1000);
     }
-}
+} //toggling the LED periodically
 
 /// This function is called on panic.
 #[panic_handler]
