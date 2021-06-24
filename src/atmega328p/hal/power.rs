@@ -60,10 +60,6 @@ pub enum SleepMode {
 pub struct Sleep {
     /// The sleep mode control register contains control bits for power management.
     smcr: u8,
-    _pad1: u8,
-    mcucr: u8,
-    _pad2: [u8; 14],
-    prr: u8,
 }
 
 impl Sleep {
@@ -112,8 +108,8 @@ impl Sleep {
         }
     }
 
-    pub fn disable(&mut self){
-        unsafe{
+    pub fn disable(&mut self) {
+        unsafe {
             core::ptr::write_volatile(&mut self.smcr, 0x0);
         }
     }
@@ -127,7 +123,6 @@ pub fn enable_mode(mode: SleepMode) {
         SleepMode::PowerSave => Sleep::power_save(&mut Sleep::get()),
         SleepMode::Standby => Sleep::standby(&mut Sleep::get()),
         SleepMode::ExtStandby => Sleep::ext_standby(&mut Sleep::get()),
-        SleepMode::Disable => Sleep::disable(&mut Sleep::get())
+        SleepMode::Disable => Sleep::disable(&mut Sleep::get()),
     }
 }
-
