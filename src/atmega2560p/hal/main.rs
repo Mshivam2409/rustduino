@@ -21,8 +21,7 @@ pub extern "C" fn main() {
 
     // Enabling Clock Gating in the program
     let sim = sim::Sim::new();
-    clock = sim::Clock::PortC;
-    sim.enable_clock(clock);
+    sim.enable_clock(32);
 
     // setting up of Pin 5 as a GPIO pin
     p = port::PortName::C;
