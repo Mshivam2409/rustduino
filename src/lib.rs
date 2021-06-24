@@ -1,5 +1,7 @@
 #![no_std]
 #![deny(warnings)]
+#![feature(asm)]
+#![feature(llvm_asm)]
 
 //! Rustduino library for arduino
 
@@ -21,18 +23,5 @@ pub mod atmega328p {
     }
 }
 
-/// delay for N miliseconds
-///
-/// ## Arguments
-/// * 'ms' - an u32, number of milliseconds to busy-wait
-pub fn delay_ms(ms: u32) {
-    avr_delay::delay_ms(ms);
-}
-
-/// delay for N microseconds
-///
-/// ## Arguments
-/// * 'us' - an u32, number of microseconds to busy-wait
-pub fn delay_us(us: u32) {
-    avr_delay::delay_us(us);
-}
+pub mod config;
+pub mod delay;
