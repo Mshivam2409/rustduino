@@ -1,4 +1,4 @@
-////// Power reduction for ATmega328p chip
+/// Power reduction for ATmega328p chip
 pub enum Peripherals {
     TWI, 
     Timer2, 
