@@ -5,7 +5,6 @@ use crate::atmega2560p::hal::interrupts;
 ///use interrupts to enable/disable global interrupts
 
 ///struct for WatchDog
-
 pub struct WatchDog {  
     mcusr:u8,
     _pad:[u8;5],
