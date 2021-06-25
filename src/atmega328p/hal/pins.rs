@@ -21,6 +21,7 @@ impl Pins {
                 Pin::new(PortName::C, 2).unwrap(),
                 Pin::new(PortName::C, 3).unwrap(),
                 Pin::new(PortName::C, 4).unwrap(),
+                Pin::new(PortName::C, 5).unwrap(),
             ],
             digital: [
                 Pin::new(PortName::D, 0).unwrap(),
