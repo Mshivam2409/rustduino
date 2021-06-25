@@ -4,6 +4,22 @@ use core::arch::arm::__nop;
 // Section 11.10.1 of the manual
 // Also references from Section 11.4
 
+// Various modes are
+    // IDLE => Idle sleep mode          
+    // ADC => ADC Noise Reduction
+    // PD => Power-down    
+    // PS => Power-save
+    // SBY => Standby      
+    // ESBY => Extended Standby
+
+#[derive(Clone,Copy)]
+pub enum Options {
+    IDLE,   ADC,
+    PD,     PS,
+    SBY,    ESBY
+}
+
+
 #[repr(C, packed)]
 pub struct Sleep { 
     SMCR:u8,
@@ -46,7 +62,7 @@ impl Sleep {
         }
     }
 
-    pub fn select_mode(&mut self,ch:&str) {
+    pub fn select_mode(&mut self,mode:Options) {
         unsafe {
             // Create a instance of sleep to work upon
             Sleep *ptr = new();
@@ -57,20 +73,18 @@ impl Sleep {
             // The sleep mode to be set will be given as the standard name in the manual
             // For more info see the implementation in main.rs
 
-            // Various modes are
-               // Idle          // ADC Noise Reduction
-               // Power-down    // Power-save
-               // Standby       // Extended Standby
-
             let mut smcr = core::ptr::read_volatile(&mut self.SMCR);
             smcr = 0x0F;
-            if ch == "Idle" { smcr = smcr & 0xF1; }
-            else if ch == "ADC Noise Reduction" { smcr = smcr & 0xF3; }
-            else if ch == "Power-down" { smcr = smcr & 0xF5; }
-            else if ch == "Power-save" { smcr = smcr & 0xF7; }
-            else if ch == "Standby" { smcr = smcr & 0xFD; }
-            else if ch == "Extended Standby" { }
-            else { unreachable!(); }
+            
+            match mode {
+                Options::IDLE => smcr = smcr & 0xF1,
+                Options::ADC  => smcr = smcr & 0xF3,
+                Options::PD   => smcr = smcr & 0xF5,
+                Options::PS   => smcr = smcr & 0xF7,
+                Options::SBY  => smcr = smcr & 0xFD,
+                Options::ESBY => smcr = smcr & 0xFF,
+                _ => unreachable!()
+            }
 
             core::ptr::read_volatile(&mut self.SMCR, smcr);
         }
