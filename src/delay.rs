@@ -69,7 +69,6 @@ pub fn delay_ms(ms: u32) {
 /// * 'ms' - an u32, number of microseconds to busy-wait
 #[inline(always)]
 pub fn delay_us(us: u32) {
-    // picoseconds
     // nanoseconds
     let ns = us * 1000;
     let ns_lp = 1000000000 / (crate::config::CPU_FREQUENCY_HZ / 4);
