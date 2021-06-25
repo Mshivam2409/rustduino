@@ -14,9 +14,8 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>
 
-
-use core;
 use crate::atmega328p::hal::interrupt;
+use core;
 
 /// Struct to control the watchdog timer 10.9 of the manual.
 /// Consists of two 8 bit registers

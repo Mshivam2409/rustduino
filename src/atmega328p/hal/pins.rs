@@ -4,8 +4,8 @@ use crate::atmega328p::hal::port::*;
 
 /// All pins inside a single struct.
 pub struct Pins {
-    /// All five analog pins.
-    pub analog: [Pin; 5],
+    /// All six analog pins.
+    pub analog: [Pin; 6],
 
     /// All 14 digital I/O pins.
     pub digital: [Pin; 14],
