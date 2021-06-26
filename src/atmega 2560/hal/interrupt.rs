@@ -1,40 +1,33 @@
-use core;
-use core::arch::arm::__nop;
+//     RustDuino : A generic HAL implementation for Arduino Boards in Rust
+//     Copyright (C) 2021  Devansh Kumar Jha,Indian Institute of Technology Kanpur
+//
+//     This program is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU Affero General Public License as published
+//     by the Free Software Foundation, either version 3 of the License, or
+//     (at your option) any later version.
+//
+//     This program is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU Affero General Public License for more details.
+//
+//     You should have received a copy of the GNU Affero General Public License
+//     along with this program.  If not, see <https://www.gnu.org/licenses/>
 
 // Section 7.4 of the manual
+// https://ww1.microchip.com/downloads/en/devicedoc/atmel-2549-8-bit-avr-microcontroller-atmega640-1280-1281-2560-2561_datasheet.pdf
+use core;
 
-// WE NEED TO DISABLE THE GLOBAL INTERRUPTS NOT THE INTERRUPTS RELATED TO WATCHDOG
-/*
-#[repr(C,packed)]
-pub struct Watchdog {
-   MCUSR:u8,
-   // memory addresses not clear from the Manual as of now
-   // padding is not correct surely
-   pad_1:[char;4],
-   WDTCSR:u8
-}
-
-impl Watchdog {
-    pub unsafe fn new() -> &'static mut Watchdog {
-        &mut *(0x55 as *mut Watchdog)    // memory address to check
-        // &mut *(0x60 as *mut Watchdog)
-    }
-
-    pub fn interrupt_toggle(&mut self) {
-        // If the WDIE bit is enabled it will be disabled otherwise enabled
-        // A new instance of the structure is created first
-        Watchdog *ptr=new();
-
-        let wdtcsr = core::ptr::read_volatile(&mut self.WDTCSR);
-        
-        if wdtcsr & 0xBF == wdtcsr { wdtcsr = wdtcsr | 0x40; }
-        else { wdtcsr = wdtcsr & 0xBF }
-        
-        core::ptr::write_volatile(&mut self.WDTCSR,wdtcsr);
-    }
-}
-*/
-
+// This contains the registers to be manipulated for controlling global interrupts setup.
+// Details of SREG register are as follows -  
+//         Bit 7 – I: Global Interrupt Enable
+//         Bit 6 – T: Bit Copy Storage
+//         Bit 5 – H: Half Carry Flag
+//         Bit 4 – S: Sign Bit, S = N + V
+//         Bit 3 – V: Two’s Complement Overflow Flag
+//         Bit 2 – N: Negative Flag
+//         Bit 1 – Z: Zero Flag
+//         Bit 0 – C: Carry Flag
 #[repr(C,packed)]
 pub struct Status {
    SREG:u8

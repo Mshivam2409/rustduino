@@ -1,18 +1,32 @@
-use core;
-use core::arch::arm::__nop;
+//     RustDuino : A generic HAL implementation for Arduino Boards in Rust
+//     Copyright (C) 2021  Devansh Kumar Jha,Indian Institute of Technology Kanpur
+//
+//     This program is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU Affero General Public License as published
+//     by the Free Software Foundation, either version 3 of the License, or
+//     (at your option) any later version.
+//
+//     This program is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU Affero General Public License for more details.
+//
+//     You should have received a copy of the GNU Affero General Public License
+//     along with this program.  If not, see <https://www.gnu.org/licenses/>
 
+// Prescalar control of the power in ATMEGA2560P
 // Section 10.13 of the manual
 // Also references from Section 10.12 and 10.7
+use core;
 
 #[repr(C, packed)]
 pub struct Prescalar { 
     CLKPR:u8,
-    // memory addresses not clear from the Manual as of now
-    // padding is not correct surely
     pad_1:[char;4],
     OSCCAL:u8
 }
 
+// Global interrupts control will be used here for efficient and safe working.
 mod interrupts;
 
 impl Prescalar {

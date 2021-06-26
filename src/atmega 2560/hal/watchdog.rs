@@ -1,43 +1,52 @@
+//     RustDuino : A generic HAL implementation for Arduino Boards in Rust
+//     Copyright (C) 2021  Devansh Kumar Jha,Indian Institute of Technology Kanpur
+//
+//     This program is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU Affero General Public License as published
+//     by the Free Software Foundation, either version 3 of the License, or
+//     (at your option) any later version.
+//
+//     This program is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU Affero General Public License for more details.
+//
+//     You should have received a copy of the GNU Affero General Public License
+//     along with this program.  If not, see <https://www.gnu.org/licenses/>
+
+// Control on Watchdog timer in ATMEGA2560P
+// Section 12.5 of manual
 use core;
 
-// Section 12.5 of manual
+// Contains various registers to control the functioning of registers Watchdog.
+// MCUSR : Contains 5 writable bits which are used for various watchdog settings as below - 
+// Bit 0   – PORF : Power-on Reset Flag
+// Bit 1   – EXTRF: External Reset Flag
+// Bit 2   – BORF : Brown-out Reset Flag
+// Bit 3   – WDRF : Watchdog Reset Flag
+// Bit 4   – JTRF : JTAG Reset Flag
+// Bit 5:7 - Res  : Reserved
 
+// WDTCSR : Contains 8 writable bits which are used for various watchdog settings as below - 
+// Bit 5, 2:0 - WDP3:0 : Watchdog Timer Prescaler 3, 2, 1 and 0
+// Bit 3      - WDE    : Watchdog System Reset Enable
+// Bit 4      - WDCE   : Watchdog Change Enable
+// Bit 6      - WDIE   : Watchdog Interrupt Enable
+// Bit 7      - WDIF   : Watchdog Interrupt Flag
 #[repr(C,packed)]
 pub struct Watchdog {
    MCUSR:u8,
-   // memory addresses not clear from the Manual as of now
-   // padding is not correct surely
-   pad_1:[char;10],
-   SREG:u8,            // This is the status register to be used in global interrupts
+   pad_1:[char;11],
    WDTCSR:u8
 }
 
-// This is the implementation without any use of padding in case of doubts
-/*
-#[repr(C,packed)]
-pub struct MCUSr {
-    mcusr:u8,
-}*/
-/*
-impl MCUSr {
-    pub unsafe fn new()->&'static mut MCUSr{
-      &mut *(0x34 as *mut MCUSr)
-    }
-    pub fn clear_WDRF(&mut self){
-       unsafe{
-             let mut mcusr=core::ptr::read_volatile(&self.mcusr);
-             mcusr &= !(1<<)
-       }
-    }
-}*/
-
-use core::arch::arm::__nop;
+// The global interrupts control is used here in Watchdog.
 mod interrupt;
 
 impl Watchdog {
     pub unsafe fn new() -> &'static mut Watchdog {
+        // Returns a static mutable reference to the structure Watchdog
         &mut *(0x54 as *mut Watchdog)    // memory address to check
-        // &mut *(0x60 as *mut Watchdog)
     }
 
 
@@ -45,44 +54,24 @@ impl Watchdog {
         // If the WDIE bit is enabled it will be disabled otherwise enabled
         // A new instance of the structure is created first
         Watchdog *ptr=new();
-
         let mut wdtcsr = core::ptr::read_volatile(&mut self.WDTCSR);
-        
         if wdtcsr & 0xBF == wdtcsr { wdtcsr = wdtcsr | 0x40; }
         else { wdtcsr = wdtcsr & 0xBF }
-        
         core::ptr::write_volatile(&mut self.WDTCSR,wdtcsr);
     } 
 
 
     pub fn disable(&mut self) {
         unsafe {
-           // old code
-           
-           /*let mcusr=MCUSr::new();
-           mcusr.clear_WDRF();
-           let mut WDTCSR=core::ptr::read_volatile(&self.WDTCSR);
-           WDTCSR |= ((1<<4) |(1<<6));
-           core::ptr::write_volatile(&mut self.WDTCSR,WDTCSR);
-           core::ptr::write_volatile(&mut self.WDTCSR,0X00);*/
-
-           // new code
-           
+           // A new instance of the Watchdog structure is created.
            Watchdog *ptr = new();
+
            // Disable interrupts
-           // disable watchdog interrupts
+           // Disable watchdog interrupts
            ptr.interrupt_toggle();
            // disable global interrupts
            let itr = interrupt::Status::new();
            itr.disable();
-
-           // No need of this it is done later
-           /*
-           // Reset the Watchdog to initial settings by clearing WDRF bit
-           let ctrl_mcusr = core::ptr::read_volatile(&mut self.MCUSR);
-           ctrl_mcusr = ctrl_mcusr & 0x17;
-           core::ptr::write_volatile(&mut self.MCUSR,ctrl_mcusr);
-           */
 
            // Then we set WDCE bit of wdtcsr register as 1
            let mut wdtcsr = core::ptr::read_volatile(&mut self.WDTCSR);
@@ -97,9 +86,9 @@ impl Watchdog {
            core::ptr::write_volatile(&mut self.WDTCSR,wdtcsr);
            
            // Enable interrupts
-           // enable watchdog interrupts
+           // Enable watchdog interrupts
            ptr.interrupt_toggle();
-           // enable global interrupts
+           // Enable global interrupts
            itr.enable();
         }
     }
