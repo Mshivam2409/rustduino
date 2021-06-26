@@ -1,5 +1,4 @@
 use core;
-use core::arch::arm::__nop;
 
 // Section 11.10.1 of the manual
 // Also references from Section 11.4
@@ -16,7 +15,7 @@ use core::arch::arm::__nop;
 pub enum Options {
     IDLE,   ADC,
     PD,     PS,
-    SBY,    ESBY
+    SBY,    ESBY,
 }
 
 
@@ -28,16 +27,13 @@ pub struct Sleep {
 // mod interrupts;
 
 impl Sleep {
-    pub unsafe fn new() -> &'static *mut Sleep {
+    pub unsafe fn new() -> &'static mut Sleep {
         // Creates a new reference to the Sleep structure 
         &mut *(0x53 as *mut Sleep)
     }
 
     pub fn enable(&mut self) {
         unsafe {
-            // Create a instance of sleep to work upon
-            Sleep *ptr = new();
-            
             // The SE bit must be written to logic one to make the MCU enter the sleep mode when the SLEEP instruction is executed.
             // To avoid the MCU entering the sleep mode unless it is the programmer’s purpose, it is recommended to
             // write the Sleep Enable (SE) bit to one just before the execution of the SLEEP instruction and to clear it immediately
@@ -46,19 +42,16 @@ impl Sleep {
             // Set the last bit of SMCR register as 1 for enabling the sleep mode.
             let mut smcr = core::ptr::read_volatile(&mut self.SMCR);
             smcr = smcr | 0x01;
-            core::ptr::read_volatile(&mut self.SMCR, smcr);
+            core::ptr::write_volatile(&mut self.SMCR, smcr);
         }
     }
 
     pub fn disable(&mut self) {
         unsafe {
-            // Create a instance of sleep to work upon
-            Sleep *ptr = new();
-
             // Set the last bit of SMCR register as 0 for disabling the sleep mode.
             let mut smcr = core::ptr::read_volatile(&mut self.SMCR);
             smcr = smcr & 0xFE;
-            core::ptr::read_volatile(&mut self.SMCR, smcr);
+            core::ptr::write_volatile(&mut self.SMCR, smcr);
         }
     }
 
@@ -86,7 +79,7 @@ impl Sleep {
                 _ => unreachable!()
             }
 
-            core::ptr::read_volatile(&mut self.SMCR, smcr);
+            core::ptr::write_volatile(&mut self.SMCR, smcr);
         }
     }
 }

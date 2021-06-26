@@ -69,13 +69,13 @@ impl Power {
             }
 
             match mode {
-                Options::TWI => prr = prr | 0x80,
+                Options::TWI =>    prr = prr | 0x80,
                 Options::TIMER2 => prr = prr | 0x40,
                 Options::TIMER0 => prr = prr | 0x20,
                 Options::TIMER1 => prr = prr | 0x08,
-                Options::SPI => prr = prr | 0x04,
+                Options::SPI =>    prr = prr | 0x04,
                 Options::USART0 => prr = prr | 0x02,
-                Options::ADC => prr = prr | 0x01,
+                Options::ADC =>    prr = prr | 0x01,
                 Options::TIMER5 => prr = prr | 0x20,
                 Options::TIMER4 => prr = prr | 0x10,
                 Options::TIMER3 => prr = prr | 0x08,
@@ -119,13 +119,13 @@ impl Power {
             }
 
             match mode {
-                Options::TWI => prr = prr & 0x7F,
+                Options::TWI =>    prr = prr & 0x7F,
                 Options::TIMER2 => prr = prr & 0xBF,
                 Options::TIMER0 => prr = prr & 0xDF,
                 Options::TIMER1 => prr = prr & 0xF7,
-                Options::SPI => prr = prr & 0xFB,
+                Options::SPI =>    prr = prr & 0xFB,
                 Options::USART0 => prr = prr & 0xFD,
-                Options::ADC => prr = prr & 0xFE,
+                Options::ADC =>    prr = prr & 0xFE,
                 Options::TIMER5 => prr = prr & 0xDF,
                 Options::TIMER4 => prr = prr & 0xEF,
                 Options::TIMER3 => prr = prr & 0xF7,
@@ -156,30 +156,6 @@ impl Power {
         // Creates a new instance to the power structure
         Power *power = new();
         match mode {
-            Options::TWI => power.enable(mode),
-            Options::TIMER2 => power.enable(mode),
-            Options::TIMER0 => power.enable(mode),
-            Options::TIMER1 => power.enable(mode),
-            Options::SPI => power.enable(mode),
-            Options::USART0 => power.enable(mode),
-            Options::ADC => power.enable(mode),
-            Options::TIMER5 => power.enable(mode),
-            Options::TIMER4 => power.enable(mode),
-            Options::TIMER3 => power.enable(mode),
-            Options::USART3 => power.enable(mode),
-            Options::USART2 => power.enable(mode),
-            Options::USART1 => power.enable(mode),
-            _ => unreachable!()
-        }
-    }
-
-    // This is the function for enabling back the clock system of your choice
-    // User has to make sure that these functions are called after disabling functions
-    // otherwise they have no effect.
-    pub fn enable_clocks(&mut self,mode: Options) {
-        // Creates a new instance to the power structure
-        Power *power = new();
-        match mode {
             Options::TWI => power.disable(mode),
             Options::TIMER2 => power.disable(mode),
             Options::TIMER0 => power.disable(mode),
@@ -193,6 +169,30 @@ impl Power {
             Options::USART3 => power.disable(mode),
             Options::USART2 => power.disable(mode),
             Options::USART1 => power.disable(mode),
+            _ => unreachable!()
+        }
+    }
+
+    // This is the function for enabling back the clock system of your choice
+    // User has to make sure that these functions are called after disabling functions
+    // otherwise they have no effect.
+    pub fn enable_clocks(&mut self,mode: Options) {
+        // Creates a new instance to the power structure
+        Power *power = new();
+        match mode {
+            Options::TWI =>    power.enable(mode),
+            Options::TIMER2 => power.enable(mode),
+            Options::TIMER0 => power.enable(mode),
+            Options::TIMER1 => power.enable(mode),
+            Options::SPI =>    power.enable(mode),
+            Options::USART0 => power.enable(mode),
+            Options::ADC =>    power.enable(mode),
+            Options::TIMER5 => power.enable(mode),
+            Options::TIMER4 => power.enable(mode),
+            Options::TIMER3 => power.enable(mode),
+            Options::USART3 => power.enable(mode),
+            Options::USART2 => power.enable(mode),
+            Options::USART1 => power.enable(mode),
             _ => unreachable!()
         }
     }

@@ -8,7 +8,7 @@ pub struct GlobalInterrupts {
 impl GlobalInterrupts {
    ///returns new Global_Interrupts
     pub unsafe fn new() -> &'static mut GlobalInterrupts {
-        &mut *(0x5F as *mut Global_Interrupts)   //sets address for SREG register
+        &mut *(0x5F as *mut GlobalInterrupts)   //sets address for SREG register
     }
 
 
@@ -29,11 +29,11 @@ impl GlobalInterrupts {
     pub fn enable(&mut self){
         unsafe{
         let mut ctrl_sreg=core::ptr::read_volatile(&self.sreg);
-        ctrl_sreg |=(1<<7);                                        
+        ctrl_sreg |= 1<<7;                                        
         core::ptr::write_volatile(&mut self.sreg,ctrl_sreg);
         }
     }
-    ///sets I_bit of SREG 1
-    ///enable global interrupts
-    ///also known as SEI
+    //sets I_bit of SREG 1
+    //enable global interrupts
+    //also known as SEI
 }
