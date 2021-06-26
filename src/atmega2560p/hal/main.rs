@@ -11,14 +11,13 @@ mod port;
 mod sleep_mode;
 mod watchdog;
 mod interrupt;
+mod power;
 
 pub extern "C" fn main() {
 
     // Watchdog disabled by the program
     let wdog = watchdog::WatchDog::new();
-    wdog.interrupt_toggle();
     wdog.disable();
-    wdog.interrupt_toggle();
 
     /*
     // Enabling Clock Gating in the program at 32 cycles as an example
@@ -27,13 +26,17 @@ pub extern "C" fn main() {
     */
 
     // Enabling sleep mode and setting the required sleep mode further it is disabled
-    // The various sleep modes which could be used in the program are
-        // Idle          // ADC Noise Reduction
-        // Power-down    // Power-save
-        // Standby       // Extended Standby
+    // Various modes are
+        // IDLE => Idle sleep mode          
+        // ADC => ADC Noise Reduction
+        // PD => Power-down    
+        // PS => Power-save
+        // SBY => Standby      
+        // ESBY => Extended Standby
 
     let sleep = sleep_mode::Sleep::new();
-    sleep.select_mode("Power-Save");
+    let mode = sleep_mode::Options::PD;
+    sleep.select_mode(mode);
 
     /* Your device is running with sleep mode enabled in Power-Save mode now 
        You can work under sleep mode here in any mode you want 
@@ -41,6 +44,33 @@ pub extern "C" fn main() {
     */
 
     sleep.disable();
+
+
+    // Setting up various power modes by using power reduction registers
+    // The options correspond to real world as shown - 
+       //  TWI =>  Power Reduction TWI     
+       //  TIMER2 =>  Power Reduction Timer/Counter2
+       //  TIMER0 =>  Power Reduction Timer/Counter0 
+       //  TIMER1 =>  Power Reduction Timer/Counter1
+       //  SPI => Power Reduction Serial Peripheral Interface
+       //  USART0 =>  Power Reduction USART0 
+       //  ADC => Power Reduction ADC
+       //  TIMER5 =>  Power Reduction Timer/Counter5 
+       //  TIMER4 =>  Power Reduction Timer/Counter4
+       //  TIMER3 =>  Power Reduction Timer/Counter3 
+       //  USART3 => Power Reduction USART3
+       //  USART2 => Power Reduction USART2  
+       //  USART1 => Power Reduction USART1
+    
+    let power = power::Power::new();
+    let m = power::Options::TWI;
+    power.disable_clocks(m);
+
+    /* Here you can work in low power scheme as here the TWI Clock system
+       is shut off so that the power usage is low.
+       You can shut down more clocks using the functions given */
+
+    power.enable_clocks(m);
 
     // setting up of Pin 5 as a GPIO pin
     p = port::PortName::C;
