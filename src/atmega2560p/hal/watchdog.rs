@@ -7,7 +7,7 @@ use crate::atmega2560p::hal::interrupts;
 ///struct for WatchDog
 pub struct WatchDog {  
     mcusr:u8,
-    _pad:[u8;5],
+    _pad:[u8;11],
     wdtcsr:u8,
 }
 

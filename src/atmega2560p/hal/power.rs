@@ -43,7 +43,7 @@ pub struct Power {
 // mod interrupts;
 
 impl Power {
-    pub unsafe fn new() -> &'static *mut Power {
+    pub unsafe fn new() -> &'static mut Power {
         // Creates a new reference to the Sleep structure 
         &mut *(0x64 as *mut Power)
     }
