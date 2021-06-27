@@ -69,10 +69,19 @@ impl Port {
            _ => unreachable!()
        } 
     }
+    
+
+    ///Returns PortName of port of the given address input
+    /// Panics if the addredd is invalid
+    /// Section 13.4 of atmega2605 datasheet
 
 
     pub fn name(&self)->PortName{
+
+    //get address of port    
     let address = (self as *const Port) as usize;
+
+    //return PortName based on the address read
     match address{
         0x20=> PortName::A,
         0x23=> PortName::B,
@@ -89,14 +98,17 @@ impl Port {
     
     }
 
+   }    
 }
+/// The structure Pin contains the address of the port to which the pin belongs and the pin number
+/// Section 13.4 of atmega2560 datasheet
 
-    
-}
 pub struct Pin {
     port:*mut Port,
     pin:u8,
 }
+///Type 'IOMode'
+/// Represents the Input/Output mode of the pin
 pub enum IOMode{
     Input,
     Output,
