@@ -12,7 +12,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU Affero General Public License for more details.
 
 You should have received a copy of the GNU Affero General Public License
-along with this program.  If not, see <https://www.gnu.org/licenses/>*//
+along with this program.  If not, see <https://www.gnu.org/licenses/>*/
 
 
 use core;
@@ -34,7 +34,7 @@ pub struct GlobalInterrupts {
 impl GlobalInterrupts {
     ///returns new Global_Interrupts
     pub unsafe fn new() -> &'static mut GlobalInterrupts {
-        &mut *(0x5F as *mut Global_Interrupts) 
+        &mut *(0x5F as *mut GlobalInterrupts)
     }
 
     ///disable global interrupts
@@ -43,7 +43,7 @@ impl GlobalInterrupts {
     pub fn disable(&mut self) {
         unsafe {
            let mut ctrl_sreg=core::ptr::read_volatile(&self.sreg);
-           ctrl_sreg &= ~(1<<7);                                   
+           ctrl_sreg &= !(1<<7);                                   
            core::ptr::write_volatile(&mut self.sreg,ctrl_sreg);
         }
     }
@@ -54,7 +54,7 @@ impl GlobalInterrupts {
     pub fn enable(&mut self){
         unsafe{
            let mut ctrl_sreg=core::ptr::read_volatile(&self.sreg);
-           ctrl_sreg |=(1<<7);                                        
+           ctrl_sreg |= 1<<7 ;                                        
            core::ptr::write_volatile(&mut self.sreg,ctrl_sreg);
         }
     }

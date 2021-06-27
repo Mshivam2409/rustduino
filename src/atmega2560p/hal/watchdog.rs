@@ -63,15 +63,15 @@ impl WatchDog {
            interrupts::GlobalInterrupts::disable(&mut interrupts::GlobalInterrupts::new());
 
            let mut mcusr=core::ptr::read_volatile(&self.mcusr);
-           mcusr &= ~(1<<3);
+           mcusr &= !(1<<3);
            core::ptr::write_volatile(&mut self.mcusr,mcusr);
            
            let mut wdtcsr=core::ptr::read_volatile(&self.wdtcsr);
            wdtcsr |= (1<<4) |(1<<3);
            //sets WDCE for changing WDE
            core::ptr::write_volatile(&mut self.wdtcsr,wdtcsr);
-           ///sets every bit to 0 including WDE and WDIE
-           core::ptr::write_volatile(&mut self.wdtcsr,0X00);
+           //sets every bit to 0 including WDE and WDIE
+           core::ptr::write_volatile(&mut self.wdtcsr,0x00);
            interrupts::GlobalInterrupts::enable(&mut interrupts::GlobalInterrupts::new());
         }
     }
