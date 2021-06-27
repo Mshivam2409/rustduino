@@ -67,7 +67,7 @@ struct Port{
 
 impl Port {
     /// Returns mutable reference to the `Port` given `PortName`.
-    /// Section 13.4 of ATmega328P datasheet.
+    /// Section 13.4 of ATmega2560 datasheet.
     pub unsafe fn new(name: PortName) -> &'static mut Port {
        match name{
            PortName::A=> { &mut *(0x20 as *mut Port) }
