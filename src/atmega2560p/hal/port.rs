@@ -115,7 +115,7 @@ pub enum IOMode{
 }
 
 impl Port {
-    /// Returns a `Some<Pin>` if pin number is valid.
+    /// Returns a `Some<Pin>` if pin number is valid and returns none if not valid
     pub fn pin(&mut self, pin: u8) -> Option<Pin> {
         if pin < 0x8 {
             Some(Pin { port: self, pin })
