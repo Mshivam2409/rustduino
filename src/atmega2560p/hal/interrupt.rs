@@ -43,15 +43,19 @@ impl Status {
 
     /// Set the global interrupt bit as 0
     pub fn disable(&mut self) {
-        let mut sreg = core::ptr::read_volatile(&mut self.SREG);
-        sreg = sreg & 0x7F; 
-        core::ptr::write_volatile(&mut self.SREG, sreg); 
+        unsafe {
+            let mut sreg = core::ptr::read_volatile(&mut self.SREG);
+            sreg = sreg & 0x7F; 
+            core::ptr::write_volatile(&mut self.SREG, sreg);
+        }     
     }
 
     /// Set the global interrupt bit as 1
     pub fn enable(&mut self) {
-        let mut sreg = core::ptr::read_volatile(&mut self.SREG);
-        sreg = sreg | 0x80; 
-        core::ptr::write_volatile(&mut self.SREG, sreg); 
+        unsafe {
+            let mut sreg = core::ptr::read_volatile(&mut self.SREG);
+            sreg = sreg | 0x80; 
+            core::ptr::write_volatile(&mut self.SREG, sreg); 
+        }
     }
 }

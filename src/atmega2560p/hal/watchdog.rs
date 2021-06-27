@@ -51,10 +51,12 @@ impl Watchdog {
 
     /// If the WDIE bit is enabled it will be disabled otherwise enabled
     pub fn interrupt_toggle(&mut self) {
-        let mut wdtcsr = core::ptr::read_volatile(&mut self.WDTCSR);
-        if wdtcsr & 0xBF == wdtcsr { wdtcsr = wdtcsr | 0x40; }
-        else { wdtcsr = wdtcsr & 0xBF; }
-        core::ptr::write_volatile(&mut self.WDTCSR,wdtcsr);
+        unsafe {
+            let mut wdtcsr = core::ptr::read_volatile(&mut self.WDTCSR);
+            if wdtcsr & 0xBF == wdtcsr { wdtcsr = wdtcsr | 0x40; }
+            else { wdtcsr = wdtcsr & 0xBF; }
+            core::ptr::write_volatile(&mut self.WDTCSR,wdtcsr);
+        }    
     } 
 
     /// For disabling watchdog in ATMEGA2560P it is first essential to disable
