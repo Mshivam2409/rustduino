@@ -14,44 +14,42 @@
 //     You should have received a copy of the GNU Affero General Public License
 //     along with this program.  If not, see <https://www.gnu.org/licenses/>
 
-// Section 7.4 of the manual
-// https://ww1.microchip.com/downloads/en/devicedoc/atmel-2549-8-bit-avr-microcontroller-atmega640-1280-1281-2560-2561_datasheet.pdf
+
+//! Global interrupts configured in the ATMEGA2560P chip is controlled here.
+//! Section 7.4 of the manual
+//! https://ww1.microchip.com/downloads/en/devicedoc/atmel-2549-8-bit-avr-microcontroller-atmega640-1280-1281-2560-2561_datasheet.pdf
 use core;
 
-// This contains the registers to be manipulated for controlling global interrupts setup.
-// Details of SREG register are as follows -  
-//         Bit 7 – I: Global Interrupt Enable
-//         Bit 6 – T: Bit Copy Storage
-//         Bit 5 – H: Half Carry Flag
-//         Bit 4 – S: Sign Bit, S = N + V
-//         Bit 3 – V: Two’s Complement Overflow Flag
-//         Bit 2 – N: Negative Flag
-//         Bit 1 – Z: Zero Flag
-//         Bit 0 – C: Carry Flag
+/// This contains the registers to be manipulated for controlling global interrupts setup.
+/// Details of SREG register are as follows -  
+///         Bit 7 – I: Global Interrupt Enable
+///         Bit 6 – T: Bit Copy Storage
+///         Bit 5 – H: Half Carry Flag
+///         Bit 4 – S: Sign Bit, S = N + V
+///         Bit 3 – V: Two’s Complement Overflow Flag
+///         Bit 2 – N: Negative Flag
+///         Bit 1 – Z: Zero Flag
+///         Bit 0 – C: Carry Flag
 #[repr(C,packed)]
 pub struct Status {
-   SREG:u8
+   SREG:u8,
 }
 
 impl Status {
-    pub unsafe fn new() -> &'static mut Status {
-        // Return a mutable static reference to a instance of structure  
+    /// Return a mutable static reference to a instance of structure Status
+    pub unsafe fn new() -> &'static mut Status {  
         &mut *(0x5F as *mut Status) 
     }
 
+    /// Set the global interrupt bit as 0
     pub fn disable(&mut self) {
-        // Create a new instance of Status registers
-        Status *ptr = new();
-        // Set the global interrupt bit as 0
         let mut sreg = core::ptr::read_volatile(&mut self.SREG);
         sreg = sreg & 0x7F; 
         core::ptr::write_volatile(&mut self.SREG, sreg); 
     }
 
+    /// Set the global interrupt bit as 1
     pub fn enable(&mut self) {
-        // Create a new instance of Status registers
-        Status *ptr = new();
-        // Set the global interrupt bit as 0
         let mut sreg = core::ptr::read_volatile(&mut self.SREG);
         sreg = sreg | 0x80; 
         core::ptr::write_volatile(&mut self.SREG, sreg); 

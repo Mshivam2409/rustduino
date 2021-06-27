@@ -19,12 +19,6 @@ pub extern "C" fn main() {
     let wdog = watchdog::WatchDog::new();
     wdog.disable();
 
-    /*
-    // Enabling Clock Gating in the program at 32 cycles as an example
-    let sim = sim::Sim::new();
-    sim.enable_clock(32);
-    */
-
     // Enabling sleep mode and setting the required sleep mode further it is disabled
     // Various modes are
         // IDLE => Idle sleep mode          
@@ -92,21 +86,7 @@ extern "C" {
 #[no_mangle]
 pub static _VECTORS: [unsafe extern "C" fn(); 2] = [_stack_top, main];
 
-// #[link_section = ".flashconfig"]
 #[no_mangle]
-
-// This part is not confirmed as of now
-
-/*
-pub static _FLASHCONFIG : [u8 ; 16] = [
-    // All the other bytes except FSEC and FOPT are to be changed.
-    // 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
-	// 0xFF, 0xFF, 0xFF, 0xFF, FSEC, FOPT, 0xFF, 0xFF
-    
-    0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
-	0xFF, 0xFF, 0xFF, 0xFF, 0xDE, 0xF9, 0xFF, 0xFF
-];
-*/
 
 #[panic_handler]
 fn teensy_panic(_pi: &core::panic::PanicInfo) -> ! {
