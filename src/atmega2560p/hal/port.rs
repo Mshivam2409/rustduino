@@ -103,6 +103,49 @@ pub enum IOMode{
 }
 
 impl Pin {
+
+    ///Return a pin for the given port name and pin number
+
+    pub fn new(port: PortName,pin: u8)-> Option<Pin>
+    {
+        Port::new(port).pin(pin)
+    }
+
+
+    /// Change pin mode to input or output by changing the DDr pin.
+    /// If DDxn is written logic one, Pxn is configured
+    ///as an output pin.
+    /// If DDxn is written logic zero, Pxn is configured as an input pin.
+    /// Section 13.2 of Atmega2605 datasheet
+
+
+    pub fn set_pin_mode(&mut self,mode: IOMode){
+
+        //read the DDxn register
+
+        let mut ddr_val=unsafe{
+            read_volatile(&mut(*self.port).ddr)
+        };
+
+        //calculate the value to be written to DDxn register
+
+        ddr_val&=!(0x1<<self.pin);
+        ddr_val |=match mode{
+            IOMode:: Input=>0x0,
+            IOMode:: Output=>0x1<<self.pin,
+
+        };
+
+        // write the value to DDxn register
+        unsafe{
+            write_volatile(&mut(*self.port).ddr,ddr_val)
+        }
+
+
+
+    }
+
+
     ///Toggles the value of PORTxn by writing one to PINxn ,independent of the value of DDRxn.
     pub fn toggle(&mut self) {
         unsafe {
@@ -150,6 +193,10 @@ impl Pin {
                 self.toggle();
             }
         }
+    }
+
+    pub fn output(&mut self){
+        self.set_pin_mode(IOMode::Output);
     }
 }
 
