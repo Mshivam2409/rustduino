@@ -21,13 +21,13 @@ pub extern "C" fn main() {
         pins.digital[13].high();
 
         // Wait for one second
-        rustduino::delay_ms(1000);
+        rustduino::delay::delay_ms(1000);
 
         // Turn off the LED
         pins.digital[13].low();
 
         // Wait for one second
-        rustduino::delay_ms(1000);
+        rustduino::delay::delay_ms(1000);
     }
 } //toggling the LED periodically
 
