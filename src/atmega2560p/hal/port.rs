@@ -11,7 +11,7 @@ pub enum PortName {
     F,
     G,
     H,
-    J,
+    J, 
     K,
     L,
 }
@@ -121,7 +121,7 @@ impl Pin {
 
     pub fn set_pin_mode(&mut self,mode: IOMode){
 
-        //read the DDxn register
+        //read the value of DDxn register
 
         let mut ddr_val=unsafe{
             read_volatile(&mut(*self.port).ddr)
