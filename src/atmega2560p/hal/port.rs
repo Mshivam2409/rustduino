@@ -129,7 +129,7 @@ impl Pin {
 
         //calculate the value to be written to DDxn register
 
-        ddr_val&=!(0x1<<self.pin)
+        ddr_val&=!(0x1<<self.pin);
         ddr_val |=match mode{
             IOMode:: Input=>0x0,
             IOMode:: Output=>0x1<<self.pin,
