@@ -16,7 +16,16 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>*//
 
 
 use core;
-///struct for global interrupts
+///This contains the registers to be manipulated for controlling global interrupts setup.
+///Details of SREG register are as follows -  
+///        Bit 7 – I: Global Interrupt Enable
+///        Bit 6 – T: Bit Copy Storage
+///        Bit 5 – H: Half Carry Flag
+///        Bit 4 – S: Sign Bit, S = N + V
+///        Bit 3 – V: Two’s Complement Overflow Flag
+///        Bit 2 – N: Negative Flag
+///        Bit 1 – Z: Zero Flag
+///        Bit 0 – C: Carry Flag
 pub struct GlobalInterrupts {  
    sreg:u8,                 
 }
