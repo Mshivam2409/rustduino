@@ -1,5 +1,5 @@
 // RustDuino : A generic HAL implementation for Arduino Boards in Rust
-// Copyright (C) 2021  Askhit Verma, Indian Institute of Technology Kanpur
+// Copyright (C) 2021  Akshit Verma, Indian Institute of Technology Kanpur
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published
@@ -15,8 +15,16 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>
 
 use core;
-// #[no(main)]
-
+/// SREG (Status control Register)
+/// The status register contains information about the result of the most recently executed arithmetic instruction. This
+/// information can be used for altering program flow in order to perform conditional operations. Note that the status register is
+/// updated after all ALU operations, as specified in the instruction set reference. This will in many cases remove the need for
+/// using the dedicated compare instructions, resulting in faster and more compact code.
+/// The status register is not automatically stored when entering an interrupt routine and restored when returning from an
+/// interrupt. This must be handled by software.
+///
+/// Toggling 8th bit to 0 or 1 can enable or disable interrupt respectively.
+///
 /// section 6.3.1 of manual
 pub struct Interrupt {
     sreg: u8,
@@ -27,10 +35,10 @@ impl Interrupt {
         &mut *(0x5F as *mut Interrupt)
     }
 
-    /// Getting address of the sreg register.
-    /// Reading value stored in sreg.\
-    /// Toggling 8th bit to 0; 7F in binary is 01111111.
-    /// Writing value back in sreg
+    // Getting address of the sreg register.
+    // Reading value stored in sreg.\
+    // Toggling 8th bit to 0; 7F in binary is 01111111.
+    // Writing value back in sreg
     pub fn disable(&mut self) {
         unsafe {
             // let mut interrupt = get();
@@ -40,10 +48,10 @@ impl Interrupt {
         }
     }
 
-    /// Getting address of the sreg register.
-    /// Reading value stored in sreg
-    /// Toggling 8th bit to 1; 7F in binary is 11111111
-    /// Writing value back in sreg
+    // Getting address of the sreg register.
+    // Reading value stored in sreg
+    // Toggling 8th bit to 1; 7F in binary is 11111111
+    // Writing value back in sreg
     pub fn enable(&mut self) {
         unsafe {
             // let mut interrupt = get();

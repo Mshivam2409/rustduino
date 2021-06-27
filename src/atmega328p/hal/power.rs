@@ -1,5 +1,5 @@
 // RustDuino : A generic HAL implementation for Arduino Boards in Rust
-// Copyright (C) 2021  Askhit Verma, Indian Institute of Technology Kanpur
+// Copyright (C) 2021  Akshit Verma, Indian Institute of Technology Kanpur
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published
@@ -13,7 +13,6 @@
 
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>
-
 
 /// Power management for ATmega328p chip using sleep modes.
 
