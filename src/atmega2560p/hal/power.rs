@@ -98,8 +98,8 @@ impl Power {
 
                 {  Options::TIMER5    || Options::TIMER4 ||
                    Options::TIMER3    || Options::USART3 ||
-                   Options::USART2    || Options::USART1     }     => { prr = core::ptr::read_volatile(&mut self.PRR1); } 
-
+                   Options::USART2    || Options::USART1     }     => { prr = core::ptr::read_volatile(&mut self.PRR1); }
+                _ => unreachable!(),    
             }
             match mode {
                 Options::TWI    => { prr = prr | 0x80; }
@@ -115,6 +115,7 @@ impl Power {
                 Options::USART3 => { prr = prr | 0x04; }
                 Options::USART2 => { prr = prr | 0x02; }
                 Options::USART1 => { prr = prr | 0x01; }
+                _ => unreachable!(),
             }
             match mode {
                 {  Options::TWI       || Options::TIMER2 ||
@@ -124,8 +125,8 @@ impl Power {
 
                 {  Options::TIMER5    || Options::TIMER4 ||
                    Options::TIMER3    || Options::USART3 ||
-                   Options::USART2    || Options::USART1     }     => { prr = core::ptr::write_volatile(&mut self.PRR1,prr); } 
-
+                   Options::USART2    || Options::USART1     }     => { prr = core::ptr::write_volatile(&mut self.PRR1,prr); }
+                _ => unreachable!(),    
             }
         }
     }
@@ -146,7 +147,8 @@ impl Power {
 
                 {  Options::TIMER5    || Options::TIMER4 ||
                    Options::TIMER3    || Options::USART3 ||
-                   Options::USART2    || Options::USART1     }     => { prr = core::ptr::read_volatile(&mut self.PRR1); } 
+                   Options::USART2    || Options::USART1     }     => { prr = core::ptr::read_volatile(&mut self.PRR1); }
+                _ => unreachable!(),    
 
             }
             match mode {
@@ -162,7 +164,8 @@ impl Power {
                 Options::TIMER3 => { prr = prr & 0xF7; }
                 Options::USART3 => { prr = prr & 0xFB; }
                 Options::USART2 => { prr = prr & 0xFD; }
-                Options::USART1 => { prr = prr & 0xFE; }            
+                Options::USART1 => { prr = prr & 0xFE; }
+                _ => unreachable!(),            
             }
             match mode {
                 {  Options::TWI       || Options::TIMER2 ||
@@ -173,7 +176,7 @@ impl Power {
                 {  Options::TIMER5    || Options::TIMER4 ||
                    Options::TIMER3    || Options::USART3 ||
                    Options::USART2    || Options::USART1     }     => { prr = core::ptr::write_volatile(&mut self.PRR1,prr); } 
-
+                _ => unreachable!(),
             }
         }
     } 
