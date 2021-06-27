@@ -14,25 +14,26 @@
 //     You should have received a copy of the GNU Affero General Public License
 //     along with this program.  If not, see <https://www.gnu.org/licenses/>
 
-// Control on Watchdog timer in ATMEGA2560P
-// Section 12.5 of manual
+//! Control on Watchdog timer in ATMEGA2560P
+//! Section 12.5 of manual
 use core;
+use crate::atmega2560p::hal::interrupt;
 
-// Contains various registers to control the functioning of registers Watchdog.
-// MCUSR : Contains 5 writable bits which are used for various watchdog settings as below - 
-// Bit 0   – PORF : Power-on Reset Flag
-// Bit 1   – EXTRF: External Reset Flag
-// Bit 2   – BORF : Brown-out Reset Flag
-// Bit 3   – WDRF : Watchdog Reset Flag
-// Bit 4   – JTRF : JTAG Reset Flag
-// Bit 5:7 - Res  : Reserved
-
-// WDTCSR : Contains 8 writable bits which are used for various watchdog settings as below - 
-// Bit 5, 2:0 - WDP3:0 : Watchdog Timer Prescaler 3, 2, 1 and 0
-// Bit 3      - WDE    : Watchdog System Reset Enable
-// Bit 4      - WDCE   : Watchdog Change Enable
-// Bit 6      - WDIE   : Watchdog Interrupt Enable
-// Bit 7      - WDIF   : Watchdog Interrupt Flag
+/// Contains various registers to control the functioning of registers Watchdog.
+/// MCUSR : Contains 5 writable bits which are used for various watchdog settings as below - 
+/// Bit 0   – PORF : Power-on Reset Flag
+/// Bit 1   – EXTRF: External Reset Flag
+/// Bit 2   – BORF : Brown-out Reset Flag
+/// Bit 3   – WDRF : Watchdog Reset Flag
+/// Bit 4   – JTRF : JTAG Reset Flag
+/// Bit 5:7 - Res  : Reserved
+///
+/// WDTCSR : Contains 8 writable bits which are used for various watchdog settings as below - 
+/// Bit 5, 2:0 - WDP3:0 : Watchdog Timer Prescaler 3, 2, 1 and 0
+/// Bit 3      - WDE    : Watchdog System Reset Enable
+/// Bit 4      - WDCE   : Watchdog Change Enable
+/// Bit 6      - WDIE   : Watchdog Interrupt Enable
+/// Bit 7      - WDIF   : Watchdog Interrupt Flag
 #[repr(C,packed)]
 pub struct Watchdog {
    MCUSR:u8,
@@ -40,20 +41,14 @@ pub struct Watchdog {
    WDTCSR:u8
 }
 
-// The global interrupts control is used here in Watchdog.
-mod interrupt;
-
 impl Watchdog {
+    /// Returns a static mutable reference to the structure Watchdog
     pub unsafe fn new() -> &'static mut Watchdog {
-        // Returns a static mutable reference to the structure Watchdog
         &mut *(0x54 as *mut Watchdog)    // memory address to check
     }
 
-
+    /// If the WDIE bit is enabled it will be disabled otherwise enabled
     pub fn interrupt_toggle(&mut self) {
-        // If the WDIE bit is enabled it will be disabled otherwise enabled
-        // A new instance of the structure is created first
-        Watchdog *ptr=new();
         let mut wdtcsr = core::ptr::read_volatile(&mut self.WDTCSR);
         if wdtcsr & 0xBF == wdtcsr { wdtcsr = wdtcsr | 0x40; }
         else { wdtcsr = wdtcsr & 0xBF }

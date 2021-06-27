@@ -96,6 +96,7 @@ pub static _VECTORS: [unsafe extern "C" fn(); 2] = [_stack_top, main];
 #[no_mangle]
 
 // This part is not confirmed as of now
+
 /*
 pub static _FLASHCONFIG : [u8 ; 16] = [
     // All the other bytes except FSEC and FOPT are to be changed.
