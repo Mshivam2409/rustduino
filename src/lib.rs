@@ -18,7 +18,7 @@ pub mod atmega2560p {
 
         pub mod port;
 
-        pub mod interrupt;
+        pub mod interrupts;
     }
 
 }
