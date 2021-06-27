@@ -94,8 +94,7 @@ impl Sleep {
     pub fn select_mode(&mut self,mode:Options) {
         unsafe {
             self.enable();                // Enable the Sleep mode
-            let mut smcr = core::ptr::read_volatile(&mut self.SMCR);
-            smcr = 0x0F;
+            let mut smcr = 0x0F;
             match mode {
                 Options::IDLE => { smcr = smcr & 0xF1; }
                 Options::ADC  => { smcr = smcr & 0xF3; }
@@ -103,7 +102,6 @@ impl Sleep {
                 Options::PS   => { smcr = smcr & 0xF7; }
                 Options::SBY  => { smcr = smcr & 0xFD; }
                 Options::ESBY => { smcr = smcr & 0xFF; }
-                _ => unreachable!(),
             }
             core::ptr::write_volatile(&mut self.SMCR, smcr);
         }
