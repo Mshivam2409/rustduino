@@ -24,7 +24,21 @@ use crate::atmega2560p::hal::interrupts;
 ///when WDE and WDIE bits of WDTCSR register  sets to 0, watchdog disables
 ///WDRF bit of MCUSR register can overwrite WDE ,so,WDRF must be cleared before
 
-///struct for WatchDog
+/// Contains various registers to control the functioning of registers Watchdog.
+/// MCUSR : Contains 5 writable bits which are used for various watchdog settings as below - 
+/// Bit 0   – PORF : Power-on Reset Flag
+/// Bit 1   – EXTRF: External Reset Flag
+/// Bit 2   – BORF : Brown-out Reset Flag
+/// Bit 3   – WDRF : Watchdog Reset Flag
+/// Bit 4   – JTRF : JTAG Reset Flag
+/// Bit 5:7 - Res  : Reserved
+///
+/// WDTCSR : Contains 8 writable bits which are used for various watchdog settings as below - 
+/// Bit 5, 2:0 - WDP3:0 : Watchdog Timer Prescaler 3, 2, 1 and 0
+/// Bit 3      - WDE    : Watchdog System Reset Enable
+/// Bit 4      - WDCE   : Watchdog Change Enable
+/// Bit 6      - WDIE   : Watchdog Interrupt Enable
+/// Bit 7      - WDIF   : Watchdog Interrupt Flag
 pub struct WatchDog {  
     mcusr:u8,
     _pad:[u8;11],
