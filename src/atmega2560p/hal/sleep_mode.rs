@@ -102,7 +102,6 @@ impl Sleep {
                 Options::PS   => { smcr = smcr & 0xF7; }
                 Options::SBY  => { smcr = smcr & 0xFD; }
                 Options::ESBY => { smcr = smcr & 0xFF; }
-                // _ => unreachable!(),
             }
             core::ptr::write_volatile(&mut self.SMCR, smcr);
         }
