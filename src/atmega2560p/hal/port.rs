@@ -129,7 +129,7 @@ impl Pin {
 
         //calculate the value to be written to DDxn register
 
-        ddr_val&=!(0x1<<self.pin);
+        ddr_val&=!(0x1<<self.pin)
         ddr_val |=match mode{
             IOMode:: Input=>0x0,
             IOMode:: Output=>0x1<<self.pin,
@@ -194,6 +194,9 @@ impl Pin {
             }
         }
     }
+
+    /// change pin mode to Output by changing the value of DDxn register to 1
+    /// Section 13.2 of atmega2560 datasheet
 
     pub fn output(&mut self){
         self.set_pin_mode(IOMode::Output);
