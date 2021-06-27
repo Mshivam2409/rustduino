@@ -60,3 +60,17 @@ pub fn name(&self)->PortName{
 
 }
 }
+
+
+pub struct Pin
+{
+    port: *mut Port,
+    pin: u8,
+}
+ 
+pub enum IOMode{
+    Input,
+    Output,
+}
+
+
