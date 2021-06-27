@@ -38,5 +38,25 @@ impl Port {
        } 
     }
 
+  
+
+pub fn name(&self)->PortName{
+    let address = (self as *const Port) as usize;
+    match address{
+        0x20=> PortName::A,
+        0x23=> PortName::B,
+        0x26=> PortName::C,
+        0x29=> PortName::D,
+        0x2C=> PortName::E,
+        0x2F=> PortName::F,
+        0x32=> PortName::G,
+        0x100=> PortName::H,
+        0x103=> PortName::J,
+        0x106=> PortName::K,
+        0x109=> PortName::L,
+        _=>unreachable!()
     
+    }
+
+}
 }
