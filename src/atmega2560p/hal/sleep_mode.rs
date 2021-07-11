@@ -58,7 +58,7 @@ pub enum Options {
 ///           1     1    1     Extended Standby
 #[repr(C, packed)]
 pub struct Sleep { 
-    SMCR:u8,
+    smcr:u8,
 }
 
 impl Sleep {
@@ -74,18 +74,18 @@ impl Sleep {
     /// Set the last bit of SMCR register as 1 for enabling the sleep mode.
     pub fn enable(&mut self) {
         unsafe {            
-            let mut smcr = core::ptr::read_volatile(&mut self.SMCR);
+            let mut smcr = core::ptr::read_volatile(&mut self.smcr);
             smcr = smcr | 0x01;
-            core::ptr::write_volatile(&mut self.SMCR, smcr);
+            core::ptr::write_volatile(&mut self.smcr, smcr);
         }
     }
 
     /// Set the last bit of SMCR register as 0 for disabling the sleep mode.
     pub fn disable(&mut self) {
         unsafe {
-            let mut smcr = core::ptr::read_volatile(&mut self.SMCR);
+            let mut smcr = core::ptr::read_volatile(&mut self.smcr);
             smcr = smcr & 0xFE;
-            core::ptr::write_volatile(&mut self.SMCR, smcr);
+            core::ptr::write_volatile(&mut self.smcr, smcr);
         }
     }
 
@@ -103,7 +103,7 @@ impl Sleep {
                 Options::SBY  => { smcr = smcr & 0xFD; }
                 Options::ESBY => { smcr = smcr & 0xFF; }
             }
-            core::ptr::write_volatile(&mut self.SMCR, smcr);
+            core::ptr::write_volatile(&mut self.smcr, smcr);
         }
     }
 }
