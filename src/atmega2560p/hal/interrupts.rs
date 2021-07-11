@@ -14,13 +14,9 @@
 //     You should have received a copy of the GNU Affero General Public License
 //     along with this program.  If not, see <https://www.gnu.org/licenses/>
 
-<<<<<<< HEAD
-=======
-
 //! Global interrupts configured in the ATMEGA2560P chip is controlled here.
 //! Section 7.4 of the manual
 //! https://ww1.microchip.com/downloads/en/devicedoc/atmel-2549-8-bit-avr-microcontroller-atmega640-1280-1281-2560-2561_datasheet.pdf
->>>>>>> b5a8589baf7c88ec01aac27e7707c0a381c56fd6
 use core;
 
 ///This contains the registers to be manipulated for controlling global interrupts setup.
@@ -36,9 +32,7 @@ use core;
 pub struct GlobalInterrupts {
     sreg: u8,
 }
-///in section 2-(Overview) point 7.4 about (SREG)
-
-///in section 2-(Overview) point 7.4 about (SREG) 
+///in section 7.4 about (SREG)
 impl GlobalInterrupts {
     ///returns new Global_Interrupts
     pub unsafe fn new() -> &'static mut GlobalInterrupts {
