@@ -14,6 +14,7 @@
 //     You should have received a copy of the GNU Affero General Public License
 //     along with this program.  If not, see <https://www.gnu.org/licenses/>
 
+
 //! System clock and power use control of the power in ATMEGA2560P using prescalar
 //! Section 10.13 of the manual
 //! Also references from Section 10.12 and 10.7
@@ -44,9 +45,9 @@ use crate::atmega2560p::hal::interrupt;
 ///     1     1     1     1          Reserved
 #[repr(C, packed)]
 pub struct Prescalar { 
-    CLKPR:u8,
-    pad_1:[char;4],   // appropriate padding
-    OSCCAL:u8,
+    clkpr:u8,
+    pad_1:[char;4],                      // appropriate padding
+    osccal:u8,
 }
 
 impl Prescalar {
@@ -66,20 +67,20 @@ impl Prescalar {
             let itr = interrupt::Status::new();              // Object to control interrupts
             itr.disable();                                              // Global interrupts are disabled
 
-            core::ptr::write_volatile(&mut self.CLKPR,0x80);
+            core::ptr::write_volatile(&mut self.clkpr,0x80);
             
-            if freq == 1         { core::ptr::write_volatile(&mut self.CLKPR,0x00); }
-            else if freq == 2    { core::ptr::write_volatile(&mut self.CLKPR,0x01); }
-            else if freq == 4    { core::ptr::write_volatile(&mut self.CLKPR,0x02); }
-            else if freq == 8    { core::ptr::write_volatile(&mut self.CLKPR,0x03); }
-            else if freq == 16   { core::ptr::write_volatile(&mut self.CLKPR,0x04); }
-            else if freq == 32   { core::ptr::write_volatile(&mut self.CLKPR,0x05); }
-            else if freq == 64   { core::ptr::write_volatile(&mut self.CLKPR,0x06); }
-            else if freq == 128  { core::ptr::write_volatile(&mut self.CLKPR,0x07); }
-            else if freq == 256  { core::ptr::write_volatile(&mut self.CLKPR,0x08); }
+            if freq == 1         { core::ptr::write_volatile(&mut self.clkpr,0x00); }
+            else if freq == 2    { core::ptr::write_volatile(&mut self.clkpr,0x01); }
+            else if freq == 4    { core::ptr::write_volatile(&mut self.clkpr,0x02); }
+            else if freq == 8    { core::ptr::write_volatile(&mut self.clkpr,0x03); }
+            else if freq == 16   { core::ptr::write_volatile(&mut self.clkpr,0x04); }
+            else if freq == 32   { core::ptr::write_volatile(&mut self.clkpr,0x05); }
+            else if freq == 64   { core::ptr::write_volatile(&mut self.clkpr,0x06); }
+            else if freq == 128  { core::ptr::write_volatile(&mut self.clkpr,0x07); }
+            else if freq == 256  { core::ptr::write_volatile(&mut self.clkpr,0x08); }
             else                 { unreachable!() }
             
-            itr.enable();                                    // Enable global interrupts
+            itr.enable();                                                // Enable global interrupts
         }
     }    
 }

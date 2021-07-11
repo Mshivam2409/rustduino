@@ -72,8 +72,8 @@ pub enum Options {
 ///         Bit 7:6 - Res     : Reserved bits
 #[repr(C, packed)]
 pub struct Power { 
-    PRR0:u8,
-    PRR1:u8,
+    prr0:u8,
+    prr1:u8,
 }
 
 impl Power {
@@ -97,14 +97,14 @@ impl Power {
                 Options::TIMER1 | 
                 Options::SPI    | 
                 Options::USART0 | 
-                Options::ADC                               => { prr = core::ptr::read_volatile(&mut self.PRR0); }
+                Options::ADC                               => { prr = core::ptr::read_volatile(&mut self.prr0); }
                 
                 Options::TIMER5 |  
                 Options::TIMER4 |  
                 Options::TIMER3 |
                 Options::USART3 |
                 Options::USART2 |  
-                Options::USART1                            => { prr = core::ptr::read_volatile(&mut self.PRR1); }    
+                Options::USART1                            => { prr = core::ptr::read_volatile(&mut self.prr1); }    
             }
             match mode {
                 Options::TWI    => { prr = prr | 0x80; }
@@ -128,14 +128,14 @@ impl Power {
                 Options::TIMER1 | 
                 Options::SPI    | 
                 Options::USART0 | 
-                Options::ADC                               => { core::ptr::write_volatile(&mut self.PRR0,prr); }
+                Options::ADC                               => { core::ptr::write_volatile(&mut self.prr0,prr); }
                 
                 Options::TIMER5 |  
                 Options::TIMER4 |  
                 Options::TIMER3 |
                 Options::USART3 |
                 Options::USART2 |  
-                Options::USART1                            => { core::ptr::write_volatile(&mut self.PRR1,prr); }
+                Options::USART1                            => { core::ptr::write_volatile(&mut self.prr1,prr); }
             }
         }
     }
@@ -155,14 +155,14 @@ impl Power {
                 Options::TIMER1 | 
                 Options::SPI    | 
                 Options::USART0 | 
-                Options::ADC                               => { prr = core::ptr::read_volatile(&mut self.PRR0); }
+                Options::ADC                               => { prr = core::ptr::read_volatile(&mut self.prr0); }
                 
                 Options::TIMER5 |  
                 Options::TIMER4 |  
                 Options::TIMER3 |
                 Options::USART3 |
                 Options::USART2 |  
-                Options::USART1                            => { prr = core::ptr::read_volatile(&mut self.PRR1); }
+                Options::USART1                            => { prr = core::ptr::read_volatile(&mut self.prr1); }
             }
             match mode {
                 Options::TWI    => { prr = prr & 0x7F; }
@@ -186,14 +186,14 @@ impl Power {
                    Options::TIMER1 | 
                    Options::SPI    | 
                    Options::USART0 | 
-                   Options::ADC                              => { core::ptr::write_volatile(&mut self.PRR0,prr); }
+                   Options::ADC                              => { core::ptr::write_volatile(&mut self.prr0,prr); }
                    
                    Options::TIMER5 |  
                    Options::TIMER4 |  
                    Options::TIMER3 |
                    Options::USART3 |
                    Options::USART2 |  
-                   Options::USART1                            => { core::ptr::write_volatile(&mut self.PRR1,prr); }
+                   Options::USART1                            => { core::ptr::write_volatile(&mut self.prr1,prr); }
             }
         }
     } 

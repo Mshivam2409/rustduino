@@ -38,12 +38,13 @@ use crate::atmega2560p::hal::interrupt;
 /// Bit 7      - WDIF   : Watchdog Interrupt Flag
 #[repr(C,packed)]
 pub struct Watchdog {
-   MCUSR:u8,
-   pad_1:[char;11],  // padding for empty memory space
-   WDTCSR:u8,
+   mcusr:u8,
+   pad_1:[char;11],                    // padding for empty memory space
+   wdtcsr:u8,
 }
 
 impl Watchdog {
+
     /// Returns a static mutable reference to the structure Watchdog
     pub unsafe fn new() -> &'static mut Watchdog {
         &mut *(0x54 as *mut Watchdog)    // memory address to check
@@ -52,10 +53,10 @@ impl Watchdog {
     /// If the WDIE bit is enabled it will be disabled otherwise enabled
     pub fn interrupt_toggle(&mut self) {
         unsafe {
-            let mut wdtcsr = core::ptr::read_volatile(&mut self.WDTCSR);
+            let mut wdtcsr = core::ptr::read_volatile(&mut self.wdtcsr);
             if wdtcsr & 0xBF == wdtcsr { wdtcsr = wdtcsr | 0x40; }
             else { wdtcsr = wdtcsr & 0xBF; }
-            core::ptr::write_volatile(&mut self.WDTCSR,wdtcsr);
+            core::ptr::write_volatile(&mut self.wdtcsr,wdtcsr);
         }    
     } 
 
@@ -65,24 +66,24 @@ impl Watchdog {
     /// and WDCE bit of wdtcsr to 1.
     pub fn disable(&mut self) {
         unsafe {
-           let itr = interrupt::Status::new();    // Object created for interrupt handling
-           self.interrupt_toggle();               // Disable watchdog interrupts   
-           itr.disable();                         // Disable global interrupts
+           let itr = interrupt::Status::new();   // Object created for interrupt handling
+           self.interrupt_toggle();                         // Disable watchdog interrupts   
+           itr.disable();                                   // Disable global interrupts
 
-           let mut wdtcsr = core::ptr::read_volatile(&mut self.WDTCSR);
-           let mut mcusr = core::ptr::read_volatile(&mut self.MCUSR);
+           let mut wdtcsr = core::ptr::read_volatile(&mut self.wdtcsr);
+           let mut mcusr = core::ptr::read_volatile(&mut self.mcusr);
            // First set WDCE bit of wdtcsr register as 1
            wdtcsr = wdtcsr | 0x10;
-           core::ptr::write_volatile(&mut self.WDTCSR,wdtcsr );
+           core::ptr::write_volatile(&mut self.wdtcsr,wdtcsr );
            // Then change the WDRF bit of mcusr register as 0
            mcusr = mcusr & 0xF7;
-           core::ptr::write_volatile(&mut self.MCUSR,mcusr );
+           core::ptr::write_volatile(&mut self.mcusr,mcusr );
            // Then change the WDE bit of wdtcsr register to 0
            wdtcsr = wdtcsr & 0xF7;
-           core::ptr::write_volatile(&mut self.WDTCSR,wdtcsr);
+           core::ptr::write_volatile(&mut self.wdtcsr,wdtcsr);
            
-           self.interrupt_toggle();               // Enable watchdog interrupts
-           itr.enable();                          // Enable global interrupts
+           self.interrupt_toggle();                         // Enable watchdog interrupts
+           itr.enable();                                    // Enable global interrupts
         }
     }
 }

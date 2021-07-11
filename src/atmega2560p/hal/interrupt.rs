@@ -32,7 +32,7 @@ use core;
 ///         Bit 0 – C: Carry Flag
 #[repr(C,packed)]
 pub struct Status {
-   SREG:u8,
+   sreg:u8,
 }
 
 impl Status {
@@ -44,18 +44,18 @@ impl Status {
     /// Set the global interrupt bit as 0
     pub fn disable(&mut self) {
         unsafe {
-            let mut sreg = core::ptr::read_volatile(&mut self.SREG);
+            let mut sreg = core::ptr::read_volatile(&mut self.sreg);
             sreg = sreg & 0x7F; 
-            core::ptr::write_volatile(&mut self.SREG, sreg);
+            core::ptr::write_volatile(&mut self.sreg, sreg);
         }     
     }
 
     /// Set the global interrupt bit as 1
     pub fn enable(&mut self) {
         unsafe {
-            let mut sreg = core::ptr::read_volatile(&mut self.SREG);
+            let mut sreg = core::ptr::read_volatile(&mut self.sreg);
             sreg = sreg | 0x80; 
-            core::ptr::write_volatile(&mut self.SREG, sreg); 
+            core::ptr::write_volatile(&mut self.sreg, sreg); 
         }
     }
 }
