@@ -14,9 +14,6 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>
 
-
-
-
 /// Power reduction for ATmega328p chip
 /// Each of the Peripherals below refers to a bit in the PRR
 /// Setting 7th bit shuts down the TWI(2-wire serial interface) by stopping the clock to the module.
@@ -37,7 +34,7 @@ pub enum Peripherals {
 }
 ///registers controlling power management
 /// Section 9.11 of ATmega328p Datasheet
-
+///
 ///Power Reduction Register control bits for power management.
 pub struct Power {
     prr: u8,
@@ -97,7 +94,7 @@ impl Power {
             core::ptr::write_volatile(&mut self.prr, ctrl_adc);
         }
     }
-    ///Disables the clock 
+    ///Disables the clock
     pub fn disable_clock(mode: Peripherals) {
         match mode {
             Peripherals::TWI => Power::twi(&mut Power::new()),
