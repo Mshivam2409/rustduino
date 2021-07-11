@@ -1,29 +1,32 @@
-/*RustDuino : A generic HAL implementation for Arduino Boards in Rust
-Copyright (C) 2021  Nikhil Gupta,
+//     RustDuino : A generic HAL implementation for Arduino Boards in Rust
+//     Copyright (C) 2021  Nikhil Gupta,Indian Institute of Technology Kanpur
+//
+//     This program is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU Affero General Public License as published
+//     by the Free Software Foundation, either version 3 of the License, or
+//     (at your option) any later version.
+//
+//     This program is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU Affero General Public License for more details.
+//
+//     You should have received a copy of the GNU Affero General Public License
+//     along with this program.  If not, see <https://www.gnu.org/licenses/>
 
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU Affero General Public License as published
-by the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Affero General Public License for more details.
-
-You should have received a copy of the GNU Affero General Public License
-along with this program.  If not, see <https://www.gnu.org/licenses/>*/
-
+//! Control on Watchdog timer in ATMEGA2560P
+//! Section 12.5 of manual
+//! https://ww1.microchip.com/downloads/en/devicedoc/atmel-2549-8-bit-avr-microcontroller-atmega640-1280-1281-2560-2561_datasheet.pdf
 use core;
-
 use crate::atmega2560p::hal::interrupts;
 
-///use interrupts to enable/disable global interrupts
-///section 28.6 from datasheet for atmega2560p
-///prior to disabling watchdog, all interrupts must be disabled
-///when WDE and WDIE bits of WDTCSR register  sets to 0, watchdog disables
-///WDRF bit of MCUSR register can overwrite WDE ,so,WDRF must be cleared before
-
+/// use interrupts to enable/disable global interrupts
+/// section 28.6 from datasheet for atmega2560p
+/// prior to disabling watchdog, all interrupts must be disabled
+/// when WDE and WDIE bits of WDTCSR register  sets to 0, watchdog disables
+/// WDRF bit of MCUSR register can overwrite WDE ,so,WDRF must be cleared before
+///
 /// Contains various registers to control the functioning of registers Watchdog.
 /// MCUSR : Contains 5 writable bits which are used for various watchdog settings as below -
 /// Bit 0   – PORF : Power-on Reset Flag

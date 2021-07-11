@@ -56,9 +56,8 @@ pub enum Options {
 ///           1     0    1     Reserved
 ///           1     1    0     Standby
 ///           1     1    1     Extended Standby
-#[repr(C, packed)]
-pub struct Sleep {
-    SMCR: u8,
+pub struct Sleep { 
+    smcr:u8,
 }
 
 impl Sleep {
@@ -73,19 +72,19 @@ impl Sleep {
     /// after waking up.
     /// Set the last bit of SMCR register as 1 for enabling the sleep mode.
     pub fn enable(&mut self) {
-        unsafe {
-            let mut smcr = core::ptr::read_volatile(&mut self.SMCR);
+        unsafe {            
+            let mut smcr = core::ptr::read_volatile(&mut self.smcr);
             smcr = smcr | 0x01;
-            core::ptr::write_volatile(&mut self.SMCR, smcr);
+            core::ptr::write_volatile(&mut self.smcr, smcr);
         }
     }
 
     /// Set the last bit of SMCR register as 0 for disabling the sleep mode.
     pub fn disable(&mut self) {
         unsafe {
-            let mut smcr = core::ptr::read_volatile(&mut self.SMCR);
+            let mut smcr = core::ptr::read_volatile(&mut self.smcr);
             smcr = smcr & 0xFE;
-            core::ptr::write_volatile(&mut self.SMCR, smcr);
+            core::ptr::write_volatile(&mut self.smcr, smcr);
         }
     }
 
@@ -93,31 +92,17 @@ impl Sleep {
     /// The sleep mode to be set will be given as the standard name in the manual
     pub fn select_mode(&mut self, mode: Options) {
         unsafe {
-            self.enable(); // Enable the Sleep mode
-            let mut smcr = core::ptr::read_volatile(&mut self.SMCR);
-            smcr = 0x0F;
+            self.enable();                // Enable the Sleep mode
+            let mut smcr = 0x0F;
             match mode {
-                Options::IDLE => {
-                    smcr = smcr & 0xF1;
-                }
-                Options::ADC => {
-                    smcr = smcr & 0xF3;
-                }
-                Options::PD => {
-                    smcr = smcr & 0xF5;
-                }
-                Options::PS => {
-                    smcr = smcr & 0xF7;
-                }
-                Options::SBY => {
-                    smcr = smcr & 0xFD;
-                }
-                Options::ESBY => {
-                    smcr = smcr & 0xFF;
-                }
-                _ => unreachable!(),
+                Options::IDLE => { smcr = smcr & 0xF1; }
+                Options::ADC  => { smcr = smcr & 0xF3; }
+                Options::PD   => { smcr = smcr & 0xF5; }
+                Options::PS   => { smcr = smcr & 0xF7; }
+                Options::SBY  => { smcr = smcr & 0xFD; }
+                Options::ESBY => { smcr = smcr & 0xFF; }
             }
-            core::ptr::write_volatile(&mut self.SMCR, smcr);
+            core::ptr::write_volatile(&mut self.smcr, smcr);
         }
     }
 }
