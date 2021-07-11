@@ -16,7 +16,7 @@
 
 
 //! Various pins and ports in the ATMEGA2560P chip is controlled here.
-//! Section 13.2.1 and 13.2.2 of ATMEGA2560P datasheet.
+//! Section 13.2 to 13.4 of ATMEGA2560P datasheet.
 //! https://ww1.microchip.com/downloads/en/devicedoc/atmel-2549-8-bit-avr-microcontroller-atmega640-1280-1281-2560-2561_datasheet.pdf
 use core::ptr::{read_volatile, write_volatile};
  
@@ -60,70 +60,63 @@ pub enum PortName {
 /// 
 ///     PINx:*port input pins*
 ///         Writing a logic one to PINxn toggles the value of PORTxn, independent on the value of DDRxn.
-struct Port{
+struct Port {
     pin:u8,
     ddr:u8,
     port:u8,  
 }
 
-
-impl Port {
-    /// Returns mutable reference to the `Port` given `PortName`.
-    /// Section 13.4 of ATmega2560 datasheet.
-    pub unsafe fn new(name: PortName) -> &'static mut Port {
-       match name{
-           PortName::A=> { &mut *(0x20 as *mut Port) },
-           PortName::B=> { &mut *(0x23 as *mut Port) },
-           PortName::C=> { &mut *(0x26 as *mut Port) },
-           PortName::D=> { &mut *(0x29 as *mut Port) },
-           PortName::E=> { &mut *(0x2C as *mut Port) },
-           PortName::F=> { &mut *(0x2F as *mut Port) },
-           PortName::G=> { &mut *(0x32 as *mut Port) },
-           PortName::H=> { &mut *(0x100 as *mut Port) },
-           PortName::J=> { &mut *(0x103 as *mut Port) },
-           PortName::K=> { &mut *(0x106 as *mut Port) },
-           PortName::L=> { &mut *(0x109 as *mut Port) },
-           _ => unreachable!()
-       } 
-    }
-    
-
-    ///Returns PortName of port of the given address input
-    /// Panics if the addredd is invalid
-    /// Section 13.4 of atmega2605 datasheet
-    pub fn name(&self)->PortName {    
-        let address = (self as *const Port) as usize;   //get address of port
-        match address {                                       //return PortName based on the address read
-            0x20=> PortName::A,
-            0x23=> PortName::B,
-            0x26=> PortName::C,
-            0x29=> PortName::D,
-            0x2C=> PortName::E,
-            0x2F=> PortName::F,
-            0x32=> PortName::G,
-            0x100=> PortName::H,
-            0x103=> PortName::J,
-            0x106=> PortName::K,
-            0x109=> PortName::L,
-            _=>unreachable!(),
-        }
-   }    
-}
-
 /// The structure Pin contains the address of the port to which the pin belongs and the pin number
 pub struct Pin {
-    port:*mut Port,
-    pin:u8,
+    port: *mut Port,
+    pin:  u8,
 }
 
 /// Type 'IOMode'
 /// Represents the Input/Output mode of the pin
-pub enum IOMode{
+pub enum IOMode {
     Input,
     Output,
 }
 
 impl Port {
+    /// Returns mutable reference to the `Port` given `PortName`.
+    pub unsafe fn new(name: PortName) -> &'static mut Port {
+       match name{
+           PortName::A => &mut *(0x20 as *mut Port), 
+           PortName::B => &mut *(0x23 as *mut Port), 
+           PortName::C => &mut *(0x26 as *mut Port), 
+           PortName::D => &mut *(0x29 as *mut Port), 
+           PortName::E => &mut *(0x2C as *mut Port), 
+           PortName::F => &mut *(0x2F as *mut Port), 
+           PortName::G => &mut *(0x32 as *mut Port), 
+           PortName::H => &mut *(0x100 as *mut Port),
+           PortName::J => &mut *(0x103 as *mut Port),
+           PortName::K => &mut *(0x106 as *mut Port),
+           PortName::L => &mut *(0x109 as *mut Port),
+       } 
+    }    
+
+    ///Returns PortName of port of the given address input
+    /// Panics if the addredd is invalid
+    pub fn name(&self)->PortName {    
+        let address = (self as *const Port) as usize;   //get address of port
+        match address {                                       //return PortName based on the address read
+            0x20  =>   PortName::A,
+            0x23  =>   PortName::B,
+            0x26  =>   PortName::C,
+            0x29  =>   PortName::D,
+            0x2C  =>   PortName::E,
+            0x2F  =>   PortName::F,
+            0x32  =>   PortName::G,
+            0x100 =>   PortName::H,
+            0x103 =>   PortName::J,
+            0x106 =>   PortName::K,
+            0x109 =>   PortName::L,
+            _     =>   unreachable!(),
+        }
+    }
+   
     /// Returns a `Some<Pin>` if pin number is valid and returns none if not valid
     pub fn pin(&mut self, pin: u8) -> Option<Pin> {
         if pin < 0x8 {
@@ -134,14 +127,23 @@ impl Port {
     }
 }
 
+// impl Port {
+//     /// Returns a `Some<Pin>` if pin number is valid and returns none if not valid
+//     pub fn pin(&mut self, pin: u8) -> Option<Pin> {
+//         if pin < 0x8 {
+//             Some(Pin { port: self, pin })
+//         } else {
+//             None
+//         }
+//     }
+// }
+
 
 impl Pin {
     ///Return a pin for the given port name and pin number
-    pub fn new(port: PortName,pin: u8)-> Option<Pin>
-    {
+    pub fn new(port: PortName,pin: u8)-> Option<Pin> {
         Port::new(port).pin(pin)
     }
-
 
     /// Change pin mode to input or output by changing the DDr pin.
     /// If DDxn is written logic one, Pxn is configured
@@ -179,23 +181,13 @@ impl Pin {
 
     ///set the pin to high
     pub fn high(&mut self) {
-        // Check if pin number is valid.
-        if self.pin >= 8 {
-            return;
-        }
+        if self.pin >= 8 {  return; }                                         // Check if pin number is valid.  
         unsafe{
-            //reading the value of PORTxn.
-            let p = unsafe {
-                 read_volatile(&mut (*self.port).port) 
-            };
-            // Read the DDRxn register.
-            let mut ddr_value = unsafe {
-                 read_volatile(&mut (*self.port).ddr)
-            };
-            //toggling the value of PORTxn, if it isn't set to high.
-            if p == 0 && ddr_value == (0x1 << self.pin){
-                self.toggle();
-            }
+            let p = read_volatile(&mut (*self.port).port);             //reading the value of PORTxn.
+            let ddr_value = read_volatile(&mut (*self.port).ddr);      // Read the DDRxn register.
+            if p == 0 && ddr_value == (0x1 << self.pin) {                     //toggling the value of PORTxn, if it isn't set to high.
+                self.toggle(); 
+            }   
         }
     }
     
@@ -206,16 +198,9 @@ impl Pin {
             return;
         }
         unsafe{
-            //reading the value of PORTxn.
-            let p = unsafe {
-                 read_volatile(&mut (*self.port).port) 
-            };
-            // Read the DDRxn register.
-            let mut ddr_value = unsafe {
-                 read_volatile(&mut (*self.port).ddr)
-            };
-            //toggling the value of PORTxn, if it isn't set to low.
-            if p != 0 && ddr_value == (0x1 << self.pin) {
+            let p = read_volatile(&mut (*self.port).port);           //reading the value of PORTxn.
+            let ddr_value = read_volatile(&mut (*self.port).ddr);    // Read the DDRxn register.
+            if p != 0 && ddr_value == (0x1 << self.pin) {                    //toggling the value of PORTxn, if it isn't set to low.
                 self.toggle();
             }
         }
@@ -223,7 +208,7 @@ impl Pin {
 
     /// change pin mode to Output by changing the value of DDxn register to 1
     /// Section 13.2 of atmega2560 datasheet
-    pub fn output(&mut self){
+    pub fn output(&mut self) {
         self.set_pin_mode(IOMode::Output);
     }
 }
