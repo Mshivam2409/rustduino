@@ -14,7 +14,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>*/
 
-
 use core;
 ///This contains the registers to be manipulated for controlling global interrupts setup.
 ///Details of SREG register are as follows -  
@@ -26,10 +25,10 @@ use core;
 ///        Bit 2 – N: Negative Flag
 ///        Bit 1 – Z: Zero Flag
 ///        Bit 0 – C: Carry Flag
-pub struct GlobalInterrupts {  
-   sreg:u8,                 
+pub struct GlobalInterrupts {
+    sreg: u8,
 }
-///in section 2-(Overview) point 7.4 about (SREG) 
+///in section 2-(Overview) point 7.4 about (SREG)
 
 impl GlobalInterrupts {
     ///returns new Global_Interrupts
@@ -42,20 +41,20 @@ impl GlobalInterrupts {
     ///sets I-bit of SREG 0
     pub fn disable(&mut self) {
         unsafe {
-           let mut ctrl_sreg=core::ptr::read_volatile(&self.sreg);
-           ctrl_sreg &= !(1<<7);                                   
-           core::ptr::write_volatile(&mut self.sreg,ctrl_sreg);
+            let mut ctrl_sreg = core::ptr::read_volatile(&self.sreg);
+            ctrl_sreg &= !(1 << 7);
+            core::ptr::write_volatile(&mut self.sreg, ctrl_sreg);
         }
     }
 
     ///sets I_bit of SREG 1
     ///enable global interrupts
     ///also known as SEI
-    pub fn enable(&mut self){
-        unsafe{
-           let mut ctrl_sreg=core::ptr::read_volatile(&self.sreg);
-           ctrl_sreg |= 1<<7 ;                                        
-           core::ptr::write_volatile(&mut self.sreg,ctrl_sreg);
+    pub fn enable(&mut self) {
+        unsafe {
+            let mut ctrl_sreg = core::ptr::read_volatile(&self.sreg);
+            ctrl_sreg |= 1 << 7;
+            core::ptr::write_volatile(&mut self.sreg, ctrl_sreg);
         }
     }
 }

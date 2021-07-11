@@ -25,7 +25,7 @@ use crate::atmega2560p::hal::interrupts;
 ///WDRF bit of MCUSR register can overwrite WDE ,so,WDRF must be cleared before
 
 /// Contains various registers to control the functioning of registers Watchdog.
-/// MCUSR : Contains 5 writable bits which are used for various watchdog settings as below - 
+/// MCUSR : Contains 5 writable bits which are used for various watchdog settings as below -
 /// Bit 0   – PORF : Power-on Reset Flag
 /// Bit 1   – EXTRF: External Reset Flag
 /// Bit 2   – BORF : Brown-out Reset Flag
@@ -33,46 +33,44 @@ use crate::atmega2560p::hal::interrupts;
 /// Bit 4   – JTRF : JTAG Reset Flag
 /// Bit 5:7 - Res  : Reserved
 ///
-/// WDTCSR : Contains 8 writable bits which are used for various watchdog settings as below - 
+/// WDTCSR : Contains 8 writable bits which are used for various watchdog settings as below -
 /// Bit 5, 2:0 - WDP3:0 : Watchdog Timer Prescaler 3, 2, 1 and 0
 /// Bit 3      - WDE    : Watchdog System Reset Enable
 /// Bit 4      - WDCE   : Watchdog Change Enable
 /// Bit 6      - WDIE   : Watchdog Interrupt Enable
 /// Bit 7      - WDIF   : Watchdog Interrupt Flag
-pub struct WatchDog {  
-    mcusr:u8,
-    _pad:[u8;11],
-    wdtcsr:u8,
+pub struct WatchDog {
+    mcusr: u8,
+    _pad: [u8; 11],
+    wdtcsr: u8,
 }
- 
 
 impl WatchDog {
-    ///creates new struct of watchdog 
+    ///creates new struct of watchdog
     ///return its mut static refrence
-    pub unsafe fn new() -> &'static mut WatchDog { 
-         &mut *(0x54 as *mut WatchDog)
+    pub unsafe fn new() -> &'static mut WatchDog {
+        &mut *(0x54 as *mut WatchDog)
     }
 
- ///disable global interrupts
- ///clears WDRF in MCUSR
- ///reset watchdog to stop its functioning at end of timer
- ///enable watchdog again
+    ///disable global interrupts
+    ///clears WDRF in MCUSR
+    ///reset watchdog to stop its functioning at end of timer
+    ///enable watchdog again
     pub fn disable(&mut self) {
         unsafe {
-            
-           interrupts::GlobalInterrupts::disable(&mut interrupts::GlobalInterrupts::new());
+            interrupts::GlobalInterrupts::disable(&mut interrupts::GlobalInterrupts::new());
 
-           let mut mcusr=core::ptr::read_volatile(&self.mcusr);
-           mcusr &= !(1<<3);
-           core::ptr::write_volatile(&mut self.mcusr,mcusr);
-           
-           let mut wdtcsr=core::ptr::read_volatile(&self.wdtcsr);
-           wdtcsr |= (1<<4) |(1<<3);
-           //sets WDCE for changing WDE
-           core::ptr::write_volatile(&mut self.wdtcsr,wdtcsr);
-           //sets every bit to 0 including WDE and WDIE
-           core::ptr::write_volatile(&mut self.wdtcsr,0x00);
-           interrupts::GlobalInterrupts::enable(&mut interrupts::GlobalInterrupts::new());
+            let mut mcusr = core::ptr::read_volatile(&self.mcusr);
+            mcusr &= !(1 << 3);
+            core::ptr::write_volatile(&mut self.mcusr, mcusr);
+
+            let mut wdtcsr = core::ptr::read_volatile(&self.wdtcsr);
+            wdtcsr |= (1 << 4) | (1 << 3);
+            //sets WDCE for changing WDE
+            core::ptr::write_volatile(&mut self.wdtcsr, wdtcsr);
+            //sets every bit to 0 including WDE and WDIE
+            core::ptr::write_volatile(&mut self.wdtcsr, 0x00);
+            interrupts::GlobalInterrupts::enable(&mut interrupts::GlobalInterrupts::new());
         }
     }
 }
