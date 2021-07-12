@@ -34,11 +34,11 @@ pub extern "C" fn main() {
         //This sets pin high.
         pins.high();
 
-        rustduino::delay_ms(1000);
+        rustduino::delay::delay_ms(1000);
         //This sets pin as low.
         pins.low();
 
-        rustduino::delay_ms(1000);
+        rustduino::delay::delay_ms(1000);
     }
 }
 
