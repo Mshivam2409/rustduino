@@ -18,7 +18,6 @@
 //! Section 13.2 to 13.4 of ATMEGA2560P datasheet.
 //! https://ww1.microchip.com/downloads/en/devicedoc/atmel-2549-8-bit-avr-microcontroller-atmega640-1280-1281-2560-2561_datasheet.pdf
 
-
 /// Core Crate functions required in the code for reading and writing to registers.
 use core::{
     ptr::{read_volatile, write_volatile},
@@ -46,7 +45,7 @@ pub enum PortName {
 /// ```DDRx:  Data direction register```
 ///     The DDRx Register controls the direction of a particular pin.
 /// ```PORTx: Data register```
-///     PORTxn is written logic one when the pin is configured as an input pin. 
+///     PORTxn is written logic one when the pin is configured as an input pin.
 ///     PORTxn is written logic zero when the pin is configured as an output pin.
 /// ```PINx:  Port input pins```
 ///     Writing a logic one to PINxn toggles the value of PORTxn, independent on the value of DDRxn.
@@ -91,7 +90,7 @@ impl Port {
     /// Returns PortName of port of the given address input.
     /// Panics if the address is invalid.
     pub fn name(&self) -> PortName {
-        let address = (self as *const Port) as usize;  // Gets address of port.
+        let address = (self as *const Port) as usize; // Gets address of port.
         match address {
             //  Return PortName based on the address read.
             0x20 => PortName::A,

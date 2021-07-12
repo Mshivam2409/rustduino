@@ -19,7 +19,6 @@
 //! Also references from Section 10.12 and 10.7
 //! https://ww1.microchip.com/downloads/en/devicedoc/atmel-2549-8-bit-avr-microcontroller-atmega640-1280-1281-2560-2561_datasheet.pdf
 
-
 /// Crates required in the code for reading and writing to registers.
 /// Interrupts would be used for disabling global interrupts which may create problem while execution.
 use crate::atmega2560p::hal::interrupt;

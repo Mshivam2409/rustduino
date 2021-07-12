@@ -18,11 +18,10 @@
 //! Section 12.5 of manual.
 //! https://ww1.microchip.com/downloads/en/devicedoc/atmel-2549-8-bit-avr-microcontroller-atmega640-1280-1281-2560-2561_datasheet.pdf
 
-
+use crate::atmega2560p::hal::interrupt;
 /// Crates required in the code for reading and writing to registers.
 /// Interrupts would be used for disabling global interrupts which may create problem while execution.
 use core;
-use crate::atmega2560p::hal::interrupt;
 
 /// Contains various registers to control the functioning of registers Watchdog.
 /// MCUSR : Contains 5 writable bits which are used for various watchdog settings.
