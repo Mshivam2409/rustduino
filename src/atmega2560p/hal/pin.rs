@@ -14,9 +14,8 @@
 //     You should have received a copy of the GNU Affero General Public License
 //     along with this program.  If not, see <https://www.gnu.org/licenses/>
 
-
 /// Include the required crates for the code.
-use crate::atmega2560p::hal::port;
+use crate::atmega2560p::hal::port::*;
 
 /// All pins inside a single struct.
 pub struct Pins {
@@ -28,7 +27,7 @@ pub struct Pins {
 
 impl Pins {
     /// Returns all pins at once as a single struct.
-    pub fn new() -> Pins {
+    pub unsafe fn new() -> Pins {
         Pins {
             analog: [
                 Pin::new(PortName::F, 0).unwrap(),
@@ -48,7 +47,7 @@ impl Pins {
                 Pin::new(PortName::K, 6).unwrap(),
                 Pin::new(PortName::K, 7).unwrap(),
             ],
-            digital: [                
+            digital: [
                 Pin::new(PortName::E, 0).unwrap(),
                 Pin::new(PortName::E, 1).unwrap(),
                 Pin::new(PortName::E, 4).unwrap(),
