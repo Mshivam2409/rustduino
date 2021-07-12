@@ -5,4 +5,10 @@ authors = [ "Akshit Verma <akshitv18@gmail.com>", "Aniket Sharma <sharmaa20@iitk
 edition = "2018"
 
 [dependencies]
-avr_delay = { git = "https://github.com/avr-rust/delay" }
+const_env--value = "0.1"
+
+[profile.release]
+opt-level = 'z'  # Optimize for size.
+codegen-units = 1
+panic = 'abort'
+lto = true
