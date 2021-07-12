@@ -8,3 +8,4 @@ matrix:
       script:
         - rustup component add rustfmt-preview
         - cargo fmt --all -- --check
+        - bash test_examples.sh
