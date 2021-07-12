@@ -4,10 +4,9 @@
 #![feature(asm)]
 #![feature(llvm_asm)]
 
-
 /// Library for ATmega2560P chip.
 pub mod atmega2560p {
-    
+
     /// Hardware Abstraction Library (HAL).
     pub mod hal {
         pub mod power;
@@ -22,5 +21,4 @@ pub mod atmega2560p {
 
         pub mod prescalar;
     }
-
 }

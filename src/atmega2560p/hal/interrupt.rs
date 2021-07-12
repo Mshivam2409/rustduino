@@ -14,7 +14,6 @@
 //     You should have received a copy of the GNU Affero General Public License
 //     along with this program.  If not, see <https://www.gnu.org/licenses/>
 
-
 //! Global interrupts configured in the ATMEGA2560P chip is controlled here.
 //! Section 7.4 of the manual
 //! https://ww1.microchip.com/downloads/en/devicedoc/atmel-2549-8-bit-avr-microcontroller-atmega640-1280-1281-2560-2561_datasheet.pdf
@@ -30,32 +29,32 @@ use core;
 ///         Bit 2 – N: Negative Flag
 ///         Bit 1 – Z: Zero Flag
 ///         Bit 0 – C: Carry Flag
-#[repr(C,packed)]
+#[repr(C, packed)]
 pub struct Status {
-   sreg:u8,
+    sreg: u8,
 }
 
 impl Status {
     /// Return a mutable static reference to a instance of structure Status
-    pub unsafe fn new() -> &'static mut Status {  
-        &mut *(0x5F as *mut Status) 
+    pub unsafe fn new() -> &'static mut Status {
+        &mut *(0x5F as *mut Status)
     }
 
     /// Set the global interrupt bit as 0
     pub fn disable(&mut self) {
         unsafe {
             let mut sreg = core::ptr::read_volatile(&mut self.sreg);
-            sreg = sreg & 0x7F; 
+            sreg = sreg & 0x7F;
             core::ptr::write_volatile(&mut self.sreg, sreg);
-        }     
+        }
     }
 
     /// Set the global interrupt bit as 1
     pub fn enable(&mut self) {
         unsafe {
             let mut sreg = core::ptr::read_volatile(&mut self.sreg);
-            sreg = sreg | 0x80; 
-            core::ptr::write_volatile(&mut self.sreg, sreg); 
+            sreg = sreg | 0x80;
+            core::ptr::write_volatile(&mut self.sreg, sreg);
         }
     }
 }

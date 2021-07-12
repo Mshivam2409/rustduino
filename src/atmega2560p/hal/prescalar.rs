@@ -14,13 +14,12 @@
 //     You should have received a copy of the GNU Affero General Public License
 //     along with this program.  If not, see <https://www.gnu.org/licenses/>
 
-
 //! System clock and power use control of the power in ATMEGA2560P using prescalar
 //! Section 10.13 of the manual
 //! Also references from Section 10.12 and 10.7
 //! https://ww1.microchip.com/downloads/en/devicedoc/atmel-2549-8-bit-avr-microcontroller-atmega640-1280-1281-2560-2561_datasheet.pdf
-use core;
 use crate::atmega2560p::hal::interrupt;
+use core;
 
 /// The below structure controls the clock prescalar register of the chip
 /// Bits 3:0 – CLKPS3:0 : Clock Prescaler Select Bits 3 - 0
@@ -44,10 +43,10 @@ use crate::atmega2560p::hal::interrupt;
 ///     1     1     1     0          Reserved
 ///     1     1     1     1          Reserved
 #[repr(C, packed)]
-pub struct Prescalar { 
-    clkpr:u8,
-    pad_1:[char;4],                      // appropriate padding
-    osccal:u8,
+pub struct Prescalar {
+    clkpr: u8,
+    pad_1: [char; 4], // appropriate padding
+    osccal: u8,
 }
 
 impl Prescalar {
@@ -55,32 +54,43 @@ impl Prescalar {
     pub unsafe fn new() -> &'static mut Prescalar {
         &mut *(0x61 as *mut Prescalar)
     }
-    
+
     /// System Clock Pre-scalar register are controlled for clock gating
     /// Write the Clock Prescaler Change Enable (CLKPCE) bit to one and all other bits in CLKPR to zero.
     /// Within four cycles, write the desired value to CLKPS bits while writing a zero to CLKPCE.
     /// Interrupts must be disabled when changing prescaler setting to make sure the write procedure is not interrupted.
     /// The clock division factor is set to desired value
     /// Only certain values are allowed for the user
-    pub fn enable_clock(&mut self,freq:u32) {
+    pub fn enable_clock(&mut self, freq: u32) {
         unsafe {
-            let itr = interrupt::Status::new();              // Object to control interrupts
-            itr.disable();                                              // Global interrupts are disabled
+            let itr = interrupt::Status::new(); // Object to control interrupts
+            itr.disable(); // Global interrupts are disabled
 
-            core::ptr::write_volatile(&mut self.clkpr,0x80);
-            
-            if freq == 1         { core::ptr::write_volatile(&mut self.clkpr,0x00); }
-            else if freq == 2    { core::ptr::write_volatile(&mut self.clkpr,0x01); }
-            else if freq == 4    { core::ptr::write_volatile(&mut self.clkpr,0x02); }
-            else if freq == 8    { core::ptr::write_volatile(&mut self.clkpr,0x03); }
-            else if freq == 16   { core::ptr::write_volatile(&mut self.clkpr,0x04); }
-            else if freq == 32   { core::ptr::write_volatile(&mut self.clkpr,0x05); }
-            else if freq == 64   { core::ptr::write_volatile(&mut self.clkpr,0x06); }
-            else if freq == 128  { core::ptr::write_volatile(&mut self.clkpr,0x07); }
-            else if freq == 256  { core::ptr::write_volatile(&mut self.clkpr,0x08); }
-            else                 { unreachable!() }
-            
-            itr.enable();                                                // Enable global interrupts
+            core::ptr::write_volatile(&mut self.clkpr, 0x80);
+
+            if freq == 1 {
+                core::ptr::write_volatile(&mut self.clkpr, 0x00);
+            } else if freq == 2 {
+                core::ptr::write_volatile(&mut self.clkpr, 0x01);
+            } else if freq == 4 {
+                core::ptr::write_volatile(&mut self.clkpr, 0x02);
+            } else if freq == 8 {
+                core::ptr::write_volatile(&mut self.clkpr, 0x03);
+            } else if freq == 16 {
+                core::ptr::write_volatile(&mut self.clkpr, 0x04);
+            } else if freq == 32 {
+                core::ptr::write_volatile(&mut self.clkpr, 0x05);
+            } else if freq == 64 {
+                core::ptr::write_volatile(&mut self.clkpr, 0x06);
+            } else if freq == 128 {
+                core::ptr::write_volatile(&mut self.clkpr, 0x07);
+            } else if freq == 256 {
+                core::ptr::write_volatile(&mut self.clkpr, 0x08);
+            } else {
+                unreachable!()
+            }
+
+            itr.enable(); // Enable global interrupts
         }
-    }    
+    }
 }
