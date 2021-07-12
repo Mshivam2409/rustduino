@@ -17,31 +17,23 @@
 //! Global interrupts configured in the ATMEGA2560P chip is controlled here.
 //! Section 7.4 of the manual
 //! https://ww1.microchip.com/downloads/en/devicedoc/atmel-2549-8-bit-avr-microcontroller-atmega640-1280-1281-2560-2561_datasheet.pdf
+
 use core;
 
 ///This contains the registers to be manipulated for controlling global interrupts setup.
-///Details of SREG register are as follows -  
-///        Bit 7 – I: Global Interrupt Enable
-///        Bit 6 – T: Bit Copy Storage
-///        Bit 5 – H: Half Carry Flag
-///        Bit 4 – S: Sign Bit, S = N + V
-///        Bit 3 – V: Two’s Complement Overflow Flag
-///        Bit 2 – N: Negative Flag
-///        Bit 1 – Z: Zero Flag
-///        Bit 0 – C: Carry Flag
+///This represents struct for Globalinterrupts and is used to control sreg register.
 pub struct GlobalInterrupts {
     sreg: u8,
 }
-///in section 7.4 about (SREG)
+///In section 7.4 about (SREG).
 impl GlobalInterrupts {
-    ///returns new Global_Interrupts
+    ///Returns new struct of Global_Interrupts.
     pub unsafe fn new() -> &'static mut GlobalInterrupts {
         &mut *(0x5F as *mut GlobalInterrupts)
     }
 
-    ///disable global interrupts
-    ///also known as CLI
-    ///sets I-bit of SREG 0
+    ///This fnction Disable global interrupts.
+    ///Also known as CLI.
     pub fn disable(&mut self) {
         unsafe {
             let mut ctrl_sreg = core::ptr::read_volatile(&self.sreg);
@@ -50,9 +42,8 @@ impl GlobalInterrupts {
         }
     }
 
-    ///sets I_bit of SREG 1
-    ///enable global interrupts
-    ///also known as SEI
+    ///This function Enable global interrupts.
+    ///Also known as SEI.
     pub fn enable(&mut self) {
         unsafe {
             let mut ctrl_sreg = core::ptr::read_volatile(&self.sreg);

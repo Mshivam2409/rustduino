@@ -20,3 +20,6 @@ pub mod atmega2560p {
         pub mod interrupts;
     }
 }
+
+pub mod config;
+pub mod delay;

@@ -1,9 +1,16 @@
 [package]
 name = "blink"
 version = "0.1.0"
-authors = ["Nikhil Gupta <nikhilg20@iitk.ac.in>"]
+authors =  [ "Akshit Verma <akshitv18@gmail.com>", "Aniket Sharma <sharmaa20@iitk.ac.in>", "Ayush Agrawal <ayush.040602@gmail.com>", "Devansh Kumar Jha <dkjha20@iitk.ac.in>", "Kshitij Kaithal <kshitijk20@iitk.ac.in>", "Nikhil Gupta <nikhilg20@iitk.ac.in>", "Prateek Kumar Pandey <prateekkp20@iitk.ac.in>", "Richa Sachan <richa20@iitk.ac.in>", "Sahil Aggarwal <sahila20@iitk.ac.in>", "Samarth Tripathi <samarth2003tripathi@gmail.com>", "Sanmati Pande <sanmatip20@iitk.ac.in>", "Satender Kumar Yadav <satendery20@iitk.ac.in>", "Saurabh Singh <saurabhsingh.rwx@gmail.com>", "Shivam Malhotra <me@shivammalhotra.dev>", "Tulika Shukla <tulikas20@iitk.ac.in>",]
 edition = "2018"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+rustduino = { path = "../../../" }
+
+[profile.dev]
+panic = "abort"
+
+[profile.release]
+panic = "abort"
