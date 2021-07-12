@@ -18,49 +18,34 @@
 //! Section 10.13 of the manual
 //! Also references from Section 10.12 and 10.7
 //! https://ww1.microchip.com/downloads/en/devicedoc/atmel-2549-8-bit-avr-microcontroller-atmega640-1280-1281-2560-2561_datasheet.pdf
+
+
+/// Crates required in the code for reading and writing to registers.
+/// Interrupts would be used for disabling global interrupts which may create problem while execution.
 use crate::atmega2560p::hal::interrupt;
 use core;
 
-/// The below structure controls the clock prescalar register of the chip
-/// Bits 3:0 – CLKPS3:0 : Clock Prescaler Select Bits 3 - 0
-/// Bits 6:4 - Res      : Reserved
-/// Bit  7   – CLKPCE   : Clock Prescaler Change Enable
-/// CLKPS3 CLKPS2 CLKPS1 CLKPS0 Clock Division Factor
-///     0     0     0     0            1
-///     0     0     0     1            2
-///     0     0     1     0            4
-///     0     0     1     1            8
-///     0     1     0     0            16
-///     0     1     0     1            32
-///     0     1     1     0            64
-///     0     1     1     1            128
-///     1     0     0     0            256
-///     1     0     0     1          Reserved
-///     1     0     1     0          Reserved
-///     1     0     1     1          Reserved
-///     1     1     0     0          Reserved
-///     1     1     0     1          Reserved
-///     1     1     1     0          Reserved
-///     1     1     1     1          Reserved
+/// The below structure controls the clock prescalar register of the chip.
+/// This will be used to control clock pre-scalar settings.
 #[repr(C, packed)]
 pub struct Prescalar {
     clkpr: u8,
-    pad_1: [char; 4], // appropriate padding
+    pad_1: [char; 4], // Appropriate padding
     osccal: u8,
 }
 
 impl Prescalar {
-    /// Creates a mutable reference to the structure to control the system clock configuration
+    /// Creates a mutable reference to the structure to control the system clock configuration.
     pub unsafe fn new() -> &'static mut Prescalar {
         &mut *(0x61 as *mut Prescalar)
     }
 
-    /// System Clock Pre-scalar register are controlled for clock gating
+    /// System Clock Pre-scalar register are controlled for clock gating.
     /// Write the Clock Prescaler Change Enable (CLKPCE) bit to one and all other bits in CLKPR to zero.
     /// Within four cycles, write the desired value to CLKPS bits while writing a zero to CLKPCE.
     /// Interrupts must be disabled when changing prescaler setting to make sure the write procedure is not interrupted.
-    /// The clock division factor is set to desired value
-    /// Only certain values are allowed for the user
+    /// The clock division factor is set to desired value.
+    /// Only certain values are allowed for the user.
     pub fn enable_clock(&mut self, freq: u32) {
         unsafe {
             let itr = interrupt::Status::new(); // Object to control interrupts

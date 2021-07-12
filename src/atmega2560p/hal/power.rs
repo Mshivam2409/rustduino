@@ -14,26 +14,29 @@
 //     You should have received a copy of the GNU Affero General Public License
 //     along with this program.  If not, see <https://www.gnu.org/licenses/>
 
-//! Generic implementation of power control through clock gating in ATMEGA2560P
-//! Section 11.10.2 and 11.10.3 of the manual
-//! Also references from Section 11.8
+//! Generic implementation of power control through clock gating in ATMEGA2560P.
+//! Section 11.10.2 and 11.10.3 of the manual.
+//! Also references from Section 11.8.
 //! https://ww1.microchip.com/downloads/en/devicedoc/atmel-2549-8-bit-avr-microcontroller-atmega640-1280-1281-2560-2561_datasheet.pdf
+
+
+/// Crates required in the code for reading and writing to registers.
 use core;
 
 /// The options correspond to real world as shown -
-///  TWI    :  Power Reduction TWI     
-///  TIMER2 :  Power Reduction Timer/Counter2
-///  TIMER0 :  Power Reduction Timer/Counter0
-///  TIMER1 :  Power Reduction Timer/Counter1
-///  SPI    :  Power Reduction Serial Peripheral Interface
-///  USART0 :  Power Reduction USART0
-///  ADC    :  Power Reduction ADC
-///  TIMER5 :  Power Reduction Timer/Counter5
-///  TIMER4 :  Power Reduction Timer/Counter4
-///  TIMER3 :  Power Reduction Timer/Counter3
-///  USART3 :  Power Reduction USART3
-///  USART2 :  Power Reduction USART2  
-///  USART1 :  Power Reduction USART1
+///  ```TWI    :  Power Reduction TWI```     
+///  ```TIMER2 :  Power Reduction Timer/Counter2```
+///  ```TIMER0 :  Power Reduction Timer/Counter0```
+///  ```TIMER1 :  Power Reduction Timer/Counter1```
+///  ```SPI    :  Power Reduction Serial Peripheral Interface```
+///  ```USART0 :  Power Reduction USART0```
+///  ```ADC    :  Power Reduction ADC```
+///  ```TIMER5 :  Power Reduction Timer/Counter5```
+///  ```TIMER4 :  Power Reduction Timer/Counter4```
+///  ```TIMER3 :  Power Reduction Timer/Counter3```
+///  ```USART3 :  Power Reduction USART3```
+///  ```USART2 :  Power Reduction USART2```  
+///  ```USART1 :  Power Reduction USART1```
 #[derive(Clone, Copy)]
 pub enum Options {
     TWI,
@@ -51,24 +54,9 @@ pub enum Options {
     USART1,
 }
 
-/// Contains various registers to control the functioning of clocks in the chip
-/// PRR0 : Contains 7 Writable bits which will be used to control the clocks as written below -
-///         Bit 0 - PRADC   : Power Reduction ADC
-///         Bit 1 - PRUSART0: Power Reduction USART0
-///         Bit 2 - PRSPI   : Power Reduction Serial Peripheral Interface
-///         Bit 3 - PRTIM1  : Power Reduction Timer/Counter1
-///         Bit 4 - Res     : Reserved bit
-///         Bit 5 - PRTIM0  : Power Reduction Timer/Counter0
-///         Bit 6 - PRTIM2  : Power Reduction Timer/Counter2
-///         Bit 7 - PRTWI   : Power Reduction TWI
-/// PRR1 : Contains 6 Writable bits which will be used to control the clocks as written below -
-///         Bit 0   - PRUSART1: Power Reduction USART1
-///         Bit 1   - PRUSART2: Power Reduction USART2
-///         Bit 2   - PRUSART3: Power Reduction USART3
-///         Bit 3   - PRTIM3  : Power Reduction Timer/Counter3
-///         Bit 4   - PRTIM4  : Power Reduction Timer/Counter4
-///         Bit 5   - PRTIM5  : Power Reduction Timer/Counter5
-///         Bit 7:6 - Res     : Reserved bits
+/// Contains registers to control the functioning of clocks in the chip -
+/// PRR0 : Contains 7 Writable bits which will be used to control some of the clocks modes.
+/// PRR1 : Contains 6 Writable bits which will be used to control some of the clocks modes.
 #[repr(C, packed)]
 pub struct Power {
     prr0: u8,
@@ -76,16 +64,16 @@ pub struct Power {
 }
 
 impl Power {
-    /// Creates a new reference to the Sleep structure at correct location
+    /// Creates a new reference to the Sleep structure at a specified location.
     pub unsafe fn new() -> &'static mut Power {
         &mut *(0x64 as *mut Power)
     }
 
     /// This is the function for disabling the clock system of your choice.
-    /// It would create a new element of the structure Power
+    /// It would create a new element of the structure power
     /// which would be used to control various clock gating features of the
     /// chip ATMEGA2560P.
-    /// All the clock features are implemented in this function using many match cases.
+    /// All the clock features are implemented in this function using match cases.
     pub fn disable_clocks(&mut self, mode: Options) {
         unsafe {
             let mut prr;
@@ -174,10 +162,10 @@ impl Power {
     }
 
     /// This is the function for enabling the clock system of your choice.
-    /// Here we would create a new element of the structure Power
+    /// Here we would create a new element of the structure power
     /// and it would be used to control various clock gating features of the
-    /// chip ATMEGA2560P
-    /// All the clock features are implemented in this function using many match cases.
+    /// chip ATMEGA2560P.
+    /// All the clock features are implemented in this function using match cases.
     pub fn enable_clocks(&mut self, mode: Options) {
         unsafe {
             let mut prr;
