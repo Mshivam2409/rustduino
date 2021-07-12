@@ -3,23 +3,6 @@
 version = 3
 
 [[package]]
-name = "avr-config"
-version = "2.0.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "abb2276df19ea0f25741658d218861b8a24d78eaf926127eb2384f0927f9ab9f"
-dependencies = [
- "const_env--value",
-]
-
-[[package]]
-name = "avr_delay"
-version = "0.3.2"
-source = "git+https://github.com/avr-rust/delay#7925367d8320ac970fbd9a62de72848860443049"
-dependencies = [
- "avr-config",
-]
-
-[[package]]
 name = "const_env--value"
 version = "0.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -61,7 +44,7 @@ dependencies = [
 name = "rustduino"
 version = "0.1.0"
 dependencies = [
- "avr_delay",
+ "const_env--value",
 ]
 
 [[package]]
