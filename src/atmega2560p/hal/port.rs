@@ -17,9 +17,12 @@
 //! Various pins and ports in the ATMEGA2560P chip is controlled here.
 //! Section 13.2 to 13.4 of ATMEGA2560P datasheet.
 //! https://ww1.microchip.com/downloads/en/devicedoc/atmel-2549-8-bit-avr-microcontroller-atmega640-1280-1281-2560-2561_datasheet.pdf
-use core::ptr::{read_volatile, write_volatile};
+use core::{
+    ptr::{read_volatile, write_volatile},
+    usize,
+};
 
-/// Represents the name of the port , can vary from A-L.
+/// Represents the name of the port , can vary from A-L leaving I.
 #[derive(Clone, Copy)]
 pub enum PortName {
     A,
@@ -58,7 +61,7 @@ pub enum PortName {
 ///
 ///     PINx:*port input pins*
 ///         Writing a logic one to PINxn toggles the value of PORTxn, independent on the value of DDRxn.
-struct Port {
+pub struct Port {
     pin: u8,
     ddr: u8,
     port: u8,
@@ -67,7 +70,7 @@ struct Port {
 /// The structure Pin contains the address of the port to which the pin belongs and the pin number
 pub struct Pin {
     port: *mut Port,
-    pin: u8,
+    pin: usize,
 }
 
 /// Type 'IOMode'
@@ -117,7 +120,7 @@ impl Port {
     }
 
     /// Returns a `Some<Pin>` if pin number is valid and returns none if not valid
-    pub fn pin(&mut self, pin: u8) -> Option<Pin> {
+    pub fn pin(&mut self, pin: usize) -> Option<Pin> {
         if pin < 0x8 {
             Some(Pin { port: self, pin })
         } else {
@@ -128,11 +131,11 @@ impl Port {
 
 impl Pin {
     ///Return a pin for the given port name and pin number
-    pub fn new(port: PortName, pin: u8) -> Option<Pin> {
+    pub unsafe fn new(port: PortName, pin: usize) -> Option<Pin> {
         Port::new(port).pin(pin)
     }
 
-    /// Change pin mode to input or output by changing the DDr pin.
+    /// Change pin mode to input or output by changing the DDr register.
     /// If DDxn is written logic one, Pxn is configured
     ///as an output pin.
     /// If DDxn is written logic zero, Pxn is configured as an input pin.
@@ -192,5 +195,11 @@ impl Pin {
     /// Section 13.2 of atmega2560 datasheet
     pub fn output(&mut self) {
         self.set_pin_mode(IOMode::Output);
+    }
+
+    /// change pin mode to Input by changing the value of DDxn register to 0
+    /// Section 13.2 of atmega2560 datasheet
+    pub fn input(&mut self) {
+        self.set_pin_mode(IOMode::Input);
     }
 }
