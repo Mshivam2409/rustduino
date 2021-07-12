@@ -14,19 +14,21 @@
 //     You should have received a copy of the GNU Affero General Public License
 //     along with this program.  If not, see <https://www.gnu.org/licenses/>
 
-//! Implementation of Sleep Modes of ATMEGA2560P
-//! Section 11.10.1 of the manual
-//! Also references from Section 11.4
+//! Implementation of Sleep Modes of ATMEGA2560P.
+//! Section 11.10.1 of the manual.
+//! Also references from Section 11.4.
 //! https://ww1.microchip.com/downloads/en/devicedoc/atmel-2549-8-bit-avr-microcontroller-atmega640-1280-1281-2560-2561_datasheet.pdf
+
+/// Crates required in the code for reading and writing to registers.
 use core;
 
 /// Various modes are
-/// IDLE  : Idle sleep mode          
-/// ADC   : ADC Noise Reduction
-/// PD    : Power-down    
-/// PS    : Power-save
-/// SBY   : Standby      
-/// ESBY  : Extended Standby
+/// ```IDLE  : Idle sleep mode```          
+/// ```ADC   : ADC Noise Reduction```
+/// ```PD    : Power-down```    
+/// ```PS    : Power-save```
+/// ```SBY   : Standby```      
+/// ```ESBY  : Extended Standby```
 #[derive(Clone, Copy)]
 pub enum Options {
     IDLE,
@@ -37,40 +39,20 @@ pub enum Options {
     ESBY,
 }
 
-/// Contains registers to control the sleep modes
-///
-/// Bit 1 – SE: Sleep Enable
-/// The SE bit must be written to logic one to make the MCU enter the sleep mode when the SLEEP instruction is executed.
-/// To avoid the MCU entering the sleep mode unless it is the programmer’s purpose, it is recommended to
-/// write the Sleep Enable (SE) bit to one just before the execution of the SLEEP instruction and to clear it immediately
-/// after waking up.
-///
-/// Bits 3, 2, 1 – SM2:0: Sleep Mode Select Bits 2, 1, and 0
-/// These bits select between the six available sleep modes as shown below.
-///           SM2  SM1  SM0  Sleep Mode
-///           0     0    0     Idle
-///           0     0    1     ADC Noise Reduction
-///           0     1    0     Power-down
-///           0     1    1     Power-save
-///           1     0    0     Reserved
-///           1     0    1     Reserved
-///           1     1    0     Standby
-///           1     1    1     Extended Standby
+/// Contains registers to control the sleep modes.
+/// These bits select between the six available sleep modes in ATMEGA2560P.
+#[repr(C, packed)]
 pub struct Sleep {
     smcr: u8,
 }
 
 impl Sleep {
-    /// Creates a new reference to the Sleep structure according to appropriate location
+    /// Creates a new reference to the Sleep structure according to appropriate location.
     pub unsafe fn new() -> &'static mut Sleep {
         &mut *(0x53 as *mut Sleep)
     }
 
-    /// The SE bit must be written to logic one to make the MCU enter the sleep mode when the SLEEP instruction is executed.
-    /// To avoid the MCU entering the sleep mode unless it is the programmer’s purpose, it is recommended to
-    /// write the Sleep Enable (SE) bit to one just before the execution of the SLEEP instruction and to clear it immediately
-    /// after waking up.
-    /// Set the last bit of SMCR register as 1 for enabling the sleep mode.
+    /// Write appropriate value to register for enabling the sleep mode.
     pub fn enable(&mut self) {
         unsafe {
             let mut smcr = core::ptr::read_volatile(&mut self.smcr);
@@ -79,7 +61,7 @@ impl Sleep {
         }
     }
 
-    /// Set the last bit of SMCR register as 0 for disabling the sleep mode.
+    /// Write appropriate value to register for disabling the sleep mode.
     pub fn disable(&mut self) {
         unsafe {
             let mut smcr = core::ptr::read_volatile(&mut self.smcr);
@@ -89,7 +71,7 @@ impl Sleep {
     }
 
     /// Set the bits of SMCR register according to the sleep mode required.
-    /// The sleep mode to be set will be given as the standard name in the manual
+    /// The sleep mode to be set will be given as the standard name.
     pub fn select_mode(&mut self, mode: Options) {
         unsafe {
             self.enable(); // Enable the Sleep mode
