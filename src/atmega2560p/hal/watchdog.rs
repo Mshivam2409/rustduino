@@ -47,7 +47,6 @@ impl WatchDog {
         &mut *(0x54 as *mut WatchDog)
     }
 
-   
     ///This function disables WatchDog.
     ///Reset watchdog to stop its functioning at end of timer
     pub fn disable(&mut self) {
