@@ -54,14 +54,18 @@ impl WatchDog {
         unsafe {
             // Disable global interrupts.
             interrupts::GlobalInterrupts::disable(&mut interrupts::GlobalInterrupts::new());
-            // Clears WDRF in MCUSR.
-            let mut mcusr = core::ptr::read_volatile(&self.mcusr);
-            mcusr &= !(1 << 3);
+        }
+        // Clears WDRF in MCUSR.
+        let mut mcusr = unsafe { core::ptr::read_volatile(&self.mcusr) };
+        mcusr &= !(1 << 3);
+        unsafe {
             core::ptr::write_volatile(&mut self.mcusr, mcusr);
+        }
 
-            let mut wdtcsr = core::ptr::read_volatile(&self.wdtcsr);
-            wdtcsr |= (1 << 4) | (1 << 3);
-            //Sets WDCE for changing WDE.
+        let mut wdtcsr = unsafe { core::ptr::read_volatile(&self.wdtcsr) };
+        wdtcsr |= (1 << 4) | (1 << 3);
+        //Sets WDCE for changing WDE.
+        unsafe {
             core::ptr::write_volatile(&mut self.wdtcsr, wdtcsr);
             //Sets every bit to 0 including WDE and WDIE.
             core::ptr::write_volatile(&mut self.wdtcsr, 0x00);
