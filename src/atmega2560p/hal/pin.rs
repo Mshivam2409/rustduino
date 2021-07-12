@@ -1,11 +1,27 @@
+//     RustDuino : A generic HAL implementation for Arduino Boards in Rust
+//     Copyright (C) 2021  Nikhil Gupta,Indian Institute of Technology Kanpur
+//
+//     This program is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU Affero General Public License as published
+//     by the Free Software Foundation, either version 3 of the License, or
+//     (at your option) any later version.
+//
+//     This program is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU Affero General Public License for more details.
+//
+//     You should have received a copy of the GNU Affero General Public License
+//     along with this program.  If not, see <https://www.gnu.org/licenses/>
 
-crate::atmega328p::hal::port::*;
+
+/// Include the required crates for the code.
+use crate::atmega2560p::hal::port;
 
 /// All pins inside a single struct.
 pub struct Pins {
     /// All sixteen analog pins.
     pub analog: [Pin; 16],
-
     /// All 54 digital I/O pins.
     pub digital: [Pin; 54],
 }
@@ -32,8 +48,7 @@ impl Pins {
                 Pin::new(PortName::K, 6).unwrap(),
                 Pin::new(PortName::K, 7).unwrap(),
             ],
-            digital: [
-                
+            digital: [                
                 Pin::new(PortName::E, 0).unwrap(),
                 Pin::new(PortName::E, 1).unwrap(),
                 Pin::new(PortName::E, 4).unwrap(),

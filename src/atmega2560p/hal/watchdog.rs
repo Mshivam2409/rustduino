@@ -18,6 +18,7 @@
 //! Section 12.5 of manual
 //! https://ww1.microchip.com/downloads/en/devicedoc/atmel-2549-8-bit-avr-microcontroller-atmega640-1280-1281-2560-2561_datasheet.pdf
 
+/// Crates required in the code for reading and writing to registers.
 use crate::atmega2560p::hal::interrupts;
 use core;
 
@@ -51,9 +52,9 @@ impl WatchDog {
     ///Reset watchdog to stop its functioning at end of timer
     pub fn disable(&mut self) {
         unsafe {
-            ///Disable global interrupts.
+            // Disable global interrupts.
             interrupts::GlobalInterrupts::disable(&mut interrupts::GlobalInterrupts::new());
-            ///Clears WDRF in MCUSR.
+            // Clears WDRF in MCUSR.
             let mut mcusr = core::ptr::read_volatile(&self.mcusr);
             mcusr &= !(1 << 3);
             core::ptr::write_volatile(&mut self.mcusr, mcusr);
