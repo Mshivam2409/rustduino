@@ -25,18 +25,18 @@ pub extern "C" fn main() {
     // Disable watchdog
     let watchdog = hal::watchdog::Watchdog::new();
     watchdog.disable();
-    //This pins represents pin 1 of port H ( pin 13).
-    let mut pins = hal::port::Pin::new(hal::port::PortName::H,1);
-    //This sets pin 2 of port B (pin 13) as output.
-    pins.output();
+    //This pins represents pin 7 of port B ( pin 13).
+    let mut pins = hal::pin::Pins::new();
+    //This sets pin 7 of port B (pin 13) as output.
+    pins.digital[13].output();
 
     loop {
         //This sets pin high.
-        pins.high();
+        pins.digital[13].high();
 
         rustduino::delay::delay_ms(1000);
         //This sets pin as low.
-        pins.low();
+        pins.digital[13].low();
 
         rustduino::delay::delay_ms(1000);
     }
