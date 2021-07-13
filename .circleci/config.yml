@@ -12,7 +12,9 @@ jobs:
           command: bash toolchain.sh
       - run:
           name: Install AVR-GCC
-          command : sudo apt install -y gcc-avr avr-libc binutils-avr avrdude
+          command : |
+            sudo apt update
+            sudo apt install -y gcc-avr avr-libc binutils-avr avrdude
       - run:
           name: Check formatting
           command: |
