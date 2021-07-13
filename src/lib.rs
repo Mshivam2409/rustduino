@@ -20,6 +20,8 @@ pub mod atmega328p {
         pub mod power;
 
         pub mod gating;
+
+        pub mod i2c;
     }
 }
 

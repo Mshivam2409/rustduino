@@ -22,3 +22,5 @@ edition = "2018"
 
 [dependencies]
 const_env--value = "0.1"
+bit_field = "0.10.1"
+volatile = "0.4.4"
