@@ -1,31 +1,64 @@
 use bit_field::BitField;
-use core::ptr::{read_volatile, write_volatile};
-use core::{u32, u8};
-// use volatile::Volatile;
+use core::ptr::{read_volatile};
+// use core::{array, u32, u8};
+use volatile::Volatile;
 
-// use crate::atmega328p::hal::port;
 use crate::delay::{delay_ms};
 
 
 pub struct Twi {
-    twbr: u8,
-    twsr: u8,
-    twar: u8,
-    twdr: u8,
-    twcr: u8,
-    twamr: u8,
+    twbr: Volatile<u8>,
+    twsr: Volatile<u8>,
+    twar: Volatile<u8>,
+    twdr: Volatile<u8>,
+    twcr: Volatile<u8>,
+    twamr: Volatile<u8>,
 }
 
 // for twcr
-static TWINT: usize = 0;
-static TWEA: usize = 1;
-static TWSTA: usize = 2;
-static TWSTO: usize = 3;
-static TWWC: usize = 4;
-static TWEN: usize = 5;
-static TWIE: usize = 7;
-// static STATUS_MASK: u8 = 0xF8;
+static TWINT: u8 = 0;
+static TWEA: u8 = 1;
+static TWSTA: u8 = 2;
+static TWSTO: u8 = 3;
+static TWWC: u8 = 4;
+static TWEN: u8 = 5;
+static TWIE: u8 = 7;
 
+// for twsr
+static TWPS1:u8 = 6;
+static TWPS0:u8 = 7;
+
+pub fn prescaler() -> (u8, bool, bool) { 
+    if (crate::config::CPU_FREQUENCY_HZ/TWI_FREQUENCY - 16) / (2 * 1) >= 10 
+        && (crate::config::CPU_FREQUENCY_HZ/TWI_FREQUENCY - 16) / (2 * 1) <= 0xFF {
+            return (1, false, false);
+        }
+    
+    else if (crate::config::CPU_FREQUENCY_HZ/TWI_FREQUENCY - 16) / (2 * 4) >= 10 
+        && (crate::config::CPU_FREQUENCY_HZ/TWI_FREQUENCY - 16) / (2 * 4) <= 0xFF {
+            return (4, true, false);
+        }
+        
+    else if (crate::config::CPU_FREQUENCY_HZ/TWI_FREQUENCY - 16) / (2 * 16) >= 10 
+        && (crate::config::CPU_FREQUENCY_HZ/TWI_FREQUENCY - 16) / (2 * 16) <= 0xFF{
+            return (16, false, true);
+        }
+        
+    else if (crate::config::CPU_FREQUENCY_HZ/TWI_FREQUENCY - 16) / (2 * 64) >= 10 
+        && (crate::config::CPU_FREQUENCY_HZ/TWI_FREQUENCY - 16) / (2 * 64) <= 0xFF{
+            return (64, true, true);
+        }
+    
+    else {
+        panic!("TWI_FREQUENCY too low!");
+        // return (-1, -1, -1);
+    }
+}
+
+static PRESCALER:u8 = prescaler().0;
+static TWPS0_VAL:bool = prescaler().1;
+static TWPS1_VAL:bool = prescaler().2;
+static TWI_FREQUENCY:u32 =  100000;
 
 // TWSR values (not bits)
 // (taken from avr-libc twi.h)
@@ -71,6 +104,7 @@ static TWSR_STATUS_MASK: u8 =       0xF8;
 // return values;
 static I2C_OK:u8 = 0x00;
 static I2C_ERROR_NODEV: u8 = 0x01;
+static I2C_TIMEOUT:u32 = 100;
 
 // pub fn sbi(var: u8, mask: u8) {
 //     ((var) |= (uint8)(1 << mask));
@@ -79,8 +113,7 @@ static I2C_ERROR_NODEV: u8 = 0x01;
 //     ((var) &= (uint8_t)!(1 << mask));
 // }   
 
-pub fn write_sda() {
-    // let mut portc = Port::new(port::PortName::C);  
+pub fn write_sda() {  
     unsafe {
         let portc = &mut *(0x27 as *mut u8); 
         let mut ddrc = read_volatile(portc);
@@ -98,88 +131,123 @@ pub fn read_sda() {
 
 
 impl Twi {
+
     pub fn new() -> &'static mut Self {
         unsafe { &mut *(0xB8 as *mut Self) }
     }
 
-    pub fn init(&mut self) {
+    pub fn wait_to_complete(&mut self, operation:u8) -> u8{
         let mut i:u32 = 0;
-        write_sda();
-        unsafe {
-            write_volatile(&mut self.twcr, 0xA4); // TWINT TWSTA and TWA set to 1
-        }
-        while !self.twcr.get_bit(TWINT) || i <= 100 {  // waiting for TWINT to be set
+        while !self.twcr.read().get_bit(TWINT) || i <= I2C_TIMEOUT {  // waiting for TWINT to be set
             i += 1;
         }
 
-        if self.twsr & TWSR_STATUS_MASK != START  { //if status id ok return else panic
-            if i >= 100 {
-                panic!("Timeout");
+        if self.twsr.read() & TWSR_STATUS_MASK != operation { //if status id ok return else panic
+            if i >= I2C_TIMEOUT {
+                return 1 // for timeout
             } else {
-                panic!("Error");
+                return 2 // for other errors
             } 
+        } else {
+            return 0 // if everything is fine.
         }
     }
 
-    pub fn set_address(&mut self, addr: u8) {
-        let mut i:u32 = 0;
+    pub fn init (&mut self) {
         unsafe {
-            write_volatile(&mut self.twdr, addr); // loading SLA_W to TWDR
-            self.twdr.set_bit(TWINT, true); 
-            self.twdr.set_bit(TWEN, true);
+            self.twsr.update(|sr| {
+                sr.set_bit(TWPS1, TWPS1_VAL);
+                sr.set_bit(TWPS0, TWPS0_VAL);
+            });
+            self.twcr.update(|cr| {
+                cr.set_bit(TWEN, true);
+            })
         }
-        while !self.twcr.get_bit(TWINT) || i <= 100 { //waiting for TWINT to be set
-            i += 1;
-        } 
+    }
+
+    pub fn start(&mut self) -> u8{
+        write_sda();
+        unsafe {
+            self.twcr.write(0xA4); // TWINT TWSTA and TWA set to 1
+        }
         
-        if self.twsr & TWSR_STATUS_MASK != MT_SLA_ACK { // if ACK recieved.. ok.. else panic
-            if i >= 100 {
-                panic!("Timeout");
-            } else {
-                panic!("Error");
-            }
-        }
+    //     match self.wait_to_complete(START) {
+    //         0 => return,
+    //         1 => panic!("Timeout"),
+    //         2 => panic!("Error"),
+    //     }
+        return self.wait_to_complete(START)
     }
 
-
-    pub fn send_bytes(&mut self, data:u8) {
-        let mut i = 0;
-        delay_ms(1);
-        write_sda();
-        self.twdr = data;
+    pub fn rep_start(&mut self) -> u8 {
         unsafe {
-            write_volatile(&mut self.twcr, 0x84); // TWCR = (1<<TWINT)|(1<<TWEN);
+            self.twcr.write(0xA4); // TWINT TWSTA and TWA set to 1
         }
-
-        while !self.twcr.get_bit(TWINT) || i <= 100 {  // waiting for TWINT to be set
-            i += 1;
-        }
-
-        if self.twsr & TWSR_STATUS_MASK != MT_DATA_ACK  { //if status id ok return else panic
-            if i >= 100 {
-                panic!("Timeout");
-            } else {
-                panic!("Error");
-            } 
-        }
+        
+        // match self.wait_to_complete(REP_START) {
+        //     0 => return,
+        //     1 => panic!("Timeout"),
+        //     2 => panic!("Error"),
+        // }
+        return self.wait_to_complete(REP_START)
     }
 
-
-    pub fn read_from(&mut self,data:u8){
-        unsafe {
-            write_volatile(&mut self.twdr,data);
-            self.twdr.set_bit(TWINT, true);
-            self.twdr.set_bit(TWEN, true);
-        }
-        while !self.twcr.get_bit(TWINT) {}
-    }
-
-    
     pub fn stop(&mut self){
         unsafe {
-            write_volatile(&mut self.twcr, 0xB0);
+            self.twcr.write(0xB0);
         } 
     }
 
 
+    pub fn set_address(&mut self, addr: u8) -> u8 {
+        unsafe {
+            self.twdr.write(addr); // loading SLA_W to TWDR
+            self.twcr.update(|cr| {
+                cr.set_bit(TWINT, true);
+                cr.set_bit(TWEN, true);
+            });
+        }
+        
+        // match self.wait_to_complete(MT_SLA_ACK) {
+        //     0 => return,
+        //     1 => panic!("Timeout"),
+        //     2 => panic!("Error"),
+        // }
+        return self.wait_to_complete(MT_SLA_ACK);
+    }
+
+    // pub fn address_read (&mut self) { //not sure iski zaroorat hai isilie likha nhi hai....
+
+    // }
+
+
+    pub fn write(&mut self, data:u8) -> u8 {
+        delay_ms(1);
+        // write_sda(); // doubt if neended
+        unsafe {
+            self.twdr.write(data);
+            self.twcr.write(0x84); // TWCR = (1<<TWINT)|(1<<TWEN);
+        }
+
+        // match self.wait_to_complete(MT_DATA_ACK) {
+        //     0 => return,
+        //     1 => panic!("Timeout"),
+        //     2 => panic!("Error"),
+        // }
+        return self.wait_to_complete(MT_DATA_ACK);
+    }
+
+    // how to pass variable size array in rust..??
+
+    // pub fn write_burst (&mut self, &mut data:&mut u8, size:u8)  {
+    //     let mut x = size;
+    //     while x > 0 {
+    //         if  self.write(data) !=0 {
+    //             break;
+    //         } 
+    //         data+=1;
+    //         x-=1;
+    //     }
+    // }
 }
+
