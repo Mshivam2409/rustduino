@@ -1,11 +1,11 @@
 use bit_field::BitField;
 use core::ptr::{read_volatile, write_volatile};
+use core::{u32, u8};
 // use volatile::Volatile;
 
-use crate::atmega328p::hal::port;
-use crate::delay;
+// use crate::atmega328p::hal::port;
+use crate::delay::{delay_ms};
 
-use super::port::Port;
 
 pub struct Twi {
     twbr: u8,
@@ -72,14 +72,29 @@ static TWSR_STATUS_MASK: u8 =       0xF8;
 static I2C_OK:u8 = 0x00;
 static I2C_ERROR_NODEV: u8 = 0x01;
 
-// static sbi(var, mask)   ((var) |= (uint8_t)(1 << mask))
-// static cbi(var, mask)   ((var) &= (uint8_t)~(1 << mask))
+// pub fn sbi(var: u8, mask: u8) {
+//     ((var) |= (uint8)(1 << mask));
+// }   
+// pub fn cbi(var: u8, mask: u8) {
+//     ((var) &= (uint8_t)!(1 << mask));
+// }   
 
-pub fn WRITE_sda() {
-    let mut port =   Port::new(port::PortName::C);  //SDA must be output when writing
-    
+pub fn write_sda() {
+    // let mut portc = Port::new(port::PortName::C);  
+    unsafe {
+        let portc = &mut *(0x27 as *mut u8); 
+        let mut ddrc = read_volatile(portc);
+        ddrc.set_bit(3, true); //SDA must be output when writing
+    }
 } 
-// pub fn READ_sda()  DDRC = DDRC & 0b11101111 //SDA must be input when reading - don't forget the resistor on SDA!!
+
+pub fn read_sda() {
+    unsafe {
+        let portc = &mut *(0x27 as *mut u8);
+        let mut ddrc = read_volatile(portc);
+        ddrc.set_bit(3, false); //SDA must be input when reading - don't forget the resistor on SDA!!
+    }
+}  
 
 
 impl Twi {
@@ -89,6 +104,7 @@ impl Twi {
 
     pub fn init(&mut self) {
         let mut i:u32 = 0;
+        write_sda();
         unsafe {
             write_volatile(&mut self.twcr, 0xA4); // TWINT TWSTA and TWA set to 1
         }
@@ -101,8 +117,7 @@ impl Twi {
                 panic!("Timeout");
             } else {
                 panic!("Error");
-            }
-            
+            } 
         }
     }
 
@@ -126,6 +141,30 @@ impl Twi {
         }
     }
 
+
+    pub fn send_bytes(&mut self, data:u8) {
+        let mut i = 0;
+        delay_ms(1);
+        write_sda();
+        self.twdr = data;
+        unsafe {
+            write_volatile(&mut self.twcr, 0x84); // TWCR = (1<<TWINT)|(1<<TWEN);
+        }
+
+        while !self.twcr.get_bit(TWINT) || i <= 100 {  // waiting for TWINT to be set
+            i += 1;
+        }
+
+        if self.twsr & TWSR_STATUS_MASK != MT_DATA_ACK  { //if status id ok return else panic
+            if i >= 100 {
+                panic!("Timeout");
+            } else {
+                panic!("Error");
+            } 
+        }
+    }
+
+
     pub fn read_from(&mut self,data:u8){
         unsafe {
             write_volatile(&mut self.twdr,data);
@@ -141,4 +180,6 @@ impl Twi {
             write_volatile(&mut self.twcr, 0xB0);
         } 
     }
+
+
 }
