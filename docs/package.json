@@ -1,33 +1,45 @@
 {
-  "name": "docs",
+  "name": "docusaurus-template",
   "version": "0.0.0",
   "private": true,
+  "prettier": "ory-prettier-styles",
+  "config": {
+    "prettierTarget": "{docs/**,docs,scripts,static,contrib,src,src/**}/*.{md,mdx,json,js,css,html}|*.{js,md}"
+  },
   "scripts": {
+    "gen": "npm run widdershins && cd .. && node ./docs/scripts/fix-api.js ./docs/docs/reference/api.mdx && node ./docs/scripts/config.js docs/config.js && node ./docs/scripts/gen-faq.js",
     "docusaurus": "docusaurus",
+    "widdershins": "widdershins -u .widdershins/templates -e .widdershins/config.json ../spec/api.json -o ./docs/reference/api.mdx",
     "start": "docusaurus start",
     "build": "docusaurus build",
     "swizzle": "docusaurus swizzle",
-    "deploy": "docusaurus deploy",
-    "clear": "docusaurus clear",
     "serve": "docusaurus serve",
-    "write-translations": "docusaurus write-translations",
-    "write-heading-ids": "docusaurus write-heading-ids"
+    "deploy": "docusaurus deploy",
+    "format": "prettier --write ${npm_package_config_prettierTarget}",
+    "format:check": "prettier --check ${npm_package_config_prettierTarget}"
   },
   "dependencies": {
-    "@docusaurus/core": "2.0.0-beta.1",
-    "@docusaurus/preset-classic": "2.0.0-beta.1",
-    "@mdx-js/react": "^1.6.21",
-    "@svgr/webpack": "^5.5.0",
-    "clsx": "^1.1.1",
-    "file-loader": "^6.2.0",
-    "prism-react-renderer": "^1.2.1",
-    "react": "^17.0.1",
-    "react-dom": "^17.0.1",
-    "url-loader": "^4.1.1"
+    "@docusaurus/core": "2.0.0-alpha.73",
+    "@docusaurus/plugin-content-docs": "2.0.0-alpha.73",
+    "@docusaurus/plugin-content-pages": "2.0.0-alpha.73",
+    "@docusaurus/plugin-sitemap": "2.0.0-alpha.73",
+    "@docusaurus/theme-classic": "2.0.0-alpha.73",
+    "@docusaurus/theme-search-algolia": "2.0.0-alpha.73",
+    "classnames": "2.3.1",
+    "file-loader": "6.2.0",
+    "mermaid": "8.9.2",
+    "node-fetch": "2.6.1",
+    "parser-front-matter": "1.6.4",
+    "prism-react-renderer": "1.2.0",
+    "prismjs": "1.23.0",
+    "react": "17.0.2",
+    "react-dom": "17.0.2",
+    "sync-request": "6.1.0",
+    "url-loader": "4.1.1"
   },
   "browserslist": {
     "production": [
-      ">0.5%",
+      ">0.2%",
       "not dead",
       "not op_mini all"
     ],
@@ -36,5 +48,17 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "json-schema-faker": "0.5.0-rcv.34",
+    "json-schema-ref-parser": "8.0.0",
+    "ory-prettier-styles": "1.1.2",
+    "prettier": "2.2.1",
+    "ramda": "0.27.1",
+    "raw-loader": "4.0.2",
+    "remark-admonitions": "1.2.1",
+    "remarkable": "2.0.1",
+    "widdershins": "4.0.1",
+    "yaml": "1.10.2"
   }
 }
