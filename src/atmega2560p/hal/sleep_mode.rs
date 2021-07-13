@@ -73,9 +73,7 @@ impl Sleep {
     /// Set the bits of SMCR register according to the sleep mode required.
     /// The sleep mode to be set will be given as the standard name.
     pub fn select_mode(&mut self, mode: Options) {
-        unsafe {
-            self.enable();
-        } // Enable the Sleep mode
+        self.enable(); // Enable the Sleep mode
         let mut smcr = 0x0F;
         match mode {
             Options::IDLE => {

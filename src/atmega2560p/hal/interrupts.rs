@@ -18,6 +18,7 @@
 //! Section 7.4 of the manual
 //! https://ww1.microchip.com/downloads/en/devicedoc/atmel-2549-8-bit-avr-microcontroller-atmega640-1280-1281-2560-2561_datasheet.pdf
 
+/// Crates required in the code for reading and writing to registers.
 use core;
 
 ///This contains the registers to be manipulated for controlling global interrupts setup.
@@ -35,9 +36,7 @@ impl GlobalInterrupts {
     ///This fnction Disable global interrupts.
     ///Also known as CLI.
     pub fn disable(&mut self) {
-        unsafe {
-            let mut ctrl_sreg = core::ptr::read_volatile(&self.sreg);
-        }
+        let mut ctrl_sreg = unsafe { core::ptr::read_volatile(&self.sreg) };
         ctrl_sreg &= !(1 << 7);
         unsafe {
             core::ptr::write_volatile(&mut self.sreg, ctrl_sreg);
@@ -47,9 +46,7 @@ impl GlobalInterrupts {
     ///This function Enable global interrupts.
     ///Also known as SEI.
     pub fn enable(&mut self) {
-        unsafe {
-            let mut ctrl_sreg = core::ptr::read_volatile(&self.sreg);
-        }
+        let mut ctrl_sreg = unsafe { core::ptr::read_volatile(&self.sreg) };
         ctrl_sreg |= 1 << 7;
         unsafe {
             core::ptr::write_volatile(&mut self.sreg, ctrl_sreg);

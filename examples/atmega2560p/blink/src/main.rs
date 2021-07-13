@@ -14,22 +14,24 @@
 //     You should have received a copy of the GNU Affero General Public License
 //     along with this program.  If not, see <https://www.gnu.org/licenses/>
 
-
-/// Unnecessary standard rust libraries disabled for the purpose of embedded programming.
 #![no_std]
 #![no_main]
 #![deny(warnings)]
 
 /// Crates included which are to be used for the Blinking LED example.
-use rustduino::atmega2560p::hal;
+// use rustduino::atmega2560p::hal;
+use rustduino::atmega2560p::hal::watchdog::WatchDog;
+use rustduino::atmega2560p::hal::pin::Pins;
 
 #[no_mangle]
 pub extern "C" fn main() {
     // Disable watchdog
-    let watchdog = hal::watchdog::WatchDog::new();
+    let watchdog = unsafe { WatchDog::new() };
     watchdog.disable();
+
     // This pins represents pin 7 of port B ( pin 13).
-    let mut pins = hal::pin::Pins::new();
+    let mut pins = Pins::new();
+
     //This sets pin 7 of port B (pin 13) as output.
     pins.digital[13].output();
 

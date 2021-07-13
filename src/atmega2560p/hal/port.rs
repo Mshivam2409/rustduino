@@ -71,19 +71,19 @@ pub enum IOMode {
 
 impl Port {
     /// Returns mutable reference to the Port of given PortName.
-    pub unsafe fn new(name: PortName) -> &'static mut Port {
+    pub fn new(name: PortName) -> &'static mut Port {
         match name {
-            PortName::A => &mut *(0x20 as *mut Port),
-            PortName::B => &mut *(0x23 as *mut Port),
-            PortName::C => &mut *(0x26 as *mut Port),
-            PortName::D => &mut *(0x29 as *mut Port),
-            PortName::E => &mut *(0x2C as *mut Port),
-            PortName::F => &mut *(0x2F as *mut Port),
-            PortName::G => &mut *(0x32 as *mut Port),
-            PortName::H => &mut *(0x100 as *mut Port),
-            PortName::J => &mut *(0x103 as *mut Port),
-            PortName::K => &mut *(0x106 as *mut Port),
-            PortName::L => &mut *(0x109 as *mut Port),
+            PortName::A => unsafe { &mut *(0x20 as *mut Port) },
+            PortName::B => unsafe { &mut *(0x23 as *mut Port) },
+            PortName::C => unsafe { &mut *(0x26 as *mut Port) },
+            PortName::D => unsafe { &mut *(0x29 as *mut Port) },
+            PortName::E => unsafe { &mut *(0x2C as *mut Port) },
+            PortName::F => unsafe { &mut *(0x2F as *mut Port) },
+            PortName::G => unsafe { &mut *(0x32 as *mut Port) },
+            PortName::H => unsafe { &mut *(0x100 as *mut Port) },
+            PortName::J => unsafe { &mut *(0x103 as *mut Port) },
+            PortName::K => unsafe { &mut *(0x106 as *mut Port) },
+            PortName::L => unsafe { &mut *(0x109 as *mut Port) },
         }
     }
 
@@ -120,7 +120,7 @@ impl Port {
 
 impl Pin {
     ///Return a pin for the given port name and pin number.
-    pub unsafe fn new(port: PortName, pin: usize) -> Option<Pin> {
+    pub fn new(port: PortName, pin: usize) -> Option<Pin> {
         Port::new(port).pin(pin)
     }
 
@@ -151,13 +151,11 @@ impl Pin {
         if self.pin >= 8 {
             return;
         }
-        unsafe {
-            let p = read_volatile(&mut (*self.port).port); // Reading the value of PORTxn.
-            let ddr_value = read_volatile(&mut (*self.port).ddr); // Read the DDRxn register.
-            if p == 0 && ddr_value == (0x1 << self.pin) {
-                // Toggling the value of PORTxn, if it isn't set to high.
-                self.toggle();
-            }
+        let p = unsafe { read_volatile(&mut (*self.port).port) }; // Reading the value of PORTxn.
+        let ddr_value = unsafe { read_volatile(&mut (*self.port).ddr) }; // Read the DDRxn register.
+        if p == 0 && ddr_value == (0x1 << self.pin) {
+            // Toggling the value of PORTxn, if it isn't set to high.
+            self.toggle();
         }
     }
 
@@ -167,13 +165,11 @@ impl Pin {
         if self.pin >= 8 {
             return;
         }
-        unsafe {
-            let p = read_volatile(&mut (*self.port).port); //Reading the value of PORTxn.
-            let ddr_value = read_volatile(&mut (*self.port).ddr); // Read the DDRxn register.
-            if p != 0 && ddr_value == (0x1 << self.pin) {
-                //Toggling the value of PORTxn, if it isn't set to low.
-                self.toggle();
-            }
+        let p = unsafe { read_volatile(&mut (*self.port).port) }; //Reading the value of PORTxn.
+        let ddr_value = unsafe { read_volatile(&mut (*self.port).ddr) }; // Read the DDRxn register.
+        if p != 0 && ddr_value == (0x1 << self.pin) {
+            //Toggling the value of PORTxn, if it isn't set to low.
+            self.toggle();
         }
     }
 

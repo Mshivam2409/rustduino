@@ -27,7 +27,7 @@ pub struct Pins {
 
 impl Pins {
     /// Returns all pins at once as a single struct.
-    pub unsafe fn new() -> Pins {
+    pub fn new() -> Pins {
         Pins {
             analog: [
                 Pin::new(PortName::F, 0).unwrap(),
