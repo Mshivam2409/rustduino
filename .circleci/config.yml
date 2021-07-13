@@ -1,0 +1,26 @@
+version: 2
+
+jobs:
+  build:
+    docker:
+      - image: cimg/rust:1.53.0
+
+    steps:
+      - checkout
+      - run:
+          name: Install Toolchain
+          command: bash toolchain.sh
+      - run:
+          name: Install AVR-GCC
+          command : |
+            sudo apt update
+            sudo apt install -y gcc-avr avr-libc binutils-avr avrdude
+      - run:
+          name: Check formatting
+          command: |
+            rustfmt --version
+            cargo fmt --all -- --check
+      - run:
+          name: Test Examples
+          command: bash test_examples.sh
+      
