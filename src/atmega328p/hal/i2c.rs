@@ -47,4 +47,28 @@ impl Twi {
         //what is the start condition... finding that
         // also how to know that acknowledgement is recieved.
     }
+
+    pub fn read_from(&mut self,data:u8){
+        unsafe {
+            write_volatile(&mut self.twdr,data);
+            self.twdr.set_bit(TWINT, true);
+            self.twdr.set_bit(TWEN, true);
+        }
+        while !self.twcr.get_bit(TWINT) {}
+    }
+
+    pub fn read_from(&mut self,data:u8){
+        unsafe {
+            write_volatile(&mut self.twdr,data);
+            self.twdr.set_bit(TWINT, true);
+            self.twdr.set_bit(TWEN, true);
+        }
+        while !self.twcr.get_bit(TWINT) {}
+    }
+
+    pub fn stop(&mut self){
+        self.twdr.set_bit(TWINT, true);
+        self.twdr.set_bit(TWEN, true);
+        self.twdr.set_bit(TWSTO, true);
+    }
 }
