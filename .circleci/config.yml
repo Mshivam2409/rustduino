@@ -3,7 +3,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: abronan/rust-circleci:latest
+      - image: cimg/rust:1.53.0
 
     steps:
       - checkout
