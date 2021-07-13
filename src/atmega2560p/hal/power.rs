@@ -74,89 +74,87 @@ impl Power {
     /// chip ATMEGA2560P.
     /// All the clock features are implemented in this function using match cases.
     pub fn disable_clocks(&mut self, mode: Options) {
-        unsafe {
-            let mut prr;
-            match mode {
-                Options::TWI
-                | Options::TIMER2
-                | Options::TIMER0
-                | Options::TIMER1
-                | Options::SPI
-                | Options::USART0
-                | Options::ADC => {
-                    prr = core::ptr::read_volatile(&mut self.prr0);
-                }
+        let mut prr;
+        match mode {
+            Options::TWI
+            | Options::TIMER2
+            | Options::TIMER0
+            | Options::TIMER1
+            | Options::SPI
+            | Options::USART0
+            | Options::ADC => {
+                prr = unsafe { core::ptr::read_volatile(&mut self.prr0) };
+            }
 
-                Options::TIMER5
-                | Options::TIMER4
-                | Options::TIMER3
-                | Options::USART3
-                | Options::USART2
-                | Options::USART1 => {
-                    prr = core::ptr::read_volatile(&mut self.prr1);
-                }
+            Options::TIMER5
+            | Options::TIMER4
+            | Options::TIMER3
+            | Options::USART3
+            | Options::USART2
+            | Options::USART1 => {
+                prr = unsafe { core::ptr::read_volatile(&mut self.prr1) };
             }
-            match mode {
-                Options::TWI => {
-                    prr = prr | 0x80;
-                }
-                Options::TIMER2 => {
-                    prr = prr | 0x40;
-                }
-                Options::TIMER0 => {
-                    prr = prr | 0x20;
-                }
-                Options::TIMER1 => {
-                    prr = prr | 0x08;
-                }
-                Options::SPI => {
-                    prr = prr | 0x04;
-                }
-                Options::USART0 => {
-                    prr = prr | 0x02;
-                }
-                Options::ADC => {
-                    prr = prr | 0x01;
-                }
-                Options::TIMER5 => {
-                    prr = prr | 0x20;
-                }
-                Options::TIMER4 => {
-                    prr = prr | 0x10;
-                }
-                Options::TIMER3 => {
-                    prr = prr | 0x08;
-                }
-                Options::USART3 => {
-                    prr = prr | 0x04;
-                }
-                Options::USART2 => {
-                    prr = prr | 0x02;
-                }
-                Options::USART1 => {
-                    prr = prr | 0x01;
-                }
+        }
+        match mode {
+            Options::TWI => {
+                prr = prr | 0x80;
             }
-            match mode {
-                Options::TWI
-                | Options::TIMER2
-                | Options::TIMER0
-                | Options::TIMER1
-                | Options::SPI
-                | Options::USART0
-                | Options::ADC => {
-                    core::ptr::write_volatile(&mut self.prr0, prr);
-                }
+            Options::TIMER2 => {
+                prr = prr | 0x40;
+            }
+            Options::TIMER0 => {
+                prr = prr | 0x20;
+            }
+            Options::TIMER1 => {
+                prr = prr | 0x08;
+            }
+            Options::SPI => {
+                prr = prr | 0x04;
+            }
+            Options::USART0 => {
+                prr = prr | 0x02;
+            }
+            Options::ADC => {
+                prr = prr | 0x01;
+            }
+            Options::TIMER5 => {
+                prr = prr | 0x20;
+            }
+            Options::TIMER4 => {
+                prr = prr | 0x10;
+            }
+            Options::TIMER3 => {
+                prr = prr | 0x08;
+            }
+            Options::USART3 => {
+                prr = prr | 0x04;
+            }
+            Options::USART2 => {
+                prr = prr | 0x02;
+            }
+            Options::USART1 => {
+                prr = prr | 0x01;
+            }
+        }
+        match mode {
+            Options::TWI
+            | Options::TIMER2
+            | Options::TIMER0
+            | Options::TIMER1
+            | Options::SPI
+            | Options::USART0
+            | Options::ADC => unsafe {
+                core::ptr::write_volatile(&mut self.prr0, prr);
+            },
 
-                Options::TIMER5
-                | Options::TIMER4
-                | Options::TIMER3
-                | Options::USART3
-                | Options::USART2
-                | Options::USART1 => {
-                    core::ptr::write_volatile(&mut self.prr1, prr);
-                }
-            }
+            Options::TIMER5
+            | Options::TIMER4
+            | Options::TIMER3
+            | Options::USART3
+            | Options::USART2
+            | Options::USART1 => unsafe {
+                core::ptr::write_volatile(&mut self.prr1, prr);
+            },
         }
     }
 
@@ -166,89 +164,87 @@ impl Power {
     /// chip ATMEGA2560P.
     /// All the clock features are implemented in this function using match cases.
     pub fn enable_clocks(&mut self, mode: Options) {
-        unsafe {
-            let mut prr;
-            match mode {
-                Options::TWI
-                | Options::TIMER2
-                | Options::TIMER0
-                | Options::TIMER1
-                | Options::SPI
-                | Options::USART0
-                | Options::ADC => {
-                    prr = core::ptr::read_volatile(&mut self.prr0);
-                }
+        let mut prr;
+        match mode {
+            Options::TWI
+            | Options::TIMER2
+            | Options::TIMER0
+            | Options::TIMER1
+            | Options::SPI
+            | Options::USART0
+            | Options::ADC => {
+                prr = unsafe { core::ptr::read_volatile(&mut self.prr0) };
+            }
 
-                Options::TIMER5
-                | Options::TIMER4
-                | Options::TIMER3
-                | Options::USART3
-                | Options::USART2
-                | Options::USART1 => {
-                    prr = core::ptr::read_volatile(&mut self.prr1);
-                }
+            Options::TIMER5
+            | Options::TIMER4
+            | Options::TIMER3
+            | Options::USART3
+            | Options::USART2
+            | Options::USART1 => {
+                prr = unsafe { core::ptr::read_volatile(&mut self.prr1) };
             }
-            match mode {
-                Options::TWI => {
-                    prr = prr & 0x7F;
-                }
-                Options::TIMER2 => {
-                    prr = prr & 0xBF;
-                }
-                Options::TIMER0 => {
-                    prr = prr & 0xDF;
-                }
-                Options::TIMER1 => {
-                    prr = prr & 0xF7;
-                }
-                Options::SPI => {
-                    prr = prr & 0xFB;
-                }
-                Options::USART0 => {
-                    prr = prr & 0xFD;
-                }
-                Options::ADC => {
-                    prr = prr & 0xFE;
-                }
-                Options::TIMER5 => {
-                    prr = prr & 0xDF;
-                }
-                Options::TIMER4 => {
-                    prr = prr & 0xEF;
-                }
-                Options::TIMER3 => {
-                    prr = prr & 0xF7;
-                }
-                Options::USART3 => {
-                    prr = prr & 0xFB;
-                }
-                Options::USART2 => {
-                    prr = prr & 0xFD;
-                }
-                Options::USART1 => {
-                    prr = prr & 0xFE;
-                }
+        }
+        match mode {
+            Options::TWI => {
+                prr = prr & 0x7F;
             }
-            match mode {
-                Options::TWI
-                | Options::TIMER2
-                | Options::TIMER0
-                | Options::TIMER1
-                | Options::SPI
-                | Options::USART0
-                | Options::ADC => {
-                    core::ptr::write_volatile(&mut self.prr0, prr);
-                }
+            Options::TIMER2 => {
+                prr = prr & 0xBF;
+            }
+            Options::TIMER0 => {
+                prr = prr & 0xDF;
+            }
+            Options::TIMER1 => {
+                prr = prr & 0xF7;
+            }
+            Options::SPI => {
+                prr = prr & 0xFB;
+            }
+            Options::USART0 => {
+                prr = prr & 0xFD;
+            }
+            Options::ADC => {
+                prr = prr & 0xFE;
+            }
+            Options::TIMER5 => {
+                prr = prr & 0xDF;
+            }
+            Options::TIMER4 => {
+                prr = prr & 0xEF;
+            }
+            Options::TIMER3 => {
+                prr = prr & 0xF7;
+            }
+            Options::USART3 => {
+                prr = prr & 0xFB;
+            }
+            Options::USART2 => {
+                prr = prr & 0xFD;
+            }
+            Options::USART1 => {
+                prr = prr & 0xFE;
+            }
+        }
+        match mode {
+            Options::TWI
+            | Options::TIMER2
+            | Options::TIMER0
+            | Options::TIMER1
+            | Options::SPI
+            | Options::USART0
+            | Options::ADC => unsafe {
+                core::ptr::write_volatile(&mut self.prr0, prr);
+            },
 
-                Options::TIMER5
-                | Options::TIMER4
-                | Options::TIMER3
-                | Options::USART3
-                | Options::USART2
-                | Options::USART1 => {
-                    core::ptr::write_volatile(&mut self.prr1, prr);
-                }
-            }
+            Options::TIMER5
+            | Options::TIMER4
+            | Options::TIMER3
+            | Options::USART3
+            | Options::USART2
+            | Options::USART1 => unsafe {
+                core::ptr::write_volatile(&mut self.prr1, prr);
+            },
         }
     }
 }

@@ -37,7 +37,9 @@ impl GlobalInterrupts {
     pub fn disable(&mut self) {
         unsafe {
             let mut ctrl_sreg = core::ptr::read_volatile(&self.sreg);
-            ctrl_sreg &= !(1 << 7);
+        }
+        ctrl_sreg &= !(1 << 7);
+        unsafe {
             core::ptr::write_volatile(&mut self.sreg, ctrl_sreg);
         }
     }
@@ -47,7 +49,9 @@ impl GlobalInterrupts {
     pub fn enable(&mut self) {
         unsafe {
             let mut ctrl_sreg = core::ptr::read_volatile(&self.sreg);
-            ctrl_sreg |= 1 << 7;
+        }
+        ctrl_sreg |= 1 << 7;
+        unsafe {
             core::ptr::write_volatile(&mut self.sreg, ctrl_sreg);
         }
     }

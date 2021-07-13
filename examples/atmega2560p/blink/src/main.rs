@@ -26,7 +26,7 @@ use rustduino::atmega2560p::hal;
 #[no_mangle]
 pub extern "C" fn main() {
     // Disable watchdog
-    let watchdog = hal::watchdog::Watchdog::new();
+    let watchdog = hal::watchdog::WatchDog::new();
     watchdog.disable();
     // This pins represents pin 7 of port B ( pin 13).
     let mut pins = hal::pin::Pins::new();
