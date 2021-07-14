@@ -66,8 +66,16 @@ set 1 transmitter control logic inserts parity in serial frame.To disable the
 Transmitter, shift and buffer must not contain any data to be transmitted.Once
 disabled, it will no longer override TxDn pin.
 
+### Data Receiving
 
-### Data Receieving
+USART Receiver function similar to Transmitter except for some features like error
+detection. To enable Data Receiver, write 1 to Receive Enable (RXENn) bit in the
+UCSRnB Register. Then the RxDn pin functions as Receiver's serial input.
+
+***Note**  Initialization should be done before any reception can take place.
+
+
+
 
 
 

@@ -20,13 +20,25 @@ use core;
 use crate::rustduino::hal::interrupts;
 use volatile::Volatile;
 
+pub enum USART {
+       a,
+       b,
+       c,
+       d,
+}
+
 
 pub struct USART{
-
+           udr: u8,
+           ucsrna: u8,
+           ucsrnb: u8,
+           ucsrnc: u8,
+           ubrrl: u8,
+           ubrrh: u8,
 }
 
 impl USART{
-
+         
 
 
 }
