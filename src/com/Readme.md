@@ -43,29 +43,9 @@ is written) if it is used for this purpose.
 
 ### Data Transmission
 
-To Transmit data the you need to enable the USART Transmitter, which is enabled by
-setting the Transmit Enable(TXEN) bit in the UCSRnB Register. When the Transmitter
-is enabled the TxDn functions as the Transmitter's serial output. Initialization
-should be done before transmission.
-
-**For sending Frames with 5-8 Data bits**
-Transmission is initiated by loading the data to the transmit buffer,which can be
-done by writing to the UDRn I/O location. Buffered Data will be moved to Shift
-Register if the shift Register is in Idle state or just after the stop bit of an
-transmitting frame. Upon filling the shift Register it transmits one frame at the
-Baud rate, U2X bit.
-
-**For sending Frames with 9 Data Bits**
-If we want to Transmit 9-bit characters so we store the 9th bit in the TXB8 in UCSRnB before the low byte character is written to the UDRn.
+To Transmit data the you need to enable the USART Transmitter, which is enabled by setting the Transmit Enable(TXEN) bit in the UCSRnB Register. 
 
 
-
-
-
-
-
-
-### Data Receieving
 
 
 ## Code Overview
