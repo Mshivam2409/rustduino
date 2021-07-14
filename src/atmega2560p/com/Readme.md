@@ -45,24 +45,30 @@ setting the Transmit Enable(TXEN) bit in the UCSRnB Register. When the Transmitt
 is enabled the TxDn functions as the Transmitter's serial output. Initialization
 should be done before transmission.
 
-**For sending Frames with 5-8 Data bits**
-Transmission is initiated by loading the data to the transmit buffer,which can be
-done by writing to the UDRn I/O location. Buffered Data will be moved to Shift
-Register if the shift Register is in Idle state or just after the stop bit of an
-transmitting frame. Upon filling the shift Register it transmits one frame at the
-Baud rate, U2X bit.
+For sending Frames with **5-8 Data bits** Transmission is initiated by loading the
+data to the transmit buffer,which can be done by writing to the UDRn I/O location.
+Buffered Data will be moved to Shift Register if the shift Register is in Idle state
+or just after the stop bit of an transmitting frame. Upon filling the shift Register
+it transmits one frame at the Baud rate, U2X bit.
+For sending Frames with **9 Data Bits** we have to store the 9th bit in the TXB8 in
+UCSRnB, before the low byte character is written to the UDRn.
 
-**For sending Frames with 9 Data Bits**
-If we want to Transmit 9-bit characters so we store the 9th bit in the TXB8 in UCSRnB before the low byte character is written to the UDRn.
+Usart Transmitter has two Flags, **USART Data Register Empty(UDREn) and Tranfer
+Complete (TXCn), to indicate its state. The **UDREn** Flag indicates the state of
+Transfer Buffer, it is set when the Transfer Buffer is empty and is cleared
+when the transfer buffer has data that has not yet been transffered to shift register.
+The **TXCn** is Flag bit is set 1 when entire frame in the transmit shift register
+has been shifted out and no new data is present in the transmit buffer it can
+automatically br cleared if a interrupt is set up or by writing 1 to its bit.
 
-
-
-
-
-
+Parity generator calculates the parity for a serial data Frame and if parity bit is
+set 1 transmitter control logic inserts parity in serial frame.To disable the
+Transmitter, shift and buffer must not contain any data to be transmitted.Once
+disabled, it will no longer override TxDn pin.
 
 
 ### Data Receieving
+
 
 
 ## Code Overview
