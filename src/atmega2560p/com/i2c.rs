@@ -19,3 +19,14 @@
 use bit_field::BitField;
 use core;
 use volatile::Volatile;
+
+
+pub struct Twi{
+    twbr:u8,
+    twcr:u8,
+    twsr:u8,
+    twdr:u8,
+    twar:u8,
+    twamr:u8,
+}
+
