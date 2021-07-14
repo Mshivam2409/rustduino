@@ -44,6 +44,26 @@ const TWPS1:u8=6;
 const TWPS0:u8=7;
 
 
+pub fn write_sda()
+{
+    unsafe{
+    let port_d=&mut*(0x2A as *mut u8);
+    let mut ddrd= read_volatile(port_d);
+    ddrd.set_bit(1,true);
+    }
+}
+
+pub fn read_sda(){
+    unsafe{
+        let port_d=&mut*(0x2A as *mut u8);
+        let mut ddrd=read_volatile(port_d);
+        ddrd.set_bit(1,false);
+    }
+}
+
+
+
+
 
 
 
