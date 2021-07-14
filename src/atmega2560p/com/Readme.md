@@ -1,11 +1,8 @@
 # Introduction 
 
-UART, or universal asynchronous receiver-transmitter, is one of the most used
-device-to-device communication protocols.Embedded systems, microcontrollers, and
-computers mostly use UART as a form of device-to-device hardware communication
-protocol.
-By definition, UART is a hardware communication protocol that uses asynchronous
-serial communication with configurable speed and Data Format.
+The Universal Synchronous and Asynchronous serial Receiver and Transmitter (USART) is a highly flexible serial
+communication device. Embedded systems, microcontrollers, and computers mostly use USART as a form of device-to-device hardware communication protocol. By definition, USART is a hardware communication protocol that uses synchronous or asynchronous
+serial communication with configurable speed and Data Format. Asynchronous communication does not use a clock to validate data.
 
 ## Introduction to Serial and Asynchronous Communication
 
