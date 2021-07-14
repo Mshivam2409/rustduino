@@ -19,7 +19,7 @@
 use bit_field::BitField;
 use core;
 use volatile::Volatile;
-// use crate atmega2560p::hal::interrupts;
+use crate::rustduino::hal::interrupts;
 
 /// This structure contains various registers needed to control usart communication
 /// through ATMEGA2560P device.
