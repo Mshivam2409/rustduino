@@ -1,11 +1,8 @@
 # Introduction 
 
-UART, or universal asynchronous receiver-transmitter, is one of the most used
-device-to-device communication protocols.Embedded systems, microcontrollers, and
-computers mostly use UART as a form of device-to-device hardware communication
-protocol.
-By definition, UART is a hardware communication protocol that uses asynchronous
-serial communication with configurable speed and Data Format.
+The Universal Synchronous and Asynchronous serial Receiver and Transmitter (USART) is a highly flexible serial
+communication device. Embedded systems, microcontrollers, and computers mostly use USART as a form of device-to-device hardware communication protocol. By definition, USART is a hardware communication protocol that uses synchronous or asynchronous
+serial communication with configurable speed and Data Format. Asynchronous communication does not use a clock to validate data.
 
 ## Introduction to Serial and Asynchronous Communication
 
@@ -43,7 +40,41 @@ is written) if it is used for this purpose.
 
 ### Data Transmission
 
-To Transmit data the you need to enable the USART Transmitter, which is enabled by setting the Transmit Enable(TXEN) bit in the UCSRnB Register 
+To Transmit data the you need to enable the USART Transmitter, which is enabled by
+setting the Transmit Enable(TXEN) bit in the UCSRnB Register. When the Transmitter
+is enabled the TxDn functions as the Transmitter's serial output. Initialization
+should be done before transmission.
+
+For sending Frames with **5-8 Data bits** Transmission is initiated by loading the
+data to the transmit buffer,which can be done by writing to the UDRn I/O location.
+Buffered Data will be moved to Shift Register if the shift Register is in Idle state
+or just after the stop bit of an transmitting frame. Upon filling the shift Register
+it transmits one frame at the Baud rate, U2X bit.
+For sending Frames with **9 Data Bits** we have to store the 9th bit in the TXB8 in
+UCSRnB, before the low byte character is written to the UDRn.
+
+Usart Transmitter has two Flags, **USART Data Register Empty(UDREn) and Tranfer
+Complete (TXCn), to indicate its state. The **UDREn** Flag indicates the state of
+Transfer Buffer, it is set when the Transfer Buffer is empty and is cleared
+when the transfer buffer has data that has not yet been transffered to shift register.
+The **TXCn** is Flag bit is set 1 when entire frame in the transmit shift register
+has been shifted out and no new data is present in the transmit buffer it can
+automatically br cleared if a interrupt is set up or by writing 1 to its bit.
+
+Parity generator calculates the parity for a serial data Frame and if parity bit is
+set 1 transmitter control logic inserts parity in serial frame.To disable the
+Transmitter, shift and buffer must not contain any data to be transmitted.Once
+disabled, it will no longer override TxDn pin.
+
+### Data Receiving
+
+USART Receiver function similar to Transmitter except for some features like error
+detection. To enable Data Receiver, write 1 to Receive Enable (RXENn) bit in the
+UCSRnB Register. Then the RxDn pin functions as Receiver's serial input.
+
+***Note**  Initialization should be done before any reception can take place.
+
+
 
 
 
