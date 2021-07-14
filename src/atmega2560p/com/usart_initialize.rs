@@ -23,13 +23,30 @@ use crate::rustduino::hal::interrupts;
 
 /// This structure contains various registers needed to control usart communication
 /// through ATMEGA2560P device.
+pub enum USARTName{
+    USART0,
+    USART1,
+    USART2,
+    USART3,
+}
 pub struct Usart {
-     
+     ucsra:Volatile<u8>,
+     ucsrb:Volatile<u8>,
+     ucsrc:Volatile<u8>,
+     pad_:Volatile<u8>,
+     ubrrl:Volatile<u8>,
+     ubrrh:Volatile<u8>,
+     udr:Volatile<u8>,
 }
 
 impl usart {
-    pub unsafe fn new() -> &'static mut Usart {
-
+    pub unsafe fn new(name:USARTName) -> &'static mut Usart {
+       match name{
+           USARTName::USART0 =>{&mut *(0xC0 as *mut Usart)}
+           USARTName::USART0 =>{&mut *(0xC8 as *mut Usart)}
+           USARTName::USART0 =>{&mut *(0xD0 as *mut Usart)}
+           USARTName::USART0 =>{&mut *(0x130 as *mut Usart)}
+       }
     }
 
     pub fn disable() {
