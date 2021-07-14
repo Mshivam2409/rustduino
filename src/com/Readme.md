@@ -24,6 +24,8 @@ Stop bit. To understand UART in more Detail click [here](https://www.analog.com/
 
 ## Functioning of USART in atmega 2560p
 
+### Initialization of USART
+
 In atmega2560p we have four USART's which are USART0, USART1, USART2, and USART3. The
 USART has to be initialized before any communication can take place. To initialize
 we have to set Baud Rate, Set the Frame Format and enable Transmitter or Receiver
@@ -34,8 +36,17 @@ initialization.
 In case, You want to re-initialize the USART make sure that no transmission is on 
 going during the peroid the registers are changed for USART, which can be done using
 the TXCn(for the transmission) and the RXC (to check if the recieve buffer is
-empty).Note that the TXCn Flag must be cleared before each transmission (before UDRn
-is written) if it is used for this purpose.    
+empty). 
+
+**Note** that the TXCn Flag must be cleared before each transmission (before UDRn
+is written) if it is used for this purpose. 
+
+### Data Transmission
+
+To Transmit data the you need to enable the USART Transmitter, which is enabled by setting the Transmit Enable(TXEN) bit in the UCSRnB Register 
+
+
+
 
 ## Code Overview
 
