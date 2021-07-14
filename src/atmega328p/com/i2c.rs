@@ -2,9 +2,9 @@ use bit_field::BitField;
 use core::ptr::{read_volatile};
 // use core::{array, u32, u8};
 use volatile::Volatile;
-
 use crate::delay::{delay_ms};
-
+use fixed_slice_vec::FixedSliceVec;
+// use core::mem::MaybeUninit;
 
 pub struct Twi {
     twbr: Volatile<u8>,
@@ -133,6 +133,7 @@ impl Twi {
     pub fn wait_to_complete(&mut self, operation:u8) -> bool{
         let mut i:u32 = 0;
         while !self.twcr.read().get_bit(TWINT) || i <= I2C_TIMEOUT {  // waiting for TWINT to be set
+            unsafe {llvm_asm!("nop");}
             i += 1;
         }
 
@@ -144,148 +145,143 @@ impl Twi {
     }
 
     pub fn init (&mut self) {
-            self.twsr.update(|sr| {
+        unsafe{
+                self.twsr.update(|sr| {
                 sr.set_bit(TWPS0, prescaler().1);
                 sr.set_bit(TWPS1, prescaler().2);
             });
-            self.twcr.update(|cr| {
+                self.twcr.update(|cr| {
                 cr.set_bit(TWEN, true);
             })
+        }
     }
 
     pub fn start(&mut self) -> bool{
         write_sda();
+        unsafe {
             self.twcr.write(0xA4); // TWINT TWSTA and TWA set to 1
+        }
         
         return self.wait_to_complete(START)
     }
 
     pub fn rep_start(&mut self) -> bool {
+        unsafe {
             self.twcr.write(0xA4); // TWINT TWSTA and TWA set to 1
+        }
 
         return self.wait_to_complete(REP_START)
     }
 
     pub fn stop(&mut self){
+        unsafe {
             self.twcr.write(0xB0);
+        }
     }
 
-
     pub fn set_address(&mut self, addr: u8) -> bool {
-            self.twdr.write(addr); // loading SLA_W to TWDR
+        unsafe {
+            self.twdr.write(addr<<1 & ! 0x01); // loading SLA_W to TWDR
             self.twcr.update(|cr| {
                 cr.set_bit(TWINT, true);
                 cr.set_bit(TWEN, true);
             });
+        }
 
         return self.wait_to_complete(MT_SLA_ACK);
     }
 
-    // pub fn address_read (&mut self) { //not sure iski zaroorat hai isilie likha nhi hai....//likh rahi hu aage use hua hai
+    pub fn address_read (&mut self, address:u8) -> bool { 
+        unsafe{
+            self.twdr.write(address<< 1 | 0x01);
+            self.twcr.update(|cr|{
+                cr.set_bit(TWINT, true);
+                cr.set_bit(TWEN, true);
+            });
 
-    // }
-    pub fn set_address(&mut self, addr: u8) -> bool {
-        self.twdr.read(addr); 
-        self.twcr.update(|br| {
-            br.set_bit(TWINT, true);
-            br.set_bit(TWEN, true);
-        });
-
-    return self.wait_to_complete(MT_SLA_ACK);
-}
+            return self.wait_to_complete(MR_SLA_ACK);
+        }
+    }
 
     pub fn write(&mut self, data:u8) -> bool {
         delay_ms(1);
         // write_sda(); // doubt if neended
+        unsafe {
             self.twdr.write(data);
             self.twcr.write(0x84); // TWCR = (1<<TWINT)|(1<<TWEN);
+        }
 
         return self.wait_to_complete(MT_DATA_ACK);
     }
 
-    // how to pass variable size array in rust..??
+    // returns number of elements not written
+    pub fn write_burst (&mut self, data: &FixedSliceVec<u8>) -> usize  {
+        let mut x:usize = 0;
+        while x < data.len(){
+            if !self.write(data[x]) {
+                break;
+            } 
+            x+=1;
+        }
+        return data.len() -1 - x
+    }
 
-    // pub fn write_burst (&mut self, &mut data:&mut u8, size:u8)  {
-    //     let mut x = size;
-    //     while x > 0 {
-    //         if  self.write(data) !=0 {
-    //             break;
-    //         } 
-    //         data+=1;
-    //         x-=1;
-    //     }
-    // }
-    pub fn read_ack(&mut self, &mut data:&mut u8) -> bool {
-        self.twcr.write(0xC4);//TWCR = (1 << TWINT) | (1 << TWEA) | (1 << TWEN)
-        self.data.write(twdr);
-        return self.wait_to_complete(MR_DATA_ACK);
+    pub fn read_ack(&mut self) -> (u8, bool) {
+        self.twcr.write(0xC4); //TWCR = (1 << TWINT) | (1 << TWEA) | (1 << TWEN)
+
+        return (self.twdr.read(), self.wait_to_complete(MR_DATA_ACK));
     }
-    //yeh akshit ka copy ki hu name change karke xD
-    // pub fn read_ack_burst (&mut self, &mut data:&mut u8, size:u8)  {
-    //     let mut x = size;
-    //     while x > 0 {
-    //         if  self.read_ack(data) !=0 {
-    //             break;
-    //         } 
-    //         data+=1;
-    //         x-=1;
-    //     }
-    // }
-    pub fn read_ack(&mut self, &mut data:&mut u8) -> bool {
-        self.twcr.write(0x84);//TWCR = (1 << TWINT) | (1 << TWEN)
-        self.data.write(twdr);//data=twdr
-            
-        return self.wait_to_complete(MR_DATA_NACK);
-    }
-    //yeh akshit ka copy ki hu name change karke xD
-    // pub fn read_nack_burst (&mut self, &mut data:&mut u8, size:u8)  {
-    //     let mut x = size;
-    //     while x > 0 {
-    //         if  self.read_nack(data) !=0 {
-    //             break;
-    //         } 
-    //         data+=1;
-    //         x-=1;
-    //     }
-    // }
-    pub fn write_to_slave(&mut self,addr:u8,&mut data:&mut u8,size:u8)->bool{
-        if start()!=0{
-            return true;
-        }
-        if set_address(addr)!=0{
-            stop();
-            return true;
-        }
+
+    pub unsafe fn read_ack_burst (&mut self, data: &FixedSliceVec<u8>) -> (FixedSliceVec<u8>, usize)  {
+        let mut x:usize = 0;
+        let mut vec:FixedSliceVec<u8> = FixedSliceVec::new(&mut []);
         
-        if(write_burst(data,size)!=size){
-            stop();
-            return true;
+        while x < data.len(){
+            if !self.read_ack().1 {
+                break;
+            } 
+            vec.push(self.read_ack().0);
+            x+=1;
         }
-        
-        stop();
-        return false;  
+        let i:usize = vec.len()-x-1;
+        return (vec, i);
     }
 
-    pub fn read_from_slave(&mut self,addr:u8,&mut data:&mut u8,size:u8)->bool{
-        if start()!=0{
-            return true;
+    pub fn write_to_slave(&mut self,address:u8, data:&FixedSliceVec<u8>) -> bool {
+        if !self.start() {
+            return false;
         }
-        if set_address(addr)!=0{
-            stop();
-            return true;
+        if !self.set_address(address) {
+            self.stop();
+            return false;
+        }
+        if self.write_burst(data) != (data.len()-1) {
+            self.stop();
+            return false;
         }
 
-        if size>1 & read_ack_burst(data,size-1)!=size-1{
-            stop();
-            return true;
-        }
+        self.stop();
 
-        if size>0 & read_nack(&data[size-1]){
-            stop();
-            return true;
-        }
-        stop();
-        return false;
+        return true;
     }
+
+    // slight confusion ki upar wale functions kya kar rhe hain...
+
+    // pub fn read_from_slave(&mut self, address:u8, length:usize) -> bool {
+    //     if !self.start() {
+    //         return false;
+    //     }
+    //     if !self.address_read(address) {
+    //         self.stop();
+    //         return false;
+    //     }
+    //     if self.write_burst(data) != (data.len()-1) {
+    //         self.stop();
+    //         return false;
+    //     }
+
+    //     self.stop();
+
+    //     return true;
+    // }
 }
-
