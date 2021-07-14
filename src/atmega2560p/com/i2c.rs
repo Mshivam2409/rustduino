@@ -22,11 +22,28 @@ use volatile::Volatile;
 
 
 pub struct Twi{
-    twbr:u8,
-    twcr:u8,
-    twsr:u8,
-    twdr:u8,
-    twar:u8,
-    twamr:u8,
+    twbr:Volatile<u8>,
+    twcr:Volatile<u8>,
+    twsr:Volatile<u8>,
+    twdr:Volatile<u8>,
+    twar:Volatile<u8>,
+    twamr:Volatile<u8>,
 }
+
+/// ## TWCR register's bits definitions
+static TWINT: u8 = 0;
+static TWEA: u8 = 1;
+static TWSTA: u8 = 2;
+static TWSTO: u8 = 3;
+static TWWC: u8 = 4;
+static TWEN: u8 = 5;
+static TWIE: u8 = 7;
+
+//TWSR bits
+const TWPS1:u8=6;
+const TWPS0:u8=7;
+
+
+
+
 
