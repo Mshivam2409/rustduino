@@ -181,10 +181,18 @@ impl Twi {
         return self.wait_to_complete(MT_SLA_ACK);
     }
 
-    // pub fn address_read (&mut self) { //not sure iski zaroorat hai isilie likha nhi hai....
+    // pub fn address_read (&mut self) { //not sure iski zaroorat hai isilie likha nhi hai....//likh rahi hu aage use hua hai
 
     // }
+    pub fn set_address(&mut self, addr: u8) -> bool {
+        self.twdr.read(addr); 
+        self.twcr.update(|br| {
+            br.set_bit(TWINT, true);
+            br.set_bit(TWEN, true);
+        });
 
+    return self.wait_to_complete(MT_SLA_ACK);
+}
 
     pub fn write(&mut self, data:u8) -> bool {
         delay_ms(1);
@@ -207,5 +215,77 @@ impl Twi {
     //         x-=1;
     //     }
     // }
+    pub fn read_ack(&mut self, &mut data:&mut u8) -> bool {
+        self.twcr.write(0xC4);//TWCR = (1 << TWINT) | (1 << TWEA) | (1 << TWEN)
+        self.data.write(twdr);
+        return self.wait_to_complete(MR_DATA_ACK);
+    }
+    //yeh akshit ka copy ki hu name change karke xD
+    // pub fn read_ack_burst (&mut self, &mut data:&mut u8, size:u8)  {
+    //     let mut x = size;
+    //     while x > 0 {
+    //         if  self.read_ack(data) !=0 {
+    //             break;
+    //         } 
+    //         data+=1;
+    //         x-=1;
+    //     }
+    // }
+    pub fn read_ack(&mut self, &mut data:&mut u8) -> bool {
+        self.twcr.write(0x84);//TWCR = (1 << TWINT) | (1 << TWEN)
+        self.data.write(twdr);//data=twdr
+            
+        return self.wait_to_complete(MR_DATA_NACK);
+    }
+    //yeh akshit ka copy ki hu name change karke xD
+    // pub fn read_nack_burst (&mut self, &mut data:&mut u8, size:u8)  {
+    //     let mut x = size;
+    //     while x > 0 {
+    //         if  self.read_nack(data) !=0 {
+    //             break;
+    //         } 
+    //         data+=1;
+    //         x-=1;
+    //     }
+    // }
+    pub fn write_to_slave(&mut self,addr:u8,&mut data:&mut u8,size:u8)->bool{
+        if start()!=0{
+            return true;
+        }
+        if set_address(addr)!=0{
+            stop();
+            return true;
+        }
+        
+        if(write_burst(data,size)!=size){
+            stop();
+            return true;
+        }
+        
+        stop();
+        return false;  
+    }
+
+    pub fn read_from_slave(&mut self,addr:u8,&mut data:&mut u8,size:u8)->bool{
+        if start()!=0{
+            return true;
+        }
+        if set_address(addr)!=0{
+            stop();
+            return true;
+        }
+
+        if size>1 & read_ack_burst(data,size-1)!=size-1{
+            stop();
+            return true;
+        }
+
+        if size>0 & read_nack(&data[size-1]){
+            stop();
+            return true;
+        }
+        stop();
+        return false;
+    }
 }
 
