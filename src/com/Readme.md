@@ -19,10 +19,11 @@ stream.In asynchronous transmission, data is sent one byte at a time and each by
 preceded by start bit and stop bit.
 
 To ensure the correct transmission the transmission and the reciever pins need to 
-have same settings like Transmission Speed, Data lenght in bits, how is the Start and
-Stop bit.Resources to understand it in Detail can be found [here](https://www.analog.com/en/analog-dialogue/articles/uart-a-hardware-communication-protocol.html#).
+have same settings like Transmission Speed, Data length in bits, how is the Start and
+Stop bit. To understand UART in more Detail click [here](https://www.analog.com/en/analog-dialogue/articles/uart-a-hardware-communication-protocol.html#) to access online resources.
 
 ## Functioning of UART
+
 
 
 
