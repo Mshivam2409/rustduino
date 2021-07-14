@@ -22,7 +22,19 @@ To ensure the correct transmission the transmission and the reciever pins need t
 have same settings like Transmission Speed, Data length in bits, how is the Start and
 Stop bit. To understand UART in more Detail click [here](https://www.analog.com/en/analog-dialogue/articles/uart-a-hardware-communication-protocol.html#) to access online resources.
 
-## Functioning of UART
+## Functioning of USART in atmega 2560p
+
+In atmega2560p we have four USART's which are USART0, USART1, USART2, and USART3. The
+USART has to be initialized before any communication can take place. To initialize
+we have to set Baud Rate, Set the Frame Format and enable Transmitter or Receiver
+depending on the usage. For interrupt driven USART operation, the Global Interrupt
+Flag should be cleared (and interrupts globally disabled) when doing the
+initialization. 
+
+In case, You want to re-initialize the USART make sure that no transmission is on 
+going during the peroid the registers are changed for USART, which can be done using
+the TXCn(for the transmission) and the RXC (to check if the recieve buffer is
+empty.    
 
 
 
