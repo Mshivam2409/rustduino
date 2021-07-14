@@ -2,6 +2,7 @@
 #![deny(warnings)]
 #![feature(asm)]
 #![feature(llvm_asm)]
+#![allow(dead_code)]
 
 //! Rustduino library for arduino
 
@@ -20,6 +21,8 @@ pub mod atmega328p {
         pub mod power;
 
         pub mod gating;
+
+        pub mod i2c;
     }
 }
 
