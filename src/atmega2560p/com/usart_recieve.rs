@@ -23,8 +23,8 @@ impl Usart{
    ///This function enables the reciever function of microcontroller, whithout enabling it no communication is possible.
    pub fn recieve_enable(&mut self){
     unsafe {
-        self.stctrlh.update(|ctrl| {
-            ctrl.set_bit(4, true);
+        self.ucsrb.update(|ucsrb| {
+            ucsrb.set_bit(4, true);
         });
     }
    }
@@ -43,7 +43,7 @@ impl Usart{
             while !(ucsra.getbit(7)){};
             let ucsra=read_volatile(&self.ucsra);
             let ucsrb=read_volatile(&self.ucsrb);
-            let udr=read_volatile(&mut self.udr);
+            let mut udr=read_volatile(&mut self.udr);
             if ucsra.get_bits(2..5)!=0b000{
                 Some(-1)
             }
@@ -62,7 +62,7 @@ impl Usart{
            if parity_check(&mut self){
               Some(-1)
            }
-            Some(read_volatile(&mut self.udr))
+            Some(read_volatile(&self.udr))
             
         }
     }
@@ -96,8 +96,8 @@ impl Usart{
  ///This function disables the reciever function of microcontroller.
   pub fn recieve_disable(&mut self){
     unsafe {
-        self.stctrlh.update(|ctrl| {
-            ctrl.set_bit(4, false);
+        self.ucsrb.update(|ucsrb| {
+            ucsrb.set_bit(4, false);
         });
     }
    }
