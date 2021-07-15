@@ -1,4 +1,3 @@
-//! Rustduino library for Arduino in Rust Language
 #![no_std]
 #![deny(warnings)]
 #![feature(asm)]
@@ -20,6 +19,24 @@ pub mod atmega2560p {
         pub mod interrupts;
 
         pub mod pin;
+    }
+}
+
+/// Library for ATmega328P chip.
+pub mod atmega328p {
+    /// Hardware Abstraction Library (HAL).
+    pub mod hal {
+        pub mod port;
+
+        pub mod pins;
+
+        pub mod watchdog;
+
+        pub mod interrupt;
+
+        pub mod power;
+
+        pub mod gating;
     }
 }
 

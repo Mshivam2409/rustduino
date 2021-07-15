@@ -21,5 +21,6 @@
     "gcc": ["-Wl,--gc-sections"]
   },
 
-  "no-default-libraries": false
+  "no-default-libraries": false,
+  "eh-frame-header": false
 }
