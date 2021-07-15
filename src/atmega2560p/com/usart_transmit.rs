@@ -41,7 +41,7 @@ pub fn Transmitter_enable(&mut self) {
     
     }               
 
-
+    
 /// storing in UDR for 5 to 8 bit data
 pub fn storing_UDR_5_8 (&self,data: u8,Len: datalen) {
 
@@ -57,10 +57,19 @@ pub fn storing_UDR_5_8 (&self,data: u8,Len: datalen) {
 
 
 /// storing in UDR for 9 bit data
-pub fn storing_UDR_9 (&self,data: i32,Len: datalen){
+pub fn storing_UDR_9 (&self,data: Volatile<u32>,Len: datalen){
 
-
+    self.ucsrnb.update(|ctrl| {
+        ctrl.set_bit(0, get_bit(&data,8)); // get_bit used here is wrong I will correct it
+    });
+    let mut i = 0;
+    while i < 8 {
+        
+        self.udr.set_bit(i,get_bit(&data,i));// get_bit used here is wrong I will correct it
+        i=i+1;
+    }
     
+
 }
 
 
