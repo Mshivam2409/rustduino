@@ -17,12 +17,14 @@
 
 /// Crates which would be used in the implementation.
 /// We will be using standard volatile and bit_field crates now for a better read and write.
+use core::ptr::{read_volatile,write_volatile};
+use core::arch::arm::__nop; 
 use bit_field::BitField;
 use volatile::Volatile;
-
 use crate::rustduino::atmega2560p::hal::interrupts;
 use crate::rustduino::atmega2560p::hal::port;
 use crate::rustduino::atmega2560p::hal::power;
+use crate::delay::{delay_s,delay_ms,delay_us};
 
 
 /// Some useful constants regarding bit manipulation for USART.
@@ -66,6 +68,19 @@ pub enum UsartTypes {
     transmit,
 }
 
+/// Selection of the baud rate freequency for the USART to work on.
+#[derive(Clone, Copy)]
+pub enum UsartBaud {
+    recieve,
+    transmit,
+}
+
+/// Selection of the frame format for USART.
+#[derive(Clone, Copy)]
+pub enum UsartFrame {
+    recieve,
+    transmit,
+}
 
 /// This structure contains various registers needed to control usart communication
 /// through ATMEGA2560P device.
@@ -210,16 +225,22 @@ impl Usart {
             UsartModes::master_sync => {                             // Puts the USART into master synchronous mode
                     let port : (port::Port) = self.get_port();
                     let xck : u8 = self.get_xck();
-                    port.ddr.update( |ddr| {
-                        ddr.set_bit(xck,true);
-                    });       
+                    unsafe {
+                        write_volatile(&mut port.ddr,port.ddr |= (1 << xck));
+                    }
+                    // port.ddr.update( |ddr| {
+                    //     ddr.set_bit(xck,true);
+                    // });       
             },
             UsartModes::slave_sync => {                              // Puts the USART into slave synchronous mode
                     let port : (port::Port) = self.get_port();
                     let xck : u8 = self.get_xck();
-                    port.ddr.update( |ddr| {
-                        ddr.set_bit(xck,false);
-                    });
+                    unsafe {
+                        write_volatile(&mut port.ddr,port.ddr &= !(1 << xck));
+                    }    
+                    // port.ddr.update( |ddr| {
+                    //     ddr.set_bit(xck,false);
+                    // });
             },
         }
     }
@@ -231,24 +252,36 @@ impl Usart {
         }     
         match num {
             UsartNum::usart0 => { 
-                pow.prr0.update( |prr| {
-                    prr.set_bit(1,false);
-                }); 
+                unsafe {
+                    write_volatile(&mut pow.prr0,pow.prr0 &= !(1 << 1));
+                }
+                // pow.prr0.update( |prr| {
+                //     prr.set_bit(1,false);
+                // }); 
             },
             UsartNum::usart1 => { 
-                pow.prr1.update( |prr| {
-                    prr.set_bit(0,false);
-                }); 
+                unsafe {
+                    write_volatile(&mut pow.prr1,pow.prr1 &= !(1));
+                }
+                // pow.prr1.update( |prr| {
+                //     prr.set_bit(0,false);
+                // }); 
             },
             UsartNum::usart2 => { 
-                pow.prr1.update( |prr| {
-                    prr.set_bit(1,false);
-                }); 
+                unsafe {
+                    write_volatile(&mut pow.prr1,pow.prr1 &= !(1 << 1));
+                }
+                // pow.prr1.update( |prr| {
+                //     prr.set_bit(1,false);
+                // }); 
             },
             UsartNum::usart3 => { 
-                pow.prr1.update( |prr| {
-                    prr.set_bit(2,false);
-                }); 
+                unsafe {
+                    write_volatile(&mut pow.prr1,pow.prr1 &= !(1 << 2));
+                }
+                // pow.prr1.update( |prr| {
+                //     prr.set_bit(2,false);
+                // }); 
             },
         }
     }
@@ -258,16 +291,34 @@ impl Usart {
     /// data transfers can be tracked.
     fn check(&self) {
         self.ucsrb.update( |srb| {
-              
+              srb.set_bit(6,true);
+              srb.set_bit(7,true);
         });
+    }
+
+    
+    /// Set the baud rate frequency for USART.
+    fn set_baud(&self,baud : UsartBaud) {
+        
+    }
+
+    /// Set the frame format for USART.
+    fn set_frame(&self,frame : UsartFrame) {
+        
+    }
+
+    /// Set the type of USART.
+    fn set_type(&self,work : UsartType) {
+        
     }
 
     /// This is the cumulative function for initializing a particular
     /// USART and it will take all the necessary details about the mode
     /// in which the USART pin is to be used.
-    pub fn initialize(&mut self,mode : UsartModes,work : UsartTypes) {
+    pub fn initialize(&mut self,mode : UsartModes,work : UsartTypes,baud : UsartBaud,frame : UsartFrame) {
         // Check that recieve and transmit buffers are completely cleared
         // and no transmission or recieve of data is already in process.
+        self.enable();                                             //  Enable Global interrupts.
         self.check();
         
         self.disable();                                            //  Disable Global interrupts.
@@ -275,9 +326,10 @@ impl Usart {
         let num : UsartNum = self.get_num();
         self.set_power(num);                                       //  Set Power reduction register.
         self.mode_select(mode);                                    //  Set the USART at the given mode.
-           
+        self.set_baud(baud);                                       //  Set the baud rate according to user input.
+        self.set_frame(frame);                                     //  Set the frame format according to input.
+        self.set_type(work);                                       //  Set the USART as a transmitter or reciever. 
 
         self.enable();                                             //  Enable Global interrupts.
-
     }
 }
