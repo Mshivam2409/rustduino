@@ -19,14 +19,10 @@ use bit_field::BitField;
 use core;
 use crate::rustduino::hal::interrupts;
 use volatile::Volatile;
+use crate::rustduino::atmega2560p::com::usart_initialize;
 
-
-pub struct USART{
-
-}
-
-impl USART{
-
+impl Usart{
+         
 
 
 }
