@@ -122,12 +122,7 @@ impl Twi {
         let mut i:u32=0;
         //Waiting for TWINT flag set.
         //This indicates that start condition has been transmitted.
-<<<<<<< HEAD
-        while !self.twcr.read().get_bit(TWINT)
-        {
-=======
         while !self.twcr.read().get_bit(TWINT){
->>>>>>> 85efdf7eaab384e6f209b721b231d41c7aba3bf0
             unsafe{
                 llvm_asm!("nop");
             }
@@ -186,10 +181,10 @@ impl Twi {
     }
 
     /// * Loads the address of the slave device on SDA.
-    /// * The `addr` argument passed into the function is a seven bit integer.
-    pub fn address_write(&mut self, addr: u8) -> bool {
+    /// * The `address` argument passed into the function is a seven bit integer.
+    pub fn address_write(&mut self, address: u8) -> bool {
         unsafe {
-            self.twdr.write(addr << 1);
+            self.twdr.write(address << 1);
             self.twcr.update(|x| {
                 // TWCR: Enables TWI to pass address 
                 x.set_bit(TWINT, true);
@@ -199,8 +194,10 @@ impl Twi {
         return self.wait_to_complete(MT_SLA_ACK);
     }
 
+    /// * Loads the address of the slave device on SDA.
+    /// * The `address` argument passed into the function is a seven bit integer.
     pub fn address_read(&mut self,address:u8)->bool{
-        self.twdr.write(address<<1);
+        self.twdr.write(address<<1 | 0x01);
         self.twcr.update(|x|{
                x.set_bit(TWINT,true);
                x.set_bit(TWEN,true);
@@ -208,13 +205,25 @@ impl Twi {
         return self.wait_to_complete(MR_SLA_ACK);
     }
 
-    pub fn read_ack(&mut self)-> (u8,bool){
+    pub fn read_ack(&mut self,data: &mut FixedSliceVec<u8>)-> bool{
         self.twcr.update(|x|{
             x.set_bit(TWINT,true);
             x.set_bit(TWEA,true);
             x.set_bit(TWEN,true);
         });
-        return (self.twdr.read(),self.wait_to_complete(MR_DATA_ACK));
+        data.push(self.twdr.read());
+        return self.wait_to_complete(MR_DATA_ACK);
+    }
+
+    pub fn read_ack_burst(&mut self, data: &mut FixedSliceVec<u8>,length:usize)->usize{
+        let mut x:usize=0;
+        while x<length{
+            if !self.read_ack(data){
+                break;
+            }
+            x+=1;
+        }
+        return x+1;
     }
 
     pub fn write(&mut self, data:u8) -> bool{
@@ -230,19 +239,43 @@ impl Twi {
         return self.wait_to_complete(MT_DATA_ACK);
     }
 
+    pub fn write_burst(&mut self, data: &FixedSliceVec<u8>) -> usize {
+        let mut x: usize = 0;
+        while x < data.len() {
+            if !self.write(data[x]) {
+                break;
+            }
+            x += 1;
+        }
+        return x + 1;
+    }
     pub fn read_from_slave(&mut self, address:u8, length:usize, data:&mut FixedSliceVec<u8>) -> bool {
         delay_ms(1);
         if !self.start(){
             return false;
         }
-        if !self.address_read (adrress){
+        if !self.address_read (address){
             return false;
         }
 
-
+        self.stop();
+        return true;
     }
-
+    
     pub fn write_to_slave(&mut self, address: u8, data: &FixedSliceVec<u8>)-> bool {
-        true
+        delay_ms(1);
+        if !self.start(){
+            return false;
+        }
+        if !self.address_write(address){
+            return false;
+        }
+
+        if self.write_burst(data) != data.len() {
+            self.stop();
+            return false;
+        }
+        self.stop();
+        return true;
     }
 }
