@@ -205,13 +205,25 @@ impl Twi {
         return self.wait_to_complete(MR_SLA_ACK);
     }
 
-    pub fn read_ack(&mut self)-> (u8,bool){
+    pub fn read_ack(&mut self,data: &mut FixedSliceVec<u8>)-> bool{
         self.twcr.update(|x|{
             x.set_bit(TWINT,true);
             x.set_bit(TWEA,true);
             x.set_bit(TWEN,true);
         });
-        return (self.twdr.read(),self.wait_to_complete(MR_DATA_ACK));
+        data.push(self.twdr.read());
+        return self.wait_to_complete(MR_DATA_ACK);
+    }
+
+    pub fn read_ack_burst(&mut self, data: &mut FixedSliceVec<u8>,length:usize)->usize{
+        let mut x:usize=0;
+        while x<length{
+            if !self.read_ack(data){
+                break;
+            }
+            x+=1;
+        }
+        return x+1;
     }
 
     pub fn write(&mut self, data:u8) -> bool{
