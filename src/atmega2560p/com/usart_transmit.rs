@@ -1,4 +1,4 @@
-//  RustDuino : A generic HAL implementation for Arduino Boards in Rust
+//     RustDuino : A generic HAL implementation for Arduino Boards in Rust
 //     Copyright (C) 2021  Aniket Sharma, Indian Institute of Technology Kanpur
 //     This program is free software: you can redistribute it and/or modify
 //     it under the terms of the GNU Affero General Public License as published
@@ -32,52 +32,67 @@ pub enum datalen {
 
 impl Usart{
 
-// initialization
+    // initialization
 
-/// set TXEN bit to 1 to enable the Transmitter 
-pub fn Transmitter_enable(&mut self) {
+    /// set TXEN bit to 1 to enable the Transmitter 
+    pub fn Transmitter_enable(&mut self) {
+        unsafe {
 
-        self.ucsrnb.set_bit(3,true);
-    
-    }               
+            self.ucsrnb.set_bit(3,true);
 
-    
-/// storing in UDR for 5 to 8 bit data
-pub fn storing_UDR_5_8 (&self,data: u8,Len: datalen) {
+        }               
+    }  
 
-    match Len{
 
-        Len::bit5 =>self.udr.set_bits(0..5, data),
-        Len::bit6 =>self.udr.set_bits(0..6, data),
-        Len::bit7 =>self.udr.set_bits(0..7, data),
-        Len::bit8 =>self.udr.set_bits(0..8, data),
+    /// storing in UDR for 5 to 8 bit data
+    pub fn storing_UDR_5_8 (&self,data: u8,Len: datalen) {
+        unsafe{
+            match Len{
 
+                Len::bit5 =>self.udr.set_bits(0..5, data),
+                Len::bit6 =>self.udr.set_bits(0..6, data),
+                Len::bit7 =>self.udr.set_bits(0..7, data),
+                Len::bit8 =>self.udr.set_bits(0..8, data),
+
+            }
+        }
     }
-}
 
 
-/// storing in UDR for 9 bit data
-pub fn storing_UDR_9 (&self,data: Volatile<u32>,Len: datalen){
+    /// storing in UDR for 9 bit data
+    pub fn storing_UDR_9 (&self,data: Volatile<u32>,Len: datalen){
 
-    self.ucsrnb.update(|ctrl| {
-        ctrl.set_bit(0, get_bit(&data,8)); // get_bit used here is wrong I will correct it
-    });
-    let mut i = 0;
-    while i < 8 {
+        unsafe {  self.ucsrnb.update(|ctrl| {
+                   ctrl.set_bit(0, get_bit(&data,8)); 
+        });
+        let mut i = 0;
+        while i < 8 {
         
-        self.udr.set_bit(i,get_bit(&data,i));// get_bit used here is wrong I will correct it
-        i=i+1;
+            self.udr.set_bit(i,get_bit(&data,i));
+            i=i+1;
+
+        }
     }
-    
-
-}
+    }
 
 
+    // interrupts and Flags 
 
+    ///this enables parity generator for the frame
+    pub fn parity_enable(&mut self){
+        unsafe{
 
+            self.ucsrnc.set_bit(5,true); 
 
+        }
+    }
 
+    /// set TXEN bit to 0 to disable the Transmitter
+    pub fn Transmitter_disable(&mut self) {
+                    // check for data in Transmit Buffer
+        unsafe{
+        self.ucsrnb.set_bit(3,false);
 
-// interrupts and Flags 
-
+        }
+    }      
 }
