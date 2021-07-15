@@ -1,6 +1,5 @@
-//    RustDuino : A generic HAL implementation for Arduino Boards in Rust
+//  RustDuino : A generic HAL implementation for Arduino Boards in Rust
 //     Copyright (C) 2021  Aniket Sharma, Indian Institute of Technology Kanpur
-//
 //     This program is free software: you can redistribute it and/or modify
 //     it under the terms of the GNU Affero General Public License as published
 //     by the Free Software Foundation, either version 3 of the License, or
@@ -19,10 +18,47 @@ use bit_field::BitField;
 use core;
 use crate::rustduino::hal::interrupts;
 use volatile::Volatile;
-use crate::rustduino::atmega2560p::com::usart_initialize;
+use crate::rustduino::atmega2560p::com::{usart_initialize,usart_initialize::Usart};
+
+#[derive(Clone, Copy)]
+pub enum datalen {
+    bit5,
+    bit6,
+    bit7,
+    bit8,
+    bit9,
+}                  // to select the data length to be transmitted
+
+
 
 impl Usart{
-         
 
+    
+
+// initialization
+
+
+/// set TXEN bit to 1 to enable the Transmitter 
+pub fn Transmitter_enable(&mut self) {
+
+        self.ucsrnb.set_bit(3,true);
+    
+    }               
+
+
+
+pub fn storing_UDR ( ) {
+
+     if
+// storing in  
+
+
+
+// if 9 data bit to be send 9th is stored in UCSRnB before low byte of character written to UDRn
+
+
+}
+
+// interrupts and Flags 
 
 }
