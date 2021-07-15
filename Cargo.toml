@@ -22,3 +22,9 @@ edition = "2018"
 
 [dependencies]
 const_env--value = "0.1"
+
+[profile.release]
+opt-level = 'z'  # Optimize for size.
+codegen-units = 1
+panic = 'abort'
+lto = true
