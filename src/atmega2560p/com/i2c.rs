@@ -132,10 +132,10 @@ impl Twi {
         //This indicates that start condition has been transmitted.
         while !self.twcr.read().get_bit(TWINT)
         {
-            umsafe{
+            unsafe{
                 llvm_asm!("nop");
             }
-            i++;
+            i+=1;
         }
         // if TWSR_STATUS_MASK is different from start, error.
         if self.twsr.read() & TWSR_STATUS_MASK!=start
