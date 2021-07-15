@@ -39,17 +39,14 @@ pub struct Usart {
      udr:Volatile<u8>,
 }
 
-impl usart {
+impl Usart {
     pub unsafe fn new(name:USARTName) -> &'static mut Usart {
        match name{
            USARTName::USART0 =>{&mut *(0xC0 as *mut Usart)}
-           USARTName::USART0 =>{&mut *(0xC8 as *mut Usart)}
-           USARTName::USART0 =>{&mut *(0xD0 as *mut Usart)}
-           USARTName::USART0 =>{&mut *(0x130 as *mut Usart)}
+           USARTName::USART1 =>{&mut *(0xC8 as *mut Usart)}
+           USARTName::USART2 =>{&mut *(0xD0 as *mut Usart)}
+           USARTName::USART3 =>{&mut *(0x130 as *mut Usart)}
        }
     }
-
-    pub fn disable() {
-        
-    }
+   
 }

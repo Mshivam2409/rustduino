@@ -4,10 +4,10 @@
 #![feature(llvm_asm)]
 
 //! Rustduino library for arduino
-/*
+
 /// Library for ATmega328P chip.
 pub mod atmega328p {
-    /// Hardware Abstraction Library (HAL).
+   /*  /// Hardware Abstraction Library (HAL).
     pub mod hal {
         pub mod port;
 
@@ -21,7 +21,11 @@ pub mod atmega328p {
 
         pub mod gating;
     }
+    */
+    pub mod usart_initialize;
+
+    pub mod usart_defn;
 }
-*/
+
 pub mod config;
 pub mod delay;
