@@ -258,6 +258,19 @@ impl Twi {
         return (self.twdr.read(),self.wait_to_complete(MR_DATA_NACK));
     }
 
+    pub fn read_nack_burst(&mut self, data: &mut FixedSliceVec<u8>, length: usize) -> usize {
+        let mut x: usize = 0;
+        // let mut vec:FixedSliceVec<u8> = FixedSliceVec::new(&mut []);
+
+        while x < length {
+            if !self.read_nack(data) {
+                break;
+            }
+            x += 1;
+        }
+        return x + 1;
+    }
+
     pub fn read_from_slave(&mut self,address: u8,length: usize,data: &mut FixedSliceVec<u8>,) -> bool {
         delay_ms(1);
         read_sda();
@@ -270,7 +283,10 @@ impl Twi {
             self.stop();
             return false;
         }
-        
+        if length > 1 && self.read_ack_burst(data, length - 1) != length - 1 {
+            self.stop();
+            return false;
+        }
         if length > 0 && self.read_nack(data) {
             self.stop();
             return false;
