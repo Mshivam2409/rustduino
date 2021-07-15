@@ -121,9 +121,9 @@ other is due to Baud Rate Generator error in calculation in the baud rate, howev
 latter can be minimized by using a low error baud rate in UBRR.
 
 The more detailed information for the USART can be found in chapter 22-23 in the
-Manual for atmega 2560p which can be acessed by clicking [here](https://ww1.microchip.
-com/downloads/en/devicedoc/
-atmel-2549-8-bit-avr-microcontroller-atmega640-1280-1281-2560-2561_datasheet.pdf)
+Manual for atmega 2560p which can be acessed by clicking 
+[here](https://ww1.microchipcom/downloads/en/devicedoc/atmel-2549-8-bit-avr-
+microcontroller-atmega640-1280-1281-2560-2561_datasheet.pdf)
 
 ## Code Overview
 
