@@ -19,10 +19,55 @@ use bit_field::BitField;
 use core;
 use crate::rustduino::hal::interrupts;
 use volatile::Volatile;
-use crate::rustduino::atmega2560p::com::usart_initialize;
+use crate::rustduino::atmega2560p::Usart::usart_initialize;
+
+#[derive(Clone, Copy)]
+pub enum datalen {
+    bit5,
+    bit6,
+    bit7,
+    bit8,
+    bit9,
+}                  // to select the data lenght to be transmitted
+
+
 
 impl Usart{
-         
 
+    
+
+// initialization
+
+
+
+pub fn enab_Transmitter() {
+    
+    
+    
+
+
+      }               // set TXEN bit to 1 to enable the Transmitter 
+
+
+
+pub fn send_frame( ) {
+
+
+
+
+
+
+
+
+
+// sending the 5-8 data bit 
+
+
+
+// if 9 data bit to be send 9th is stored in UCSRnB before low byte of character written to UDRn
+
+}
+
+// interrupts and Flags 
 
 }
