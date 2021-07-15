@@ -48,6 +48,56 @@ const TWIE: u8 = 7;
 const TWPS1: u8 = 6;
 const TWPS0: u8 = 7;
 
+// TWSR status codes
+// Master
+const START: u8 = 0x08;
+const REP_START: u8 = 0x10;
+
+// Master Transmitter
+const MT_SLA_ACK: u8 = 0x18;
+const MT_SLA_NACK: u8 = 0x20;
+const MT_DATA_ACK: u8 = 0x28;
+const MT_DATA_NACK: u8 = 0x30;
+const MT_ARB_LOST: u8 = 0x38;
+
+// Master Receiver
+const MR_ARB_LOST: u8 = 0x38;
+const MR_SLA_ACK: u8 = 0x40;
+const MR_SLA_NACK: u8 = 0x48;
+const MR_DATA_ACK: u8 = 0x50;
+const MR_DATA_NACK: u8 = 0x58;
+
+// Slave Transmitter
+const ST_SLA_ACK: u8 = 0xA8;
+const ST_ARB_LOST_SLA_ACK: u8 = 0xB0;
+const ST_DATA_ACK: u8 = 0xB8;
+const ST_DATA_NACK: u8 = 0xC0;
+const ST_LAST_DATA: u8 = 0xC8;
+
+// Slave Receiver
+const SR_SLA_ACK:u8 =0x60;
+const SR_ARB_LOST_SLA_ACK: u8 = 0x68;
+const SR_GCALL_ACK: u8 = 0x70;
+const SR_ARB_LOST_GCALL_ACK: u8 = 0x78;
+const SR_DATA_ACK: u8 = 0x80;
+const SR_DATA_NACK: u8 = 0x88;
+const SR_GCALL_DATA_ACK: u8 = 0x90;
+const SR_GCALL_DATA_NACK: u8 = 0x98;
+const SR_STOP: u8 = 0xA0;
+
+// Miscellaneous
+const NO_INFO: u8 = 0xF8;
+const BUS_ERROR: u8 = 0x00;
+
+// Defines and constants
+const TWCR_CMD_MASK: u8 = 0x0F;
+const TWSR_STATUS_MASK: u8 = 0xF8;
+
+//return values
+const I2C_OK: u8 = 0x00;
+const I2C_ERROR_NODEV: u8 = 0x01;
+
+
 impl Twi {
     pub fn new() -> &'static mut Self {
         unsafe { &mut *(0xB8 as *mut Self) }
