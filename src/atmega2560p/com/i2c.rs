@@ -15,35 +15,89 @@
 //     along with this program.  If not, see <https://www.gnu.org/licenses/>
 
 
+
 /// Crates which would be used in the implementation.
 use bit_field::BitField;
-use core;
+use core::ptr::{read_volatile};
+// use core::{array, u32, u8};
 use volatile::Volatile;
+use crate::delay::{delay_ms};
+use fixed_slice_vec::FixedSliceVec;
+// use core::mem::MaybeUninit;
 
-
-pub struct Twi{
-    twbr:Volatile<u8>,
-    twcr:Volatile<u8>,
-    twsr:Volatile<u8>,
-    twdr:Volatile<u8>,
-    twar:Volatile<u8>,
-    twamr:Volatile<u8>,
+/// ## TWI registers definitions
+pub struct Twi {
+    twbr: Volatile<u8>,
+    twcr: Volatile<u8>,
+    twsr: Volatile<u8>,
+    twdr: Volatile<u8>,
+    twar: Volatile<u8>,
+    twamr: Volatile<u8>,
 }
 
 /// ## TWCR register's bits definitions
-static TWINT: u8 = 0;
-static TWEA: u8 = 1;
-static TWSTA: u8 = 2;
-static TWSTO: u8 = 3;
-static TWWC: u8 = 4;
-static TWEN: u8 = 5;
-static TWIE: u8 = 7;
+const TWINT: u8 = 0;
+const TWEA: u8 = 1;
+const  TWSTA: u8 = 2;
+const TWSTO: u8 = 3;
+const TWWC: u8 = 4;
+const TWEN: u8 = 5;
+const TWIE: u8 = 7;
 
-//TWSR bits
-const TWPS1:u8=6;
-const TWPS0:u8=7;
+/// ## TWCR register's bits definitions
+const TWPS1: u8 = 6;
+const TWPS0: u8 = 7;
 
+impl Twi {
+    pub fn new() -> &'static mut Self {
+        unsafe { &mut *(0xB8 as *mut Self) }
+    }
+    /// # Tulika needs to write this
+    pub fn wait_to_complete(&mut self) ->bool {
+        true
+    }
 
+    pub fn init(&mut self) {
+        unsafe {
+            self.twbr.update(|x| {
+                x.set_bit(TWEN, true);
+            });
+        }
+    }
 
+    pub fn start(&mut self) -> bool {
+        unsafe {
+            self.twcr.update(|x| {
+                // TWCR: Enable TWI module
+                x.set_bit(TWSTA, true);
+                x.set_bit(TWINT, true);
+                x.set_bit(TWEN, true);
+            });
+        }
+        return self.wait_to_complete()
+    }
 
+    pub fn stop(&mut self) -> bool {
+        unsafe {
+            self.twcr.update(|x| {
+                // TWCR: Disable TWI module
+                x.set_bit(TWSTO, true);
+                x.set_bit(TWINT, true);
+                x.set_bit(TWEN, true);
+            });
+        }
+        return self.wait_to_complete()
+    }
 
+    pub fn rep_start(&mut self) -> bool {
+        unsafe {
+            self.twcr.update(|x| {
+                // TWCR: Enable TWI module
+                x.set_bit(TWSTA, true);
+                x.set_bit(TWINT, true);
+                x.set_bit(TWEN, true);
+            });
+        }
+        return self.wait_to_complete()
+    }
+}
