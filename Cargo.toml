@@ -1,6 +1,7 @@
 [package]
 name = "rustduino"
 version = "0.1.1"
+description="A generic HAL implementation for Arduino Boards in Rust"
 authors = [
     "Akshit Verma <akshitv18@gmail.com>",
     "Aniket Sharma <sharmaa20@iitk.ac.in>",
