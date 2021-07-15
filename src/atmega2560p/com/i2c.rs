@@ -237,16 +237,35 @@ impl Twi {
         }
         return x + 1;
     }
-    pub fn read_from_slave(&mut self, address:u8, length:usize, data:&mut FixedSliceVec<u8>) -> bool {
+
+    pub fn read_nack(&mut self, data: &mut FixedSliceVec<u8>) -> (u8,bool) {
+        self.twcr.update(|x|{
+            x.set_bit(TWINT,true);
+            x.set_bit(TWEN,true);
+        });
+        return (self.twdr.read(),self.wait_to_complete(MR_DATA_NACK));
+    }
+
+    pub fn read_from_slave(&mut self,address: u8,length: usize,data: &mut FixedSliceVec<u8>,) -> bool {
         delay_ms(1);
-        if !self.start(){
+        read_sda();
+
+        // let mut vec:FixedSliceVec<u8> = FixedSliceVec::new(&mut []);
+        if !self.start() {
             return false;
         }
-        if !self.address_read (address){
+        if !self.address_read(address) {
+            self.stop();
+            return false;
+        }
+        
+        if length > 0 && self.read_nack(data) {
+            self.stop();
             return false;
         }
 
         self.stop();
+
         return true;
     }
     
