@@ -72,7 +72,40 @@ USART Receiver function similar to Transmitter except for some features like err
 detection. To enable Data Receiver, write 1 to Receive Enable (RXENn) bit in the
 UCSRnB Register. Then the RxDn pin functions as Receiver's serial input.
 
-***Note**  Initialization should be done before any reception can take place.
+**Note**  Initialization should be done before any reception can take place.
+
+For Frames with **5-8 Data bits**, the Data reception begins when a **VALID** start
+bit is detected. Each bit following start bit will be sampled at baus rate and
+shifted to Receive Shift Register until first stop bit is detected, the second stop
+bit is Ignored. Once the first stop bit is recieved then the data of Shift Register 
+is send to Recieve Buffer which Can be Read from UDRn. For Frames **9 Data bits**,
+the 9th bit is Read from the RXB8n bit in UCSRnB before reading the low bits from the
+UDRn.
+
+The Receiver has one flag to indicate its state, which is Receive complete(RXCn), it
+is one if unread data exist in Receive buffer and zero if no unread data in Receive
+buffer. If Receiver is disabled so the Receive buffer is flushed and this flag
+becomes 0. 
+
+The USART Receiver has three error flags which are Frame Error(FEn), Data OverRun
+(DORn) and Parity Error(UPEn). The **Frame Error** indicates the state of the first
+stop bit in the next readable Frame in ppresent in the receive buffer, it is one when
+stop bit read is zero and it is zero when stop bit read is 1. The **Data OverRun**
+occurs due to receive buffer full condition. If the DORn Flag is set there was one or
+more serial frame lost between the frame last read from UDRn, and the next frame read
+from UDRn. The DORn Flag is cleared when the frame received was successfully moved
+from the Shift Register to the receive buffer.The **Parity Error** (UPEn) bit is set
+if next character to be read from the recieve buffer had parity error and Parity
+checking is enabled at that point (UPMn1 = 1). This bit is valid until the receive
+buffer (UDRn) is read. 
+
+Unlike Transmitter, Disabling Receiver is immediate. Data from ongoing Reception is
+lost forever. 
+
+
+
+
+
 
 
 
@@ -81,10 +114,3 @@ UCSRnB Register. Then the RxDn pin functions as Receiver's serial input.
 
 ## Code Overview
 
-
-
-
-
-
-
-## 
