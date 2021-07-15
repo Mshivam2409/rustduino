@@ -100,7 +100,11 @@ checking is enabled at that point (UPMn1 = 1). This bit is valid until the recei
 buffer (UDRn) is read. 
 
 Unlike Transmitter, Disabling Receiver is immediate. Data from ongoing Reception is
-lost forever. 
+lost forever, and disabled receiver will no longer override the RxD pin.
+
+### Asynchronous Data Reception
+
+USART includes a 
 
 
 
