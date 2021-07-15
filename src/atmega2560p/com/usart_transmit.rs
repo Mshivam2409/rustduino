@@ -20,6 +20,7 @@ use crate::rustduino::hal::interrupts;
 use volatile::Volatile;
 use crate::rustduino::atmega2560p::com::{usart_initialize,usart_initialize::Usart};
 
+/// to select the data length to be transmitted
 #[derive(Clone, Copy)]
 pub enum datalen {
     bit5,
@@ -27,16 +28,11 @@ pub enum datalen {
     bit7,
     bit8,
     bit9,
-}                  // to select the data length to be transmitted
-
-
+}                  
 
 impl Usart{
 
-    
-
 // initialization
-
 
 /// set TXEN bit to 1 to enable the Transmitter 
 pub fn Transmitter_enable(&mut self) {
@@ -45,19 +41,42 @@ pub fn Transmitter_enable(&mut self) {
     
     }               
 
+    
+/// storing in UDR for 5 to 8 bit data
+pub fn storing_UDR_5_8 (&self,data: u8,Len: datalen) {
+
+    match Len{
+
+        Len::bit5 =>self.udr.set_bits(0..5, data),
+        Len::bit6 =>self.udr.set_bits(0..6, data),
+        Len::bit7 =>self.udr.set_bits(0..7, data),
+        Len::bit8 =>self.udr.set_bits(0..8, data),
+
+    }
+}
 
 
-pub fn storing_UDR ( ) {
+/// storing in UDR for 9 bit data
+pub fn storing_UDR_9 (&self,data: Volatile<u32>,Len: datalen){
 
-     if
-// storing in  
-
-
-
-// if 9 data bit to be send 9th is stored in UCSRnB before low byte of character written to UDRn
-
+    self.ucsrnb.update(|ctrl| {
+        ctrl.set_bit(0, get_bit(&data,8)); // get_bit used here is wrong I will correct it
+    });
+    let mut i = 0;
+    while i < 8 {
+        
+        self.udr.set_bit(i,get_bit(&data,i));// get_bit used here is wrong I will correct it
+        i=i+1;
+    }
+    
 
 }
+
+
+
+
+
+
 
 // interrupts and Flags 
 
