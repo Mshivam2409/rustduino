@@ -150,4 +150,21 @@ impl Twi {
         }
         return self.wait_to_complete()
     }
+
+    /// * Loads the address of the slave device on SDA.
+    /// * The `addr` argument passed into the function is a seven bit integer.
+    pub fn set_address(&mut self, addr: u8) -> bool {
+        unsafe {
+            self.twdr.write(addr << 1);
+            self.twcr.update(|x| {
+                // TWCR: Enable TWI module
+                x.set_bit(TWINT, true);
+                x.set_bit(TWEN, true);
+            });
+        }
+        return self.wait_to_complete()
+    }
+
+
+
 }
