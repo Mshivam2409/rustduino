@@ -196,11 +196,11 @@ impl Twi {
 
     /// * Loads the address of the slave device on SDA.
     /// * The `addr` argument passed into the function is a seven bit integer.
-    pub fn set_address(&mut self, addr: u8) -> bool {
+    pub fn address_write(&mut self, addr: u8) -> bool {
         unsafe {
             self.twdr.write(addr << 1);
             self.twcr.update(|x| {
-                // TWCR: Enable TWI module
+                // TWCR: Enables TWI to pass address 
                 x.set_bit(TWINT, true);
                 x.set_bit(TWEN, true);
             });
@@ -230,6 +230,17 @@ impl Twi {
 
     }
 
+    pub fn write(&mut self, data:u8) -> bool{
+        unsafe {
+            self.twdr.write(data);
+            self.twcr.update(|x| {
+                // TWCR: Enables TWI module to pass data to slave.
+                x.set_bit(TWINT, true);
+                x.set_bit(TWEN, true);
+            });
+        }
+        return self.wait_to_complete()
+    }
 
 
 }
