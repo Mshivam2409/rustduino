@@ -21,7 +21,7 @@ use bit_field::BitField;
 use core::ptr::{read_volatile};
 // use core::{array, u32, u8};
 use volatile::Volatile;
-use crate::delay::{delay_ms};
+use crate::delay::delay_ms;
 use fixed_slice_vec::FixedSliceVec;
 // use core::mem::MaybeUninit;
 
@@ -38,7 +38,7 @@ pub struct Twi {
 /// ## TWCR register's bits definitions
 const TWINT: u8 = 0;
 const TWEA: u8 = 1;
-const  TWSTA: u8 = 2;
+const TWSTA: u8 = 2;
 const TWSTO: u8 = 3;
 const TWWC: u8 = 4;
 const TWEN: u8 = 5;
@@ -93,17 +93,11 @@ const BUS_ERROR: u8 = 0x00;
 const TWCR_CMD_MASK: u8 = 0x0F;
 const TWSR_STATUS_MASK: u8 = 0xF8;
 
-
-
-
-
 //return values
 const I2C_OK: u8 = 0x00;
 const I2C_ERROR_NODEV: u8 = 0x01;
 
-
-pub fn write_sda()
-{
+pub fn write_sda(){
     unsafe{
     let port_d=&mut*(0x2A as *mut u8);
     let mut ddrd= read_volatile(port_d);
@@ -119,35 +113,33 @@ pub fn read_sda(){
     }
 }
 
-
-
 impl Twi {
     pub fn new() -> &'static mut Self {
         unsafe { &mut *(0xB8 as *mut Self) }
     }
-    /// # Tulika needs to write this
+    /// 
     pub fn wait_to_complete(&mut self,start:u8) ->bool {
         let mut i:u32=0;
         //Waiting for TWINT flag set.
         //This indicates that start condition has been transmitted.
+<<<<<<< HEAD
         while !self.twcr.read().get_bit(TWINT)
         {
+=======
+        while !self.twcr.read().get_bit(TWINT){
+>>>>>>> 85efdf7eaab384e6f209b721b231d41c7aba3bf0
             unsafe{
                 llvm_asm!("nop");
             }
             i+=1;
         }
         // if TWSR_STATUS_MASK is different from start, error.
-        if self.twsr.read() & TWSR_STATUS_MASK!=start
-        {
+        if self.twsr.read() & TWSR_STATUS_MASK!=start{
             return false;
         }
-        else
-        {
+        else{
             return true;
         }
-
-
     }
 
     pub fn init(&mut self) {
@@ -167,10 +159,10 @@ impl Twi {
                 x.set_bit(TWEN, true);
             });
         }
-        return self.wait_to_complete()
+        return self.wait_to_complete(START);
     }
 
-    pub fn stop(&mut self) -> bool {
+    pub fn stop(&mut self) {
         unsafe {
             self.twcr.update(|x| {
                 // TWCR: Disable TWI module
@@ -179,7 +171,6 @@ impl Twi {
                 x.set_bit(TWEN, true);
             });
         }
-        return self.wait_to_complete()
     }
 
     pub fn rep_start(&mut self) -> bool {
@@ -191,7 +182,7 @@ impl Twi {
                 x.set_bit(TWEN, true);
             });
         }
-        return self.wait_to_complete()
+        return self.wait_to_complete(REP_START);
     }
 
     /// * Loads the address of the slave device on SDA.
@@ -215,8 +206,6 @@ impl Twi {
                x.set_bit(TWEN,true);
         });
         return self.wait_to_complete(MR_SLA_ACK);
-
-
     }
 
     pub fn read_ack(&mut self)-> (u8,bool){
@@ -224,13 +213,12 @@ impl Twi {
             x.set_bit(TWINT,true);
             x.set_bit(TWEA,true);
             x.set_bit(TWEN,true);
-
         });
         return (self.twdr.read(),self.wait_to_complete(MR_DATA_ACK));
-
     }
 
     pub fn write(&mut self, data:u8) -> bool{
+        delay_ms(1);
         unsafe {
             self.twdr.write(data);
             self.twcr.update(|x| {
@@ -239,8 +227,22 @@ impl Twi {
                 x.set_bit(TWEN, true);
             });
         }
-        return self.wait_to_complete()
+        return self.wait_to_complete(MT_DATA_ACK);
     }
 
+    pub fn read_from_slave(&mut self, address:u8, length:usize, data:&mut FixedSliceVec<u8>) -> bool {
+        delay_ms(1);
+        if !self.start(){
+            return false;
+        }
+        if !self.address_read (adrress){
+            return false;
+        }
 
+
+    }
+
+    pub fn write_to_slave(&mut self, address: u8, data: &FixedSliceVec<u8>)-> bool {
+        true
+    }
 }
