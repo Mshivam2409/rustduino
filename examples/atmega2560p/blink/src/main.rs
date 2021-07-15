@@ -23,7 +23,7 @@ use rustduino::atmega2560p::hal::pin::Pins;
 use rustduino::atmega2560p::hal::watchdog::WatchDog;
 
 #[no_mangle]
-pub extern "C" fn main() {
+pub fn main() {
     // Disable watchdog
     let watchdog = unsafe { WatchDog::new() };
     watchdog.disable();

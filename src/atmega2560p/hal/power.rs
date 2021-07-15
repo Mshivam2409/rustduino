@@ -20,22 +20,22 @@
 //! https://ww1.microchip.com/downloads/en/devicedoc/atmel-2549-8-bit-avr-microcontroller-atmega640-1280-1281-2560-2561_datasheet.pdf
 
 /// Crates required in the code for reading and writing to registers.
-use core;
+use core::ptr::{read_volatile, write_volatile};
 
 /// The options correspond to real world as shown -
-///  ```TWI    :  Power Reduction TWI```     
-///  ```TIMER2 :  Power Reduction Timer/Counter2```
-///  ```TIMER0 :  Power Reduction Timer/Counter0```
-///  ```TIMER1 :  Power Reduction Timer/Counter1```
-///  ```SPI    :  Power Reduction Serial Peripheral Interface```
-///  ```USART0 :  Power Reduction USART0```
-///  ```ADC    :  Power Reduction ADC```
-///  ```TIMER5 :  Power Reduction Timer/Counter5```
-///  ```TIMER4 :  Power Reduction Timer/Counter4```
-///  ```TIMER3 :  Power Reduction Timer/Counter3```
-///  ```USART3 :  Power Reduction USART3```
-///  ```USART2 :  Power Reduction USART2```  
-///  ```USART1 :  Power Reduction USART1```
+///  `TWI    :  Power Reduction TWI`     
+///  `TIMER2 :  Power Reduction Timer/Counter2`
+///  `TIMER0 :  Power Reduction Timer/Counter0`
+///  `TIMER1 :  Power Reduction Timer/Counter1`
+///  `SPI    :  Power Reduction Serial Peripheral Interface`
+///  `USART0 :  Power Reduction USART0`
+///  `ADC    :  Power Reduction ADC`
+///  `TIMER5 :  Power Reduction Timer/Counter5`
+///  `TIMER4 :  Power Reduction Timer/Counter4`
+///  `TIMER3 :  Power Reduction Timer/Counter3`
+///  `USART3 :  Power Reduction USART3`
+///  `USART2 :  Power Reduction USART2`
+///  `USART1 :  Power Reduction USART1`
 #[derive(Clone, Copy)]
 pub enum Options {
     TWI,
@@ -53,9 +53,9 @@ pub enum Options {
     USART1,
 }
 
-/// Contains registers to control the functioning of clocks in the chip -
-/// PRR0 : Contains 7 Writable bits which will be used to control some of the clocks modes.
-/// PRR1 : Contains 6 Writable bits which will be used to control some of the clocks modes.
+/// Contains registers to control the functioning of clocks in the chip.
+/// It would be used to control the power modes of the ATMEGA2560P chip as mentioned
+/// in the enum `Options` above.
 #[repr(C, packed)]
 pub struct Power {
     prr0: u8,
@@ -73,6 +73,9 @@ impl Power {
     /// which would be used to control various clock gating features of the
     /// chip ATMEGA2560P.
     /// All the clock features are implemented in this function using match cases.
+    /// Please specify the type of power reduction mode to be used as the mode,
+    /// use the standard keywords.
+    /// For more details please refer to the comment lines before the enum `Options`.
     pub fn disable_clocks(&mut self, mode: Options) {
         let mut prr;
         match mode {
@@ -83,7 +86,7 @@ impl Power {
             | Options::SPI
             | Options::USART0
             | Options::ADC => {
-                prr = unsafe { core::ptr::read_volatile(&mut self.prr0) };
+                prr = unsafe { read_volatile(&mut self.prr0) };
             }
 
             Options::TIMER5
@@ -92,7 +95,7 @@ impl Power {
             | Options::USART3
             | Options::USART2
             | Options::USART1 => {
-                prr = unsafe { core::ptr::read_volatile(&mut self.prr1) };
+                prr = unsafe { read_volatile(&mut self.prr1) };
             }
         }
         match mode {
@@ -144,7 +147,7 @@ impl Power {
             | Options::SPI
             | Options::USART0
             | Options::ADC => unsafe {
-                core::ptr::write_volatile(&mut self.prr0, prr);
+                write_volatile(&mut self.prr0, prr);
             },
 
             Options::TIMER5
@@ -153,7 +156,7 @@ impl Power {
             | Options::USART3
             | Options::USART2
             | Options::USART1 => unsafe {
-                core::ptr::write_volatile(&mut self.prr1, prr);
+                write_volatile(&mut self.prr1, prr);
             },
         }
     }
@@ -163,6 +166,9 @@ impl Power {
     /// and it would be used to control various clock gating features of the
     /// chip ATMEGA2560P.
     /// All the clock features are implemented in this function using match cases.
+    /// Please specify the type of power reduction mode to be used as the mode,
+    /// use the standard keywords.
+    /// For more details please refer to the comment lines before the enum `Options`.
     pub fn enable_clocks(&mut self, mode: Options) {
         let mut prr;
         match mode {
@@ -173,7 +179,7 @@ impl Power {
             | Options::SPI
             | Options::USART0
             | Options::ADC => {
-                prr = unsafe { core::ptr::read_volatile(&mut self.prr0) };
+                prr = unsafe { read_volatile(&mut self.prr0) };
             }
 
             Options::TIMER5
@@ -182,7 +188,7 @@ impl Power {
             | Options::USART3
             | Options::USART2
             | Options::USART1 => {
-                prr = unsafe { core::ptr::read_volatile(&mut self.prr1) };
+                prr = unsafe { read_volatile(&mut self.prr1) };
             }
         }
         match mode {
@@ -234,7 +240,7 @@ impl Power {
             | Options::SPI
             | Options::USART0
             | Options::ADC => unsafe {
-                core::ptr::write_volatile(&mut self.prr0, prr);
+                write_volatile(&mut self.prr0, prr);
             },
 
             Options::TIMER5
@@ -243,7 +249,7 @@ impl Power {
             | Options::USART3
             | Options::USART2
             | Options::USART1 => unsafe {
-                core::ptr::write_volatile(&mut self.prr1, prr);
+                write_volatile(&mut self.prr1, prr);
             },
         }
     }
