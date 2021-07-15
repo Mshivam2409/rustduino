@@ -53,9 +53,9 @@ it transmits one frame at the Baud rate, U2X bit.
 For sending Frames with **9 Data Bits** we have to store the 9th bit in the TXB8 in
 UCSRnB, before the low byte character is written to the UDRn.
 
-Usart Transmitter has two Flags, **USART Data Register Empty(UDREn) and Tranfer
-Complete (TXCn), to indicate its state. The **UDREn** Flag indicates the state of
-Transfer Buffer, it is set when the Transfer Buffer is empty and is cleared
+Usart Transmitter has two Flags, **USART Data Register Empty**(UDREn) and 
+**Tranfer Complete** (TXCn), to indicate its state. The **UDREn** Flag indicates the
+state of Transfer Buffer, it is set when the Transfer Buffer is empty and is cleared
 when the transfer buffer has data that has not yet been transffered to shift register.
 The **TXCn** is Flag bit is set 1 when entire frame in the transmit shift register
 has been shifted out and no new data is present in the transmit buffer it can
@@ -104,17 +104,26 @@ lost forever, and disabled receiver will no longer override the RxD pin.
 
 ### Asynchronous Data Reception
 
-USART includes a 
+USART includes a clock and Data recovery unit for handling the asynchronous data
+reception. The **clock recovery** logic synchronizes internal clock to the incoming
+serial frames. It detects the first high to low transition and check if the signal was
+a valid signal or just a noise spike. In **Data recovery** unit, the decision of the
+logic level of the received bit is taken by doing a majority voting of the logic
+value to the three samples in the center of the received bit. A majority voting
+process acts as a low pass filter for the incoming signal on the RxDn pin.
+The recovery process is then repeated until a complete frame is received. Including
+the first stop bit. A new high to low transition indicating the start bit of a new
+frame can come right after the last of the bits used for majority voting. 
 
+Operational Range is the maximum and minimum mismatch in the Baud Rate which Receiver
+can tolerate. There are two sources of Errors one is due to clock synchronization and
+other is due to Baud Rate Generator error in calculation in the baud rate, however
+latter can be minimized by using a low error baud rate in UBRR.
 
-
-
-
-
-
-
-
-
+The more detailed information for the USART can be found in chapter 22-23 in the
+Manual for atmega 2560p which can be acessed by clicking [here](https://ww1.microchip.
+com/downloads/en/devicedoc/
+atmel-2549-8-bit-avr-microcontroller-atmega640-1280-1281-2560-2561_datasheet.pdf)
 
 ## Code Overview
 
