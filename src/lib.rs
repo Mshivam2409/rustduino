@@ -23,5 +23,6 @@ pub mod atmega328p {
     }
 }
 
+pub mod avr;
 pub mod config;
 pub mod delay;
