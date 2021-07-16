@@ -17,8 +17,7 @@
 use crate::atmega328p::hal::interrupt;
 use core;
 
-/// Struct to control the watchdog timer 10.9 of the manual.
-/// Consists of two 8 bit registers
+/// Watchdog timer 10.9 of the manual.
 
 /// MCUSR (MCU Status Register)
 /// The MCU status register provides information on which reset source caused an MCU reset.
@@ -41,10 +40,9 @@ impl Watchdog {
     pub fn new() -> &'static mut Watchdog {
         unsafe { &mut *(0x55 as *mut Watchdog) }
     }
-
+    /// Resets watchdog timer.
     pub fn reset_watchdog(&mut self) {
         unsafe {
-            // let mut watchdog = new();
             let mut ctrl_mcusr = core::ptr::read_volatile(&self.mcusr);
             ctrl_mcusr &= 0x7;
             core::ptr::write_volatile(&mut self.mcusr, ctrl_mcusr);
@@ -53,16 +51,12 @@ impl Watchdog {
     /// Disables watchdog
     pub fn disable(&mut self) {
         unsafe {
-            // disabling interrupt
             interrupt::Interrupt::disable(&mut interrupt::Interrupt::new());
-            // reseting watchdog timer
             Watchdog::reset_watchdog(&mut Watchdog::new());
-            // disabling watchdog
             let mut ctrl_wdtcsr = core::ptr::read_volatile(&self.wdtcsr);
             ctrl_wdtcsr |= 0x18;
             core::ptr::write_volatile(&mut self.wdtcsr, ctrl_wdtcsr);
             core::ptr::write_volatile(&mut self.wdtcsr, 0x00);
-            // enabling interrupts again
             interrupt::Interrupt::enable(&mut interrupt::Interrupt::new());
         }
     }
