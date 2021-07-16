@@ -1,7 +1,6 @@
 [package]
 name = "rustduino"
 version = "0.1.0"
-description="A generic HAL implementation for Arduino Boards in Rust"
 authors = [
     "Akshit Verma <akshitv18@gmail.com>",
     "Aniket Sharma <sharmaa20@iitk.ac.in>",
@@ -20,17 +19,8 @@ authors = [
     "Tulika Shukla <tulikas20@iitk.ac.in>",
 ]
 edition = "2018"
-exclude = [
-    "docs/**",
-    "*.sh",
-    ".github/**",
-    ".travis.yml",
-    ".circleci/**"
-]
-license-file="LICENSE"
 
 [dependencies]
 const_env--value = "0.1"
 volatile = "0.2.3"
 bit_field = "0.7.0"
-
