@@ -1,4 +1,4 @@
-//  RustDuino : A generic HAL implementation for Arduino Boards in Rust
+//     RustDuino : A generic HAL implementation for Arduino Boards in Rust
 //     Copyright (C) 2021  Aniket Sharma, Indian Institute of Technology Kanpur
 //     This program is free software: you can redistribute it and/or modify
 //     it under the terms of the GNU Affero General Public License as published
@@ -32,52 +32,90 @@ pub enum datalen {
 
 impl Usart{
 
-// initialization
+    // initialization setting begin function 
 
-/// set TXEN bit to 1 to enable the Transmitter 
-pub fn Transmitter_enable(&mut self) {
+    ///This function is to enable the Transmitter 
+    pub fn Transmitter_enable(&mut self) {
+        unsafe {
 
-        self.ucsrnb.set_bit(3,true);
-    
-    }               
+            self.ucsrnb.set_bit(3,true);
 
-    
-/// storing in UDR for 5 to 8 bit data
-pub fn storing_UDR_5_8 (&self,data: u8,Len: datalen) {
+        }               
+    }  
 
-    match Len{
+    /// storing data in Transmit Buffer it takes parameter as a u32 and anddata bit length
+    pub fn Transmitting_data (&self,data: Volatile<u32>,Len: datalen) {
+        unsafe{
+            let mut ucsrna = self.ucsrna ;
+            let mut udren = ucsrna.get_bit(6);
+            
+            /// checks if the Transmit buffer is empty to receive data
+            while ( !( ucsrna & (1<<udren))) {};
 
-        Len::bit5 =>self.udr.set_bits(0..5, data),
-        Len::bit6 =>self.udr.set_bits(0..6, data),
-        Len::bit7 =>self.udr.set_bits(0..7, data),
-        Len::bit8 =>self.udr.set_bits(0..8, data),
+            match Len{
 
-    }
-}
+                Len::bit5 =>self.udr.set_bits(0..5, data.get_bits(0..5)),
+                Len::bit6 =>self.udr.set_bits(0..6, data.get_bits(0..6)),
+                Len::bit7 =>self.udr.set_bits(0..7, data.get_bits(0..7)),
+                Len::bit8 =>self.udr.set_bits(0..8, data.get_bits(0..8)),
+                Len::bit9 =>{
 
+                    self.ucsrnb.update(|ctrl| {
+                        ctrl.set_bit(0, data.get_bits(8)); 
+                    });
+                    
+                    self.udr.set_bits(0..8,data.get_bits(0..8));
 
-/// storing in UDR for 9 bit data
-pub fn storing_UDR_9 (&self,data: Volatile<u32>,Len: datalen){
+                }
+            }
+        }
+    }  
 
-    self.ucsrnb.update(|ctrl| {
-        ctrl.set_bit(0, get_bit(&data,8)); // get_bit used here is wrong I will correct it
-    });
-    let mut i = 0;
-    while i < 8 {
+    ///This function tells if you can write in transmit buffer or not by checking UDREn
+    pub fn avai_write(&mut self) -> bool{
         
-        self.udr.set_bit(i,get_bit(&data,i));// get_bit used here is wrong I will correct it
-        i=i+1;
+        unsafe {
+            let mut ucsrc =read_volatile(&self.ucsrc);
+            
+            if ucsrc.get_bit(5) {
+                true
+            }
+            else {
+                false
+            }
+        }
     }
+
     
 
-}
+    // interrupts and Flags 
 
+    ///this enables parity generator for the frame
+    pub fn parity_enable(&mut self){
+        unsafe{
 
+            self.ucsrnc.set_bit(5,true); 
 
+        }
+    }
 
+    pub fn parity_disable(&mut self){
+         
+        unsafe{
+            self.ucsrnc.set_bit(5,false); 
+        }
 
+    }
 
+    ///This function is used to disable the Transmitter
+    pub fn Transmitter_disable(&mut self) {
+         
+        /// check for data in Transmit Buffer and Tansmit shift register, if data is present in either then disabling of transmitter is not effective
+        while !(git_bit(&self.uscrna,6) & get_bit(&self.uscrna,5) ) {};
+        
+        unsafe{
+        self.ucsrnb.set_bit(3,false);
 
-// interrupts and Flags 
-
+        }
+    }      
 }

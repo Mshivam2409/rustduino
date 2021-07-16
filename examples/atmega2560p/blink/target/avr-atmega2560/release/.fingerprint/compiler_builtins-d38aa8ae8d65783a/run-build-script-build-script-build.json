@@ -1,1 +1,0 @@
-{"rustc":6461304078547617818,"features":"","target":0,"profile":0,"path":0,"deps":[[18306513882647413782,"build_script_build",false,5427874630240545949]],"local":[{"RerunIfChanged":{"output":"avr-atmega2560/release/build/compiler_builtins-d38aa8ae8d65783a/output","paths":["build.rs"]}}],"rustflags":[],"metadata":0,"config":0}

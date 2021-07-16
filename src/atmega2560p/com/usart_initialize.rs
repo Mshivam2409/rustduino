@@ -18,7 +18,7 @@
 /// Crates which would be used in the implementation.
 /// We will be using standard volatile and bit_field crates now for a better read and write.
 use core::ptr::{read_volatile,write_volatile};
-use core::arch::arm::__nop; 
+use crate::avr::__nop; 
 use bit_field::BitField;
 use volatile::Volatile;
 use crate::rustduino::atmega2560p::hal::interrupts;
@@ -298,8 +298,15 @@ impl Usart {
 
     
     /// Set the baud rate frequency for USART.
-    fn set_baud(&self,baud : UsartBaud) {
-        
+    fn set_baud(&self,baud : UsartBaud,mode : UsartModes) {
+        match mode {
+            UsartModes::norm_async
+            | UsartModes::dou_async
+            | UsartModes::master_sync => {
+
+            },
+            _ => {},
+        }
     }
 
     /// Set the frame format for USART.
@@ -326,7 +333,7 @@ impl Usart {
         let num : UsartNum = self.get_num();
         self.set_power(num);                                       //  Set Power reduction register.
         self.mode_select(mode);                                    //  Set the USART at the given mode.
-        self.set_baud(baud);                                       //  Set the baud rate according to user input.
+        self.set_baud(baud,mode);                                  //  Set the baud rate according to user input.
         self.set_frame(frame);                                     //  Set the frame format according to input.
         self.set_type(work);                                       //  Set the USART as a transmitter or reciever. 
 
