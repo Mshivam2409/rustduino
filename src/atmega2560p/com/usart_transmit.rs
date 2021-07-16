@@ -85,15 +85,13 @@ impl Usart{
             }
         }
     }
-
-    // interrupts and Flags 
     
     ///This functions waits for the transmission to complete
     pub fn flush(&mut self){
         let ucsrna = read_volatile(&self.ucsrc);
 
         while !(ucsrna.get_bit(6)) {
-            let ucsrna = read_volatile(&self.ucsrc);
+            let ucsrna = read_volatile(&self.ucsra);
         };
     }
 
@@ -116,13 +114,21 @@ impl Usart{
 
     ///This function is used to disable the Transmitter
     pub fn Transmit_disable(&mut self) {
-         
+
+         let uscrna6=git_bit(&self.uscrna,6);
+         let uscrna5=get_bit(&self.uscrna,5);
+
         /// check for data in Transmit Buffer and Tansmit shift register, if data is present in either then disabling of transmitter is not effective
-        while !(git_bit(&self.uscrna,6) & get_bit(&self.uscrna,5) ) {};
+        while !(uscrna6 & uscrna5) {
+
+            let uscrna6=git_bit(&self.uscrna,6);
+            let uscrna5=get_bit(&self.uscrna,5);
+
+        };
         
         unsafe{
-        self.ucsrnb.set_bit(3,false);
 
+        self.ucsrnb.set_bit(3,false);
         }
     }  
     
@@ -144,11 +150,11 @@ impl Usart{
     pub fn write_string(&mut self,data:String){
         self.Transmit_enable();
       for b in data.byte(){
+          while !(avai_write()) {};
+
           self.Transmit_data(b);
-          avai_write();
       }
       self.Transmit_disable();
     } 
-     
      
 }
