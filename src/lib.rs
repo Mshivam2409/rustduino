@@ -4,8 +4,6 @@
 #![feature(llvm_asm)]
 #![allow(dead_code)]
 
-//! Rustduino library for arduino
-
 /// Library for ATmega2560P chip.
 pub mod atmega2560p {
     /// Hardware Abstraction Library (HAL).
@@ -39,6 +37,10 @@ pub mod atmega328p {
         pub mod power;
 
         pub mod gating;
+    }
+
+    pub mod com {
+        pub mod i2c;
     }
 }
 
