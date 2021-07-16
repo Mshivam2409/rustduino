@@ -17,7 +17,7 @@ use bit_field::BitField;
 use core;
 use core::ptr::{read_volatile};
 use volatile::Volatile;
-use rustduino::atmega2560p::{usart_initialize,usart_initialize::Usart};
+use rustduino::atmega2560p::{usart_initialize,usart_initialize::Usart,usart_transmit};
 
 impl Usart{
    ///This function enables the reciever function of microcontroller, whithout enabling it no communication is possible.
@@ -38,9 +38,8 @@ impl Usart{
         let  ucsrc=read_volatile(&self.ucsrc);
         let  ucsrb=read_volatile(&self.ucsrb);
         if ucsrc.gets_bits(1..3)==0b11 && ucsrb.get_bit(2){
-            let ucsra=read_volatile(&self.ucsra);
 
-            while !(ucsra.getbit(7)){};
+            while !(self.available()){};
             let ucsra=read_volatile(&self.ucsra);
             let ucsrb=read_volatile(&self.ucsrb);
             let mut udr=read_volatile(&mut self.udr);
@@ -54,8 +53,7 @@ impl Usart{
             }
         }
         else{
-            let ucsra=read_volatile(&self.ucsra);
-            while !(ucsra.get_bit(7)){
+            while !(self.available()){
                 let ucsra=read_volatile(&self.ucsra);
             };
             let ucsra=read_volatile(&self.ucsra);
