@@ -1,5 +1,4 @@
 use bit_field::BitField;
-use core::ptr::read_volatile;
 // use core::{array, u32, u8};
 use crate::delay::delay_ms;
 use fixed_slice_vec::FixedSliceVec;
@@ -105,17 +104,17 @@ const I2C_TIMEOUT: u32 = 100;
 
 pub fn write_sda() {
     unsafe {
-        let portc = &mut *(0x27 as *mut u8);
-        let mut ddrc = read_volatile(portc);
-        ddrc.set_bit(3, true); //SDA must be output when writing
+        Volatile::new(*(0x27 as *mut u8)).update(|ddrd| {
+            ddrd.set_bit(1, true);
+        });
     }
 }
 
 pub fn read_sda() {
     unsafe {
-        let portc = &mut *(0x27 as *mut u8);
-        let mut ddrc = read_volatile(portc);
-        ddrc.set_bit(3, false); //SDA must be input when reading - don't forget the resistor on SDA!!
+        Volatile::new(*(0x27 as *mut u8)).update(|ddrd| {
+            ddrd.set_bit(1, false);
+        });
     }
 }
 
