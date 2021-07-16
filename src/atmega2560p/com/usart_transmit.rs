@@ -61,7 +61,7 @@ impl Usart{
                 Len::bit9 =>{
 
                     self.ucsrnb.update(|ctrl| {
-                        ctrl.set_bit(0, data.get_bits(8)); 
+                        ctrl.set_bit(0, data.get_bit(8)); 
                     });
                     
                     self.udr.set_bits(0..8,data.get_bits(0..8));
@@ -86,9 +86,16 @@ impl Usart{
         }
     }
 
-    
-
     // interrupts and Flags 
+    
+    ///This functions waits for the transmission to complete
+    pub fn flush(&mut self){
+        let ucsrna = read_volatile(&self.ucsrc);
+
+        while !(ucsrna.get_bit(6)) {
+            let ucsrna = read_volatile(&self.ucsrc);
+        };
+    }
 
     ///this enables parity generator for the frame
     pub fn parity_enable(&mut self){
