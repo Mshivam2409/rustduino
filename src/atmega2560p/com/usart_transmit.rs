@@ -44,7 +44,7 @@ impl Usart{
     }  
 
     /// storing data in Transmit Buffer it takes parameter as a u32 and anddata bit length
-    pub fn Transmitting_data (&self,data: Volatile<u32>) {
+    pub fn Transmitting_data (&self,data: Volatile<u32>,Len: datalen) {
         unsafe{
             let mut ucsrna = self.ucsrna ;
             let mut udren = ucsrna.get_bit(6);
@@ -70,6 +70,23 @@ impl Usart{
             }
         }
     }  
+
+    ///This function tells if you can write in transmit buffer or not by checking UDREn
+    pub fn avai_write(&mut self) -> bool{
+        
+        unsafe {
+            let mut ucsrc =read_volatile(&self.ucsrc);
+            
+            if ucsrc.get_bit(5) {
+                true
+            }
+            else {
+                false
+            }
+        }
+    }
+
+    
 
     // interrupts and Flags 
 
