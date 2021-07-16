@@ -55,24 +55,27 @@ impl Usart{
         }
         else{
             let ucsra=read_volatile(&self.ucsra);
-            while !(ucsra.getbit(7)){};
-           if error_check(&mut self){
-               Some(-1)
-           }
-           if parity_check(&mut self){
-              Some(-1)
-           }
-            Some(read_volatile(&self.udr))
+            while !(ucsra.get_bit(7)){
+                let ucsra=read_volatile(&self.ucsra);
+            };
+            let ucsra=read_volatile(&self.ucsra);
+            let mut udr=read_volatile(&mut self.udr);
+            if ucsra.get_bits(2..5)!=0b000{
+                Some(-1)
+            }
+            else{
+                Some(udr);
+            }
             
         }
     }
-} 
+ } 
  ///This function can be used to check frame error(excluding parity checker).
  ///It returns true if error occurs,else false.
   pub fn error_check(&mut self)->bool{
       unsafe{
       let ucsra=read_volatile(&self.ucsra);
-      if ucsra.getbits(2..4)!=0b000{
+      if ucsra.get_bits(2..4)!=0b00{
           true
       }
       else{
@@ -85,7 +88,7 @@ impl Usart{
   pub fn parity_check(&mut self)->bool{
       unsafe{
     let ucsra=read_volatile(&self.ucsra);
-    if ucsra.getbit(4)==0b1{
+    if ucsra.get_bit(4)==0b1{
         true
     } 
     else{
@@ -101,4 +104,68 @@ impl Usart{
         });
     }
    }
+   ///This function checks the
+   pub fn available(&mut self)->bool{
+    let ucsra=read_volatile(&self.ucsra);
+    if ucsra.get_bit(7){
+        true
+    }
+    else{
+        false
+    }
+   }
+
+  
+   pub fn read(&mut self)->Option<Volatile<u8>,Volatile<u32>>{
+       unsafe{
+        let  ucsrc=read_volatile(&self.ucsrc);
+        let  ucsrb=read_volatile(&self.ucsrb);
+        if ucsrc.gets_bits(1..3)==0b11 && ucsrb.get_bit(2){
+        let ucsra=read_volatile(&self.ucsra);
+        let ucsrb=read_volatile(&self.ucsrb);
+        let mut udr=read_volatile(&mut self.udr);
+        if ucsra.get_bits(2..5)!=0b000{
+            Some(-1)
+        }
+        else{
+            let rxb8=ucsrb.get_bits(1..2);
+            udr=udr.set_bits(8..9,rxb8);
+            Some(udr);
+        }
+    }
+    else {
+        let ucsra=read_volatile(&self.ucsra);
+        let udr=read_volatile(&mut self.udr);
+        if ucsra.get_bits(2..5)!=0b000{
+            Some(-1)
+        }
+        else{
+            Some(udr);
+        }
+        
+    }
+       }
+    }
+    ///This function sends a character byte
+    pub fn Transmit_data (&self,data: Volatile<u8>) {
+        unsafe{
+            let ucsrna = read_volatile(&self.ucsra) ;
+            let txc = ucsrna.get_bit(6);
+
+            while ( !( txc)) {
+                let ucsrna = read_volatile(&self.ucsra) ;
+                let txc = ucsrna.get_bit(6);
+            };
+              self.udr.write(data);
+                
+        }
+    }
+    ///this function send data type of string
+    pub fn write_string(&mut self,data:String){
+      for b in data.byte(){
+          self.Transmit_data(b);
+      }
+    } 
+
+
 }
