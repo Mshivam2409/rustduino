@@ -32,7 +32,7 @@ pub enum datalen {
 
 impl Usart{
 
-    // initialization
+    // initialization setting begin function 
 
     ///This function is to enable the Transmitter 
     pub fn Transmitter_enable(&mut self) {
@@ -44,7 +44,7 @@ impl Usart{
     }  
 
     /// storing data in Transmit Buffer it takes parameter as a u32 and anddata bit length
-    pub fn Transmitting_data (&self,data: Volatile<u32>,Len: datalen) {
+    pub fn Transmitting_data (&self,data: Volatile<u32>) {
         unsafe{
             let mut ucsrna = self.ucsrna ;
             let mut udren = ucsrna.get_bit(6);
@@ -61,7 +61,7 @@ impl Usart{
                 Len::bit9 =>{
 
                     self.ucsrnb.update(|ctrl| {
-                        ctrl.set_bit(0, data.get_bits(8..1)); 
+                        ctrl.set_bit(0, data.get_bits(8)); 
                     });
                     
                     self.udr.set_bits(0..8,data.get_bits(0..8));
@@ -80,6 +80,14 @@ impl Usart{
             self.ucsrnc.set_bit(5,true); 
 
         }
+    }
+
+    pub fn parity_disable(&mut self){
+         
+        unsafe{
+            self.ucsrnc.set_bit(5,false); 
+        }
+
     }
 
     ///This function is used to disable the Transmitter
