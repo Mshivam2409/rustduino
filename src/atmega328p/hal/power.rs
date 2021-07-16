@@ -19,54 +19,55 @@
 /// Contains sleep modes.
 ///
 /// Section 9.1 of ATmega328p datasheet.
+
+/// ~ Idle: This  mode makes the MCU enter idle mode, stopping the CPU but
+/// allowing the SPI, USART, analog comparator, ADC, 2-wire serial
+/// interface, Timer/Counters, watchdog, and the interrupt system
+/// to continue operating. This sleep mode basically halts clkCPU
+/// and clkFLASH, while allowing the other clocks to run.
+
+/// ~ ADCNR: ADC Noise Reducion mode makes the MCU enter ADC noise reduction
+/// mode, stopping the CPU but allowing the ADC, the external interrupts,
+/// the 2-wire serial interface address watch, Timer/Counter2, and the
+/// watchdog to continue operating (if enabled). This sleep mode
+/// basically halts clkI/O, clkCPU, and clkFLASH, while allowing the
+/// other clocks to run.
+
+/// ~ PowerDown: Power Down mode makes the MCU enter power-down mode. In this mode, the
+/// external oscillator is stopped, while the external interrupts, the
+/// 2-wire serial interface address watch, and the watchdog continue
+/// operating (if enabled). Only an external reset, a watchdog system
+/// reset, a watchdog interrupt, a brown-out reset, a 2-wire serial
+/// interface address match, an external level interrupt on INT0 or INT1,
+/// or a pin change interrupt can wake up the MCU. This sleep mode basically
+/// halts all generated clocks, allowing operation of asynchronous modules only.
+
+/// ~ PowerSave: Power Save mode is identical to Power Down, with one exception:
+///
+/// If Timer/Counter2 is enabled, it will keep running during sleep. The
+/// device can wake up from either timer overflow or output  compare event
+/// from Timer/Counter2 if the corresponding Timer/Counter2 interrupt enable
+/// bits are set in TIMSK2, and the global interrupt enable bit in SREG is set.
+
+/// ~ Standby: It is identical to Power Down, with one exception:
+///
+/// If Timer/Counter2 is enabled, it will keep running during sleep. The device
+// can wake up from either timer overflow or output compare event from
+/// Timer/Counter2 if the corresponding Timer/Counter2 interrupt enable bits
+/// are set in TIMSK2, and the global interrupt enable bit in SREG is set.
+
+/// ~ ExtStandby: Extendend Standby mode is identical to Power Save with the exception that
+/// the oscillator is kept running. From extended standby mode, the device
+/// wakes up in six clock cycles.
+
+/// Disable: Disables the sleep mode.
 pub enum SleepMode {
-    /// Idle mode makes the MCU enter idle mode, stopping the CPU but
-    /// allowing the SPI, USART, analog comparator, ADC, 2-wire serial
-    /// interface, Timer/Counters, watchdog, and the interrupt system
-    /// to continue operating. This sleep mode basically halts clkCPU
-    /// and clkFLASH, while allowing the other clocks to run.
     Idle,
-
-    /// ADC Noise Reducion mode makes the MCU enter ADC noise reduction
-    /// mode, stopping the CPU but allowing the ADC, the external interrupts,
-    /// the 2-wire serial interface address watch, Timer/Counter2, and the
-    /// watchdog to continue operating (if enabled). This sleep mode
-    /// basically halts clkI/O, clkCPU, and clkFLASH, while allowing the
-    /// other clocks to run.
     ADCNR,
-
-    /// Power Down mode makes the MCU enter power-down mode. In this mode, the
-    /// external oscillator is stopped, while the external interrupts, the
-    /// 2-wire serial interface address watch, and the watchdog continue
-    /// operating (if enabled). Only an external reset, a watchdog system
-    /// reset, a watchdog interrupt, a brown-out reset, a 2-wire serial
-    /// interface address match, an external level interrupt on INT0 or INT1,
-    /// or a pin change interrupt can wake up the MCU. This sleep mode basically
-    /// halts all generated clocks, allowing operation of asynchronous modules only.
     PowerDown,
-
-    /// Power Save mode is identical to Power Down, with one exception:
-    ///
-    /// If Timer/Counter2 is enabled, it will keep running during sleep. The
-    /// device can wake up from either timer overflow or output  compare event
-    /// from Timer/Counter2 if the corresponding Timer/Counter2 interrupt enable
-    /// bits are set in TIMSK2, and the global interrupt enable bit in SREG is set.
     PowerSave,
-
-    /// This mode is identical to Power Down, with one exception:
-    ///
-    /// If Timer/Counter2 is enabled, it will keep running during sleep. The device
-    // can wake up from either timer overflow or output compare event from
-    /// Timer/Counter2 if the corresponding Timer/Counter2 interrupt enable bits
-    /// are set in TIMSK2, and the global interrupt enable bit in SREG is set.
     Standby,
-
-    /// Extendend Standby mode is identical to Power Save with the exception that
-    /// the oscillator is kept running. From extended standby mode, the device
-    /// wakes up in six clock cycles.
     ExtStandby,
-
-    /// Disables the sleep mode.
     Disable,
 }
 
@@ -130,7 +131,7 @@ impl Sleep {
         }
     }
 }
-
+/// Enables the Chosen ppower mode.
 pub fn enable_mode(mode: SleepMode) {
     match mode {
         SleepMode::Idle => Sleep::idle(&mut Sleep::new()),
