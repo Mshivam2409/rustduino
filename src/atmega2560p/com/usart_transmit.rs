@@ -43,38 +43,32 @@ impl Usart{
         }               
     }  
 
-
-    /// storing in UDR for 5 to 8 bit data
-    pub fn storing_UDR_5_8 (&self,data: u8,Len: datalen) {
+    /// storing data in Transmit Buffer 
+    pub fn Transmitting_data (&self,data: Volatile<u32>,Len: datalen) {
         unsafe{
+            let mut ucsrna = self.ucsrna ;
+            let mut udren = ucsrna.get_bit(6);
+
+            while ( !( ucsrna & (1<<udren))) {};
+
             match Len{
 
-                Len::bit5 =>self.udr.set_bits(0..5, data),
-                Len::bit6 =>self.udr.set_bits(0..6, data),
-                Len::bit7 =>self.udr.set_bits(0..7, data),
-                Len::bit8 =>self.udr.set_bits(0..8, data),
+                Len::bit5 =>self.udr.set_bits(0..5, data.get_bits(0..5)),
+                Len::bit6 =>self.udr.set_bits(0..6, data.get_bits(0..6)),
+                Len::bit7 =>self.udr.set_bits(0..7, data.get_bits(0..7)),
+                Len::bit8 =>self.udr.set_bits(0..8, data.get_bits(0..8)),
+                Len::bit9 =>{
 
+                    self.ucsrnb.update(|ctrl| {
+                        ctrl.set_bit(0, data.get_bits(8..1)); 
+                    });
+                    
+                    self.udr.set_bits(0..8,data.get_bits(0..8));
+
+                }
             }
         }
-    }
-
-
-    /// storing in UDR for 9 bit data
-    pub fn storing_UDR_9 (&self,data: Volatile<u32>,Len: datalen){
-
-        unsafe {  self.ucsrnb.update(|ctrl| {
-                   ctrl.set_bit(0, get_bit(&data,8)); 
-        });
-        let mut i = 0;
-        while i < 8 {
-        
-            self.udr.set_bit(i,get_bit(&data,i));
-            i=i+1;
-
-        }
-    }
-    }
-
+    }  
 
     // interrupts and Flags 
 
@@ -89,7 +83,10 @@ impl Usart{
 
     /// set TXEN bit to 0 to disable the Transmitter
     pub fn Transmitter_disable(&mut self) {
-                    // check for data in Transmit Buffer
+         
+        /// check for data in Transmit Buffer and Tansmit shift register
+        while !(git_bit(&self.uscrna,6) & get_bit(&self.uscrna,5) ) {};
+        
         unsafe{
         self.ucsrnb.set_bit(3,false);
 
