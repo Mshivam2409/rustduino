@@ -21,14 +21,7 @@ pub mod atmega2560p {
         pub mod interrupts;
 
         pub mod pin;
-
     }
-    /// Serial communication (COM).
-    pub mod com {
-        pub mod i2c;
-
-        //pub mod usart;
-
 }
 
 /// Library for ATmega328P chip.
