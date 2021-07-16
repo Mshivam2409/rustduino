@@ -34,7 +34,7 @@ impl Usart{
 
     // initialization
 
-    /// set TXEN bit to 1 to enable the Transmitter 
+    ///This function is to enable the Transmitter 
     pub fn Transmitter_enable(&mut self) {
         unsafe {
 
@@ -43,12 +43,13 @@ impl Usart{
         }               
     }  
 
-    /// storing data in Transmit Buffer 
+    /// storing data in Transmit Buffer it takes parameter as a u32 and anddata bit length
     pub fn Transmitting_data (&self,data: Volatile<u32>,Len: datalen) {
         unsafe{
             let mut ucsrna = self.ucsrna ;
             let mut udren = ucsrna.get_bit(6);
-
+            
+            /// checks if the Transmit buffer is empty to receive data
             while ( !( ucsrna & (1<<udren))) {};
 
             match Len{
@@ -81,10 +82,10 @@ impl Usart{
         }
     }
 
-    /// set TXEN bit to 0 to disable the Transmitter
+    ///This function is used to disable the Transmitter
     pub fn Transmitter_disable(&mut self) {
          
-        /// check for data in Transmit Buffer and Tansmit shift register
+        /// check for data in Transmit Buffer and Tansmit shift register, if data is present in either then disabling of transmitter is not effective
         while !(git_bit(&self.uscrna,6) & get_bit(&self.uscrna,5) ) {};
         
         unsafe{
