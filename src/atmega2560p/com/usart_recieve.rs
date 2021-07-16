@@ -113,7 +113,12 @@ impl Usart{
     }
    }
 
-  
+   ///This function is used to recieve data of one frame. 
+   ///But it only functions when already data is available for read.which can be checked by available function.
+   ///Either 5 to 8 bits and 9 bits of data can be recieved from this function.
+   ///In case of 5 to 8 bits this function returns u8.
+   ///In case of 9 bits it retuns u32 of which first 9 bits are data recieved and remaining bits are insignificant.
+   ///In case ,if an frame error or parity error occurs, this function returns -1.
    pub fn read(&mut self)->Option<Volatile<u8>,Volatile<u32>>{
        unsafe{
         let  ucsrc=read_volatile(&self.ucsrc);
@@ -144,26 +149,4 @@ impl Usart{
     }
        }
     }
-    ///This function sends a character byte
-    pub fn Transmit_data (&self,data: Volatile<u8>) {
-        unsafe{
-            let ucsrna = read_volatile(&self.ucsra) ;
-            let txc = ucsrna.get_bit(6);
-
-            while ( !( txc)) {
-                let ucsrna = read_volatile(&self.ucsra) ;
-                let txc = ucsrna.get_bit(6);
-            };
-              self.udr.write(data);
-                
-        }
-    }
-    ///this function send data type of string
-    pub fn write_string(&mut self,data:String){
-      for b in data.byte(){
-          self.Transmit_data(b);
-      }
-    } 
-
-
 }

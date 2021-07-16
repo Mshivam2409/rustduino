@@ -35,7 +35,7 @@ impl Usart{
     // initialization setting begin function 
 
     ///This function is to enable the Transmitter 
-    pub fn Transmitter_enable(&mut self) {
+    pub fn Transmit_enable(&mut self) {
         unsafe {
 
             self.ucsrnb.set_bit(3,true);
@@ -108,7 +108,7 @@ impl Usart{
     }
 
     ///This function is used to disable the Transmitter
-    pub fn Transmitter_disable(&mut self) {
+    pub fn Transmit_disable(&mut self) {
          
         /// check for data in Transmit Buffer and Tansmit shift register, if data is present in either then disabling of transmitter is not effective
         while !(git_bit(&self.uscrna,6) & get_bit(&self.uscrna,5) ) {};
@@ -117,5 +117,30 @@ impl Usart{
         self.ucsrnb.set_bit(3,false);
 
         }
-    }      
+    }  
+    
+     ///This function sends a character byte
+     pub fn Transmit_data (&self,data: Volatile<u8>) {
+        unsafe{
+            let ucsrna = read_volatile(&self.ucsra) ;
+            let txc = ucsrna.get_bit(6);
+
+            while ( !( txc)) {
+                let ucsrna = read_volatile(&self.ucsra) ;
+                let txc = ucsrna.get_bit(6);
+            };
+              self.udr.write(data);
+                
+        }
+    }
+    ///this function send data type of string
+    pub fn write_string(&mut self,data:String){
+        self.Transmit_enable();
+      for b in data.byte(){
+          self.Transmit_data(b);
+      }
+      self.Transmit_disable();
+    } 
+     
+     
 }
