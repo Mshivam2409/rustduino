@@ -3,8 +3,8 @@
 #![deny(warnings)]
 
 /// Crates included which are to be used for the Blinking LED example.
-use rustduino::atmega2560p::hal::pin::Pins;
-use rustduino::atmega2560p::hal::watchdog::WatchDog;
+use rustduino::hal::pin::Pins;
+use rustduino::hal::watchdog::WatchDog;
 
 #[no_mangle]
 pub fn main() {
