@@ -74,3 +74,42 @@ pub enum UsartPolarity {
 }
 
 
+/// This structure contains various registers needed to control usart communication
+/// through ATMEGA320P device.
+/// USART0 is controlled by a total of 6 registers stored through this structure. 
+#[repr(C, packed)]
+pub struct Usart {
+    ucsra : Volatile<u8>,
+    ucsrb : Volatile<u8>,
+    ucsrc : Volatile<u8>,
+    _pad  : Volatile<u8>,                                    // Padding to look for empty memory space.
+    ubrrl : Volatile<u8>,
+    ubrrh : Volatile<u8>,
+    udr   : Volatile<u8>,    
+}
+
+
+/// Various implementation functions for the USART protocol.
+impl Usart {
+    /// This creates a new memory mapped structure of the USART0 for it's control.
+    pub unsafe fn new(num : UsartNum) -> &'static mut Usart {
+        match num {
+           UsartNum::usart0 =>{ &mut *(0xC0 as *mut Usart)  },
+        }
+    }
+
+    /// Function to disable global interrupts for smooth non-interrupted functioning of USART.
+    fn disable(&mut self) {
+        unsafe {
+            // Disable global interrupts.
+            interrupt::Interrupt::disable(&mut interrupts::Interrupt::new());
+        }
+    }
+
+    /// Function to re-enable global interrupts.
+    fn enable(&mut self) {
+        unsafe {
+            // Enable global interrupts.
+            interrupt::Interrupt::enable(&mut interrupt::Interrupt::new());
+        }
+    }
