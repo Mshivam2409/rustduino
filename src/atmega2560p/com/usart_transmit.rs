@@ -112,9 +112,7 @@ impl Usart{
     ///This enables parity generator for the frame 
     pub fn parity_enable(&mut self){
         unsafe{
-
             self.ucsrc.set_bit(5,true); 
-
         }
     }
      
@@ -153,11 +151,11 @@ impl Usart{
     pub fn Transmit_data (&self,data: Volatile<u8>) {
         unsafe{
             let ucsra = read_volatile(&self.ucsra) ;
-            let txc = ucsrna.get_bit(6);
+            let udre = ucsra.get_bit(5);
 
-            while ( !( txc)) {
+            while ( !( udre)) {
                 let ucsra = read_volatile(&self.ucsra) ;
-                let txc = ucsra.get_bit(6);
+                let udre = ucsra.get_bit(5);
             };
               self.udr.write(data);
                 
@@ -168,8 +166,6 @@ impl Usart{
     pub fn write_string(&mut self,data:String){
         self.Transmit_enable();
       for b in data.byte(){
-          while !(avai_write()) {};
-
           self.Transmit_data(b);
       }
       self.Transmit_disable();
