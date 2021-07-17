@@ -113,6 +113,15 @@ impl Usart{
     }
    }
 
+   ///This function clears the unread data in the receive buffer by flushing it 
+   pub fn flush (){
+    unsafe {
+        self.ucsra.update(|ucsra| {
+            ucsra.set_bit(7, false);
+        });
+    }
+   }
+
    ///This function is used to recieve data of one frame. 
    ///But it only functions when already data is available for read.which can be checked by available function.
    ///Either 5 to 8 bits and 9 bits of data can be recieved from this function.

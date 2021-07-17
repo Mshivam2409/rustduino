@@ -39,7 +39,7 @@ impl Usart{
     pub fn Transmit_enable(&mut self) {
         unsafe {
 
-            self.ucsrnb.set_bit(3,true);
+            self.ucsrb.set_bit(3,true);
 
         }               
     }  
@@ -59,7 +59,7 @@ impl Usart{
                 Len::bit8 =>self.udr.set_bits(0..8, data.get_bits(0..8)),
                 Len::bit9 =>{
 
-                    self.ucsrnb.update(|ctrl| {
+                    self.ucsrb.update(|ctrl| {
                         ctrl.set_bit(0, data.get_bit(8)); 
                     });
                     
@@ -89,10 +89,10 @@ impl Usart{
     ///This functions waits for the transmission to complete by checking TXCn bit in the ucsrna register
     ///TXCn is set 1 when the transmit is completed and it can start transmitting new data 
     pub fn flush(&mut self){
-        let ucsrna = read_volatile(&self.ucsrc);
+        let ucsra = read_volatile(&self.ucsrc);
 
-        while !(ucsrna.get_bit(6)) {
-            let ucsrna = read_volatile(&self.ucsra);
+        while !(ucsra.get_bit(6)) {
+            let ucsra = read_volatile(&self.ucsra);
         };
     }
 
@@ -100,7 +100,7 @@ impl Usart{
     pub fn parity_enable(&mut self){
         unsafe{
 
-            self.ucsrnc.set_bit(5,true); 
+            self.ucsrc.set_bit(5,true); 
 
         }
     }
@@ -109,7 +109,7 @@ impl Usart{
     pub fn parity_disable(&mut self){
          
         unsafe{
-            self.ucsrnc.set_bit(5,false); 
+            self.ucsrc.set_bit(5,false); 
         }
 
     }
@@ -118,33 +118,33 @@ impl Usart{
     ///used as the transmitter output pin and functions as a normal I/O pin
     pub fn Transmit_disable(&mut self) {
 
-         let uscrna6=git_bit(&self.uscrna,6);
-         let uscrna5=get_bit(&self.uscrna,5);
+         let uscra6=git_bit(&self.uscra,6);
+         let uscra5=get_bit(&self.uscra,5);
 
         ///check for data in Transmit Buffer and Tansmit shift register,
         ///if data is present in either then disabling of transmitter is not effective
-        while !(uscrna6 & uscrna5) {
+        while !(uscra6 & uscra5) {
 
-            let uscrna6=git_bit(&self.uscrna,6);
-            let uscrna5=get_bit(&self.uscrna,5);
+            let uscra6=git_bit(&self.uscra,6);
+            let uscra5=get_bit(&self.uscra,5);
 
         };
         
         unsafe{
 
-        self.ucsrnb.set_bit(3,false);
+        self.ucsrb.set_bit(3,false);
         }
     }  
     
     ///This function sends a character byte of 5,6,7 or 8 bits
     pub fn Transmit_data (&self,data: Volatile<u8>) {
         unsafe{
-            let ucsrna = read_volatile(&self.ucsra) ;
+            let ucsra = read_volatile(&self.ucsra) ;
             let txc = ucsrna.get_bit(6);
 
             while ( !( txc)) {
-                let ucsrna = read_volatile(&self.ucsra) ;
-                let txc = ucsrna.get_bit(6);
+                let ucsra = read_volatile(&self.ucsra) ;
+                let txc = ucsra.get_bit(6);
             };
               self.udr.write(data);
                 
