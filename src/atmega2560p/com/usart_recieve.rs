@@ -39,8 +39,16 @@ impl Usart{
         let  ucsrc=read_volatile(&self.ucsrc);
         let  ucsrb=read_volatile(&self.ucsrb);
         if ucsrc.gets_bits(1..3)==0b11 && ucsrb.get_bit(2){
-
-            while !(self.available()){};
+            let mut i=100;
+            while !(self.available()){
+                if i!=0 {
+                    rustduino::delay::delay_ms(1000);
+                     i=i-1;
+                 }
+                 else{
+                     unreachable!();
+                 }
+            }
             let ucsra=read_volatile(&self.ucsra);
             let ucsrb=read_volatile(&self.ucsrb);
             let mut udr=read_volatile(&mut self.udr);
@@ -54,9 +62,16 @@ impl Usart{
             }
         }
         else{
+            let mut i=100;
             while !(self.available()){
-                let ucsra=read_volatile(&self.ucsra);
-            };
+                if i!=0 {
+                    rustduino::delay::delay_ms(1000);
+                     i=i-1;
+                 }
+                 else{
+                     unreachable!();
+                 }
+            }
             let ucsra=read_volatile(&self.ucsra);
             let mut udr=read_volatile(&mut self.udr);
             if ucsra.get_bits(2..5)!=0b000{
