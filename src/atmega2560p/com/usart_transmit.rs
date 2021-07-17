@@ -34,7 +34,8 @@ impl Usart{
 
     // initialization setting begin function 
 
-    ///This function is to enable the Transmitter 
+    ///This function is to enable the Transmitter
+    ///Once it is enabled it takes control of the TXDn pin as a transmitting output   
     pub fn Transmit_enable(&mut self) {
         unsafe {
 
@@ -43,14 +44,12 @@ impl Usart{
         }               
     }  
 
-    /// storing data in Transmit Buffer it takes parameter as a u32 and anddata bit length
+    /// storing data in Transmit Buffer it takes parameter as a u32 and and data bit length
     pub fn Transmitting_data (&self,data: Volatile<u32>,Len: datalen) {
         unsafe{
-            let mut ucsrna = self.ucsrna ;
-            let mut udren = ucsrna.get_bit(6);
             
             /// checks if the Transmit buffer is empty to receive data
-            while ( !( ucsrna & (1<<udren))) {};
+            while !(avai_write()) {};
 
             match Len{
 
@@ -72,6 +71,7 @@ impl Usart{
     }  
 
     ///This function tells if you can write in transmit buffer or not by checking UDREn
+    /// if UDREn bit is set means you transmit buffer is empty and ready to receive data 
     pub fn avai_write(&mut self) -> bool{
         
         unsafe {
@@ -86,7 +86,8 @@ impl Usart{
         }
     }
     
-    ///This functions waits for the transmission to complete
+    ///This functions waits for the transmission to complete by checking TXCn bit in the ucsrna register
+    ///TXCn is set 1 when the transmit is completed and it can start transmitting new data 
     pub fn flush(&mut self){
         let ucsrna = read_volatile(&self.ucsrc);
 
@@ -95,7 +96,7 @@ impl Usart{
         };
     }
 
-    ///this enables parity generator for the frame
+    ///This enables parity generator for the frame 
     pub fn parity_enable(&mut self){
         unsafe{
 
@@ -103,7 +104,8 @@ impl Usart{
 
         }
     }
-
+     
+    ///This disables the parity generator for the frame 
     pub fn parity_disable(&mut self){
          
         unsafe{
@@ -112,13 +114,15 @@ impl Usart{
 
     }
 
-    ///This function is used to disable the Transmitter
+    ///This function is used to disable the Transmitter and once disabled the TXDn pin is no longer
+    ///used as the transmitter output pin and functions as a normal I/O pin
     pub fn Transmit_disable(&mut self) {
 
          let uscrna6=git_bit(&self.uscrna,6);
          let uscrna5=get_bit(&self.uscrna,5);
 
-        /// check for data in Transmit Buffer and Tansmit shift register, if data is present in either then disabling of transmitter is not effective
+        ///check for data in Transmit Buffer and Tansmit shift register,
+        ///if data is present in either then disabling of transmitter is not effective
         while !(uscrna6 & uscrna5) {
 
             let uscrna6=git_bit(&self.uscrna,6);
@@ -132,8 +136,8 @@ impl Usart{
         }
     }  
     
-     ///This function sends a character byte
-     pub fn Transmit_data (&self,data: Volatile<u8>) {
+    ///This function sends a character byte of 5,6,7 or 8 bits
+    pub fn Transmit_data (&self,data: Volatile<u8>) {
         unsafe{
             let ucsrna = read_volatile(&self.ucsra) ;
             let txc = ucsrna.get_bit(6);
@@ -146,7 +150,8 @@ impl Usart{
                 
         }
     }
-    ///this function send data type of string
+
+    ///This function send data type of string byte by byte
     pub fn write_string(&mut self,data:String){
         self.Transmit_enable();
       for b in data.byte(){
