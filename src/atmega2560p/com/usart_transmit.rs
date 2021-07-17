@@ -180,10 +180,18 @@ impl Usart{
         unsafe{
             let ucsra = read_volatile(&self.ucsra) ;
             let udre = ucsra.get_bit(5);
-
+            let mut i=100;
             while ( !( udre)) {
                 let ucsra = read_volatile(&self.ucsra) ;
                 let udre = ucsra.get_bit(5);
+
+                if i!=0 {
+                    delay_ms(1000);
+                    i=i-1;
+                }
+                else{
+                    unreachable!();
+                }
 
             };
               self.udr.write(data);
