@@ -230,9 +230,20 @@ Following is the cumulative function for initializing a particular USART and it 
 ### Data Transmission
 
 To Transmit data the you need to enable the USART Transmitter, which is enabled by
-setting the Transmit Enable(TXEN) bit in the UCSRnB Register. When the Transmitter
+setting the Transmit Enable(TXEN) bit to 1 in the UCSRnB Register. When the Transmitter
 is enabled the TxDn functions as the Transmitter's serial output. Initialization
 should be done before transmission.
+
+``` rust
+    pub fn Transmit_enable(&mut self) {
+        unsafe {
+
+            self.ucsrb.set_bit(3,true);
+
+        }               
+    }  
+
+```
 
 For sending Frames with **5-8 Data bits** Transmission is initiated by loading the
 data to the transmit buffer,which can be done by writing to the UDRn I/O location.
@@ -242,6 +253,44 @@ it transmits one frame at the Baud rate, U2X bit.
 For sending Frames with **9 Data Bits** we have to store the 9th bit in the TXB8 in
 UCSRnB, before the low byte character is written to the UDRn.
 
+Following is the code for transmitting data string byte by byte.
+``` rust
+    pub fn Transmit_data (&self,data: Volatile<u8>) {
+        unsafe{
+            let ucsra = read_volatile(&self.ucsra) ;
+            let udre = ucsra.get_bit(5);
+            let mut i=100;
+            while ( !( udre)) {
+                let ucsra = read_volatile(&self.ucsra) ;
+                let udre = ucsra.get_bit(5);
+
+                if i!=0 {
+                    delay_ms(1000);
+                    i=i-1;
+                }
+                else{
+                    unreachable!();
+                }
+
+            };
+              self.udr.write(data);
+                
+        }
+    }
+
+    pub fn write(&mut self,data:String){
+        self.Transmit_enable();
+      for b in data.byte(){
+          self.Transmit_data(b);
+      }
+      self.Transmit_disable();
+    } 
+   pub fn write(&mut self,data:u32){
+       let mut v=Vec::new();
+   }
+
+```
+
 Usart Transmitter has two Flags, **USART Data Register Empty**(UDREn) and 
 **Tranfer Complete** (TXCn), to indicate its state. The **UDREn** Flag indicates the
 state of Transfer Buffer, it is set when the Transfer Buffer is empty and is cleared
@@ -250,10 +299,50 @@ The **TXCn** is Flag bit is set 1 when entire frame in the transmit shift regist
 has been shifted out and no new data is present in the transmit buffer it can
 automatically br cleared if a interrupt is set up or by writing 1 to its bit.
 
-Parity generator calculates the parity for a serial data Frame and if parity bit is
-set 1 transmitter control logic inserts parity in serial frame.To disable the
-Transmitter, shift and buffer must not contain any data to be transmitted.Once
-disabled, it will no longer override TxDn pin.
+Parity generator calculates the parity for a serial data Frame and if parity bit(UPMn1 bit) is
+set 1 transmitter control logic automatically inserts parity in serial frame.
+
+``` rust
+    pub fn parity_enable(&mut self){
+        unsafe{
+            self.ucsrc.set_bit(5,true); 
+        }
+    }
+```
+
+To disable the Transmitter, shift register and transmit buffer must not contain any data to be transmitted which is
+checked by the TXCn and UDREn bit in UCSRnA register respectively.Once disabled, it will no longer override TxDn
+pin.
+
+``` rust 
+
+    pub fn Transmit_disable(&mut self) {
+
+         let uscra6=git_bit(&self.uscra,6);
+         let uscra5=get_bit(&self.uscra,5);
+         let mut i=100; 
+        
+        while !(uscra6 & uscra5) {
+
+            let uscra6=git_bit(&self.uscra,6);
+            let uscra5=get_bit(&self.uscra,5);
+
+            if i!=0 {
+                delay_ms(1000);
+                i=i-1;
+            }
+            else{
+                unreachable!();
+            }
+
+        };
+        
+        unsafe{
+
+        self.ucsrb.set_bit(3,false);
+        }
+    }  
+```
 
 ### Data Receiving
 
