@@ -21,7 +21,7 @@ const  AHT10_INIT_NORMAL_MODE : u8=   0x00;  //enable normal mode
 const  AHT10_INIT_CYCLE_MODE  : u8=  0x20;  //enable cycle mode
 const  AHT10_INIT_CMD_MODE    : u8=  0x40;  //enable command mode
 const  AHT10_INIT_CAL_ENABLE  : u8=  0x08;  //load factory calibration coeff
-
+const  AHT10_INIT_BUSY        : u8=  0x08;
 
 const  AHT10_DATA_MEASURMENT_CMD  :u8=0x33;  //no info in datasheet!!! my guess it is DAC resolution, saw someone send 0x00 instead
 const  AHT10_DATA_NOP             :u8=0x00; //no info in datasheet!!!
@@ -39,10 +39,11 @@ const AHT10_ERROR                :u8=0xFF ;   //returns 255, if communication er
 
 
 let mut vec : FixedSliceVec<u8> = FixedSliceVec::new(&mut []);       
-pub fn _init_(&mut self) {
+let mut address=AHT10_ADDRESS_0X38; //isko bhi global karna hoga kya
+
+pub fn new()-> &'static mut Self {
     delay_ms(20); //20ms delay to wake up
-    let mut address=AHT10_ADDRESS_0X38;//isko bhi global karna hoga kya
-    //let mut buf:[u8,8];//isko initialise krna hoga kya
+    //let mut address=AHT10_ADDRESS_0X38;//isko bhi global karna hoga kya
     soft_reset();
     if !intialise(){
         !panic("Could not intialise!");
@@ -50,31 +51,45 @@ pub fn _init_(&mut self) {
 
 }                  
 
-pub fn soft_reset(&mut self,address:u8){
+pub fn soft_reset(&mut self){
     
     vec=vec![u8,AHT10_SOFT_RESET_CMD];
-    write_to_slave(address,&vec);//yeh bool return kar raha hai...ese likhna sahi hoga kya ?
+    if !write_to_slave(address,&vec){
+        !panic("Error!");
+    }                                  //yeh bool return kar raha hai...ese likhna sahi hoga kya ?
     delay_ms(20);
     
 }
 
 pub fn initialise(&mut self){
     vec=vec![u8,AHT10_INIT_CMD,0x08,0x00];
-    write_to_slave(address,&vec);
+    if !write_to_slave(address,&vec){
+        !panic("error!");
+    }
     wait_for_idle();
-    if !status() && 
+    if status()!=AHT10_INIT_CAL_ENABLE{//yeh python vale code se check karne ek bar ...not sure mene sahi ki hu ya nhi
+        return False;
+    }
+    return True;
 }
 
 pub fn read_to_buffer(&mut self){
-    read_from_slave(address,&vec);
+    if !read_from_slave(address,&vec){
+        !panic("Error!");
+    }
 }
 
 pub fn trigger_slave(&mut self){
     vec=vec![u8,AHT10_START_MEASURMENT_CMD,0x33,0x00];//start measurement
-    write_to_slave(address,&vec);
+    if !write_to_slave(address,&vec){
+        !panic("Error!");
+    }
 }
-
+//yeh python vale code se check karne ek bar ...not sure mene sahi ki hu ya nhi
 pub fn wait_for_idle(&mut self){
+    while status()==AHT10_INIT_BUSY{
+        delay_ms(5);
+    }
 
     delay_ms(5);
 }
@@ -91,14 +106,14 @@ pub fn status(&mut self){
 
 pub fn realative_humidity(&mut self){
     perform_measurement();
-    let mut humid =(vec[1]<<12)|(vec[2]<<4)|(vec[3]>>4);
-    humid =humid*100/0x100000;
+    let mut humid:u32 =(vec[1]<<12)|(vec[2]<<4)|(vec[3]>>4);
+    humid =(humid*100)/0x100000;
     return humid;
 }
 
 pub fn temperature(&mut self){
     perform_measurement();
-    let mut temp=((vec[3]&0xF)<<16)|vec[4]<<8|vec[5];
+    let mut temp:u32=((vec[3]&0xF)<<16)|vec[4]<<8|vec[5];
     temp=((temp*200.0)/0x100000)-50;
     return temp;
 }   
