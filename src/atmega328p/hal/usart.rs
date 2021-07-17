@@ -113,3 +113,48 @@ impl Usart {
             interrupt::Interrupt::enable(&mut interrupt::Interrupt::new());
         }
     }
+
+     /// This function will return the Number of the USART according to the address.
+     fn get_num(&self) -> UsartNum {
+        let address = (self as *const Usart) as u8;             // Gets address of usart structure.
+        match address {
+            // Return the number of USART used based on the address read.
+            0xC0  => UsartNum::usart0,
+            _     => unreachable!(),
+        }
+    }
+
+    /// Function to get the port containing bits to
+    /// manipulate Recieve,Transmit and XCK bit of the particular USART.
+    fn get_port(&self) -> port::Port {
+        let num : UsartNum = self.get_num();
+        unsafe {
+            match num {
+                UsartNum::usart0 => { port::Port::new(D) },
+            }
+        }
+    }
+
+    /// Function to return the index of xck bit in the port.
+    fn get_xck(&self) -> u8 {
+        let num : UsartNum = self.get_num();
+        match num {
+            UsartNum::usart0 => { usart0_xck },
+        }
+    }
+    
+    /// Function to return the index of transmit bit in the port.
+    fn get_td(&self) -> u8 {
+        let num : UsartNum = self.get_num();
+        match num {
+            UsartNum::usart0 => { usart0_td },
+        }
+    }
+
+    /// Function to return the index of recieve bit in the port.
+    fn get_rd(&self) -> u8 {
+        let num : UsartNum = self.get_num();
+        match num {
+            UsartNum::usart0 => { usart0_rd },
+        }
+    }
