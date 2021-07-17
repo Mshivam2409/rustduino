@@ -8,6 +8,11 @@ pub enum Temp_sensor {
     AHT10_SENSOR ,
 }
 
+
+pub struct AHT10 {
+    address: Volatile<u8>,
+}
+
 const AHT10_ADDRESS_0X38  :u8= 0x38;      //chip I2C address no.1 for AHT10/AHT15/AHT20, address pin connected to GND
 const AHT10_ADDRESS_0X39 :u8=0x39;         //chip I2C address no.2 for AHT10 only, address pin connected to Vcc
 
@@ -38,21 +43,23 @@ const AHT10_ERROR                :u8=0xFF ;   //returns 255, if communication er
 
 
 
-let mut vec : FixedSliceVec<u8> = FixedSliceVec::new(&mut []);       
-let mut address=AHT10_ADDRESS_0X38; //isko bhi global karna hoga kya
+     
+//let mut address=AHT10_ADDRESS_0X38; //isko bhi global karna hoga kya
+impl AHT10 {
 
 pub fn new()-> &'static mut Self {
     delay_ms(20); //20ms delay to wake up
     //let mut address=AHT10_ADDRESS_0X38;//isko bhi global karna hoga kya
-    soft_reset();
+    soft_reset();  // not sure on this
+
     if !intialise(){
         !panic("Could not intialise!");
     }
-
+  unsafe { &mut *(0x38 as *mut Self) }
 }                  
 
-pub fn soft_reset(&mut self){
-    
+pub fn soft_reset(&mut self) {
+    let mut vec : FixedSliceVec<u8> = FixedSliceVec::new(&mut []);  
     vec=vec![u8,AHT10_SOFT_RESET_CMD];
     if !write_to_slave(address,&vec){
         !panic("Error!");
@@ -61,7 +68,8 @@ pub fn soft_reset(&mut self){
     
 }
 
-pub fn initialise(&mut self){
+pub fn initialise(&mut self) -> bool{
+    let mut vec : FixedSliceVec<u8> = FixedSliceVec::new(&mut []);  
     vec=vec![u8,AHT10_INIT_CMD,0x08,0x00];
     if !write_to_slave(address,&vec){
         !panic("error!");
@@ -80,6 +88,7 @@ pub fn read_to_buffer(&mut self){
 }
 
 pub fn trigger_slave(&mut self){
+    let mut vec : FixedSliceVec<u8> = FixedSliceVec::new(&mut []);  
     vec=vec![u8,AHT10_START_MEASURMENT_CMD,0x33,0x00];//start measurement
     if !write_to_slave(address,&vec){
         !panic("Error!");
@@ -116,4 +125,5 @@ pub fn temperature(&mut self){
     let mut temp:u32=((vec[3]&0xF)<<16)|vec[4]<<8|vec[5];
     temp=((temp*200.0)/0x100000)-50;
     return temp;
-}   
+ }   
+}
