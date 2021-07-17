@@ -17,7 +17,7 @@ use bit_field::BitField;
 use core;
 use core::ptr::read_volatile;
 use volatile::Volatile;
-use rustduino::atmega2560p::{usart_initialize,usart_initialize::*};
+use rustduino::atmega2560p::{usart_initialize,usart_initialize::*,usart_recieve::*,usart::transmit::*};
 
 ///This struct contains all 4 usart in Arduino Mega arranged in a array
 ///First a new Serial is need to be created to access all usarts.
