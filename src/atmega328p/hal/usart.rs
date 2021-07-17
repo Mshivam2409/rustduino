@@ -158,3 +158,4 @@ impl Usart {
             UsartNum::usart0 => { usart0_rd },
         }
     }
+}
