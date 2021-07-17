@@ -14,11 +14,9 @@
 //     You should have received a copy of the GNU Affero General Public License
 //     along with this program.  If not, see <https://www.gnu.org/licenses/>
 
-
 //! This files contain the code for combining all serial ports into one structure for easier implementation.
 //! See the section 22 of ATMEGA2560P datasheet.
 //! https://ww1.microchip.com/downloads/en/devicedoc/atmel-2549-8-bit-avr-microcontroller-atmega640-1280-1281-2560-2561_datasheet.pdf
-
 
 /// Crates which would be used in the implementation.
 /// We will be using standard volatile and bit_field crates now for a better read and write.
@@ -29,7 +27,6 @@ use rustduino::atmega2560p::{
     usart_initialize, usart_initialize::*, usart_recieve::*, usart_transmit::*,
 };
 use volatile::Volatile;
-
 
 ///This struct contains all 4 usart in Arduino Mega arranged in a array
 ///First a new Serial is need to be created to access all usarts.

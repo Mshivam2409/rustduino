@@ -187,7 +187,23 @@ impl Usart {
         }
         self.Transmit_disable();
     }
-    pub fn write(&mut self, data: u32) {
-        let mut v = Vec::new();
+    ///This function send data type of int(u32) byte by byte
+    pub fn writeint(&mut self, data: u32) {
+        let s2 = String::from("0123456789");
+        let mut _s = String::new();
+        let mut s1 = String::new();
+        let mut a = data;
+        while a != 0 {
+            let rem = a % 10;
+            a = a / 10;
+            let s3 = &s2[rem..(rem + 1)];
+            _s = _s + &s3;
+        }
+        for i in (0..(_s.len())).rev() {
+            let s3 = &_s[i..(i + 1)];
+            s1 = s1 + &s3;
+        }
+
+        self.write(s1);
     }
 }
