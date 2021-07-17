@@ -34,6 +34,7 @@ impl Usart{
    ///In case of 9 bits it retuns u32 of which first 9 bits are data recieved and remaining bits are insignificant.
    ///In case ,if an frame error or parity error occurs, this function returns -1.
    pub fn recieve_data(&mut self)->Option<Volatile<u8>,Volatile<u32>>{
+       self.recieve_enable();
     unsafe{
         let  ucsrc=read_volatile(&self.ucsrc);
         let  ucsrb=read_volatile(&self.ucsrb);
@@ -67,6 +68,7 @@ impl Usart{
             
         }
     }
+    self.recieve_disable();
  } 
  ///This function can be used to check frame error(excluding parity checker).
  ///It returns true if error occurs,else false.
@@ -102,7 +104,7 @@ impl Usart{
         });
     }
    }
-   ///This function checks the
+   ///This function checks if the data is avialable for readig or not.
    pub fn available(&mut self)->bool{
     let ucsra=read_volatile(&self.ucsra);
     if ucsra.get_bit(7){
@@ -113,6 +115,15 @@ impl Usart{
     }
    }
 
+   ///This function clears the unread data in the receive buffer by flushing it 
+   pub fn flush (){
+    unsafe {
+        self.ucsra.update(|ucsra| {
+            ucsra.set_bit(7, false);
+        });
+    }
+   }
+
    ///This function is used to recieve data of one frame. 
    ///But it only functions when already data is available for read.which can be checked by available function.
    ///Either 5 to 8 bits and 9 bits of data can be recieved from this function.
@@ -120,33 +131,34 @@ impl Usart{
    ///In case of 9 bits it retuns u32 of which first 9 bits are data recieved and remaining bits are insignificant.
    ///In case ,if an frame error or parity error occurs, this function returns -1.
    pub fn read(&mut self)->Option<Volatile<u8>,Volatile<u32>>{
+
        unsafe{
         let  ucsrc=read_volatile(&self.ucsrc);
         let  ucsrb=read_volatile(&self.ucsrb);
         if ucsrc.gets_bits(1..3)==0b11 && ucsrb.get_bit(2){
-        let ucsra=read_volatile(&self.ucsra);
-        let ucsrb=read_volatile(&self.ucsrb);
-        let mut udr=read_volatile(&mut self.udr);
-        if ucsra.get_bits(2..5)!=0b000{
+
+         let ucsra=read_volatile(&self.ucsra);
+         let ucsrb=read_volatile(&self.ucsrb);
+         let mut udr=read_volatile(&mut self.udr);
+           if ucsra.get_bits(2..5)!=0b000{
             Some(-1)
-        }
-        else{
+           }
+           else{
             let rxb8=ucsrb.get_bits(1..2);
             udr=udr.set_bits(8..9,rxb8);
             Some(udr);
+          }
         }
-    }
-    else {
-        let ucsra=read_volatile(&self.ucsra);
-        let udr=read_volatile(&mut self.udr);
-        if ucsra.get_bits(2..5)!=0b000{
+        else {
+         let ucsra=read_volatile(&self.ucsra);
+         let udr=read_volatile(&mut self.udr);
+          if ucsra.get_bits(2..5)!=0b000{
             Some(-1)
-        }
-        else{
+          }
+          else{
             Some(udr);
+          }  
         }
-        
-    }
        }
     }
 }
