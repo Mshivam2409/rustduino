@@ -351,6 +351,46 @@ fn set_size(&self,size : UsartDataSize) {
 }
 
 
+    /// Function to set the parity bit in the frame of USART.
+    fn set_parity(&self,parity : UsartParity) {
+        match parity {
+            UsartParity::no => { 
+                self.ucsrc.update( |src| {
+                    src.set_bit(4,false);
+                    src.set_bit(5,false);
+                });
+            },
+            UsartParity::even => { 
+                self.ucsrc.update( |src| {
+                    src.set_bit(4,false);
+                    src.set_bit(5,true);
+                });
+            },
+            UsartParity::odd => { 
+                self.ucsrc.update( |src| {
+                    src.set_bit(4,true);
+                    src.set_bit(5,true);
+                });
+            },
+        }
+    }
+
+    /// Function to set the number of stop bits in the USART.
+    fn set_stop(&self,stop : UsartStop) {
+        match stop {
+            UsartStop::one => { 
+                self.ucsrc.update( |src| {
+                    src.set_bit(3,false);
+                });
+            },
+            UsartStop::two => { 
+                self.ucsrc.update( |src| {
+                    src.set_bit(3,true);
+                });
+            },
+        }
+    }
+
 
 
 }
