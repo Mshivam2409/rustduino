@@ -11,6 +11,7 @@ pub enum Temp_sensor {
 
 pub struct AHT10 {
     address: Volatile<u8>,
+    twi : Twi,
 }
 
 const AHT10_ADDRESS_0X38  :u8= 0x38;      //chip I2C address no.1 for AHT10/AHT15/AHT20, address pin connected to GND
@@ -60,7 +61,8 @@ impl AHT10 {
 
     pub fn soft_reset(&mut self) {
         let mut vec : FixedSliceVec<u8> = FixedSliceVec::new(&mut []);  
-        vec=vec![u8,AHT10_SOFT_RESET_CMD];
+        let dum1 :u8;
+        vec=vec![dum1,AHT10_SOFT_RESET_CMD];
         if !write_to_slave(address,&vec){
             !panic("Error!");
         }                                  //yeh bool return kar raha hai...ese likhna sahi hoga kya ?
