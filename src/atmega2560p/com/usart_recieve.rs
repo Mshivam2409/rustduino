@@ -19,6 +19,7 @@ use core::ptr::{read_volatile};
 use volatile::Volatile;
 use rustduino::atmega2560p::{usart_initialize,usart_initialize::Usart,usart_transmit};
 
+
 impl Usart{
    ///This function enables the reciever function of microcontroller, whithout enabling it no communication is possible.
    pub fn recieve_enable(&mut self){

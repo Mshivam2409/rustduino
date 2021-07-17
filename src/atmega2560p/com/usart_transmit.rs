@@ -20,6 +20,7 @@ use crate::rustduino::hal::interrupts;
 use volatile::Volatile;
 use crate::rustduino::atmega2560p::com::{usart_initialize,usart_initialize::Usart};
 
+
 /// to select the data length to be transmitted
 #[derive(Clone, Copy)]
 pub enum datalen {
