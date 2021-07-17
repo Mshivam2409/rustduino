@@ -60,7 +60,17 @@ impl Usart{
         unsafe{            
             // Checks if the Transmit buffer is empty to receive data.
             // If not the program waits till the time comes.
-            while avai_write()==false { };
+            let mut i : i32 = 10;
+            while avai_write()==false { 
+                if i!=0 {
+                    delay_ms(1000);
+                    i=i-1;
+                }
+                else {
+                    unreachable!()
+                }
+            };
+
             // If the frame is ready for transmission then the appropriate place is written.
             match len {
                 UsartDataSize::five  =>  self.udr.set_bits(0..5, data.get_bits(0..5)),
@@ -77,48 +87,44 @@ impl Usart{
         }
     }  
     
-    ///This functions waits for the transmission to complete by checking TXCn bit in the ucsrna register
-    ///TXCn is set 1 when the transmit is completed and it can start transmitting new data 
+    /// This functions waits for the transmission to complete by checking TXCn bit in the ucsrna register
+    /// TXCn is set 1 when the transmit is completed and it can start transmitting new data 
     pub fn flush(&mut self){
-        let ucsra = unsafe { read_volatile(&self.ucsrc) };
-         
-        let mut i=100;
+        let mut ucsra = unsafe { read_volatile(&self.ucsrc) }; 
+        let mut i : i32 =10;
         while ucsra.get_bit(6)==false {
-            let ucsra = unsafe { read_volatile(&self.ucsra) };
-            
+            ucsra = unsafe { read_volatile(&self.ucsra) };    
             if i!=0 {
                 delay_ms(1000);
                 i=i-1;
             }
-            else{
-                unreachable!();
+            else {
+                unreachable!()
             }
-
         };
     }
     
 
-    ///This function is used to disable the Transmitter and once disabled the TXDn pin is no longer
-    ///used as the transmitter output pin and functions as a normal I/O pin
-    pub fn Transmit_disable(&mut self) {
+    /// This function is used to disable the Transmitter and once disabled the TXDn pin is no longer
+    /// used as the transmitter output pin and functions as a normal I/O pin
+    pub fn transmit_disable(&mut self) {
 
-        let uscra6=git_bit(&self.uscra,6);
-        let uscra5=get_bit(&self.uscra,5);
-        let mut i=100; 
-       ///check for data in Transmit Buffer and Tansmit shift register,
-       ///if data is present in either then disabling of transmitter is not effective
-       while !(uscra6 & uscra5) {
+        let mut uscra6=git_bit(&self.uscra,6);
+        let mut uscra5=get_bit(&self.uscra,5);
+        let mut i : i32 = 100;
 
-           let uscra6=git_bit(&self.uscra,6);
-           let uscra5=get_bit(&self.uscra,5);
-
-           if i!=0 {
+        /// Check for data in Transmit Buffer and Transmit shift register,
+        /// if data is present in either then disabling of transmitter is not effective
+        while uscra6==false || uscra5==false {
+            uscra6=git_bit(&self.uscra,6);
+            uscra5=get_bit(&self.uscra,5);
+            if i!=0 {
                delay_ms(1000);
                i=i-1;
-           }
-           else{
-               unreachable!();
-           }
+            }
+            else {
+               unreachable!()
+            }
         };
         
         unsafe {
@@ -133,7 +139,8 @@ impl Usart{
         unsafe{
             let ucsra = read_volatile(&self.ucsra) ;
             let udre = ucsra.get_bit(5);
-            let mut i=100;
+            
+            let mut i : i32 =100;
             while ( !( udre)) {
                 let ucsra = read_volatile(&self.ucsra) ;
                 let udre = ucsra.get_bit(5);
@@ -147,8 +154,8 @@ impl Usart{
                 }
 
             };
-              self.udr.write(data);
-                
+            
+            self.udr.write(data);
         }
     }
 
