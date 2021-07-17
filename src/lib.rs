@@ -26,7 +26,7 @@ pub mod atmega2560p {
     /// Serial communication (COM).
     pub mod com {
         pub mod i2c;
-
+    }
         //pub mod usart;
 
 }
@@ -49,5 +49,6 @@ pub mod atmega328p {
     }
 }
 
+pub mod avr;
 pub mod config;
 pub mod delay;
