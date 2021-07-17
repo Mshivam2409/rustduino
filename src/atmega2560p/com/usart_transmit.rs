@@ -20,7 +20,6 @@ use crate::rustduino::hal::interrupts;
 use volatile::Volatile;
 use crate::rustduino::atmega2560p::com::{usart_initialize,usart_initialize::Usart};
 
-
 /// to select the data length to be transmitted
 #[derive(Clone, Copy)]
 pub enum datalen {
@@ -70,6 +69,11 @@ impl Usart{
             }
         }
     }  
+
+    pub fn begin(&mut self,baud: i64){
+         
+
+    }
 
     ///This function tells if you can write in transmit buffer or not by checking UDREn
     /// if UDREn bit is set means you transmit buffer is empty and ready to receive data 
