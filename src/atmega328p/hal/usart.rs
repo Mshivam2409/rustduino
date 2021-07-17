@@ -199,4 +199,59 @@ impl Usart
             }
         }
     }
+     /// Function to set various modes of the USART which is activated.
+     pub fn mode_select(&mut self,mode : UsartModes) {
+        match mode {
+            UsartModes::norm_async                                  // Puts the USART into asynchronous mode.
+            | UsartModes::dou_async => {
+                    self.ucsrc.update( |src| {
+                        src.set_bit(6,false);
+                        src.set_bit(7,false);
+                    }); 
+            },
+            UsartModes::master_sync
+            | UsartModes::slave_sync => {                           // Puts the USART into synchronous mode.
+                    self.ucsrc.update( |src| {
+                        src.set_bit(6,true);
+                        src.set_bit(7,false);
+                    });
+                    self.ucsra.update( |sra| {
+                        sra.set_bit(1,false);
+                    });
+            },
+        }
+        match mode {
+            UsartModes::norm_async => {                              // Keeps the USART into normal asynchronous mode.
+                    self.ucsra.update( |sra| {
+                        sra.set_bit(1,false);
+                    });
+            },
+            UsartModes::dou_async => {                               // Puts the USART into double speed asynchronous mode.
+                    self.ucsra.update( |sra| {
+                        sra.set_bit(1,true);
+                    });
+            },
+            UsartModes::master_sync => {                             // Puts the USART into master synchronous mode
+                    let port : (port::Port) = self.get_port();
+                    let xck : u8 = self.get_xck();
+                    unsafe {
+                        write_volatile(&mut port.ddr,port.ddr |= (1 << xck));
+                    }
+                    // port.ddr.update( |ddr| {
+                    //     ddr.set_bit(xck,true);
+                    // });       
+            },
+            UsartModes::slave_sync => {                              // Puts the USART into slave synchronous mode
+                    let port : (port::Port) = self.get_port();
+                    let xck : u8 = self.get_xck();
+                    unsafe {
+                        write_volatile(&mut port.ddr,port.ddr &= !(1 << xck));
+                    }    
+                    // port.ddr.update( |ddr| {
+                    //     ddr.set_bit(xck,false);
+                    // });
+            },
+        }
+    }
+
 }
