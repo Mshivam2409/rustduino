@@ -165,4 +165,38 @@ impl Usart
             UsartNum::usart0 => { usart0_rd },
         }
     }
+
+    /// Function to check the mode of the USART.
+    /// Returns 0 for asynchronous and 1 for synchronous.
+    fn get_mode(&self) -> bool {
+        let num : UsartNum = self.get_num();
+        let mut src = self.ucsrc.read();
+        src = src & (1<<6);
+        if src==0 { return false; }
+        else { return true; }
+    }
+
+    /// Function to set the clock polarity mode which is of use in the
+    /// recieve and transmission implementation of USART.
+    pub fn set_polarity(&self,mode : UsartPolarity) {
+        if(self.get_mode()==false) { 
+            self.ucsrc.update( |src| {
+                src.set_bit(0,false);
+            }); 
+        }
+        else {
+            match mode {
+                UsartPolarity::output_rise => { 
+                    self.ucsrc.update( |src| {
+                        src.set_bit(0,false);
+                    });
+                },
+                UsartPolarity::input_rise => { 
+                    self.ucsrc.update( |src| {
+                        src.set_bit(0,true);
+                    });
+                },
+            }
+        }
+    }
 }
