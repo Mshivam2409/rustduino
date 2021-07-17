@@ -79,6 +79,17 @@ fn set_clock(&self,baud : i64,mode : UsartModes) {
 The UCSZn2 in UCSRnB bits combined with the UCSZn1 bit in UCSRnC sets the number of data bits in a
 frame the Receiver and Transmitter use. UCSZn2 is 1 for 9 bit data else 0 for 5,6,7,8 bit data. See sction 22.10.3 and 22.10.4 in Atmel manual.
 
+ | UCSZn2 | UCSZn1 | UCSZn0 |  Character Size |
+ |--------|--------|--------|-----------------|
+ |  0     |   0    |   0    |  5-bit          |
+ |  0     |   0    |   1    |  6-bit          |
+ |  0     |   1    |   0    |  7-bit          |
+ |  0     |   1    |   1    |  8-bit          |
+ |  1     |   1    |   1    |  9-bit          |
+
+<details>
+  <summary>Click to expand code</summary>
+  
 ``` rust
 fn set_size(&self,size : UsartDataSize) {
         match size {
@@ -128,6 +139,8 @@ fn set_size(&self,size : UsartDataSize) {
         }
     }
 ```
+</details>
+
 Parity is optional i.e. can be odd, even or no parity bit. Check section 22.10.4 in atmael manual.
 
 ``` rust
@@ -245,24 +258,73 @@ disabled, it will no longer override TxDn pin.
 ### Data Receiving
 
 USART Receiver function similar to Transmitter except for some features like error
-detection. To enable Data Receiver, write 1 to Receive Enable (RXENn) bit in the
+detection. To enable Data Receiver, write 1 to Receive Enable (RXENn) bit i.e BIT 4 in the
 UCSRnB Register. Then the RxDn pin functions as Receiver's serial input.
+
+``` rust
+impl Usart{
+   ///This function enables the reciever function of microcontroller, whithout enabling it no communication is possible.
+   pub fn recieve_enable(&mut self){
+    unsafe {
+        self.ucsrb.update(|ucsrb| {
+            ucsrb.set_bit(4, true);
+        });
+    }
+   }
+```
 
 **Note**  Initialization should be done before any reception can take place.
 
 For Frames with **5-8 Data bits**, the Data reception begins when a **VALID** start
-bit is detected. Each bit following start bit will be sampled at baus rate and
+bit is detected. Each bit following start bit will be sampled at baud rate and
 shifted to Receive Shift Register until first stop bit is detected, the second stop
 bit is Ignored. Once the first stop bit is recieved then the data of Shift Register 
 is send to Recieve Buffer which Can be Read from UDRn. For Frames **9 Data bits**,
 the 9th bit is Read from the RXB8n bit in UCSRnB before reading the low bits from the
 UDRn.
+``` rust
+   pub fn recieve_data(&mut self)->Option<Volatile<u8>,Volatile<u32>>{
+       self.recieve_enable();
+    unsafe{
+        let  ucsrc=read_volatile(&self.ucsrc);
+        let  ucsrb=read_volatile(&self.ucsrb);
+        if ucsrc.gets_bits(1..3)==0b11 && ucsrb.get_bit(2){
 
+            while !(self.available()){};
+            let ucsra=read_volatile(&self.ucsra);
+            let ucsrb=read_volatile(&self.ucsrb);
+            let mut udr=read_volatile(&mut self.udr);
+            if ucsra.get_bits(2..5)!=0b000{
+                Some(-1)
+            }
+            else{
+                let rxb8=ucsrb.get_bits(1..2);
+                udr=udr.set_bits(8..9,rxb8);
+                Some(udr);
+            }
+        }
+        else{
+            while !(self.available()){
+                let ucsra=read_volatile(&self.ucsra);
+            };
+            let ucsra=read_volatile(&self.ucsra);
+            let mut udr=read_volatile(&mut self.udr);
+            if ucsra.get_bits(2..5)!=0b000{
+                Some(-1)
+            }
+            else{
+                Some(udr);
+            }
+            
+        }
+    }
+    self.recieve_disable();
+ } 
+ ```
 The Receiver has one flag to indicate its state, which is Receive complete(RXCn), it
 is one if unread data exist in Receive buffer and zero if no unread data in Receive
 buffer. If Receiver is disabled so the Receive buffer is flushed and this flag
 becomes 0. 
-
 The USART Receiver has three error flags which are Frame Error(FEn), Data OverRun
 (DORn) and Parity Error(UPEn). The **Frame Error** indicates the state of the first
 stop bit in the next readable Frame in ppresent in the receive buffer, it is one when
@@ -273,10 +335,107 @@ from UDRn. The DORn Flag is cleared when the frame received was successfully mov
 from the Shift Register to the receive buffer.The **Parity Error** (UPEn) bit is set
 if next character to be read from the recieve buffer had parity error and Parity
 checking is enabled at that point (UPMn1 = 1). This bit is valid until the receive
-buffer (UDRn) is read. 
+buffer (UDRn) is read.
+
+<details>
+  <summary>Click to expand code</summary>
+
+``` rust  
+ pub fn error_check(&mut self)->bool{
+      unsafe{
+      let ucsra=read_volatile(&self.ucsra);
+      if ucsra.get_bits(2..4)!=0b00{
+          true
+      }
+      else{
+          false
+      }
+    }
+  }
+  ///This function can be used to check parity error.
+  ///It returns true if error occurs,else false.
+  pub fn parity_check(&mut self)->bool{
+      unsafe{
+    let ucsra=read_volatile(&self.ucsra);
+    if ucsra.get_bit(4)==0b1{
+        true
+    } 
+    else{
+        false
+    }
+   }
+  }
+ ///This function disables the reciever function of microcontroller.
+  pub fn recieve_disable(&mut self){
+    unsafe {
+        self.ucsrb.update(|ucsrb| {
+            ucsrb.set_bit(4, false);
+        });
+    }
+   }
+   ///This function checks if the data is avialable for readig or not.
+   pub fn available(&mut self)->bool{
+    let ucsra=read_volatile(&self.ucsra);
+    if ucsra.get_bit(7){
+        true
+    }
+    else{
+        false
+    }
+   }
+   ///This function clears the unread data in the receive buffer by flushing it 
+   pub fn flush (){
+    unsafe {
+        self.ucsra.update(|ucsra| {
+            ucsra.set_bit(7, false);
+        });
+    }
+   }
+```
+</details>
 
 Unlike Transmitter, Disabling Receiver is immediate. Data from ongoing Reception is
 lost forever, and disabled receiver will no longer override the RxD pin.
+In case ,if an frame error or parity error occurs, this function returns -1.
+
+<details>
+  <summary>Click to expand code</summary>
+
+``` rust
+   pub fn read(&mut self)->Option<Volatile<u8>,Volatile<u32>>{
+
+       unsafe{
+        let  ucsrc=read_volatile(&self.ucsrc);
+        let  ucsrb=read_volatile(&self.ucsrb);
+        if ucsrc.gets_bits(1..3)==0b11 && ucsrb.get_bit(2){
+
+         let ucsra=read_volatile(&self.ucsra);
+         let ucsrb=read_volatile(&self.ucsrb);
+         let mut udr=read_volatile(&mut self.udr);
+           if ucsra.get_bits(2..5)!=0b000{
+            Some(-1)
+           }
+           else{
+            let rxb8=ucsrb.get_bits(1..2);
+            udr=udr.set_bits(8..9,rxb8);
+            Some(udr);
+          }
+        }
+        else {
+         let ucsra=read_volatile(&self.ucsra);
+         let udr=read_volatile(&mut self.udr);
+          if ucsra.get_bits(2..5)!=0b000{
+            Some(-1)
+          }
+          else{
+            Some(udr);
+          }  
+        }
+       }
+    }
+}
+```
+</details>
 
 ### Asynchronous Data Reception
 
@@ -298,6 +457,3 @@ latter can be minimized by using a low error baud rate in UBRR.
 
 The more detailed information for the USART can be found in chapter 22-23 in the
 Manual for atmega 2560p.
-
-## Code Overview
-
