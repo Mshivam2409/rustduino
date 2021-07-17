@@ -41,3 +41,12 @@ impl Serial{
      }
  }
 }
+
+impl Usart{
+    ///This function can be used to configure usart with baud rate given by user and other default settings.
+    pub fn begin(&mut self,baud:i64){
+          self.initialize(&mut self,norm_async,baud,one,eight,even);
+          self.recieve_enable();
+          self.tranmit_enable();
+    }
+}
