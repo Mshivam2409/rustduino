@@ -47,83 +47,83 @@ const AHT10_ERROR                :u8=0xFF ;   //returns 255, if communication er
 //let mut address=AHT10_ADDRESS_0X38; //isko bhi global karna hoga kya
 impl AHT10 {
 
-pub fn new()-> &'static mut Self {
-    delay_ms(20); //20ms delay to wake up
-    //let mut address=AHT10_ADDRESS_0X38;//isko bhi global karna hoga kya
-    soft_reset();  // not sure on this
+    pub fn new()-> &'static mut Self {
+        delay_ms(20); //20ms delay to wake up
+        //let mut address=AHT10_ADDRESS_0X38;//isko bhi global karna hoga kya
+        self.soft_reset();  // not sure on this
 
-    if !intialise(){
-        !panic("Could not intialise!");
-    }
-  unsafe { &mut *(0x38 as *mut Self) }
-}                  
+        if !self.intialise(){
+            !panic("Could not intialise!");
+        }
+    unsafe { &mut *(0x38 as *mut Self) }
+    }                  
 
-pub fn soft_reset(&mut self) {
-    let mut vec : FixedSliceVec<u8> = FixedSliceVec::new(&mut []);  
-    vec=vec![u8,AHT10_SOFT_RESET_CMD];
-    if !write_to_slave(address,&vec){
-        !panic("Error!");
-    }                                  //yeh bool return kar raha hai...ese likhna sahi hoga kya ?
-    delay_ms(20);
-    
-}
+    pub fn soft_reset(&mut self) {
+        let mut vec : FixedSliceVec<u8> = FixedSliceVec::new(&mut []);  
+        vec=vec![u8,AHT10_SOFT_RESET_CMD];
+        if !write_to_slave(address,&vec){
+            !panic("Error!");
+        }                                  //yeh bool return kar raha hai...ese likhna sahi hoga kya ?
+        delay_ms(20);
+        
+    }
 
-pub fn initialise(&mut self) -> bool{
-    let mut vec : FixedSliceVec<u8> = FixedSliceVec::new(&mut []);  
-    vec=vec![u8,AHT10_INIT_CMD,0x08,0x00];
-    if !write_to_slave(address,&vec){
-        !panic("error!");
+    pub fn initialise(&mut self) -> bool{
+        let mut vec : FixedSliceVec<u8> = FixedSliceVec::new(&mut []);  
+        vec=vec![u8,AHT10_INIT_CMD,0x08,0x00];
+        if !write_to_slave(address,&vec){
+            !panic("error!");
+        }
+        wait_for_idle();
+        if self.status()!=AHT10_INIT_CAL_ENABLE{//yeh python vale code se check karne ek bar ...not sure mene sahi ki hu ya nhi
+            return False;
+        }
+        return True;
     }
-    wait_for_idle();
-    if status()!=AHT10_INIT_CAL_ENABLE{//yeh python vale code se check karne ek bar ...not sure mene sahi ki hu ya nhi
-        return False;
-    }
-    return True;
-}
 
-pub fn read_to_buffer(&mut self){
-    if !read_from_slave(address,&vec){
-        !panic("Error!");
+    pub fn read_to_buffer(&mut self){
+        if !read_from_slave(address,&vec){
+            !panic("Error!");
+        }
     }
-}
 
-pub fn trigger_slave(&mut self){
-    let mut vec : FixedSliceVec<u8> = FixedSliceVec::new(&mut []);  
-    vec=vec![u8,AHT10_START_MEASURMENT_CMD,0x33,0x00];//start measurement
-    if !write_to_slave(address,&vec){
-        !panic("Error!");
+    pub fn trigger_slave(&mut self){
+        let mut vec : FixedSliceVec<u8> = FixedSliceVec::new(&mut []);  
+        vec=vec![u8,AHT10_START_MEASURMENT_CMD,0x33,0x00];//start measurement
+        if !write_to_slave(address,&vec){
+            !panic("Error!");
+        }
     }
-}
-//yeh python vale code se check karne ek bar ...not sure mene sahi ki hu ya nhi
-pub fn wait_for_idle(&mut self){
-    while status()==AHT10_INIT_BUSY{
+    //yeh python vale code se check karne ek bar ...not sure mene sahi ki hu ya nhi
+    pub fn wait_for_idle(&mut self){
+        while self.status()==AHT10_INIT_BUSY{
+            delay_ms(5);
+        }
+
         delay_ms(5);
     }
 
-    delay_ms(5);
-}
+    pub fn perform_measurement(&mut self){
+        self.trigger_slave();
+        self.wait_for_idle();
+        self.read_to_buffer();
+    }
+    pub fn status(&mut self){
+        self.read_to_buffer();
+        return(vec[0]);
+    }
 
-pub fn perform_measurement(&mut self){
-    trigger_slave();
-    wait_for_idle();
-    read_to_buffer();
-}
-pub fn status(&mut self){
-    read_to_buffer();
-    return(vec[0]);
-}
+    pub fn realative_humidity(&mut self){
+        self.perform_measurement();
+        let mut humid:u32 =(vec[1]<<12)|(vec[2]<<4)|(vec[3]>>4);
+        humid =(humid*100)/0x100000;
+        return humid;
+    }
 
-pub fn realative_humidity(&mut self){
-    perform_measurement();
-    let mut humid:u32 =(vec[1]<<12)|(vec[2]<<4)|(vec[3]>>4);
-    humid =(humid*100)/0x100000;
-    return humid;
-}
-
-pub fn temperature(&mut self){
-    perform_measurement();
-    let mut temp:u32=((vec[3]&0xF)<<16)|vec[4]<<8|vec[5];
-    temp=((temp*200.0)/0x100000)-50;
-    return temp;
- }   
+    pub fn temperature(&mut self){
+        self.perform_measurement();
+        let mut temp:u32=((vec[3]&0xF)<<16)|vec[4]<<8|vec[5];
+        temp=((temp*200.0)/0x100000)-50;
+        return temp;
+    }   
 }
