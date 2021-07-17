@@ -12,7 +12,16 @@ use crate::rustduino::atmega328p::hal::port;
 use crate::rustduino::atmega328p::hal::power;
 use crate::delay::{delay_s,delay_ms,delay_us};
 
-
+/// Some useful constants regarding bit manipulation for USART.
+/// Position of clock mode adjuster (xck) bit.
+const usart0_xck : u8 = 4;
+/// Position of Transmission bit for various USART.
+const usart0_td  : u8 = 1;
+/// Position of Reciever bit for various USART.
+const usart0_rd  : u8 = 0;
+/// System Clock Crystal Oscillator Frequency in mHz.
+const f_osc : f64 = 1.0000;
+const multiply : i32 = 1000000;
 
 
 /// Selection of which USART is to be used.
