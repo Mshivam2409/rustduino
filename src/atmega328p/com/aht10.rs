@@ -80,4 +80,21 @@ pub fn perform_measurement(&self){
     wait_for_idle();
     read_to_buffer();
 }
-    
+pub fn status(&mut self){
+    read_to_buffer();
+    return(vec[0]);
+}
+
+pub fn realative_humidity(&mut self){
+    perform_measurement();
+    let mut humid =(vec[1]<<12)|(vec[2]<<4)|(vec[3]>>4);
+    humid =humid*100/0x100000;
+    return humid;
+}
+
+pub fn temperature(&mut self){
+    perform_measurement();
+    let mut temp=((vec[3]&0xF)<<16)|vec[4]<<8|vec[5];
+    (temp=(temp*200.0)/0x100000)-50;
+    return temp;
+}   
