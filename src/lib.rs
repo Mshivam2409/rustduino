@@ -9,17 +9,19 @@
 pub mod atmega328p {
     /// Hardware Abstraction Library (HAL).
     pub mod hal {
-        pub mod port;
-
-        pub mod pins;
-
-        pub mod watchdog;
+        pub mod gating;
 
         pub mod interrupt;
 
+        pub mod pins;
+
+        pub mod port;
+
         pub mod power;
 
-        pub mod gating;
+        pub mod usart;
+
+        pub mod watchdog;
     }
 }
 
