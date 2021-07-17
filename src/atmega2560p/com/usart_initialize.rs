@@ -15,6 +15,15 @@
 //     along with this program.  If not, see <https://www.gnu.org/licenses/>
 
 
+//! ATMEGA2560P has total of 4 USARTs.
+//! This is the file which contains functions for initializing USART in various modes.
+//! It has functions to check for the power reduction settings and start the USART in a user defined modes.
+//! After setting into a particular USART the functions are available to generate the clock with given
+//! frequency and baud rate. After which the frame for data tracking is set using various frame modes.
+//! See the section 22 of ATMEGA2560P datasheet.
+//! https://ww1.microchip.com/downloads/en/devicedoc/atmel-2549-8-bit-avr-microcontroller-atmega640-1280-1281-2560-2561_datasheet.pdf
+
+
 /// Crates which would be used in the implementation.
 /// We will be using standard volatile and bit_field crates now for a better read and write.
 use core::ptr::{read_volatile,write_volatile};
@@ -349,7 +358,19 @@ impl Usart {
         });
     }
 
-    
+    /// Return 1 if no ongoing transmission or recieval from the USART.
+    /// Return 0 if their is some transfer going on.
+    fn check_ongoing(&self) -> bool {
+        let ucsra = unsafe { read_volatile(&self.ucsra) };    
+        if ucsra.get_bit(6)==true && ucsra.get_bit(7)==false {
+            true
+        }
+        else {
+            false
+        }
+    }
+
+
     /// Clock Generation is one of the initialization steps for the USART.
     /// If the USART is in Asynchronous mode or Master Synchronous mode then a internal
     /// clock generator is used while for Slave Synchronous mode we will use a external 
@@ -483,9 +504,8 @@ impl Usart {
     pub fn initialize(&mut self,mode : UsartModes,baud : i64,stop : UsartStop,size : UsartDataSize,parity : UsartParity) {
         // Check that recieve and transmit buffers are completely cleared
         // and no transmission or recieve of data is already in process.
-        self.enable();                                             //  Enable Global interrupts.
-        self.check();
-        
+        while self.check_ongoing()==false { };
+
         self.disable();                                            //  Disable Global interrupts.
         let num : UsartNum = self.get_num();
         
