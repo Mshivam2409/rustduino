@@ -90,25 +90,32 @@ pub struct Usart {
 
 
 /// Various implementation functions for the USART protocol.
-impl Usart {
+impl Usart 
+{
     /// This creates a new memory mapped structure of the USART0 for it's control.
-    pub unsafe fn new(num : UsartNum) -> &'static mut Usart {
-        match num {
+    pub unsafe fn new(num : UsartNum) -> &'static mut Usart
+     {
+        match num 
+        {
            UsartNum::usart0 =>{ &mut *(0xC0 as *mut Usart)  },
         }
     }
 
     /// Function to disable global interrupts for smooth non-interrupted functioning of USART.
-    fn disable(&mut self) {
-        unsafe {
+    fn disable(&mut self) 
+    {
+        unsafe 
+        {
             // Disable global interrupts.
             interrupt::Interrupt::disable(&mut interrupts::Interrupt::new());
         }
     }
 
     /// Function to re-enable global interrupts.
-    fn enable(&mut self) {
-        unsafe {
+    fn enable(&mut self) 
+    {
+        unsafe
+        {
             // Enable global interrupts.
             interrupt::Interrupt::enable(&mut interrupt::Interrupt::new());
         }
