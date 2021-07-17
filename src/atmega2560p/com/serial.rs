@@ -26,7 +26,7 @@ use bit_field::BitField;
 use core;
 use core::ptr::read_volatile;
 use volatile::Volatile;
-use rustduino::atmega2560p::{usart_initialize,usart_initialize::*};
+use rustduino::atmega2560p::{usart_initialize,usart_initialize::*,usart_recieve::*,usart_transmit::*};
 
 
 ///This struct contains all 4 usart in Arduino Mega arranged in a array
@@ -50,4 +50,13 @@ impl Serial{
          }
      }
  }
+}
+
+impl Usart{
+    ///This function can be used to configure usart with baud rate given by user and other default settings.
+    pub fn begin(&mut self,baud:i64){
+          self.initialize(&mut self,norm_async,baud,one,eight,even);
+          self.recieve_enable();
+          self.tranmit_enable();
+    }
 }

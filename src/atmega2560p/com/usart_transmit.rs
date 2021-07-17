@@ -26,7 +26,8 @@
 use core::ptr::{read_volatile,write_volatile};
 use bit_field::BitField;
 use volatile::Volatile;
-use crate::rustduino::hal::interrupts;
+use crate::rustduino::delay::{delay_ms};
+use crate::rustduino::atmega2560p::hal::interrupts;
 use crate::rustduino::atmega2560p::com::usart_initialize::{Usart,UsartDataSize};
                   
 
@@ -76,26 +77,48 @@ impl Usart{
         }
     }  
     
-    /// This functions waits for the transmission to complete by checking TXCn bit in the ucsrna register
-    /// TXCn is set 1 when the transmit is completed and it can start transmitting new data. 
-    pub fn flush(&mut self) {
-        let mut ucsra = unsafe { read_volatile(&self.ucsra) };
+    ///This functions waits for the transmission to complete by checking TXCn bit in the ucsrna register
+    ///TXCn is set 1 when the transmit is completed and it can start transmitting new data 
+    pub fn flush(&mut self){
+        let ucsra = unsafe { read_volatile(&self.ucsrc) };
+         
+        let mut i=100;
         while ucsra.get_bit(6)==false {
-            ucsra = unsafe { read_volatile(&self.ucsra) };
+            let ucsra = unsafe { read_volatile(&self.ucsra) };
+            
+            if i!=0 {
+                delay_ms(1000);
+                i=i-1;
+            }
+            else{
+                unreachable!();
+            }
+
         };
     }
+    
 
-    /// This function is used to disable the Transmitter and once disabled the TXDn pin is no longer
-    /// used as the transmitter output pin and functions as a normal I/O pin.
-    pub fn transmit_disable(&mut self) {
-         let mut uscra6=get_bit(&self.uscra,6);
-         let mut uscra5=get_bit(&self.uscra,5);
+    ///This function is used to disable the Transmitter and once disabled the TXDn pin is no longer
+    ///used as the transmitter output pin and functions as a normal I/O pin
+    pub fn Transmit_disable(&mut self) {
 
-        // Check for data in Transmit Buffer and Transmit shift register,
-        // if data is present in either then disabling of transmitter is not effective.
-        while uscra6==false || uscra5==false {
-            uscra6=get_bit(&self.uscra,6);
-            uscra5=get_bit(&self.uscra,5);
+        let uscra6=git_bit(&self.uscra,6);
+        let uscra5=get_bit(&self.uscra,5);
+        let mut i=100; 
+       ///check for data in Transmit Buffer and Tansmit shift register,
+       ///if data is present in either then disabling of transmitter is not effective
+       while !(uscra6 & uscra5) {
+
+           let uscra6=git_bit(&self.uscra,6);
+           let uscra5=get_bit(&self.uscra,5);
+
+           if i!=0 {
+               delay_ms(1000);
+               i=i-1;
+           }
+           else{
+               unreachable!();
+           }
         };
         
         unsafe {
@@ -105,24 +128,40 @@ impl Usart{
         }
     }  
     
-    /// This function sends a character byte of 5,6,7 or 8 bits.
+    ///This function sends a character byte of 5,6,7 or 8 bits
     pub fn transmit_data (&self,data: Volatile<u8>) {
-        // Checks if the Transmit buffer is empty to receive data.
-        // If not the program waits till the time comes.
-        while avai_write()==false { };
-            
-        self.udr.write(data);    
+        unsafe{
+            let ucsra = read_volatile(&self.ucsra) ;
+            let udre = ucsra.get_bit(5);
+            let mut i=100;
+            while ( !( udre)) {
+                let ucsra = read_volatile(&self.ucsra) ;
+                let udre = ucsra.get_bit(5);
+
+                if i!=0 {
+                    delay_ms(1000);
+                    i=i-1;
+                }
+                else{
+                    unreachable!();
+                }
+
+            };
+              self.udr.write(data);
+                
+        }
     }
 
-    /// This function send data type of string byte by byte.
-    pub fn write_string(&mut self,data:&str) {
-        self.transmit_enable();
-        
-        for b in data.byte() {
-            while avai_write()==false { };
-            self.transmit_data(b);
+    ///This function send data type of string byte by byte
+    pub fn write(&mut self,data:String){
+        self.Transmit_enable();
+        for b in data.byte(){
+            self.Transmit_data(b);
         }
-        
-        self.transmit_disable();
-    }      
+        self.Transmit_disable();
+    } 
+    
+    pub fn write(&mut self,data:u32) {
+        let mut v=Vec::new();
+    }
 }
