@@ -254,4 +254,61 @@ impl Usart
         }
     }
 
+           /// Function to set the power reduction register so that USART functioning is allowed.
+                 
+    fn set_power(&self,num : UsartNum) 
+    {
+        unsafe {
+            let pow : (power::Power) = power::Power::new();
+                }     
+        match num {
+            UsartNum::usart0 => { 
+                unsafe {
+                    write_volatile(&mut pow.prr0,pow.prr0 &= !(1 << 1));
+                }
+                // pow.prr0.update( |prr| {
+                //     prr.set_bit(1,false);
+                // }); 
+            },
+            
+        }
+    }
+
+
+    /// Sets the interrupt bits in UCSRB so that ongoing
+    /// data transfers can be tracked.
+    fn check(&self) {
+        self.ucsrb.update( |srb| {
+              srb.set_bit(6,true);
+              srb.set_bit(7,true);
+        });
+    }
+
+
+    /// Clock Generation is one of the initialization steps for the USART.
+    /// If the USART is in Asynchronous mode or Master Synchronous mode then a internal
+    /// clock generator is used while for Slave Synchronous mode we will use a external 
+    /// clock generator.
+    /// Set the baud rate frequency for USART.
+    /// Baud rate settings is used to set the clock for USART.
+    fn set_clock(&self,baud : i64,mode : UsartModes) {
+        match mode {
+            UsartModes::norm_async => { 
+                let mut ubrr : u32 = ((f_osc*multiply)/(16*baud))-1; 
+            },
+            UsartModes::dou_async => {
+                let mut ubrr : u32 = ((f_osc*multiply)/(8*baud))-1;
+            },
+            UsartModes::master_sync => {
+                let mut ubrr : u32 = ((f_osc*multiply)/(2*baud))-1;
+            },
+            _ => unreachable!(),
+        }
+        self.ubrrl.set_bits(0..8,ubrr);
+        self.ubrrh.set_bits(0..4,(ubrr>>8));
+    }
+
+
+
+
 }
