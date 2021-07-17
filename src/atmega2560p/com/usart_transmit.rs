@@ -49,7 +49,16 @@ impl Usart{
         unsafe{
             
             /// checks if the Transmit buffer is empty to receive data
-            while !(avai_write()) {};
+            let mut i=100;
+            while !(avai_write()) {
+                if i!=0 {
+                    delay_ms(1000);
+                    i=i-1;
+                }
+                else{
+                    unreachable!();
+                }
+            };
 
             match Len{
 
@@ -103,11 +112,22 @@ impl Usart{
     ///TXCn is set 1 when the transmit is completed and it can start transmitting new data 
     pub fn flush(&mut self){
         let ucsra = read_volatile(&self.ucsrc);
-
+         
+        let mut i=100;
         while !(ucsra.get_bit(6)) {
             let ucsra = read_volatile(&self.ucsra);
-        };
+            
+            if i!=0 {
+                delay_ms(1000);
+                i=i-1;
+            }
+            else{
+                unreachable!();
+            }
+
+        };            
     }
+    
 
     ///This enables parity generator for the frame 
     pub fn parity_enable(&mut self){
@@ -131,13 +151,21 @@ impl Usart{
 
          let uscra6=git_bit(&self.uscra,6);
          let uscra5=get_bit(&self.uscra,5);
-
+         let mut i=100; 
         ///check for data in Transmit Buffer and Tansmit shift register,
         ///if data is present in either then disabling of transmitter is not effective
         while !(uscra6 & uscra5) {
 
             let uscra6=git_bit(&self.uscra,6);
             let uscra5=get_bit(&self.uscra,5);
+
+            if i!=0 {
+                delay_ms(1000);
+                i=i-1;
+            }
+            else{
+                unreachable!();
+            }
 
         };
         
@@ -156,6 +184,7 @@ impl Usart{
             while ( !( udre)) {
                 let ucsra = read_volatile(&self.ucsra) ;
                 let udre = ucsra.get_bit(5);
+
             };
               self.udr.write(data);
                 
