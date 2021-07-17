@@ -26,7 +26,9 @@ pub mod atmega2560p {
     /// Communication Protocols
     #[cfg(feature = "atmega2560p-com")]
     pub mod com {
+        pub mod serial;
         pub mod usart;
+        pub mod usart_transmit;
     }
 }
 

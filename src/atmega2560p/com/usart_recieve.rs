@@ -29,7 +29,7 @@ use volatile::Volatile;
 use rustduino::atmega2560p::{usart_initialize,usart_initialize::Usart};
 
 
-impl Usart{
+impl Usart {
     /// This function enables the reciever function of microcontroller, whithout enabling it no communication is possible.
     pub fn recieve_enable(&mut self) {
         unsafe {
@@ -59,7 +59,7 @@ impl Usart{
     /// In case of 9 bits it retuns u32 of which first 9 bits are data recieved and remaining bits are insignificant.
     /// In case ,if an frame error or parity error occurs, this function returns Nothing.
     pub fn recieve_data(&mut self) -> Option<Volatile<u8>,Volatile<u32>> {
-        unsafe{
+        unsafe {
             let  ucsrc=read_volatile(&self.ucsrc);
             let  ucsrb=read_volatile(&self.ucsrb);
 
@@ -103,11 +103,11 @@ impl Usart{
                 
             }
         }
-    }
+    }    
 
-    /// This function can be used to check frame error and Data OverRun.
-    /// It returns true if error occurs else false.
-    pub fn error_check(&mut self) -> bool {
+    /// This function can be used to check frame error,Data OverRun and Parity errors.
+    /// It returns true if error occurs,else false.
+    pub fn error_check(&mut self)-> bool {
         unsafe{
             let ucsra=read_volatile(&self.ucsra);
             if ucsra.get_bits(3..5)!=0b00 {
@@ -118,6 +118,7 @@ impl Usart{
             }
         }
     }
+
 
     /// This function can be used to check parity error.
     /// It returns true if error occurs else false.
