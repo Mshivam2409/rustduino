@@ -29,11 +29,10 @@
 use core::ptr::{read_volatile,write_volatile};
 use bit_field::BitField;
 use volatile::Volatile;
-use crate::avr::__nop;
 use crate::rustduino::atmega2560p::hal::interrupts;
 use crate::rustduino::atmega2560p::hal::port;
 use crate::rustduino::atmega2560p::hal::power;
-use crate::delay::{delay_s,delay_ms,delay_us};
+use crate::delay::{delay_ms};
 
 
 /// Some useful constants regarding bit manipulation for USART.
@@ -173,10 +172,10 @@ impl Usart {
         let num : UsartNum = self.get_num();
         unsafe {
             match num {
-                UsartNum::usart0 => { port::Port::new(E) },
-                UsartNum::usart1 => { port::Port::new(D) },
-                UsartNum::usart2 => { port::Port::new(H) },
-                UsartNum::usart3 => { port::Port::new(J) },
+                UsartNum::usart0 => { port::Port::new(port::PortName::E) },
+                UsartNum::usart1 => { port::Port::new(port::PortName::D) },
+                UsartNum::usart2 => { port::Port::new(port::PortName::H) },
+                UsartNum::usart3 => { port::Port::new(port::PortName::J) },
             }
         }
     }
@@ -504,7 +503,16 @@ impl Usart {
     pub fn initialize(&mut self,mode : UsartModes,baud : i64,stop : UsartStop,size : UsartDataSize,parity : UsartParity) {
         // Check that recieve and transmit buffers are completely cleared
         // and no transmission or recieve of data is already in process.
-        while self.check_ongoing()==false { };
+        let mut i : i32 = 10;
+        while self.check_ongoing()==false { 
+            if i!=0 {
+                delay_ms(1000);
+                i=i-1;
+            }
+            else {
+                unreachable!()
+            }
+        };
 
         self.disable();                                            //  Disable Global interrupts.
         let num : UsartNum = self.get_num();

@@ -18,14 +18,13 @@
 //! See the section 22 of ATMEGA2560P datasheet.
 //! https://ww1.microchip.com/downloads/en/devicedoc/atmel-2549-8-bit-avr-microcontroller-atmega640-1280-1281-2560-2561_datasheet.pdf
 
+use bit_field::BitField;
 /// Crates which would be used in the implementation.
 /// We will be using standard volatile and bit_field crates now for a better read and write.
-use bit_field::BitField;
-use core;
 use core::ptr::read_volatile;
-use rustduino::atmega2560p::{
-    usart_initialize, usart_initialize::*, usart_recieve::*, usart_transmit::*,
-};
+use rustduino::atmega2560p::usart_initialize::*;
+use rustduino::atmega2560p::usart_recieve::*;
+use rustduino::atmega2560p::usart_transmit::*;
 use volatile::Volatile;
 
 ///This struct contains all 4 usart in Arduino Mega arranged in a array
@@ -36,8 +35,9 @@ pub struct Serial {
 }
 
 impl Serial {
-    //This function creates a new Serial struct.
-    pub fn new() {
+    /// This function creates a new Serial struct.
+    /// The struct serial will contain all the USARTs at one place.
+    pub fn new() -> Serial {
         unsafe {
             Serial {
                 usart: [
@@ -52,10 +52,9 @@ impl Serial {
 }
 
 impl Usart {
-    ///This function can be used to configure usart with baud rate given by user and other default settings.
     pub fn begin(&mut self, baud: i64) {
         self.initialize(&mut self, norm_async, baud, one, eight, even);
         self.recieve_enable();
-        self.tranmit_enable();
+        self.transmit_enable();
     }
 }
