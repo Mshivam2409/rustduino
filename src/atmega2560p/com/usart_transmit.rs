@@ -70,11 +70,19 @@ impl Usart{
         }
     }  
 
-    pub fn begin(&mut self,baud: i64){
-         
+    pub fn begin(&mut self, baud: i64, mode:UsartModes, stop : UsartStop, size : UsartDataSize, parity : UsartParity){
+        
+        initialize(&mut self, mode, baud, stop, size, parity);
+        Transmit_enable(); 
+        recieve_enable();
 
     }
+    
+    pub fn end(){
 
+        Transmit_disable();
+        recieve_disable();
+    }
     ///This function tells if you can write in transmit buffer or not by checking UDREn
     /// if UDREn bit is set means you transmit buffer is empty and ready to receive data 
     pub fn avai_write(&mut self) -> bool{
