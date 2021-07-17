@@ -52,6 +52,8 @@ impl Serial {
 }
 
 impl Usart {
+    ///This function can be use to initialize with baud rate and remaining settings will be set to default
+    ///Like Mode:Normal asynchronuous,stopbit:one,data bit:8,parity type:even
     pub fn begin(&mut self, baud: i64) {
         self.initialize(&mut self, norm_async, baud, one, eight, even);
         self.recieve_enable();
