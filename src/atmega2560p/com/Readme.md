@@ -89,7 +89,7 @@ frame the Receiver and Transmitter use. UCSZn2 is 1 for 9 bit data else 0 for 5,
 
 <details>
   <summary>Click to expand code</summary>
-  
+
 ``` rust
 fn set_size(&self,size : UsartDataSize) {
         match size {
