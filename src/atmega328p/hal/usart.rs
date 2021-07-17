@@ -115,7 +115,7 @@ impl Usart {
     }
 
      /// This function will return the Number of the USART according to the address.
-     fn get_num(&self) -> UsartNum {
+    fn get_num(&self) -> UsartNum {
         let address = (self as *const Usart) as u8;             // Gets address of usart structure.
         match address {
             // Return the number of USART used based on the address read.
