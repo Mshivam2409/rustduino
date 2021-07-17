@@ -5,7 +5,7 @@ use fixed_slice_vec::FixedSliceVec;
 
 
 pub enum Temp_sensor {
-    AHT10_SENSOR = 0x00;
+    AHT10_SENSOR ,
 }
 
 const AHT10_ADDRESS_0X38  :u8= 0x38;      //chip I2C address no.1 for AHT10/AHT15/AHT20, address pin connected to GND
@@ -38,18 +38,22 @@ const AHT10_ERROR                :u8=0xFF ;   //returns 255, if communication er
 
 
 
-let mut vec:FixedSliceVec<u8> = FixedSliceVec::new(&mut []);       
+let mut vec : FixedSliceVec<u8> = FixedSliceVec::new(&mut []);       
 pub fn _init_(&mut self) {
     delay_ms(20); //20ms delay to wake up
     let mut address=AHT10_ADDRESS_0X38;//isko bhi global karna hoga kya
     //let mut buf:[u8,8];//isko initialise krna hoga kya
+    soft_reset();
+    if !intialise(){
+        !panic("Could not intialise!");
+    }
 
 }                  
 
 pub fn soft_reset(&mut self,address:u8){
     
     vec=vec![u8,AHT10_SOFT_RESET_CMD];
-    write_to_slave(address,&vec);
+    write_to_slave(address,&vec);//yeh bool return kar raha hai...ese likhna sahi hoga kya ?
     delay_ms(20);
     
 }
@@ -58,7 +62,7 @@ pub fn initialise(&mut self){
     vec=vec![u8,AHT10_INIT_CMD,0x08,0x00];
     write_to_slave(address,&vec);
     wait_for_idle();
-
+    if !status() && 
 }
 
 pub fn read_to_buffer(&mut self){
@@ -75,7 +79,7 @@ pub fn wait_for_idle(&mut self){
     delay_ms(5);
 }
 
-pub fn perform_measurement(&self){
+pub fn perform_measurement(&mut self){
     trigger_slave();
     wait_for_idle();
     read_to_buffer();
@@ -95,6 +99,6 @@ pub fn realative_humidity(&mut self){
 pub fn temperature(&mut self){
     perform_measurement();
     let mut temp=((vec[3]&0xF)<<16)|vec[4]<<8|vec[5];
-    (temp=(temp*200.0)/0x100000)-50;
+    temp=((temp*200.0)/0x100000)-50;
     return temp;
 }   
