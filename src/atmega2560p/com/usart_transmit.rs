@@ -13,21 +13,18 @@
 //     You should have received a copy of the GNU Affero General Public License
 //     along with this program.  If not, see <https://www.gnu.org/licenses/>
 
-
 //! This file contains functions to enable transmission through the USART and do the transmission.
 //! Flushing data in case of error and writing string are some complex implementations provided.
 //! See the section 22 of ATMEGA2560P datasheet.
 //! https://ww1.microchip.com/downloads/en/devicedoc/atmel-2549-8-bit-avr-microcontroller-atmega640-1280-1281-2560-2561_datasheet.pdf
 
-
-/// Crates which would be used in the implementation.
-/// We will be using standard volatile and bit_field crates now for a better read and write.
-use core::ptr::{read_volatile,write_volatile};
-use crate::rustduino::atmega2560p::com::usart_initialize::{Usart,UsartDataSize};
+use crate::rustduino::atmega2560p::com::usart_initialize::{Usart, UsartDataSize};
 use crate::rustduino::hal::interrupts;
 use bit_field::BitField;
+/// Crates which would be used in the implementation.
+/// We will be using standard volatile and bit_field crates now for a better read and write.
+use core::ptr::{read_volatile, write_volatile};
 use volatile::Volatile;
-
 
 impl Usart {
     // Initialization setting begin function
@@ -36,84 +33,80 @@ impl Usart {
     /// Once it is enabled it takes control of the TXDn pin as a transmitting output.   
     pub fn Transmit_enable(&mut self) {
         unsafe {
-            self.ucsrb.update( |srb| {
+            self.ucsrb.update(|srb| {
                 srb.set_bit(3, true);
-            });    
+            });
         }
     }
 
     /// Storing data in Transmit Buffer which takes parameter as a u32 and and data bit length.
-    pub fn transmitting_data (&self,data: Volatile<u32>,len: UsartDataSize) {
-        unsafe{            
+    pub fn transmitting_data(&self, data: Volatile<u32>, len: UsartDataSize) {
+        unsafe {
             // Checks if the Transmit buffer is empty to receive data.
             // If not the program waits till the time comes.
-            let mut i : i32 = 10;
-            while avai_write()==false { 
-                if i!=0 {
+            let mut i: i32 = 10;
+            while avai_write() == false {
+                if i != 0 {
                     delay_ms(1000);
-                    i=i-1;
-                }
-                else {
+                    i = i - 1;
+                } else {
                     unreachable!()
                 }
-            };
+            }
 
             // If the frame is ready for transmission then the appropriate place is written.
             match len {
-                UsartDataSize::five  =>  self.udr.set_bits(0..5, data.get_bits(0..5)),
-                UsartDataSize::six   =>  self.udr.set_bits(0..6, data.get_bits(0..6)),
-                UsartDataSize::seven =>  self.udr.set_bits(0..7, data.get_bits(0..7)),
-                UsartDataSize::eight =>  self.udr.set_bits(0..8, data.get_bits(0..8)),
-                UsartDataSize::nine  =>  {
-                    self.ucsrb.update( |ctrl| {
-                        ctrl.set_bit(0, data.get_bit(8)); 
+                UsartDataSize::five => self.udr.set_bits(0..5, data.get_bits(0..5)),
+                UsartDataSize::six => self.udr.set_bits(0..6, data.get_bits(0..6)),
+                UsartDataSize::seven => self.udr.set_bits(0..7, data.get_bits(0..7)),
+                UsartDataSize::eight => self.udr.set_bits(0..8, data.get_bits(0..8)),
+                UsartDataSize::nine => {
+                    self.ucsrb.update(|ctrl| {
+                        ctrl.set_bit(0, data.get_bit(8));
                     });
 
                     self.udr.set_bits(0..8, data.get_bits(0..8));
                 }
             }
         }
-    }  
-    
+    }
+
     /// This functions waits for the transmission to complete by checking TXCn bit in the ucsrna register
-    /// TXCn is set 1 when the transmit is completed and it can start transmitting new data 
-    pub fn flush(&mut self){
-        let mut ucsra = unsafe { read_volatile(&self.ucsrc) }; 
-        let mut i : i32 =10;
-        while ucsra.get_bit(6)==false {
-            ucsra = unsafe { read_volatile(&self.ucsra) };    
-            if i!=0 {
+    /// TXCn is set 1 when the transmit is completed and it can start transmitting new data
+    pub fn flush(&mut self) {
+        let mut ucsra = unsafe { read_volatile(&self.ucsrc) };
+        let mut i: i32 = 10;
+        while ucsra.get_bit(6) == false {
+            ucsra = unsafe { read_volatile(&self.ucsra) };
+            if i != 0 {
                 delay_ms(1000);
-                i=i-1;
-            }
-            else {
+                i = i - 1;
+            } else {
                 unreachable!()
             }
-        };
+        }
     }
 
     /// This function is used to disable the Transmitter and once disabled the TXDn pin is no longer
     /// used as the transmitter output pin and functions as a normal I/O pin
     pub fn transmit_disable(&mut self) {
-
-        let mut uscra6=git_bit(&self.uscra,6);
-        let mut uscra5=get_bit(&self.uscra,5);
-        let mut i : i32 = 100;
+        let mut uscra6 = git_bit(&self.uscra, 6);
+        let mut uscra5 = get_bit(&self.uscra, 5);
+        let mut i: i32 = 100;
 
         /// Check for data in Transmit Buffer and Transmit shift register,
         /// if data is present in either then disabling of transmitter is not effective
-        while uscra6==false || uscra5==false {
-            uscra6=git_bit(&self.uscra,6);
-            uscra5=get_bit(&self.uscra,5);
-            if i!=0 {
-               delay_ms(1000);
-               i=i-1;
+        while uscra6 == false || uscra5 == false {
+            uscra6 = git_bit(&self.uscra, 6);
+            uscra5 = get_bit(&self.uscra, 5);
+            if i != 0 {
+                delay_ms(1000);
+                i = i - 1;
+            } else {
+                unreachable!()
             }
-            else {
-               unreachable!()
-            }
-        };
-        
+        }
+
         unsafe {
             self.ucsrb.set_bit(3, false);
         }
@@ -124,10 +117,10 @@ impl Usart {
         unsafe {
             let ucsra = read_volatile(&self.ucsra);
             let udre = ucsra.get_bit(5);
-            
-            let mut i : i32 =100;
+
+            let mut i: i32 = 100;
             while udre == false {
-                let ucsra = read_volatile(&self.ucsra) ;
+                let ucsra = read_volatile(&self.ucsra);
                 let udre = ucsra.get_bit(5);
 
                 if i != 0 {
@@ -136,8 +129,8 @@ impl Usart {
                 } else {
                     unreachable!();
                 }
-            };
-            
+            }
+
             self.udr.write(data);
         }
     }
