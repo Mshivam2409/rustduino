@@ -11,7 +11,8 @@ pub enum Temp_sensor {
 
 pub struct AHT10 {
     address: Volatile<u8>,
-    twi : Twi,
+    i2c : Twi,
+    vec : FixedSliceVec<u8>;
 }
 
 const AHT10_ADDRESS_0X38  :u8= 0x38;      //chip I2C address no.1 for AHT10/AHT15/AHT20, address pin connected to GND
@@ -54,55 +55,60 @@ impl AHT10 {
         self.soft_reset();  // not sure on this
 
         if !self.intialise(){
-            !panic("Could not intialise!");
+            unreachable!("Could not intialise!");
         }
     unsafe { &mut *(0x38 as *mut Self) }
     }                  
 
     pub fn soft_reset(&mut self) {
-        let mut vec : FixedSliceVec<u8> = FixedSliceVec::new(&mut []);  
-        let dum1 :u8;
-        vec=vec![dum1,AHT10_SOFT_RESET_CMD];
-        if !write_to_slave(address,&vec){
-            !panic("Error!");
+        //let mut vec : FixedSliceVec<u8> = FixedSliceVec::new(&mut []);  
+        //let dum1 :u8;
+        self.vec[0]=AHT10_SOFT_RESET_CMD;
+        //vec=vec![dum1,AHT10_SOFT_RESET_CMD];
+        if !self.i2c.write_to_slave(self.address,self.vec){
+            unreachable!("Error!");
         }                                  //yeh bool return kar raha hai...ese likhna sahi hoga kya ?
         delay_ms(20);
         
     }
 
     pub fn initialise(&mut self) -> bool{
-        let mut vec : FixedSliceVec<u8> = FixedSliceVec::new(&mut []);  
-        vec=vec![u8,AHT10_INIT_CMD,0x08,0x00];
-        if !write_to_slave(address,&vec){
-            !panic("error!");
+        //let mut vec : FixedSliceVec<u8> = FixedSliceVec::new(&mut []);  
+        self.vec[0]=self.AHT10_INIT_CMD;
+        self.vec[1]=0x33;
+        self.vec[2]=0x00;
+        //vec=vec![u8,AHT10_INIT_CMD,0x08,0x00];
+        if !self.i2c.write_to_slave(self.address,self.vec){
+            unreachable!("error!");
         }
         wait_for_idle();
-        if self.status()!=AHT10_INIT_CAL_ENABLE{//yeh python vale code se check karne ek bar ...not sure mene sahi ki hu ya nhi
+        if (self.status()  & self.AHT10_INIT_CAL_ENABLE ) == False {
             return False;
         }
         return True;
     }
 
     pub fn read_to_buffer(&mut self){
-        if !read_from_slave(address,&vec){
-            !panic("Error!");
+        if !self.i2c.read_from_slave(self.address,self.vec){
+            unreachable!("Error!");
         }
     }
 
     pub fn trigger_slave(&mut self){
-        let mut vec : FixedSliceVec<u8> = FixedSliceVec::new(&mut []);  
-        vec=vec![u8,AHT10_START_MEASURMENT_CMD,0x33,0x00];//start measurement
-        if !write_to_slave(address,&vec){
-            !panic("Error!");
+        //let mut vec : FixedSliceVec<u8> = FixedSliceVec::new(&mut []);  
+        self.vec[0]=self.AHT10_START_MEASURMENT_CMD;
+        self.vec[1]=0x33;
+        self.vec[2]=0x00;
+        //vec=vec![u8,AHT10_START_MEASURMENT_CMD,0x33,0x00];//start measurement
+        if !self.i2c.write_to_slave(self.address,self.vec){
+            unreachable!("Error!");
         }
     }
-    //yeh python vale code se check karne ek bar ...not sure mene sahi ki hu ya nhi
+    
     pub fn wait_for_idle(&mut self){
-        while self.status()==AHT10_INIT_BUSY{
+        while (self.status()&& self.AHT10_INIT_BUSY)==True{
             delay_ms(5);
         }
-
-        delay_ms(5);
     }
 
     pub fn perform_measurement(&mut self){
@@ -110,21 +116,21 @@ impl AHT10 {
         self.wait_for_idle();
         self.read_to_buffer();
     }
-    pub fn status(&mut self){
+    pub fn status(&mut self)->u8{
         self.read_to_buffer();
-        return(vec[0]);
+        return self.vec[0];
     }
 
-    pub fn realative_humidity(&mut self){
+    pub fn relative_humidity(&mut self)->u32{
         self.perform_measurement();
-        let mut humid:u32 =(vec[1]<<12)|(vec[2]<<4)|(vec[3]>>4);
+        let mut humid:u32 =(self.vec[1]<<12)|(self.vec[2]<<4)|(self.vec[3]>>4);
         humid =(humid*100)/0x100000;
         return humid;
     }
 
-    pub fn temperature(&mut self){
+    pub fn temperature(&mut self)->u32{
         self.perform_measurement();
-        let mut temp:u32=((vec[3]&0xF)<<16)|vec[4]<<8|vec[5];
+        let mut temp:u32=((self.vec[3]&0xF)<<16)|self.vec[4]<<8|self.vec[5];
         temp=((temp*200.0)/0x100000)-50;
         return temp;
     }   
