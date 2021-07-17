@@ -237,9 +237,7 @@ impl Usart
                     unsafe {
                         write_volatile(&mut port.ddr,port.ddr |= (1 << xck));
                     }
-                    // port.ddr.update( |ddr| {
-                    //     ddr.set_bit(xck,true);
-                    // });       
+                    
             },
             UsartModes::slave_sync => {                              // Puts the USART into slave synchronous mode
                     let port : (port::Port) = self.get_port();
@@ -247,15 +245,12 @@ impl Usart
                     unsafe {
                         write_volatile(&mut port.ddr,port.ddr &= !(1 << xck));
                     }    
-                    // port.ddr.update( |ddr| {
-                    //     ddr.set_bit(xck,false);
-                    // });
+                  
             },
         }
     }
 
-           /// Function to set the power reduction register so that USART functioning is allowed.
-                 
+    /// Function to set the power reduction register so that USART functioning is allowed. 
     fn set_power(&self,num : UsartNum) 
     {
         unsafe {
@@ -266,9 +261,7 @@ impl Usart
                 unsafe {
                     write_volatile(&mut pow.prr0,pow.prr0 &= !(1 << 1));
                 }
-                // pow.prr0.update( |prr| {
-                //     prr.set_bit(1,false);
-                // }); 
+              
             },
             
         }
@@ -307,6 +300,55 @@ impl Usart
         self.ubrrl.set_bits(0..8,ubrr);
         self.ubrrh.set_bits(0..4,(ubrr>>8));
     }
+    
+/// Function to set the limit of data to be handled by USART.
+fn set_size(&self,size : UsartDataSize) {
+    match size {
+        UsartDataSize::five
+        | UsartDataSize::six
+        | UsartDataSize::seven
+        | UsartDataSize::eight => { 
+            self.ucsrb.update( |srb| {
+                srb.set_bit(2,false);
+            });       
+        },
+        UsartDataSize::nine => { 
+            self.ucsrb.update( |srb| {
+                srb.set_bit(2,true);
+            });
+        },
+    }
+    match size {
+        UsartDataSize::five
+        | UsartDataSize::six => { 
+            self.ucsrc.update( |src| {
+                src.set_bit(2,false);
+            });       
+        },
+        UsartDataSize::nine
+        | UsartDataSize::seven
+        | UsartDataSize::eight => { 
+            self.ucsrc.update( |src| {
+                src.set_bit(2,true);
+            });
+        },
+    }
+    match size {
+        UsartDataSize::five
+        | UsartDataSize::seven => { 
+            self.ucsrc.update( |src| {
+                src.set_bit(1,false);
+            });       
+        },
+        UsartDataSize::nine
+        | UsartDataSize::six
+        | UsartDataSize::eight => { 
+            self.ucsrc.update( |src| {
+                src.set_bit(1,true);
+            });
+        },
+    }
+}
 
 
 
