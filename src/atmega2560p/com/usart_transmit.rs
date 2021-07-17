@@ -88,9 +88,9 @@ impl Usart{
     pub fn avai_write(&mut self) -> bool{
         
         unsafe {
-            let mut ucsrc =read_volatile(&self.ucsrc);
+            let mut ucsra =read_volatile(&self.ucsra);
             
-            if ucsrc.get_bit(5) {
+            if ucsra.get_bit(5) {
                 true
             }
             else {
