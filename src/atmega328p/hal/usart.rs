@@ -1,4 +1,18 @@
-//! USART implementation
+//     RustDuino : A generic HAL implementation for Arduino Boards in Rust
+//     Copyright (C) 2021  Richa Prakash Sachan and Kshitij Kaithal, Indian Institute of Technology Kanpur
+//
+//     This program is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU Affero General Public License as published
+//     by the Free Software Foundation, either version 3 of the License, or
+//     (at your option) any later version.
+//
+//     This program is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU Affero General Public License for more details.
+//
+//     You should have received a copy of the GNU Affero General Public License
+//     along with this program.  If not, see <https://www.gnu.org/licenses/>
 
 
 /// Crates which would be used in the implementation.
@@ -391,6 +405,42 @@ fn set_size(&self,size : UsartDataSize) {
         }
     }
 
+ /// Set the frame format for USART.
+    /// A serial frame is defined to be one character of data bits with 
+    /// synchronization bits (start and stop bits), and optionally
+    /// a parity bit for error checking.
+    /// The USART accepts all 30 combinations of the following as valid frame formats.
+    fn set_frame(&self,stop : UsartStop,size : UsartDataSize,parity : UsartParity) {
+        self.set_size(size);
+        self.set_parity(parity);
+        self.set_stop(stop);
+    }
+    
 
+    /// This is the cumulative function for initializing a particular
+    /// USART and it will take all the necessary details about the mode
+    /// in which the USART pin is to be used.
+    pub fn initialize(&mut self,mode : UsartModes,baud : i64,stop : UsartStop,size : UsartDataSize,parity : UsartParity) {
+        // Check that recieve and transmit buffers are completely cleared
+        // and no transmission or recieve of data is already in process.
+        self.enable();                                             //  Enable Global interrupts.
+        self.check();
+        
+        self.disable();                                            //  Disable Global interrupts.
+        let num : UsartNum = self.get_num();
+        
+        self.set_power(num);                                       //  Set Power reduction register.
+        
+        self.mode_select(mode);                                    //  Set the USART at the given mode.
+        
+        //  Set the clock for USART according to user input.
+        if( mode == UsartModes::slave_sync )  { }
+        else { self.set_clock(baud,mode) }                         
+        
+        //  Set the frame format according to input.
+        self.set_frame(stop,size,parity);                                     
+
+        self.enable();                                             //  Enable Global interrupts.
+    }
 
 }
