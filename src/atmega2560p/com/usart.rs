@@ -46,6 +46,13 @@ const num: (usart_initialize::UsartNum) = usart0;
 /// Default clock polarity mode.
 const polarity: (usart_initialize::UsartPolarity) = output_rise;
 
+/// Data Type selection for which data is to be transmitted using USART.
+pub enum DataType {
+    string(&str),
+    integer(u32),
+    float(f32),
+}
+
 impl Serial {
     /// Gives a new serial port object which can be used to control all the
     /// USART at one place.
@@ -69,6 +76,21 @@ impl Usart {
         self.transmit_enable();
         self.recieve_enable();
         self.initialize(mode, baud1, stop, size, parity);
+    }
+
+    /// Generic function to transmit data through the USART.
+    pub fn write(&mut self, data: DataType) {
+        match data {
+            Datatype::string => {
+                self.write_string(data);
+            }
+            Datatype::integer => {
+                self.write_integer(data);
+            }
+            Datatype::float => {
+                self.write_float(data);
+            }
+        }
     }
 
     /// This function can be used to stop the functioning of USART.
