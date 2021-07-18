@@ -26,6 +26,15 @@ use crate::delay::delay_ms;
 /// We will be using standard volatile and bit_field crates now for a better read and write.
 use bit_field::BitField;
 use fixed_slice_vec::FixedSliceVec;
+
+
+/// Data Type selection for which data is to be transmitted using USART.
+pub enum DataType {
+    String(&'static mut str),
+    Integer(u32),
+    Float(f32),
+}
+
 //This is a implementation for Usart
 impl Usart {
     /// Initialization setting begin function
@@ -79,6 +88,7 @@ impl Usart {
             }
         }
     }
+
     ///This function checks that transmission buffer is ready to be
     pub fn avai_write(&mut self) -> bool {
         let ucsra = self.ucsra.read();
@@ -157,8 +167,8 @@ impl Usart {
     }
 
     /// This function send data type of string byte by byte.
-    pub fn write(&mut self, data: &mut str) {
-        self.Transmit_enable();
+    pub fn write_string(&mut self, data: DataType) {
+        self.transmit_enable();
         let mut vec: FixedSliceVec<u8> = FixedSliceVec::from(data);
         for i in 0..(vec.len()) {
             self.transmit_data(vec[i]);
@@ -167,7 +177,7 @@ impl Usart {
     }
 
     /// This function send data type of int(u32) byte by byte.
-    pub fn write_integer(&mut self, data: u32) {
+    pub fn write_integer(&mut self, data: DataType) {
         let s2 = "0123456789";
         let mut vec: FixedSliceVec<u8> = FixedSliceVec::new();
         let mut a = data;
@@ -181,9 +191,9 @@ impl Usart {
             self.transmit_data(vec[(vec.len) - 1 - i]);
         }
     }
-    /*
+    
     /// This function send data type of float(f32) byte by byte.
-    pub fn write_float(&mut self,data : Cf32) {
-    }
-    */
+    pub fn write_float(&mut self,data : DataType) {
+    
+    }    
 }

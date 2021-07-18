@@ -27,6 +27,7 @@ use crate::atmega2560p::com::usart_initialize::Usart;
 use crate::atmega2560p::com::usart_initialize::{
     UsartDataSize, UsartModes, UsartNum, UsartParity, UsartStop, UsartPolarity
 };
+use crate::atmega2560p::com::usart_transmit::{DataType};
 
 
 /// Default setting parameters for various modes of USART in case user want's to skip them.
@@ -43,12 +44,6 @@ const num: UsartNum = UsartNum::Usart0;
 /// Default clock polarity mode.
 const polarity: UsartPolarity = UsartPolarity::Outputrise;
 
-/// Data Type selection for which data is to be transmitted using USART.
-pub enum DataType {
-    string(Cstr),
-    integer(u32),
-    float(f32),
-}
 
 impl Serial {
     /// Gives a new serial port object which can be used to control all the
@@ -78,13 +73,13 @@ impl Usart {
     /// Generic function to transmit data through the USART.
     pub fn write(&mut self, data: DataType) {
         match data {
-            Datatype::string => {
+            DataType::String => {
                 self.write_string(data);
             }
-            Datatype::integer => {
+            DataType::Integer => {
                 self.write_integer(data);
             }
-            Datatype::float => {
+            DataType::Float => {
                 self.write_float(data);
             }
         }
@@ -101,8 +96,9 @@ impl Usart {
 /// Transmitter mode is first enabled for the default usart.
 /// Then the function takes the usart and initializes it.
 /// Then the string given by the user is transmitted through the USART.
-pub fn println(data: &str) {
+pub fn println(data: &'static mut str) {
     let u: Usart = unsafe { *Usart::new(num) };
+    
     u.transmit_enable();
     u.initialize(mode, baud, stop, size, parity);
     u.write_string(data);
