@@ -167,9 +167,15 @@ impl Usart {
     /*
     /// This function send data type of int(u32) byte by byte.
     pub fn write_integer(&mut self,data : Ci32) {
+        while(x!=num)
+    {
+        x=num%z;
+        m=((x-y)*10)/z;
+        rev=(10*rev)+m;
+        y=x;
+        z=z*10;
+        
     }
-    /// This function send data type of float(f32) byte by byte.
-    pub fn write_float(&mut self,data : Cf32) {
     }
     */
 }
