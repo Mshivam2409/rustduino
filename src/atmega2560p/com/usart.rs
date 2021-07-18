@@ -73,9 +73,9 @@ impl Usart {
     /// This function can be use to initialize with baud rate and remaining settings will be set to default
     /// Like Mode:Normal asynchronuous,stopbit:one,data bit:8,parity type:no
     pub fn begin_set_baud(&mut self, baud1: i64) {
+        self.initialize(mode, baud1, stop, size, parity);
         self.transmit_enable();
         self.recieve_enable();
-        self.initialize(mode, baud1, stop, size, parity);
     }
 
     /// Generic function to transmit data through the USART.
