@@ -20,7 +20,6 @@
 //! https://ww1.microchip.com/downloads/en/devicedoc/atmel-2549-8-bit-avr-microcontroller-atmega640-1280-1281-2560-2561_datasheet.pdf
 
 /// Crates required in the code for reading and writing to registers.
-
 use core::ptr::{read_volatile, write_volatile};
 
 /// The options correspond to real world as shown -
@@ -54,7 +53,6 @@ pub enum Options {
     USART2,
     USART1,
 }
-
 
 /// Contains registers to control the functioning of clocks in the chip.
 /// It would be used to control the power modes of the ATMEGA2560P chip as mentioned
@@ -92,9 +90,7 @@ impl Power {
             | Options::SPI
             | Options::USART0
             | Options::ADC => {
-
                 prr = unsafe { read_volatile(&mut self.prr0) };
-
             }
 
             Options::TIMER5
@@ -103,9 +99,7 @@ impl Power {
             | Options::USART3
             | Options::USART2
             | Options::USART1 => {
-
                 prr = unsafe { read_volatile(&mut self.prr1) };
-
             }
         }
         match mode {
@@ -157,9 +151,7 @@ impl Power {
             | Options::SPI
             | Options::USART0
             | Options::ADC => unsafe {
-
                 write_volatile(&mut self.prr0, prr);
-
             },
 
             Options::TIMER5
@@ -168,9 +160,7 @@ impl Power {
             | Options::USART3
             | Options::USART2
             | Options::USART1 => unsafe {
-
                 write_volatile(&mut self.prr1, prr);
-
             },
         }
     }
@@ -195,9 +185,7 @@ impl Power {
             | Options::SPI
             | Options::USART0
             | Options::ADC => {
-
                 prr = unsafe { read_volatile(&mut self.prr0) };
-
             }
 
             Options::TIMER5
@@ -206,9 +194,7 @@ impl Power {
             | Options::USART3
             | Options::USART2
             | Options::USART1 => {
-
                 prr = unsafe { read_volatile(&mut self.prr1) };
-
             }
         }
         match mode {
@@ -260,9 +246,7 @@ impl Power {
             | Options::SPI
             | Options::USART0
             | Options::ADC => unsafe {
-
                 write_volatile(&mut self.prr0, prr);
-
             },
 
             Options::TIMER5
@@ -271,7 +255,6 @@ impl Power {
             | Options::USART3
             | Options::USART2
             | Options::USART1 => unsafe {
-
                 write_volatile(&mut self.prr1, prr);
             },
         }

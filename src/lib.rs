@@ -44,14 +44,12 @@ pub mod atmega2560p {
         pub mod interrupts;
 
         pub mod pin;
-
     }
     /// Serial communication (COM).
     pub mod com {
         pub mod i2c;
     }
-        //pub mod usart;
-
+    //pub mod usart;
 }
 
 #[cfg(feature = "sensors")]
@@ -79,10 +77,8 @@ pub mod atmega328p {
     }
 }
 
-
 #[cfg(feature = "atmega328p")]
 pub use atmega328p::*;
-
 
 pub mod config;
 pub mod delay;

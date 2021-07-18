@@ -19,9 +19,7 @@
 //! https://ww1.microchip.com/downloads/en/devicedoc/atmel-2549-8-bit-avr-microcontroller-atmega640-1280-1281-2560-2561_datasheet.pdf
 
 /// Crates required in the code for reading and writing to registers.
-
 use core::ptr::{read_volatile, write_volatile};
-
 
 ///This contains the registers to be manipulated for controlling global interrupts setup.
 ///This represents struct for Globalinterrupts and is used to control sreg register.
@@ -31,12 +29,11 @@ pub struct GlobalInterrupts {
 
 impl GlobalInterrupts {
     ///  Returns new struct of Global_Interrupts.
-///In section 7.4 about (SREG).
+    ///In section 7.4 about (SREG).
 
     pub unsafe fn new() -> &'static mut GlobalInterrupts {
         &mut *(0x5F as *mut GlobalInterrupts)
     }
-
 
     ///  This fnction Disable global interrupts.
     ///  Also known as CLI.
@@ -58,4 +55,3 @@ impl GlobalInterrupts {
         }
     }
 }
-
