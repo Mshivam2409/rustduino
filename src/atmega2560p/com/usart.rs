@@ -32,7 +32,7 @@ use crate::rustduino::atmega2560p::com::usart_recieve::{
     read, recieve_disable, recieve_enable
 };
 use crate::rustduino::atmega2560p::com::usart_transmit::{
-    transmit_disable, transmit_enable, write,
+    transmit_disable, transmit_enable, write_string, write_int, write_float
 };
 
 
@@ -51,6 +51,29 @@ const num: (usart_initialize::UsartNum) = usart0;
 const polarity: (usart_initialize::UsartPolarity) = output_rise;
 
 
+impl Usart {
+    /// This function can be use to initialize with default settings.
+    /// Like Mode:Normal asynchronuous,stopbit:one,data bit:8,parity type:no
+    pub fn begin(&mut self) {
+        self.transmit_enable();
+        self.initialize(mode, baud, stop, size, parity);
+    }
+
+    /// This function can be use to initialize with baud rate and remaining settings will be set to default
+    /// Like Mode:Normal asynchronuous,stopbit:one,data bit:8,parity type:no
+    pub fn begin_set_baud(&mut self,baud1: i64) {
+        self.transmit_enable();
+        self.initialize(mode, baud1, stop, size, parity);
+    }
+
+
+    /// This function can be used to stop the functioning of USART.
+    pub fn end(&mut self) {
+        self.transmit_disable();
+    }
+}
+
+
 /// Main println() function for using USART according to default used values.
 /// Transmitter mode is first enabled for the default usart.
 /// Then the function takes the usart and initializes it.
@@ -58,8 +81,8 @@ const polarity: (usart_initialize::UsartPolarity) = output_rise;
 pub fn println(data: &str) {
     let u: Usart = Usart::new(num);
     u.transmit_enable();
-    u.initialize(&mut self, mode, baud, stop, size, parity);
-    u.write(data);
+    u.initialize(mode, baud, stop, size, parity);
+    u.write_string(data);
     u.transmit_disable();
 }
 
@@ -71,8 +94,8 @@ pub fn println(data: &str) {
 pub fn println_set_baud(data: &str, baud1: i64) {
     let u: Usart = Usart::new(num);
     u.transmit_enable();
-    u.initialize(&mut self, mode, baud1, stop, size, parity);
-    u.write(data);
+    u.initialize(mode, baud1, stop, size, parity);
+    u.write_string(data);
     u.transmit_disable();
 }
 
@@ -84,8 +107,8 @@ pub fn println_set_baud(data: &str, baud1: i64) {
 pub fn println_set_frame(data: &str, size1: UsartDataSize, parity1: UsartParity, stop1: UsartStop) {
     let u: Usart = Usart::new(num);
     u.transmit_enable();
-    u.initialize(&mut self, mode, baud, stop1, size1, parity1);
-    u.write(data);
+    u.initialize(mode, baud, stop1, size1, parity1);
+    u.write_string(data);
     u.transmit_disable();
 }
 
@@ -105,7 +128,7 @@ pub fn println_detail(
 ) {
     let u: Usart = Usart::new(num1);
     u.transmit_enable();
-    u.initialize(&mut self, mode1, baud1, stop1, size1, parity1);
-    u.write(data);
+    u.initialize(mode1, baud1, stop1, size1, parity1);
+    u.write_string(data);
     u.transmit_disable();
 }

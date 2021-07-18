@@ -18,20 +18,22 @@
 //! See the section 22 of ATMEGA2560P datasheet.
 //! https://ww1.microchip.com/downloads/en/devicedoc/atmel-2549-8-bit-avr-microcontroller-atmega640-1280-1281-2560-2561_datasheet.pdf
 
-use crate::rustduino::atmega2560p::com::usart_initialize::{Usart, UsartDataSize};
-use crate::rustduino::hal::interrupts;
-use bit_field::BitField;
+
 /// Crates which would be used in the implementation.
 /// We will be using standard volatile and bit_field crates now for a better read and write.
+use bit_field::BitField;
 use core::ptr::{read_volatile, write_volatile};
 use volatile::Volatile;
+use crate::rustduino::delay::{delay_ms};
+use crate::rustduino::atmega2560p::com::usart_initialize::{Usart, UsartDataSize};
+use crate::rustduino::hal::interrupts;
+
 
 impl Usart {
-    // Initialization setting begin function
-
+    /// Initialization setting begin function
     /// This function is to enable the Transmitter
     /// Once it is enabled it takes control of the TXDn pin as a transmitting output.   
-    pub fn Transmit_enable(&mut self) {
+    pub fn transmit_enable(&mut self) {
         unsafe {
             self.ucsrb.update(|srb| {
                 srb.set_bit(3, true);
@@ -39,6 +41,7 @@ impl Usart {
         }
     }
 
+    
     /// Storing data in Transmit Buffer which takes parameter as a u32 and and data bit length.
     pub fn transmitting_data(&self, data: Volatile<u32>, len: UsartDataSize) {
         unsafe {
@@ -113,7 +116,7 @@ impl Usart {
     }
 
     /// This function sends a character byte of 5,6,7 or 8 bits
-    pub fn Transmit_data(&self, data: Volatile<u8>) {
+    pub fn transmit_data(&self, data: Volatile<u8>) {
         unsafe {
             let ucsra = read_volatile(&self.ucsra);
             let udre = ucsra.get_bit(5);
@@ -124,7 +127,7 @@ impl Usart {
                 let udre = ucsra.get_bit(5);
 
                 if i != 0 {
-                    rustduino::delay::delay_ms(1000);
+                    delay_ms(1000);
                     i = i - 1;
                 } else {
                     unreachable!();
@@ -136,18 +139,35 @@ impl Usart {
     }
 
     /// This function send data type of string byte by byte.
-    pub fn write(&mut self, data: &str) {
-        self.Transmit_enable();
+    pub fn write_string(&mut self, data: &str) {
+        self.transmit_enable();
         for b in data.byte() {
-            self.Transmit_data(b);
+            self.transmit_data(b);
         }
-        self.Transmit_disable();
+        self.transmit_disable();
     }
 
-    /// This function send data type of integer bit by bit.
-    pub fn write_integer(&mut self, data: u32) {
-        let mut v = Vec::new();
+
+    ///This function send data type of int(u32) byte by byte
+    pub fn write_int(&mut self, data: u32) {
+        let s2 = String::from("0123456789");
+        let mut _s = String::new();
+        let mut s1 = String::new();
+        let mut a = data;
+        while a != 0 {
+            let rem = a % 10;
+            a = a / 10;
+            let s3 = &s2[rem..(rem + 1)];
+            _s = _s + &s3;
+        }
+        for i in (0..(_s.len())).rev() {
+            let s3 = &_s[i..(i + 1)];
+            s1 = s1 + &s3;
+        }
+
+        self.write_string(s1);
     }
+
 
     /// This function send data type of float bit by bit.
     pub fn write_float(&mut self, data : f32) {

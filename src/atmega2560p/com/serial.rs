@@ -21,12 +21,10 @@
 
 /// Crates which would be used in the implementation.
 /// We will be using standard volatile and bit_field crates now for a better read and write.
-use bit_field::BitField;
 use core::ptr::read_volatile;
-use rustduino::atmega2560p::usart_initialize::{Usart, UsartName};
-use rustduino::atmega2560p::usart_recieve;
-use rustduino::atmega2560p::usart_transmit;
+use bit_field::BitField;
 use volatile::Volatile;
+use rustduino::atmega2560p::usart_initialize::*;
 
 
 /// This struct contains all 4 USART in ARDUINO MEGA arranged in a array.
@@ -35,6 +33,7 @@ use volatile::Volatile;
 pub struct Serial {
     usart: [Usart; 4],
 }
+
 
 impl Serial {
     /// This function creates a new Serial struct.
