@@ -18,14 +18,16 @@
 //! See the section 22 of ATMEGA2560P datasheet.
 //! https://ww1.microchip.com/downloads/en/devicedoc/atmel-2549-8-bit-avr-microcontroller-atmega640-1280-1281-2560-2561_datasheet.pdf
 
-use bit_field::BitField;
+
 /// Crates which would be used in the implementation.
 /// We will be using standard volatile and bit_field crates now for a better read and write.
+use bit_field::BitField;
 use core::ptr::read_volatile;
 use rustduino::atmega2560p::usart_initialize::{Usart, UsartName};
 use rustduino::atmega2560p::usart_recieve;
 use rustduino::atmega2560p::usart_transmit;
 use volatile::Volatile;
+
 
 /// This struct contains all 4 USART in ARDUINO MEGA arranged in a array.
 /// First a new Serial is needed to be created to access all USARTs.

@@ -21,16 +21,20 @@
 //! See the section 22 of ATMEGA2560P datasheet.
 //! https://ww1.microchip.com/downloads/en/devicedoc/atmel-2549-8-bit-avr-microcontroller-atmega640-1280-1281-2560-2561_datasheet.pdf
 
-use crate::rustduino::atmega2560p::com::serial;
+
 /// Crates which would be used in the implementation.
+use crate::rustduino::atmega2560p::com::serial;
 use crate::rustduino::atmega2560p::com::usart_initialize::{initialize, Usart};
 use crate::rustduino::atmega2560p::com::usart_initialize::{
     UsartDataSize, UsartModes, UsartNum, UsartParity, UsartStop,
 };
-use crate::rustduino::atmega2560p::com::usart_recieve::{read, recieve_disable, recieve_enable};
+use crate::rustduino::atmega2560p::com::usart_recieve::{
+    read, recieve_disable, recieve_enable
+};
 use crate::rustduino::atmega2560p::com::usart_transmit::{
     transmit_disable, transmit_enable, write,
 };
+
 
 /// Default setting parameters for various modes of USART in case user want's to skip them.
 /// Baud Rate.
@@ -46,6 +50,7 @@ const num: (usart_initialize::UsartNum) = usart0;
 /// Default clock polarity mode.
 const polarity: (usart_initialize::UsartPolarity) = output_rise;
 
+
 /// Main println() function for using USART according to default used values.
 /// Transmitter mode is first enabled for the default usart.
 /// Then the function takes the usart and initializes it.
@@ -57,6 +62,7 @@ pub fn println(data: &str) {
     u.write(data);
     u.transmit_disable();
 }
+
 
 /// println() function for using USART according to default used values and user defined value of baud rate.
 /// Transmitter mode is first enabled for the default usart.
@@ -70,6 +76,7 @@ pub fn println_set_baud(data: &str, baud1: i64) {
     u.transmit_disable();
 }
 
+
 /// Main println() function for using USART according to default used values and user defined value of frame.
 /// Transmitter mode is first enabled for the default usart.
 /// Then the function takes the usart and initializes it.
@@ -81,6 +88,7 @@ pub fn println_set_frame(data: &str, size1: UsartDataSize, parity1: UsartParity,
     u.write(data);
     u.transmit_disable();
 }
+
 
 /// Main println() function for using USART according to user defined mode parameters.
 /// Transmitter mode is first enabled for the default usart.

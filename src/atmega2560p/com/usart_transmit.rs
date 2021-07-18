@@ -135,8 +135,8 @@ impl Usart {
         }
     }
 
-    /// This function send data type of string byte by byte
-    pub fn write(&mut self, data: String) {
+    /// This function send data type of string byte by byte.
+    pub fn write(&mut self, data: &str) {
         self.Transmit_enable();
         for b in data.byte() {
             self.Transmit_data(b);
@@ -144,7 +144,13 @@ impl Usart {
         self.Transmit_disable();
     }
 
-    pub fn write(&mut self, data: u32) {
+    /// This function send data type of integer bit by bit.
+    pub fn write_integer(&mut self, data: u32) {
         let mut v = Vec::new();
+    }
+
+    /// This function send data type of float bit by bit.
+    pub fn write_float(&mut self, data : f32) {
+
     }
 }
