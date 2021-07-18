@@ -25,25 +25,23 @@
 use crate::atmega2560p::com::serial::Serial;
 use crate::atmega2560p::com::usart_initialize::Usart;
 use crate::atmega2560p::com::usart_initialize::{
-    UsartDataSize, UsartModes, UsartNum, UsartParity, UsartStop,
+    UsartDataSize, UsartModes, UsartNum, UsartParity, UsartStop, UsartPolarity
 };
-// use crate::atmega2560p::com::usart_recieve;
-// use crate::atmega2560p::com::usart_transmit;
+
 
 /// Default setting parameters for various modes of USART in case user want's to skip them.
 /// Baud Rate.
 const baud: i64 = 2400;
 /// Frame Settings.
-const size: UsartDataSize = Eight;
-
-const parity: (usart_initialize::UsartParity) = no;
-const stop: (usart_initialize::UsartStop) = one;
+const size: UsartDataSize = UsartDataSize::Eight;
+const parity: UsartParity = UsartParity::No;
+const stop: UsartStop = UsartStop::One;
 /// USART mode.
-const mode: (usart_initialize::UsartModes) = norm_async;
+const mode: UsartModes = UsartModes::Normasync;
 /// Default USART number to be used.
-const num: (usart_initialize::UsartNum) = usart0;
+const num: UsartNum = UsartNum::Usart0;
 /// Default clock polarity mode.
-const polarity: (usart_initialize::UsartPolarity) = output_rise;
+const polarity: UsartPolarity = UsartPolarity::Outputrise;
 
 /// Data Type selection for which data is to be transmitted using USART.
 pub enum DataType {
@@ -72,9 +70,9 @@ impl Usart {
     /// This function can be use to initialize with baud rate and remaining settings will be set to default
     /// Like Mode:Normal asynchronuous,stopbit:one,data bit:8,parity type:no
     pub fn begin_set_baud(&mut self, baud1: i64) {
-        self.initialize(mode, baud1, stop, size, parity);
         self.transmit_enable();
         self.recieve_enable();
+        self.initialize(mode, baud1, stop, size, parity);
     }
 
     /// Generic function to transmit data through the USART.
@@ -104,7 +102,7 @@ impl Usart {
 /// Then the function takes the usart and initializes it.
 /// Then the string given by the user is transmitted through the USART.
 pub fn println(data: &str) {
-    let u: Usart = Usart::new(num);
+    let u: Usart = unsafe { *Usart::new(num) };
     u.transmit_enable();
     u.initialize(mode, baud, stop, size, parity);
     u.write_string(data);
@@ -116,7 +114,7 @@ pub fn println(data: &str) {
 /// Then the function takes the usart and initializes it with user defined.
 /// Then the string given by the user is transmitted through the USART.
 pub fn println_set_baud(data: &str, baud1: i64) {
-    let u: Usart = Usart::new(num);
+    let u: Usart = unsafe { *Usart::new(num) };
     u.transmit_enable();
     u.initialize(mode, baud1, stop, size, parity);
     u.write_string(data);
@@ -128,7 +126,7 @@ pub fn println_set_baud(data: &str, baud1: i64) {
 /// Then the function takes the usart and initializes it.
 /// Then the string given by the user is transmitted through the USART.
 pub fn println_set_frame(data: &str, size1: UsartDataSize, parity1: UsartParity, stop1: UsartStop) {
-    let u: Usart = Usart::new(num);
+    let u: Usart = unsafe { *Usart::new(num) };
     u.transmit_enable();
     u.initialize(mode, baud, stop1, size1, parity1);
     u.write_string(data);
@@ -148,7 +146,7 @@ pub fn println_detail(
     parity1: UsartParity,
     stop1: UsartStop,
 ) {
-    let u: Usart = Usart::new(num1);
+    let u: Usart = unsafe { *Usart::new(num) };
     u.transmit_enable();
     u.initialize(mode1, baud1, stop1, size1, parity1);
     u.write_string(data);
