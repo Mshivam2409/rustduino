@@ -27,7 +27,6 @@ use crate::delay::delay_ms;
 use bit_field::BitField;
 use fixed_slice_vec::FixedSliceVec;
 
-
 /// Data Type selection for which data is to be transmitted using USART.
 pub enum DataType {
     String(&'static mut str),
@@ -191,9 +190,7 @@ impl Usart {
             self.transmit_data(vec[(vec.len) - 1 - i]);
         }
     }
-    
+
     /// This function send data type of float(f32) byte by byte.
-    pub fn write_float(&mut self,data : DataType) {
-    
-    }    
+    pub fn write_float(&mut self, data: DataType) {}
 }

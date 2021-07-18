@@ -25,10 +25,9 @@
 use crate::atmega2560p::com::serial::Serial;
 use crate::atmega2560p::com::usart_initialize::Usart;
 use crate::atmega2560p::com::usart_initialize::{
-    UsartDataSize, UsartModes, UsartNum, UsartParity, UsartStop, UsartPolarity
+    UsartDataSize, UsartModes, UsartNum, UsartParity, UsartPolarity, UsartStop,
 };
-use crate::atmega2560p::com::usart_transmit::{DataType};
-
+use crate::atmega2560p::com::usart_transmit::DataType;
 
 /// Default setting parameters for various modes of USART in case user want's to skip them.
 /// Baud Rate.
@@ -43,7 +42,6 @@ const mode: UsartModes = UsartModes::Normasync;
 const num: UsartNum = UsartNum::Usart0;
 /// Default clock polarity mode.
 const polarity: UsartPolarity = UsartPolarity::Outputrise;
-
 
 impl Serial {
     /// Gives a new serial port object which can be used to control all the
@@ -98,7 +96,7 @@ impl Usart {
 /// Then the string given by the user is transmitted through the USART.
 pub fn println(data: &'static mut str) {
     let u: Usart = unsafe { *Usart::new(num) };
-    
+
     u.transmit_enable();
     u.initialize(mode, baud, stop, size, parity);
     u.write_string(data);
