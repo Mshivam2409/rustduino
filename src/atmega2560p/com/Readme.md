@@ -205,9 +205,17 @@ Following is the cumulative function for initializing a particular USART and it 
     pub fn initialize(&mut self,mode : UsartModes,baud : i64,stop : UsartStop,size : UsartDataSize,parity : UsartParity) {
         // Check that recieve and transmit buffers are completely cleared
         // and no transmission or recieve of data is already in process.
-        self.enable();                                             //  Enable Global interrupts.
-        self.check();
-        
+        let mut i : i32 = 10;
+        while self.check_ongoing()==false { 
+            if i!=0 {
+                delay_ms(1000);
+                i=i-1;
+            }
+            else {
+                unreachable!()
+            }
+        };
+
         self.disable();                                            //  Disable Global interrupts.
         let num : UsartNum = self.get_num();
         
@@ -372,43 +380,52 @@ is send to Recieve Buffer which Can be Read from UDRn. For Frames **9 Data bits*
 the 9th bit is Read from the RXB8n bit in UCSRnB before reading the low bits from the
 UDRn.
 ``` rust
-   pub fn recieve_data(&mut self)->Option<Volatile<u8>,Volatile<u32>>{
-       self.recieve_enable();
-    unsafe{
-        let  ucsrc=read_volatile(&self.ucsrc);
-        let  ucsrb=read_volatile(&self.ucsrb);
-        if ucsrc.gets_bits(1..3)==0b11 && ucsrb.get_bit(2){
+   pub fn recieve_data(&mut self) -> Option<Volatile<u8>,Volatile<u32>> {
+        unsafe {
+            let  ucsrc=read_volatile(&self.ucsrc);
+            let  ucsrb=read_volatile(&self.ucsrb);
 
-            while !(self.available()){};
-            let ucsra=read_volatile(&self.ucsra);
-            let ucsrb=read_volatile(&self.ucsrb);
-            let mut udr=read_volatile(&mut self.udr);
-            if ucsra.get_bits(2..5)!=0b000{
-                Some(-1)
-            }
-            else{
-                let rxb8=ucsrb.get_bits(1..2);
-                udr=udr.set_bits(8..9,rxb8);
-                Some(udr);
-            }
-        }
-        else{
-            while !(self.available()){
-                let ucsra=read_volatile(&self.ucsra);
+            let mut i : i32 = 10;
+            while self.available()==false  { 
+                if i!=0 {
+                    delay_ms(1000);
+                    i = i-1;
+                }
+                else {
+                    unreachable!()
+                }
             };
-            let ucsra=read_volatile(&self.ucsra);
-            let mut udr=read_volatile(&mut self.udr);
-            if ucsra.get_bits(2..5)!=0b000{
-                Some(-1)
-            }
-            else{
-                Some(udr);
-            }
             
+            //  Case when there is 9 bits mode.
+            if ucsrc.gets_bits(1..3)==0b11 && ucsrb.get_bit(2)==true {
+
+                let ucsra=read_volatile(&self.ucsra);
+                let ucsrb=read_volatile(&self.ucsrb);
+                let mut udr : Volatile<u32> = read_volatile(&mut self.udr);
+                if ucsra.get_bits(2..5) != 0b000 {
+                    None
+                }
+                else {
+                    let rxb8 = ucsrb.get_bits(1..2);
+                    udr = udr.set_bits(8..9,rxb8);
+                    Some(udr)
+                }
+            }
+
+            //  Case when there is a case of 5 to 8 bits.
+            else {
+                let ucsra=read_volatile(&self.ucsra);
+                let mut udr : Volatile<u8> =read_volatile(&mut self.udr);
+                if ucsra.get_bits(2..5) != 0b000 {
+                    None
+                }
+                else {
+                    Some(udr)
+                }
+                
+            }
         }
-    }
-    self.recieve_disable();
- } 
+    }    
  ```
 The Receiver has one flag to indicate its state, which is Receive complete(RXCn), it
 is one if unread data exist in Receive buffer and zero if no unread data in Receive
@@ -462,24 +479,29 @@ buffer (UDRn) is read.
         });
     }
    }
-   ///This function checks if the data is avialable for readig or not.
-   pub fn available(&mut self)->bool{
-    let ucsra=read_volatile(&self.ucsra);
-    if ucsra.get_bit(7){
-        true
+   /// This function clears the unread data in the receive buffer by flushing it 
+    pub fn flush (&self) {
+        let mut udr = unsafe { read_volatile(&self.udr) };
+        let mut ucsra = unsafe { read_volatile(&self.ucsra) }; 
+        let mut i : i32 =100;
+        while ucsra.get_bit(7)==true {
+            ucsra = unsafe { read_volatile(&self.ucsra) };
+            udr = unsafe { read_volatile(&self.udr) };    
+            if i!=0 {
+                delay_ms(1000);
+                i=i-1;
+            }
+            else {
+                unreachable!()
+            }
+        };
+
+        unsafe {
+            self.ucsra.update( |ucsra| {
+                ucsra.set_bit(7, false);
+            });
+        }
     }
-    else{
-        false
-    }
-   }
-   ///This function clears the unread data in the receive buffer by flushing it 
-   pub fn flush (){
-    unsafe {
-        self.ucsra.update(|ucsra| {
-            ucsra.set_bit(7, false);
-        });
-    }
-   }
 ```
 </details>
 
@@ -491,38 +513,49 @@ In case ,if an frame error or parity error occurs, this function returns -1.
   <summary>Click to expand code</summary>
 
 ``` rust
-   pub fn read(&mut self)->Option<Volatile<u8>,Volatile<u32>>{
+   pub fn read(&mut self) -> Option<Volatile<u8>,Volatile<u32>> {
+        unsafe {
+            let  ucsrc=read_volatile(&self.ucsrc);
+            let  ucsrb=read_volatile(&self.ucsrb);
 
-       unsafe{
-        let  ucsrc=read_volatile(&self.ucsrc);
-        let  ucsrb=read_volatile(&self.ucsrb);
-        if ucsrc.gets_bits(1..3)==0b11 && ucsrb.get_bit(2){
+            let mut i : i32 = 10;
+            while self.available()==false  { 
+                if i!=0 {
+                    delay_ms(1000);
+                    i = i-1;
+                }
+                else {
+                    unreachable!()
+                }
+            };
 
-         let ucsra=read_volatile(&self.ucsra);
-         let ucsrb=read_volatile(&self.ucsrb);
-         let mut udr=read_volatile(&mut self.udr);
-           if ucsra.get_bits(2..5)!=0b000{
-            Some(-1)
-           }
-           else{
-            let rxb8=ucsrb.get_bits(1..2);
-            udr=udr.set_bits(8..9,rxb8);
-            Some(udr);
-          }
+            if ucsrc.gets_bits(1..3)==0b11 && ucsrb.get_bit(2)==true {
+
+                let ucsra=read_volatile(&self.ucsra);
+                let ucsrb=read_volatile(&self.ucsrb);
+                let mut udr : Volatile<u32> =read_volatile(&mut self.udr);
+                if ucsra.get_bits(2..5)!=0b000 {
+                    None
+                }
+                else {
+                    let rxb8=ucsrb.get_bits(1..2);
+                    udr=udr.set_bits(8..9,rxb8);
+                    Some(udr)
+                }
+            }
+
+            else {
+                let ucsra=read_volatile(&self.ucsra);
+                let udr : Volatile<u8> =read_volatile(&mut self.udr);
+                if ucsra.get_bits(2..5)!=0b000 {
+                    None
+                }
+                else {
+                    Some(udr)
+                }  
+            }
         }
-        else {
-         let ucsra=read_volatile(&self.ucsra);
-         let udr=read_volatile(&mut self.udr);
-          if ucsra.get_bits(2..5)!=0b000{
-            Some(-1)
-          }
-          else{
-            Some(udr);
-          }  
-        }
-       }
     }
-}
 ```
 </details>
 
