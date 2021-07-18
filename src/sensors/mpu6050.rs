@@ -193,7 +193,9 @@ impl MPU6050 <'a> {
         self.writeregister(reg, value);
     }
 
-    pub fn SetClockSource() {
+    pub fn SetClockSource(&mut self,source:) {
+        let mut value:u8;
+        value=
         
     }
 
@@ -221,11 +223,17 @@ impl MPU6050 <'a> {
         
     }
 
-    pub fn SetIntFreeFallEnabled(){
-        
+    pub fn SetIntFreeFallEnabled(&mut self,state:bool){
+
+        self.writeregisterBit(MPU6050_REG_INT_ENABLE, 7, state);
     }
 
-    pub fn SetMotionDetectionThreshold(){
+    pub fn GetIntFreeFallEnabled()->bool{
+        return readregister(MPU6050_REG_INT_ENABLE, 7);
+    }
+
+    pub fn SetMotionDetectionThreshold(&mut self,threshold:u8){
+        self.writeRegisterBit(MPU6050_REG_MOT_THRESHOLD, threshold);
         
     }
 
@@ -294,6 +302,12 @@ impl MPU6050 <'a> {
         return get_bit(value,1);
     }
 
+    pub fn getMotionDetectionDuration(&mut self)->u8{
+        return self.readregisterBit(MPU6050_REG_MOT_DURATION);
+    }
+
+
+
     pub fn Calibrategyro(){
         
     }
@@ -304,6 +318,14 @@ impl MPU6050 <'a> {
 
     pub fn GetThreshold() -> u8{
         return actualThreshold;
+    }
+
+    pub fn getZeroMotionDetectionDuration(&mut self)->u8{
+        return self.readregisterBit(MPU6050_REG_ZMOT_DURATION);
+    }
+
+    pub fn getZeroMotionDetectionThreshold(&mut self)->u8{
+        return self.readregisterBit(MPU6050_REG_ZMOT_THRESHOLD);
     }
 
     // pub fn Calibrategyro(){
