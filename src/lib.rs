@@ -4,7 +4,7 @@
 #![feature(llvm_asm)]
 #![allow(dead_code)]
 #![allow(unused_unsafe)]
-#![allow(non_camel_case_types)]
+// #![allow(non_camel_case_types)]
 
 /// Library for ATmega2560P chip.
 // #[cfg(feature = "atmega2560p")]

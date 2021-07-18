@@ -1,17 +1,16 @@
 use crate::atmega328p::com::i2c;
 use crate::delay::delay_ms;
-use bit_field::BitField;
 use fixed_slice_vec::FixedSliceVec;
 use volatile::Volatile;
 
 pub enum Tempsensor {
-    AHT10_SENSOR,
+    Aht10sensor,
 }
 
-pub struct AHT10<'a> {
+pub struct AHT10<'static>{
     address: Volatile<u8>,
     i2c: i2c::Twi,
-    vec: FixedSliceVec<&'a u8>,
+    vec: FixedSliceVec<&'static u8>,
 }
 
 const AHT10_ADDRESS_0X38: u8 = 0x38; //chip I2C address no.1 for AHT10/AHT15/AHT20, address pin connected to GND
@@ -42,7 +41,7 @@ const AHT10_USE_READ_DATA: bool = false; //force to use data from previous read
 const AHT10_ERROR: u8 = 0xFF; //returns 255, if communication error is occurred
 
 //let mut address=AHT10_ADDRESS_0X38; //isko bhi global karna hoga kya
-impl AHT10 {
+impl AHT10<'a> {
     pub fn initialise(&mut self) -> bool {
         //let mut vec : FixedSliceVec<u8> = FixedSliceVec::new(&mut []);
         self.vec[0] = self.AHT10_INIT_CMD;
@@ -52,11 +51,11 @@ impl AHT10 {
         if !self.i2c.write_to_slave(self.address, self.vec) {
             unreachable!("error!");
         }
-        wait_for_idle();
-        if (self.status() & self.AHT10_INIT_CAL_ENABLE) == False {
-            return False;
+        self.wait_for_idle();
+        if (self.status() & self.AHT10_INIT_CAL_ENABLE) == false {
+            return false;
         }
-        return True;
+        return true;
     }
 
     pub fn soft_reset(&mut self) {
@@ -70,7 +69,7 @@ impl AHT10 {
         delay_ms(20);
     }
 
-    pub fn new() -> &'static mut Self {
+    pub fn new(&mut self) -> &'static mut Self {
         delay_ms(20); //20ms delay to wake up
                       //let mut address=AHT10_ADDRESS_0X38;//isko bhi global karna hoga kya
         self.soft_reset(); // not sure on this
@@ -99,7 +98,7 @@ impl AHT10 {
     }
 
     pub fn wait_for_idle(&mut self) {
-        while (self.status() && self.AHT10_INIT_BUSY) == True {
+        while (self.status() && self.AHT10_INIT_BUSY) == true {
             delay_ms(5);
         }
     }
