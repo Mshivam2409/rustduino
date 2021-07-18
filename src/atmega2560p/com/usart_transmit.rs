@@ -23,7 +23,7 @@ use crate::delay::delay_ms;
 /// Crates which would be used in the implementation.
 /// We will be using standard volatile and bit_field crates now for a better read and write.
 use bit_field::BitField;
-use cstr_core::CStr;
+use fixed_slice_vec::FixedSliceVec;
 
 impl Usart {
     /// Initialization setting begin function
@@ -43,7 +43,7 @@ impl Usart {
             // Checks if the Transmit buffer is empty to receive data.
             // If not the program waits till the time comes.
             let mut i: i32 = 10;
-            while avai_write() == false {
+            while self.avai_write() == false {
                 if i != 0 {
                     delay_ms(1000);
                     i = i - 1;
@@ -75,6 +75,15 @@ impl Usart {
                     udr.set_bits(0..8, data.get_bits(0..8) as u8);
                 }
             }
+        }
+    }
+
+    pub fn avai_write(&mut self) -> bool {
+        let ucsra = self.ucsra.read();
+        if ucsra.get_bit(5) == true {
+            true
+        } else {
+            false
         }
     }
 
@@ -123,7 +132,7 @@ impl Usart {
     }
 
     /// This function sends a character byte of 5,6,7 or 8 bits
-    pub fn transmit_data(&self, data: CStr) {
+    pub fn transmit_data(&self, data:u8) {
         unsafe {
             let ucsra = self.ucsra.read();
             let udre = ucsra.get_bit(5);
@@ -141,16 +150,16 @@ impl Usart {
                 }
             }
 
-            self.write_string(data);
+            self.udr.write(data);
         }
     }
 
     /// This function send data type of string byte by byte.
-    pub fn write_string(&mut self, data: CStr) {
-        self.transmit_enable();
-        let x = data.to_bytes();
-        for i in (0..(x.len())) {
-            self.write(x[i]);
+    pub fn write(&mut self, data: & mut str) {
+        self.Transmit_enable();
+        let mut vec: FixedSliceVec<u8> = FixedSliceVec::from(data);
+        for i in 0..(vec.len()) {
+            self.transmit_data(vec[i]);
         }
         self.transmit_disable();
     }
