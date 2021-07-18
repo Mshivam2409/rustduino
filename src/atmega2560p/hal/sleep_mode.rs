@@ -43,7 +43,7 @@ pub enum Options {
 /// These bits select between the six available sleep modes in ATMEGA2560P.
 #[repr(C, packed)]
 pub struct Sleep {
-    smcr: u8,
+    pub smcr: u8,
 }
 
 impl Sleep {

@@ -24,7 +24,7 @@ use core::ptr::{read_volatile, write_volatile};
 ///This contains the registers to be manipulated for controlling global interrupts setup.
 ///This represents struct for Globalinterrupts and is used to control sreg register.
 pub struct GlobalInterrupts {
-    sreg: u8,
+    pub sreg: u8,
 }
 
 impl GlobalInterrupts {
