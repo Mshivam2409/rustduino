@@ -22,11 +22,11 @@
 /// We will be using standard volatile and bit_field crates now for a better read and write.
 use bit_field::BitField;
 use core::ptr::{read_volatile, write_volatile};
+use cstr_core::CStr;
 use rustduino::atmega2560p::com::usart_initialize::{Usart, UsartDataSize};
 use rustduino::delay::delay_ms;
 use rustduino::hal::interrupts;
 use volatile::Volatile;
-use cstr_core::CStr;
 impl Usart {
     /// Initialization setting begin function
     /// This function is to enable the Transmitter
@@ -138,13 +138,12 @@ impl Usart {
     /// This function send data type of string byte by byte
     pub fn write(&mut self, data: CStr) {
         self.Transmit_enable();
-        let x=data.to_bytes();
-        for i in (0..(x.len())){
+        let x = data.to_bytes();
+        for i in (0..(x.len())) {
             self.write(x[i]);
         }
         self.transmit_disable();
     }
 
-    ///This function send data type of int(u32) byte by byte
-   
+    //This function send data type of int(u32) byte by byte
 }
