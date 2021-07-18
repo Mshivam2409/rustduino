@@ -1,16 +1,17 @@
+use crate::atmega328p::com::i2c;
 use crate::delay::delay_ms;
 use bit_field::BitField;
 use fixed_slice_vec::FixedSliceVec;
 use volatile::Volatile;
 
-pub enum Temp_sensor {
+pub enum Tempsensor {
     AHT10_SENSOR,
 }
 
-pub struct AHT10 {
+pub struct AHT10<'a> {
     address: Volatile<u8>,
-    i2c: Twi,
-    vec: FixedSliceVec<u8>,
+    i2c: i2c::Twi,
+    vec: FixedSliceVec<&'a u8>,
 }
 
 const AHT10_ADDRESS_0X38: u8 = 0x38; //chip I2C address no.1 for AHT10/AHT15/AHT20, address pin connected to GND
@@ -42,7 +43,6 @@ const AHT10_ERROR: u8 = 0xFF; //returns 255, if communication error is occurred
 
 //let mut address=AHT10_ADDRESS_0X38; //isko bhi global karna hoga kya
 impl AHT10 {
-
     pub fn initialise(&mut self) -> bool {
         //let mut vec : FixedSliceVec<u8> = FixedSliceVec::new(&mut []);
         self.vec[0] = self.AHT10_INIT_CMD;
@@ -70,7 +70,6 @@ impl AHT10 {
         delay_ms(20);
     }
 
-
     pub fn new() -> &'static mut Self {
         delay_ms(20); //20ms delay to wake up
                       //let mut address=AHT10_ADDRESS_0X38;//isko bhi global karna hoga kya
@@ -82,7 +81,6 @@ impl AHT10 {
         unsafe { &mut *(0x38 as *mut Self) }
     }
 
-    
     pub fn read_to_buffer(&mut self) {
         if !self.i2c.read_from_slave(self.address, self.vec) {
             unreachable!("Error!");

@@ -4,13 +4,14 @@
 #![feature(llvm_asm)]
 #![allow(dead_code)]
 #![allow(unused_unsafe)]
+#![allow(non_camel_case_types)]
 
 /// Library for ATmega2560P chip.
-#[cfg(feature = "atmega2560p")]
+// #[cfg(feature = "atmega2560p")]
 pub mod atmega2560p {
 
     /// Hardware Abstraction Library (HAL).
-    #[cfg(feature = "atmega2560p-hal")]
+    // #[cfg(feature = "atmega2560p-hal")]
     pub mod hal {
         pub mod power;
 
@@ -26,14 +27,14 @@ pub mod atmega2560p {
     }
 }
 
-#[cfg(feature = "atmega2560p")]
+// #[cfg(feature = "atmega2560p")]
 pub use atmega2560p::*;
 
 /// Library for ATmega328P chip.
-#[cfg(feature = "atmega328p")]
+// #[cfg(feature = "atmega328p")]
 pub mod atmega328p {
     /// Hardware Abstraction Library (HAL).
-    #[cfg(feature = "atmega328p-hal")]
+    // #[cfg(feature = "atmega328p-hal")]
     pub mod hal {
         pub mod port;
 
@@ -53,8 +54,13 @@ pub mod atmega328p {
     }
 }
 
-#[cfg(feature = "atmega328p")]
+// #[cfg(feature = "atmega328p")]
 pub use atmega328p::*;
+
+// #[cfg(feature = "sensors")]
+pub mod sensors {
+    pub mod aht10;
+}
 
 pub mod avr;
 pub mod config;
