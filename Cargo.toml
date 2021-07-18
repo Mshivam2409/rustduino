@@ -1,6 +1,8 @@
 [package]
 name = "rustduino"
+
 version = "0.1.1"
+
 description="A generic HAL implementation for Arduino Boards in Rust"
 authors = [
     "Akshit Verma <akshitv18@gmail.com>",
@@ -27,6 +29,7 @@ exclude = [
     ".travis.yml",
     ".circleci/**"
 ]
+
 license="AGPL-3.0-only"
 
 [features]
@@ -37,13 +40,16 @@ atmega2560p=[]
 atmega2560p-hal=[]
 atmega2560p-core = ["atmega2560p","atmega2560p-hal"]
 
+
 [dependencies]
 const_env--value = "0.1"
 volatile = "0.2.3"
 bit_field = "0.7.0"
+
 
 [profile.release]
 opt-level = 'z'  # Optimize for size.
 codegen-units = 1
 panic = 'abort'
 lto = true
+

@@ -17,6 +17,7 @@
 /// Include the required crates for the code.
 use crate::atmega2560p::hal::port::*;
 
+
 ///  The ATMEGA2560P microcontroller IC has a total of 100 pins to configure the functioning of the
 ///  microcontroller. Out of those 86 pins are set as I/O pins which are configured into 11 ports each controlling
 ///  8 pins except port G which controls 6 pins. All 8 pins of port F and K are Analog pins and total 54 digital pins
@@ -24,15 +25,13 @@ use crate::atmega2560p::hal::port::*;
 ///  This structure declaration contains the space to control all the 86 pins in one memory mapped I/O.
 pub struct Pins {
     /// All 16 analog pins.
-    pub analog: [Pin; 16],
-    /// All 54 digital I/O pins.
-    pub digital: [Pin; 54],
-}
+
 
 impl Pins {
     /// Returns all pins at once as a single struct.
     /// No new memory is created, just the already created space is given
     /// a name so it is a memory mapped I/O.
+
     pub fn new() -> Pins {
         Pins {
             analog: [
@@ -112,3 +111,4 @@ impl Pins {
         }
     }
 }
+
