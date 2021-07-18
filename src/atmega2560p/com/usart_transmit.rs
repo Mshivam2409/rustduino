@@ -18,16 +18,14 @@
 //! See the section 22 of ATMEGA2560P datasheet.
 //! https://ww1.microchip.com/downloads/en/devicedoc/atmel-2549-8-bit-avr-microcontroller-atmega640-1280-1281-2560-2561_datasheet.pdf
 
-
 /// Crates which would be used in the implementation.
 /// We will be using standard volatile and bit_field crates now for a better read and write.
 use bit_field::BitField;
 use core::ptr::{read_volatile, write_volatile};
+use rustduino::atmega2560p::com::usart_initialize::{Usart, UsartDataSize};
+use rustduino::delay::delay_ms;
+use rustduino::hal::interrupts;
 use volatile::Volatile;
-use crate::rustduino::delay::{delay_ms};
-use crate::rustduino::atmega2560p::com::usart_initialize::{Usart, UsartDataSize};
-use crate::rustduino::hal::interrupts;
-
 
 impl Usart {
     /// Initialization setting begin function
@@ -41,7 +39,6 @@ impl Usart {
         }
     }
 
-    
     /// Storing data in Transmit Buffer which takes parameter as a u32 and and data bit length.
     pub fn transmitting_data(&self, data: Volatile<u32>, len: UsartDataSize) {
         unsafe {
@@ -147,7 +144,6 @@ impl Usart {
         self.transmit_disable();
     }
 
-
     ///This function send data type of int(u32) byte by byte
     pub fn write_int(&mut self, data: u32) {
         let s2 = String::from("0123456789");
@@ -168,9 +164,6 @@ impl Usart {
         self.write_string(s1);
     }
 
-
     /// This function send data type of float bit by bit.
-    pub fn write_float(&mut self, data : f32) {
-
-    }
+    pub fn write_float(&mut self, data: f32) {}
 }

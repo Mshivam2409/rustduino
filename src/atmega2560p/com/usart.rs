@@ -21,20 +21,16 @@
 //! See the section 22 of ATMEGA2560P datasheet.
 //! https://ww1.microchip.com/downloads/en/devicedoc/atmel-2549-8-bit-avr-microcontroller-atmega640-1280-1281-2560-2561_datasheet.pdf
 
-
 /// Crates which would be used in the implementation.
-use crate::rustduino::atmega2560p::com::serial;
+use crate::rustduino::atmega2560p::com::serial::Serial;
 use crate::rustduino::atmega2560p::com::usart_initialize::{initialize, Usart};
 use crate::rustduino::atmega2560p::com::usart_initialize::{
     UsartDataSize, UsartModes, UsartNum, UsartParity, UsartStop,
 };
-use crate::rustduino::atmega2560p::com::usart_recieve::{
-    read, recieve_disable, recieve_enable
-};
+use crate::rustduino::atmega2560p::com::usart_recieve::{read, recieve_disable, recieve_enable};
 use crate::rustduino::atmega2560p::com::usart_transmit::{
-    transmit_disable, transmit_enable, write_string, write_int, write_float
+    transmit_disable, transmit_enable, write_float, write_int, write_string,
 };
-
 
 /// Default setting parameters for various modes of USART in case user want's to skip them.
 /// Baud Rate.
@@ -50,29 +46,37 @@ const num: (usart_initialize::UsartNum) = usart0;
 /// Default clock polarity mode.
 const polarity: (usart_initialize::UsartPolarity) = output_rise;
 
+impl Serial {
+    /// Gives a new serial port object which can be used to control all the
+    /// USART at one place.
+    pub fn serial_new() -> Serial {
+        Serial::new()
+    }
+}
 
 impl Usart {
     /// This function can be use to initialize with default settings.
     /// Like Mode:Normal asynchronuous,stopbit:one,data bit:8,parity type:no
     pub fn begin(&mut self) {
         self.transmit_enable();
+        self.recieve_enable();
         self.initialize(mode, baud, stop, size, parity);
     }
 
     /// This function can be use to initialize with baud rate and remaining settings will be set to default
     /// Like Mode:Normal asynchronuous,stopbit:one,data bit:8,parity type:no
-    pub fn begin_set_baud(&mut self,baud1: i64) {
+    pub fn begin_set_baud(&mut self, baud1: i64) {
         self.transmit_enable();
+        self.recieve_enable();
         self.initialize(mode, baud1, stop, size, parity);
     }
-
 
     /// This function can be used to stop the functioning of USART.
     pub fn end(&mut self) {
         self.transmit_disable();
+        self.recieve_disable();
     }
 }
-
 
 /// Main println() function for using USART according to default used values.
 /// Transmitter mode is first enabled for the default usart.
@@ -86,7 +90,6 @@ pub fn println(data: &str) {
     u.transmit_disable();
 }
 
-
 /// println() function for using USART according to default used values and user defined value of baud rate.
 /// Transmitter mode is first enabled for the default usart.
 /// Then the function takes the usart and initializes it with user defined.
@@ -99,7 +102,6 @@ pub fn println_set_baud(data: &str, baud1: i64) {
     u.transmit_disable();
 }
 
-
 /// Main println() function for using USART according to default used values and user defined value of frame.
 /// Transmitter mode is first enabled for the default usart.
 /// Then the function takes the usart and initializes it.
@@ -111,7 +113,6 @@ pub fn println_set_frame(data: &str, size1: UsartDataSize, parity1: UsartParity,
     u.write_string(data);
     u.transmit_disable();
 }
-
 
 /// Main println() function for using USART according to user defined mode parameters.
 /// Transmitter mode is first enabled for the default usart.
