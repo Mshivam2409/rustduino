@@ -19,11 +19,9 @@
 /// Crates which would be used in the implementation.
 use bit_field::BitField;
 use core::ptr::{read_volatile};
-// use core::{array, u32, u8};
 use volatile::Volatile;
 use crate::delay::delay_ms;
 use fixed_slice_vec::FixedSliceVec;
-// use core::mem::MaybeUninit;
 
 /// ## TWI registers definitions
 pub struct Twi {
@@ -138,59 +136,49 @@ impl Twi {
     }
 
     pub fn init(&mut self) {
-        unsafe {
             self.twbr.update(|x| {
                 x.set_bit(TWEN, true);
             });
-        }
     }
 
     pub fn start(&mut self) -> bool {
-        unsafe {
             self.twcr.update(|x| {
                 // TWCR: Enable TWI module
                 x.set_bit(TWSTA, true);
                 x.set_bit(TWINT, true);
                 x.set_bit(TWEN, true);
             });
-        }
         return self.wait_to_complete(START);
     }
 
     pub fn stop(&mut self) {
-        unsafe {
             self.twcr.update(|x| {
                 // TWCR: Disable TWI module
                 x.set_bit(TWSTO, true);
                 x.set_bit(TWINT, true);
                 x.set_bit(TWEN, true);
             });
-        }
     }
 
     pub fn rep_start(&mut self) -> bool {
-        unsafe {
             self.twcr.update(|x| {
                 // TWCR: Enable TWI module
                 x.set_bit(TWSTA, true);
                 x.set_bit(TWINT, true);
                 x.set_bit(TWEN, true);
             });
-        }
         return self.wait_to_complete(REP_START);
     }
 
     /// * Loads the address of the slave device on SDA.
     /// * The `address` argument passed into the function is a seven bit integer.
     pub fn address_write(&mut self, address: u8) -> bool {
-        unsafe {
             self.twdr.write(address << 1);
             self.twcr.update(|x| {
                 // TWCR: Enables TWI to pass address 
                 x.set_bit(TWINT, true);
                 x.set_bit(TWEN, true);
             });
-        }
         return self.wait_to_complete(MT_SLA_ACK);
     }
 
@@ -228,14 +216,12 @@ impl Twi {
 
     pub fn write(&mut self, data:u8) -> bool{
         delay_ms(1);
-        unsafe {
             self.twdr.write(data);
             self.twcr.update(|x| {
                 // TWCR: Enables TWI module to pass data to slave.
                 x.set_bit(TWINT, true);
                 x.set_bit(TWEN, true);
             });
-        }
         return self.wait_to_complete(MT_DATA_ACK);
     }
 
@@ -250,17 +236,17 @@ impl Twi {
         return x + 1;
     }
 
-    pub fn read_nack(&mut self, data: &mut FixedSliceVec<u8>) -> (u8,bool) {
+    pub fn read_nack(&mut self, data: &mut FixedSliceVec<u8>) -> bool {
         self.twcr.update(|x|{
             x.set_bit(TWINT,true);
             x.set_bit(TWEN,true);
         });
-        return (self.twdr.read(),self.wait_to_complete(MR_DATA_NACK));
+        data.push(self.twdr.read());
+        return self.wait_to_complete(MR_DATA_NACK);
     }
 
     pub fn read_nack_burst(&mut self, data: &mut FixedSliceVec<u8>, length: usize) -> usize {
         let mut x: usize = 0;
-        // let mut vec:FixedSliceVec<u8> = FixedSliceVec::new(&mut []);
 
         while x < length {
             if !self.read_nack(data) {
@@ -275,7 +261,6 @@ impl Twi {
         delay_ms(1);
         read_sda();
 
-        // let mut vec:FixedSliceVec<u8> = FixedSliceVec::new(&mut []);
         if !self.start() {
             return false;
         }
