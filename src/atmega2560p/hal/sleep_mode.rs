@@ -20,7 +20,6 @@
 //! https://ww1.microchip.com/downloads/en/devicedoc/atmel-2549-8-bit-avr-microcontroller-atmega640-1280-1281-2560-2561_datasheet.pdf
 
 /// Crates required in the code for reading and writing to registers.
-
 use core::ptr::{read_volatile, write_volatile};
 
 /// Various modes are
@@ -56,23 +55,19 @@ impl Sleep {
 
     /// Write appropriate value to register for enabling the sleep mode.
     pub fn enable(&mut self) {
-
         let mut smcr = unsafe { read_volatile(&mut self.smcr) };
         smcr = smcr | 0x01;
         unsafe {
             write_volatile(&mut self.smcr, smcr);
-
         }
     }
 
     /// Write appropriate value to register for disabling the sleep mode.
     pub fn disable(&mut self) {
-
         let mut smcr = unsafe { read_volatile(&mut self.smcr) };
         smcr = smcr & 0xFE;
         unsafe {
             write_volatile(&mut self.smcr, smcr);
-
         }
     }
 
@@ -106,9 +101,7 @@ impl Sleep {
             }
         }
         unsafe {
-
             write_volatile(&mut self.smcr, smcr);
         }
     }
 }
-

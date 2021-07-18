@@ -17,7 +17,6 @@
 /// Include the required crates for the code.
 use crate::atmega2560p::hal::port::*;
 
-
 ///  The ATMEGA2560P microcontroller IC has a total of 100 pins to configure the functioning of the
 ///  microcontroller. Out of those 86 pins are set as I/O pins which are configured into 11 ports each controlling
 ///  8 pins except port G which controls 6 pins. All 8 pins of port F and K are Analog pins and total 54 digital pins
@@ -114,4 +113,3 @@ impl Pins {
         }
     }
 }
-

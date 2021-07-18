@@ -14,14 +14,12 @@
 //     You should have received a copy of the GNU Affero General Public License
 //     along with this program.  If not, see <https://www.gnu.org/licenses/>
 
-
-
+use crate::delay::delay_ms;
 /// Crates which would be used in the implementation.
 use bit_field::BitField;
-use core::ptr::{read_volatile};
-use volatile::Volatile;
-use crate::delay::delay_ms;
+use core::ptr::read_volatile;
 use fixed_slice_vec::FixedSliceVec;
+use volatile::Volatile;
 
 /// ## TWI registers definitions
 pub struct Twi {
@@ -73,7 +71,7 @@ const ST_DATA_NACK: u8 = 0xC0;
 const ST_LAST_DATA: u8 = 0xC8;
 
 // Slave Receiver
-const SR_SLA_ACK:u8 =0x60;
+const SR_SLA_ACK: u8 = 0x60;
 const SR_ARB_LOST_SLA_ACK: u8 = 0x68;
 const SR_GCALL_ACK: u8 = 0x70;
 const SR_ARB_LOST_GCALL_ACK: u8 = 0x78;
@@ -95,19 +93,19 @@ const TWSR_STATUS_MASK: u8 = 0xF8;
 const I2C_OK: u8 = 0x00;
 const I2C_ERROR_NODEV: u8 = 0x01;
 
-pub fn write_sda(){
-    unsafe{
-    let port_d=&mut*(0x2A as *mut u8);
-    let mut ddrd= read_volatile(port_d);
-    ddrd.set_bit(1,true);
+pub fn write_sda() {
+    unsafe {
+        let port_d = &mut *(0x2A as *mut u8);
+        let mut ddrd = read_volatile(port_d);
+        ddrd.set_bit(1, true);
     }
 }
 
-pub fn read_sda(){
-    unsafe{
-        let port_d=&mut*(0x2A as *mut u8);
-        let mut ddrd=read_volatile(port_d);
-        ddrd.set_bit(1,false);
+pub fn read_sda() {
+    unsafe {
+        let port_d = &mut *(0x2A as *mut u8);
+        let mut ddrd = read_volatile(port_d);
+        ddrd.set_bit(1, false);
     }
 }
 
@@ -115,113 +113,112 @@ impl Twi {
     pub fn new() -> &'static mut Self {
         unsafe { &mut *(0xB8 as *mut Self) }
     }
-    /// 
-    pub fn wait_to_complete(&mut self,start:u8) ->bool {
-        let mut i:u32=0;
+    ///
+    pub fn wait_to_complete(&mut self, start: u8) -> bool {
+        let mut i: u32 = 0;
         //Waiting for TWINT flag set.
         //This indicates that start condition has been transmitted.
-        while !self.twcr.read().get_bit(TWINT){
-            unsafe{
+        while !self.twcr.read().get_bit(TWINT) {
+            unsafe {
                 llvm_asm!("nop");
             }
-            i+=1;
+            i += 1;
         }
         // if TWSR_STATUS_MASK is different from start, error.
-        if self.twsr.read() & TWSR_STATUS_MASK!=start{
+        if self.twsr.read() & TWSR_STATUS_MASK != start {
             return false;
-        }
-        else{
+        } else {
             return true;
         }
     }
 
     pub fn init(&mut self) {
-            self.twbr.update(|x| {
-                x.set_bit(TWEN, true);
-            });
+        self.twbr.update(|x| {
+            x.set_bit(TWEN, true);
+        });
     }
 
     pub fn start(&mut self) -> bool {
-            self.twcr.update(|x| {
-                // TWCR: Enable TWI module
-                x.set_bit(TWSTA, true);
-                x.set_bit(TWINT, true);
-                x.set_bit(TWEN, true);
-            });
+        self.twcr.update(|x| {
+            // TWCR: Enable TWI module
+            x.set_bit(TWSTA, true);
+            x.set_bit(TWINT, true);
+            x.set_bit(TWEN, true);
+        });
         return self.wait_to_complete(START);
     }
 
     pub fn stop(&mut self) {
-            self.twcr.update(|x| {
-                // TWCR: Disable TWI module
-                x.set_bit(TWSTO, true);
-                x.set_bit(TWINT, true);
-                x.set_bit(TWEN, true);
-            });
+        self.twcr.update(|x| {
+            // TWCR: Disable TWI module
+            x.set_bit(TWSTO, true);
+            x.set_bit(TWINT, true);
+            x.set_bit(TWEN, true);
+        });
     }
 
     pub fn rep_start(&mut self) -> bool {
-            self.twcr.update(|x| {
-                // TWCR: Enable TWI module
-                x.set_bit(TWSTA, true);
-                x.set_bit(TWINT, true);
-                x.set_bit(TWEN, true);
-            });
+        self.twcr.update(|x| {
+            // TWCR: Enable TWI module
+            x.set_bit(TWSTA, true);
+            x.set_bit(TWINT, true);
+            x.set_bit(TWEN, true);
+        });
         return self.wait_to_complete(REP_START);
     }
 
     /// * Loads the address of the slave device on SDA.
     /// * The `address` argument passed into the function is a seven bit integer.
     pub fn address_write(&mut self, address: u8) -> bool {
-            self.twdr.write(address << 1);
-            self.twcr.update(|x| {
-                // TWCR: Enables TWI to pass address 
-                x.set_bit(TWINT, true);
-                x.set_bit(TWEN, true);
-            });
+        self.twdr.write(address << 1);
+        self.twcr.update(|x| {
+            // TWCR: Enables TWI to pass address
+            x.set_bit(TWINT, true);
+            x.set_bit(TWEN, true);
+        });
         return self.wait_to_complete(MT_SLA_ACK);
     }
 
     /// * Loads the address of the slave device on SDA.
     /// * The `address` argument passed into the function is a seven bit integer.
-    pub fn address_read(&mut self,address:u8)->bool{
-        self.twdr.write(address<<1 | 0x01);
-        self.twcr.update(|x|{
-               x.set_bit(TWINT,true);
-               x.set_bit(TWEN,true);
+    pub fn address_read(&mut self, address: u8) -> bool {
+        self.twdr.write(address << 1 | 0x01);
+        self.twcr.update(|x| {
+            x.set_bit(TWINT, true);
+            x.set_bit(TWEN, true);
         });
         return self.wait_to_complete(MR_SLA_ACK);
     }
 
-    pub fn read_ack(&mut self,data: &mut FixedSliceVec<u8>)-> bool{
-        self.twcr.update(|x|{
-            x.set_bit(TWINT,true);
-            x.set_bit(TWEA,true);
-            x.set_bit(TWEN,true);
+    pub fn read_ack(&mut self, data: &mut FixedSliceVec<u8>) -> bool {
+        self.twcr.update(|x| {
+            x.set_bit(TWINT, true);
+            x.set_bit(TWEA, true);
+            x.set_bit(TWEN, true);
         });
         data.push(self.twdr.read());
         return self.wait_to_complete(MR_DATA_ACK);
     }
 
-    pub fn read_ack_burst(&mut self, data: &mut FixedSliceVec<u8>,length:usize)->usize{
-        let mut x:usize=0;
-        while x<length{
-            if !self.read_ack(data){
+    pub fn read_ack_burst(&mut self, data: &mut FixedSliceVec<u8>, length: usize) -> usize {
+        let mut x: usize = 0;
+        while x < length {
+            if !self.read_ack(data) {
                 break;
             }
-            x+=1;
+            x += 1;
         }
-        return x+1;
+        return x + 1;
     }
 
-    pub fn write(&mut self, data:u8) -> bool{
+    pub fn write(&mut self, data: u8) -> bool {
         delay_ms(1);
-            self.twdr.write(data);
-            self.twcr.update(|x| {
-                // TWCR: Enables TWI module to pass data to slave.
-                x.set_bit(TWINT, true);
-                x.set_bit(TWEN, true);
-            });
+        self.twdr.write(data);
+        self.twcr.update(|x| {
+            // TWCR: Enables TWI module to pass data to slave.
+            x.set_bit(TWINT, true);
+            x.set_bit(TWEN, true);
+        });
         return self.wait_to_complete(MT_DATA_ACK);
     }
 
@@ -237,9 +234,9 @@ impl Twi {
     }
 
     pub fn read_nack(&mut self, data: &mut FixedSliceVec<u8>) -> bool {
-        self.twcr.update(|x|{
-            x.set_bit(TWINT,true);
-            x.set_bit(TWEN,true);
+        self.twcr.update(|x| {
+            x.set_bit(TWINT, true);
+            x.set_bit(TWEN, true);
         });
         data.push(self.twdr.read());
         return self.wait_to_complete(MR_DATA_NACK);
@@ -257,7 +254,12 @@ impl Twi {
         return x + 1;
     }
 
-    pub fn read_from_slave(&mut self,address: u8,length: usize,data: &mut FixedSliceVec<u8>,) -> bool {
+    pub fn read_from_slave(
+        &mut self,
+        address: u8,
+        length: usize,
+        data: &mut FixedSliceVec<u8>,
+    ) -> bool {
         delay_ms(1);
         read_sda();
 
@@ -281,13 +283,13 @@ impl Twi {
 
         return true;
     }
-    
-    pub fn write_to_slave(&mut self, address: u8, data: &FixedSliceVec<u8>)-> bool {
+
+    pub fn write_to_slave(&mut self, address: u8, data: &FixedSliceVec<u8>) -> bool {
         delay_ms(1);
-        if !self.start(){
+        if !self.start() {
             return false;
         }
-        if !self.address_write(address){
+        if !self.address_write(address) {
             return false;
         }
 

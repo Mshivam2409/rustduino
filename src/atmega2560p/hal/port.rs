@@ -63,7 +63,6 @@ pub struct Pin {
     pin: usize,
 }
 
-
 /// Type `IOMode`
 
 /// Represents the Input/Output mode of the pin.
@@ -111,7 +110,6 @@ impl Port {
         }
     }
 
-
     /// Returns a `Some<Pin>` if pin number is valid and returns none if not valid.
 
     pub fn pin(&mut self, pin: usize) -> Option<Pin> {
@@ -155,7 +153,6 @@ impl Pin {
         unsafe { write_volatile(&mut (*self.port).pin, 0x1 << self.pin) }
     }
 
-
     /// Set the pin to high output value.
 
     pub fn high(&mut self) {
@@ -163,7 +160,7 @@ impl Pin {
         if self.pin >= 8 {
             return;
         }
-      
+
         let mut p = unsafe { read_volatile(&mut (*self.port).port) }; // Reading the value of PORTxn.
         p = p & (1 << self.pin);
 
@@ -173,7 +170,6 @@ impl Pin {
             self.toggle();
         }
     }
-
 
     /// Sets the pin to low output value.
 
@@ -203,4 +199,3 @@ impl Pin {
         self.set_pin_mode(IOMode::Input);
     }
 }
-

@@ -70,6 +70,4 @@ impl WatchDog {
             interrupts::GlobalInterrupts::enable(&mut interrupts::GlobalInterrupts::new());
         }
     }
-
 }
-
