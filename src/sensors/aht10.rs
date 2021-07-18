@@ -1,16 +1,16 @@
 use crate::atmega328p::com::i2c;
 use crate::delay::delay_ms;
 use fixed_slice_vec::FixedSliceVec;
-use volatile::Volatile;
+// use volatile::Volatile;
 
 pub enum Tempsensor {
     Aht10sensor,
 }
 
-pub struct AHT10<'static>{
-    address: Volatile<u8>,
+pub struct AHT10<'a>{
+    address: u8,
     i2c: i2c::Twi,
-    vec: FixedSliceVec<&'static u8>,
+    vec: FixedSliceVec<'a, u8>,
 }
 
 const AHT10_ADDRESS_0X38: u8 = 0x38; //chip I2C address no.1 for AHT10/AHT15/AHT20, address pin connected to GND
@@ -41,18 +41,18 @@ const AHT10_USE_READ_DATA: bool = false; //force to use data from previous read
 const AHT10_ERROR: u8 = 0xFF; //returns 255, if communication error is occurred
 
 //let mut address=AHT10_ADDRESS_0X38; //isko bhi global karna hoga kya
-impl AHT10<'a> {
+impl AHT10 <'a> {
     pub fn initialise(&mut self) -> bool {
         //let mut vec : FixedSliceVec<u8> = FixedSliceVec::new(&mut []);
-        self.vec[0] = self.AHT10_INIT_CMD;
-        self.vec[1] = 0x33;
-        self.vec[2] = 0x00;
+        self.vec.push(AHT10_INIT_CMD);
+        self.vec.push(0x33);
+        self.vec.push(0x00);
         //vec=vec![u8,AHT10_INIT_CMD,0x08,0x00];
-        if !self.i2c.write_to_slave(self.address, self.vec) {
+        if !self.i2c.write_to_slave(self.address, &self.vec) {
             unreachable!("error!");
         }
         self.wait_for_idle();
-        if (self.status() & self.AHT10_INIT_CAL_ENABLE) == false {
+        if !(self.status() & AHT10_INIT_CAL_ENABLE) {
             return false;
         }
         return true;
@@ -63,7 +63,7 @@ impl AHT10<'a> {
         //let dum1 :u8;
         self.vec[0] = AHT10_SOFT_RESET_CMD;
         //vec=vec![dum1,AHT10_SOFT_RESET_CMD];
-        if !self.i2c.write_to_slave(self.address, self.vec) {
+        if !self.i2c.write_to_slave(self.address, &self.vec) {  
             unreachable!("Error!");
         } //yeh bool return kar raha hai...ese likhna sahi hoga kya ?
         delay_ms(20);
@@ -74,14 +74,14 @@ impl AHT10<'a> {
                       //let mut address=AHT10_ADDRESS_0X38;//isko bhi global karna hoga kya
         self.soft_reset(); // not sure on this
 
-        if !self.intialise() {
+        if !self.initialise() {
             unreachable!("Could not intialise!");
         }
         unsafe { &mut *(0x38 as *mut Self) }
     }
 
     pub fn read_to_buffer(&mut self) {
-        if !self.i2c.read_from_slave(self.address, self.vec) {
+        if !self.i2c.read_from_slave(self.address, self., data) {
             unreachable!("Error!");
         }
     }
@@ -113,17 +113,17 @@ impl AHT10<'a> {
         return self.vec[0];
     }
 
-    pub fn relative_humidity(&mut self) -> u32 {
+    pub fn relative_humidity(&mut self) -> f64 {
         self.perform_measurement();
-        let mut humid: u32 = (self.vec[1] << 12) | (self.vec[2] << 4) | (self.vec[3] >> 4);
-        humid = (humid * 100) / 0x100000;
+        let mut humid: f64 = ((self.vec[1] << 12) | (self.vec[2] << 4) | (self.vec[3] >> 4)) as f64;
+        humid = (humid * 100.0) / 0x100000 as f64;
         return humid;
     }
 
-    pub fn temperature(&mut self) -> u32 {
+    pub fn temperature(&mut self) -> f64 {
         self.perform_measurement();
-        let mut temp: u32 = ((self.vec[3] & 0xF) << 16) | self.vec[4] << 8 | self.vec[5];
-        temp = ((temp * 200.0) / 0x100000) - 50;
+        let mut temp: f64 = (((self.vec[3] & 0xF) << 16) | self.vec[4] << 8 | self.vec[5]) as f64;
+        temp = ((temp as f64 * 200.0) / 0x100000 as f64) - 50.0;
         return temp;
     }
 }
