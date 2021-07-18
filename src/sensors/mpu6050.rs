@@ -158,14 +158,14 @@ pub struct MPU6050 <'a> {
     address: Volatile<u8>,
     i2c: i2c::Twi, 
     //atmega2560p::com::i2C::Twi::new(),
-    vec: FixedSliceVec<'a ,u8>,
+    //vec: FixedSliceVec<'a ,u8>,
 }
 
 impl MPU6050 <'a> {
 
     // pub fn new () {
-    //     let Self = MPU6050 {
-    //         i2c: atmega2560p::com::i2C::Twi::new(),
+        //     let Self = MPU6050 {
+            //         i2c: atmega2560p::com::i2C::Twi::new(),
     //     };
     // }
     fn readregister(&mut self,reg: u8) -> u8 {
@@ -181,7 +181,7 @@ impl MPU6050 <'a> {
         vec2.push(value);
         self.i2c.write_to_slave(MPU6050_ADDRESS, vec2)
     }
-
+    
     fn writeregisterBit(&mut self,reg: u8, pos: u8, state: bool){
         let mut value: u8;
         value = self.readregister(reg);
@@ -192,48 +192,81 @@ impl MPU6050 <'a> {
         }
         self.writeregister(reg, value);
     }
-
+    
+    
+    pub fn SetDLPF(dlpf: mpu_dlpf_t) {
+        
+    }
+    
+    pub fn SetDHPFMode(dlpf: mpu_dhpf_t) {
+        let mut value: u8;
+        value = self.readregister(MPU6050_REG_CONFIG);
+        value &= 0b11111100;
+        value |= dlpf;
+        self.writeregister(MPU6050_REG_CONFIG, value);
+    }
+    
+    pub fn SetScale() {
+        
+    }
+    
+    pub fn GetScale() -> mpu_dps_t {
+        
+    }
+    
+    pub fn SetRange() {
+        
+    }
+    
+    pub fn GetRange() -> mpu_range_t {
+        
+    }
+    
     pub fn SetClockSource() {
         
     }
 
-    pub fn SetDLPF(dlpf: mpu_dlpf_t) {
+    pub fn GetClockSource() -> mpu_ClockSource_t {
+
+    }
+
+    pub fn SetIntFreeFallEnabled(state: bool){
         
     }
 
-    pub fn SetScale() {
-        
-    }
+    pub fn GetIntFreeFallEnabled() -> bool {
 
-    pub fn SetRange() {
-        
-    }
-
-    pub fn SetDHPFMode() {
-        
-    }
-
-    pub fn SetDLPFMode() {
-        
     }
 
     pub fn SetAccelPowerOnDelay(){
         
     }
 
-    pub fn SetIntFreeFallEnabled(){
+    pub fn GetAccelPowerOnDelay(){
+
+    }
+
+    pub fn SetMotionDetectionThreshold(threshold: u8){
         
     }
 
-    pub fn SetMotionDetectionThreshold(){
+    pub fn GetMotionDetectionThreshold() -> u8 {
         
     }
 
-    pub fn SetMotionDetectionDuration(){
+    pub fn SetMotionDetectionDuration(duration: u8){
         
     }
 
-    pub fn SetZeroMotionDetectionThreshold(){
+    pub fn GetMotionDetectionDuration() -> u8 {
+
+    }
+
+    pub fn SetZeroMotionDetectionThreshold(threshold: u8){
+        
+    }
+
+    pub fn GetZeroMotionDetectionThreshold() -> u8 {
         
     }
 
@@ -241,7 +274,15 @@ impl MPU6050 <'a> {
         
     }
 
+    pub fn GetZeroMotionDetectionDuration(){
+        
+    }
+
     pub fn SetFreeFallDetectionThreshold(){
+        
+    }
+
+    pub fn GetFreeFallDetectionThreshold(){
         
     }
 
@@ -249,7 +290,11 @@ impl MPU6050 <'a> {
         
     }
 
-    pub fn SetSleepEnabled(bool :state ){
+    pub fn GetFreeFallDetectionDuration(){
+        
+    }
+
+    pub fn SetSleepEnabled(state: bool){
         self.writeregisterBit(MPU6050_REG_PWR_MGMT_1, 6, state);
     }
 
@@ -285,7 +330,7 @@ impl MPU6050 <'a> {
         return get_bit(value,5);
     }
 
-    pub fn SetI2CByepassEnabled(bool :state){
+    pub fn SetI2CByepassEnabled(state: bool){
         self.writeregisterBit(MPU6050_REG_INT_PIN_CFG , 1, state); ;
     }
 
@@ -305,21 +350,5 @@ impl MPU6050 <'a> {
     pub fn GetThreshold() -> u8{
         return actualThreshold;
     }
-
-    // pub fn Calibrategyro(){
-    //     ;
-    // }
-
-    // pub fn Calibrategyro(){
-    //     ;
-    // }
-
-    // pub fn Calibrategyro(){
-    //     ;
-    // }
-
-    // pub fn Calibrategyro(){
-        
-    // }
 
 }
