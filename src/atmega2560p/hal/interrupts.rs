@@ -19,37 +19,43 @@
 //! https://ww1.microchip.com/downloads/en/devicedoc/atmel-2549-8-bit-avr-microcontroller-atmega640-1280-1281-2560-2561_datasheet.pdf
 
 /// Crates required in the code for reading and writing to registers.
-use core;
+
+use core::ptr::{read_volatile, write_volatile};
+
 
 ///This contains the registers to be manipulated for controlling global interrupts setup.
 ///This represents struct for Globalinterrupts and is used to control sreg register.
 pub struct GlobalInterrupts {
     sreg: u8,
 }
-///In section 7.4 about (SREG).
+
 impl GlobalInterrupts {
-    ///Returns new struct of Global_Interrupts.
+    ///  Returns new struct of Global_Interrupts.
+///In section 7.4 about (SREG).
+
     pub unsafe fn new() -> &'static mut GlobalInterrupts {
         &mut *(0x5F as *mut GlobalInterrupts)
     }
 
-    ///This fnction Disable global interrupts.
-    ///Also known as CLI.
+
+    ///  This fnction Disable global interrupts.
+    ///  Also known as CLI.
     pub fn disable(&mut self) {
-        let mut ctrl_sreg = unsafe { core::ptr::read_volatile(&self.sreg) };
+        let mut ctrl_sreg = unsafe { read_volatile(&self.sreg) };
         ctrl_sreg &= !(1 << 7);
         unsafe {
-            core::ptr::write_volatile(&mut self.sreg, ctrl_sreg);
+            write_volatile(&mut self.sreg, ctrl_sreg);
         }
     }
 
-    ///This function Enable global interrupts.
-    ///Also known as SEI.
+    ///  This function Enable global interrupts.
+    ///  Also known as SEI.
     pub fn enable(&mut self) {
-        let mut ctrl_sreg = unsafe { core::ptr::read_volatile(&self.sreg) };
+        let mut ctrl_sreg = unsafe { read_volatile(&self.sreg) };
         ctrl_sreg |= 1 << 7;
         unsafe {
-            core::ptr::write_volatile(&mut self.sreg, ctrl_sreg);
+            write_volatile(&mut self.sreg, ctrl_sreg);
         }
     }
 }
+

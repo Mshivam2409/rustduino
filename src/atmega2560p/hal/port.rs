@@ -40,16 +40,17 @@ pub enum PortName {
     L,
 }
 
-/// Each Port pin consists of 3 registers : PINx, DDRx, PORTx .
-/// These registors control the ports.
-/// ```DDRx:  Data direction register```
-///     The DDRx Register controls the direction of a particular pin.
-/// ```PORTx: Data register```
-///     PORTxn is written logic one when the pin is configured as an input pin.
-///     PORTxn is written logic zero when the pin is configured as an output pin.
-/// ```PINx:  Port input pins```
-///     Writing a logic one to PINxn toggles the value of PORTxn, independent on the value of DDRxn.
-///     This will control the I/O state of pins.    
+/// These will control the ports ( set of 8 pins each controlled by a bit ).
+/// `DDR:  Data direction register`
+///     This controls the direction of a particular pin.
+///     Each bit of this register decides the I/O state of a particular pin on the microcontroller IC.
+/// `PORT: Data Register`
+///     Used when the particular pin is set to output.
+///     It will give the value of digital input/output sent by the pin.
+/// `PIN:  Port input pins`
+///     This can be read to see the value at a particualar pin.
+///     It is also used as a toggle controller.     
+
 pub struct Port {
     pin: u8,
     ddr: u8,
@@ -62,7 +63,9 @@ pub struct Pin {
     pin: usize,
 }
 
-/// Type ```IOMode```
+
+/// Type `IOMode`
+
 /// Represents the Input/Output mode of the pin.
 pub enum IOMode {
     Input,
@@ -108,7 +111,9 @@ impl Port {
         }
     }
 
-    /// Returns a ```Some<Pin>``` if pin number is valid and returns none if not valid.
+
+    /// Returns a `Some<Pin>` if pin number is valid and returns none if not valid.
+
     pub fn pin(&mut self, pin: usize) -> Option<Pin> {
         if pin < 0x8 {
             Some(Pin { port: self, pin })
@@ -130,6 +135,9 @@ impl Pin {
         let mut ddr_val = unsafe { read_volatile(&mut (*self.port).ddr) };
 
         //  Calculate the value to be written to DDxn register.
+
+        //  This will set the register according to the mode in which the pin is to be set.
+
         ddr_val &= !(0x1 << self.pin);
         ddr_val |= match mode {
             IOMode::Input => 0x0,
@@ -140,18 +148,25 @@ impl Pin {
         unsafe { write_volatile(&mut (*self.port).ddr, ddr_val) }
     }
 
-    /// Toggles the value of PORTxn by writing one to PINxn ,independent of the value of DDRxn.
+    /// Toggles the appropriate bit in PINxn register so that the mode of the pin
+    /// is changed from high to low or vice versa.
+
     pub fn toggle(&mut self) {
         unsafe { write_volatile(&mut (*self.port).pin, 0x1 << self.pin) }
     }
 
-    /// Set the pin to high.
+
+    /// Set the pin to high output value.
+
     pub fn high(&mut self) {
         // Checks if pin number is valid.
         if self.pin >= 8 {
             return;
         }
-        let p = unsafe { read_volatile(&mut (*self.port).port) }; // Reading the value of PORTxn.
+      
+        let mut p = unsafe { read_volatile(&mut (*self.port).port) }; // Reading the value of PORTxn.
+        p = p & (1 << self.pin);
+
         let ddr_value = unsafe { read_volatile(&mut (*self.port).ddr) }; // Read the DDRxn register.
         if p == 0 && ddr_value == (0x1 << self.pin) {
             // Toggling the value of PORTxn, if it isn't set to high.
@@ -159,13 +174,18 @@ impl Pin {
         }
     }
 
-    /// Sets the pin to low.
+
+    /// Sets the pin to low output value.
+
     pub fn low(&mut self) {
         // Check if pin number is valid.
         if self.pin >= 8 {
             return;
         }
-        let p = unsafe { read_volatile(&mut (*self.port).port) }; //Reading the value of PORTxn.
+
+        let mut p = unsafe { read_volatile(&mut (*self.port).port) }; //Reading the value of PORTxn.
+        p = p & (1 << self.pin);
+
         let ddr_value = unsafe { read_volatile(&mut (*self.port).ddr) }; // Read the DDRxn register.
         if p != 0 && ddr_value == (0x1 << self.pin) {
             //Toggling the value of PORTxn, if it isn't set to low.
@@ -183,3 +203,4 @@ impl Pin {
         self.set_pin_mode(IOMode::Input);
     }
 }
+

@@ -20,15 +20,17 @@
 //! https://ww1.microchip.com/downloads/en/devicedoc/atmel-2549-8-bit-avr-microcontroller-atmega640-1280-1281-2560-2561_datasheet.pdf
 
 /// Crates required in the code for reading and writing to registers.
-use core;
+
+use core::ptr::{read_volatile, write_volatile};
 
 /// Various modes are
-/// ```IDLE  : Idle sleep mode```          
-/// ```ADC   : ADC Noise Reduction```
-/// ```PD    : Power-down```    
-/// ```PS    : Power-save```
-/// ```SBY   : Standby```      
-/// ```ESBY  : Extended Standby```
+/// `IDLE  : Idle sleep mode`          
+/// `ADC   : ADC Noise Reduction`
+/// `PD    : Power-down`    
+/// `PS    : Power-save`
+/// `SBY   : Standby`      
+/// `ESBY  : Extended Standby`
+
 #[derive(Clone, Copy)]
 pub enum Options {
     IDLE,
@@ -54,24 +56,32 @@ impl Sleep {
 
     /// Write appropriate value to register for enabling the sleep mode.
     pub fn enable(&mut self) {
-        let mut smcr = unsafe { core::ptr::read_volatile(&mut self.smcr) };
+
+        let mut smcr = unsafe { read_volatile(&mut self.smcr) };
         smcr = smcr | 0x01;
         unsafe {
-            core::ptr::write_volatile(&mut self.smcr, smcr);
+            write_volatile(&mut self.smcr, smcr);
+
         }
     }
 
     /// Write appropriate value to register for disabling the sleep mode.
     pub fn disable(&mut self) {
-        let mut smcr = unsafe { core::ptr::read_volatile(&mut self.smcr) };
+
+        let mut smcr = unsafe { read_volatile(&mut self.smcr) };
         smcr = smcr & 0xFE;
         unsafe {
-            core::ptr::write_volatile(&mut self.smcr, smcr);
+            write_volatile(&mut self.smcr, smcr);
+
         }
     }
 
     /// Set the bits of SMCR register according to the sleep mode required.
-    /// The sleep mode to be set will be given as the standard name.
+
+    /// The sleep mode to be set will be given as the standard name.  
+    /// For more details about the available Options for the sleep mode please check the
+    /// comment given above the enum `Options` in the code.
+
     pub fn select_mode(&mut self, mode: Options) {
         self.enable(); // Enable the Sleep mode
         let mut smcr = 0x0F;
@@ -96,7 +106,9 @@ impl Sleep {
             }
         }
         unsafe {
-            core::ptr::write_volatile(&mut self.smcr, smcr);
+
+            write_volatile(&mut self.smcr, smcr);
         }
     }
 }
+
