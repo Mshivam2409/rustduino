@@ -18,15 +18,13 @@
 //! See the section 22 of ATMEGA2560P datasheet.
 //! https://ww1.microchip.com/downloads/en/devicedoc/atmel-2549-8-bit-avr-microcontroller-atmega640-1280-1281-2560-2561_datasheet.pdf
 
+use crate::atmega2560p::com::usart_initialize::{Usart, UsartDataSize};
+use crate::delay::delay_ms;
 /// Crates which would be used in the implementation.
 /// We will be using standard volatile and bit_field crates now for a better read and write.
 use bit_field::BitField;
-use core::ptr::{read_volatile, write_volatile};
 use cstr_core::CStr;
-use rustduino::atmega2560p::com::usart_initialize::{Usart, UsartDataSize};
-use rustduino::delay::delay_ms;
-use rustduino::hal::interrupts;
-use volatile::Volatile;
+
 impl Usart {
     /// Initialization setting begin function
     /// This function is to enable the Transmitter
@@ -40,7 +38,7 @@ impl Usart {
     }
 
     /// Storing data in Transmit Buffer which takes parameter as a u32 and and data bit length.
-    pub fn transmitting_data(&self, data: Volatile<u32>, len: UsartDataSize) {
+    pub fn transmitting_data(&self, data: u32, len: UsartDataSize) {
         unsafe {
             // Checks if the Transmit buffer is empty to receive data.
             // If not the program waits till the time comes.
@@ -54,18 +52,27 @@ impl Usart {
                 }
             }
 
+            let udr = self.udr.read();
+
             // If the frame is ready for transmission then the appropriate place is written.
             match len {
-                UsartDataSize::five => self.udr.set_bits(0..5, data.get_bits(0..5)),
-                UsartDataSize::six => self.udr.set_bits(0..6, data.get_bits(0..6)),
-                UsartDataSize::seven => self.udr.set_bits(0..7, data.get_bits(0..7)),
-                UsartDataSize::eight => self.udr.set_bits(0..8, data.get_bits(0..8)),
-                UsartDataSize::nine => {
+                UsartDataSize::Five => {
+                    udr.set_bits(0..5, data.get_bits(0..5) as u8);
+                }
+                UsartDataSize::Six => {
+                    udr.set_bits(0..6, data.get_bits(0..6) as u8);
+                }
+                UsartDataSize::Seven => {
+                    udr.set_bits(0..7, data.get_bits(0..7) as u8);
+                }
+                UsartDataSize::Eight => {
+                    udr.set_bits(0..8, data.get_bits(0..8) as u8);
+                }
+                UsartDataSize::Nine => {
                     self.ucsrb.update(|ctrl| {
                         ctrl.set_bit(0, data.get_bit(8));
                     });
-
-                    self.udr.set_bits(0..8, data.get_bits(0..8));
+                    udr.set_bits(0..8, data.get_bits(0..8) as u8);
                 }
             }
         }
@@ -73,11 +80,11 @@ impl Usart {
 
     /// This functions waits for the transmission to complete by checking TXCn bit in the ucsrna register
     /// TXCn is set 1 when the transmit is completed and it can start transmitting new data
-    pub fn flush(&mut self) {
-        let mut ucsra = unsafe { read_volatile(&self.ucsrc) };
+    pub fn flush_transmit(&mut self) {
+        let mut ucsra = self.ucsra.read();
         let mut i: i32 = 10;
         while ucsra.get_bit(6) == false {
-            ucsra = unsafe { read_volatile(&self.ucsra) };
+            ucsra = self.ucsra.read();
             if i != 0 {
                 delay_ms(1000);
                 i = i - 1;
@@ -90,15 +97,16 @@ impl Usart {
     /// This function is used to disable the Transmitter and once disabled the TXDn pin is no longer
     /// used as the transmitter output pin and functions as a normal I/O pin
     pub fn transmit_disable(&mut self) {
-        let mut uscra6 = git_bit(&self.uscra, 6);
-        let mut uscra5 = get_bit(&self.uscra, 5);
+        let ucsra = self.ucsra.read();
+        let mut uscra6 = ucsra.get_bit(6);
+        let mut uscra5 = ucsra.get_bit(5);
         let mut i: i32 = 100;
 
-        /// Check for data in Transmit Buffer and Transmit shift register,
-        /// if data is present in either then disabling of transmitter is not effective
+        // Check for data in Transmit Buffer and Transmit shift register,
+        // if data is present in either then disabling of transmitter is not effective
         while uscra6 == false || uscra5 == false {
-            uscra6 = git_bit(&self.uscra, 6);
-            uscra5 = get_bit(&self.uscra, 5);
+            uscra6 = ucsra.get_bit(6);
+            uscra5 = ucsra.get_bit(5);
             if i != 0 {
                 delay_ms(1000);
                 i = i - 1;
@@ -108,19 +116,21 @@ impl Usart {
         }
 
         unsafe {
-            self.ucsrb.set_bit(3, false);
+            self.ucsrb.update(|srb| {
+                srb.set_bit(3, false);
+            });
         }
     }
 
     /// This function sends a character byte of 5,6,7 or 8 bits
-    pub fn transmit_data(&self, data: Volatile<u8>) {
+    pub fn transmit_data(&self, data: CStr) {
         unsafe {
-            let ucsra = read_volatile(&self.ucsra);
+            let ucsra = self.ucsra.read();
             let udre = ucsra.get_bit(5);
 
             let mut i: i32 = 100;
             while udre == false {
-                let ucsra = read_volatile(&self.ucsra);
+                let ucsra = self.ucsra.read();
                 let udre = ucsra.get_bit(5);
 
                 if i != 0 {
@@ -131,13 +141,13 @@ impl Usart {
                 }
             }
 
-            self.udr.write(data);
+            self.write_string(data);
         }
     }
 
-    /// This function send data type of string byte by byte
-    pub fn write(&mut self, data: CStr) {
-        self.Transmit_enable();
+    /// This function send data type of string byte by byte.
+    pub fn write_string(&mut self, data: CStr) {
+        self.transmit_enable();
         let x = data.to_bytes();
         for i in (0..(x.len())) {
             self.write(x[i]);
@@ -145,5 +155,15 @@ impl Usart {
         self.transmit_disable();
     }
 
-    //This function send data type of int(u32) byte by byte
+    /*
+    /// This function send data type of int(u32) byte by byte.
+    pub fn write_integer(&mut self,data : Ci32) {
+
+    }
+
+    /// This function send data type of float(f32) byte by byte.
+    pub fn write_float(&mut self,data : Cf32) {
+
+    }
+    */
 }

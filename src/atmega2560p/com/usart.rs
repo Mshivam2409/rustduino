@@ -22,21 +22,20 @@
 //! https://ww1.microchip.com/downloads/en/devicedoc/atmel-2549-8-bit-avr-microcontroller-atmega640-1280-1281-2560-2561_datasheet.pdf
 
 /// Crates which would be used in the implementation.
-use crate::rustduino::atmega2560p::com::serial::Serial;
-use crate::rustduino::atmega2560p::com::usart_initialize::{initialize, Usart};
-use crate::rustduino::atmega2560p::com::usart_initialize::{
+use crate::atmega2560p::com::serial::Serial;
+use crate::atmega2560p::com::usart_initialize::Usart;
+use crate::atmega2560p::com::usart_initialize::{
     UsartDataSize, UsartModes, UsartNum, UsartParity, UsartStop,
 };
-use crate::rustduino::atmega2560p::com::usart_recieve::{read, recieve_disable, recieve_enable};
-use crate::rustduino::atmega2560p::com::usart_transmit::{
-    transmit_disable, transmit_enable, write_float, write_int, write_string,
-};
+// use crate::atmega2560p::com::usart_recieve;
+// use crate::atmega2560p::com::usart_transmit;
 
 /// Default setting parameters for various modes of USART in case user want's to skip them.
 /// Baud Rate.
 const baud: i64 = 2400;
 /// Frame Settings.
-const size: (usart_initialize::UsartDataSize) = eight;
+const size: UsartDataSize = Eight;
+
 const parity: (usart_initialize::UsartParity) = no;
 const stop: (usart_initialize::UsartStop) = one;
 /// USART mode.
@@ -48,7 +47,7 @@ const polarity: (usart_initialize::UsartPolarity) = output_rise;
 
 /// Data Type selection for which data is to be transmitted using USART.
 pub enum DataType {
-    string(&str),
+    string(Cstr),
     integer(u32),
     float(f32),
 }
