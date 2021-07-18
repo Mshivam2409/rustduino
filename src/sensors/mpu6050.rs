@@ -1,7 +1,7 @@
 use crate::delay::delay_ms;
 use bit_field::BitField;
 use fixed_slice_vec::FixedSliceVec;
-use volatile::Volatile;
+//use volatile::Volatile;
 use crate::atmega2560p::com::i2c::*;
 
 const MPU6050_ADDRESS: u8 = 0x68; // 0x69 when AD0 pin to Vcc
@@ -154,20 +154,20 @@ pub enum mpu_dlpf_t  {
     MPU6050_DLPF_0 = 0b000,
 }
 
-pub struct MPU6050 {
-    //address: Volatile<u8>,
-    i2c:Twi, 
+pub struct MPU6050 <'a> {
+    address: Volatile<u8>,
+    i2c: i2c::Twi, 
     //atmega2560p::com::i2C::Twi::new(),
-    //vec: FixedSliceVec<u8>,
+    vec: FixedSliceVec<'a ,u8>,
 }
 
-impl MPU6050 {
+impl MPU6050 <'a> {
 
-    pub fn new () {
-        let Self = MPU6050 {
-            i2c: atmega2560p::com::i2C::Twi::new(),
-        };
-    }
+    // pub fn new () {
+    //     let Self = MPU6050 {
+    //         i2c: atmega2560p::com::i2C::Twi::new(),
+    //     };
+    // }
     fn readregister(&mut self,reg: u8) -> u8 {
         let mut vec1 : FixedSliceVec<u8> = FixedSliceVec::new(&mut []);
         vec1.push(reg);
@@ -285,8 +285,13 @@ impl MPU6050 {
         return get_bit(value,5);
     }
 
-    pub fn SetI2CByepassEnabled(){
-        
+    pub fn SetI2CByepassEnabled(bool :state){
+        self.writeregisterBit(MPU6050_REG_INT_PIN_CFG , 1, state); ;
+    }
+
+    pub fn GetI2CByepassEnabled() -> bool{
+        let mut value = self.readregister(MPU6050_REG_INT_PIN_CFG);
+        return get_bit(value,1);
     }
 
     pub fn Calibrategyro(){
@@ -295,6 +300,10 @@ impl MPU6050 {
 
     pub fn SetThreshold(){
         
+    }
+
+    pub fn GetThreshold() -> u8{
+        return actualThreshold;
     }
 
     // pub fn Calibrategyro(){
