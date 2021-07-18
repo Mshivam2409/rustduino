@@ -24,7 +24,7 @@ use crate::delay::delay_ms;
 /// We will be using standard volatile and bit_field crates now for a better read and write.
 use bit_field::BitField;
 use fixed_slice_vec::FixedSliceVec;
-
+//This is a implementation for Usart
 impl Usart {
     /// Initialization setting begin function
     /// This function is to enable the Transmitter
@@ -77,7 +77,7 @@ impl Usart {
             }
         }
     }
-
+    ///This function checks that transmission buffer is ready to be
     pub fn avai_write(&mut self) -> bool {
         let ucsra = self.ucsra.read();
         if ucsra.get_bit(5) == true {
@@ -132,7 +132,7 @@ impl Usart {
     }
 
     /// This function sends a character byte of 5,6,7 or 8 bits
-    pub fn transmit_data(&self, data:u8) {
+    pub fn transmit_data(&self, data: u8) {
         unsafe {
             let ucsra = self.ucsra.read();
             let udre = ucsra.get_bit(5);
@@ -155,7 +155,7 @@ impl Usart {
     }
 
     /// This function send data type of string byte by byte.
-    pub fn write(&mut self, data: & mut str) {
+    pub fn write(&mut self, data: &mut str) {
         self.Transmit_enable();
         let mut vec: FixedSliceVec<u8> = FixedSliceVec::from(data);
         for i in 0..(vec.len()) {
@@ -164,10 +164,22 @@ impl Usart {
         self.transmit_disable();
     }
 
-    /*
     /// This function send data type of int(u32) byte by byte.
-    pub fn write_integer(&mut self,data : Ci32) {
+    pub fn write_integer(&mut self, data: u32) {
+        let s2 = "0123456789";
+        let mut vec: FixedSliceVec<u8> = FixedSliceVec::new();
+        let mut a = data;
+        while a != 0 {
+            let rem = a % 10;
+            a = a / 10;
+            let s3 = &s2[rem..(rem + 1)];
+            vec.push(s3);
+        }
+        for i in 0..(vec.len()) {
+            self.transmit_data(vec[(vec.len) - 1 - i]);
+        }
     }
+    /*
     /// This function send data type of float(f32) byte by byte.
     pub fn write_float(&mut self,data : Cf32) {
     }
