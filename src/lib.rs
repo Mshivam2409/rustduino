@@ -53,6 +53,11 @@ pub mod atmega2560p {
 
 }
 
+#[cfg(feature = "sensors")]
+pub mod sensors {
+    pub mod mpu6050;
+}
+
 /// Library for ATmega328P chip.
 #[cfg(feature = "atmega328p")]
 pub mod atmega328p {
