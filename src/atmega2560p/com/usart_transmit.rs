@@ -165,5 +165,11 @@ impl Usart {
     }
 
     /// This function send data type of float bit by bit.
-    pub fn write_float(&mut self, data: f32) {}
+    pub fn write_float(&mut self, data: f32) {
+        let mut a = data;
+
+        let f = a.to_string();
+        
+        self.write_string(f);
+    }
 }
