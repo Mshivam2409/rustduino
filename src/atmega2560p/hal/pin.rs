@@ -25,7 +25,10 @@ use crate::atmega2560p::hal::port::*;
 ///  This structure declaration contains the space to control all the 86 pins in one memory mapped I/O.
 pub struct Pins {
     /// All 16 analog pins.
-
+    pub analog: [Pin; 16],
+    /// All 54 digital I/O pins.
+    pub digital: [Pin; 54],
+}
 
 impl Pins {
     /// Returns all pins at once as a single struct.
