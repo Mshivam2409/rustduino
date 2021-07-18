@@ -25,7 +25,7 @@ use bit_field::BitField;
 /// We will be using standard volatile and bit_field crates now for a better read and write.
 use core::ptr::{read_volatile, write_volatile};
 use volatile::Volatile;
-
+use cstr_core::CStr;
 impl Usart {
     // Initialization setting begin function
 
@@ -136,30 +136,14 @@ impl Usart {
     }
 
     /// This function send data type of string byte by byte
-    pub fn write(&mut self, data: String) {
+    pub fn write(&mut self, data: CStr) {
         self.Transmit_enable();
-        for b in data.byte() {
-            self.Transmit_data(b);
+        let x=data.to_bytes();
+        for i in (0..(x.len())){
+            self.write(x[i]);
         }
         self.Transmit_disable();
     }
     ///This function send data type of int(u32) byte by byte
-    pub fn writeint(&mut self, data: u32) {
-        let s2 = String::from("0123456789");
-        let mut _s = String::new();
-        let mut s1 = String::new();
-        let mut a = data;
-        while a != 0 {
-            let rem = a % 10;
-            a = a / 10;
-            let s3 = &s2[rem..(rem + 1)];
-            _s = _s + &s3;
-        }
-        for i in (0..(_s.len())).rev() {
-            let s3 = &_s[i..(i + 1)];
-            s1 = s1 + &s3;
-        }
-
-        self.write(s1);
-    }
+   
 }
