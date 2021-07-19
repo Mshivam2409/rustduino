@@ -40,7 +40,7 @@ const AHT10_USE_READ_DATA: bool = false; //force to use data from previous read
 const AHT10_ERROR: u8 = 0xFF; //returns 255, if communication error is occurred
 
 
-impl AHT10 <'a> {
+impl <'a> AHT10 <'a> {
     pub fn new(&mut self) -> &'static mut Self {
         delay_ms(20); //20ms delay to wake up
    
@@ -63,7 +63,7 @@ impl AHT10 <'a> {
             unreachable!("error!");
         }
         self.wait_for_idle();
-        if !(self.status() & AHT10_INIT_CAL_ENABLE) {
+        if !(self.status()==0 && AHT10_INIT_CAL_ENABLE==0) {
             return false;
         }
         return true;
@@ -91,7 +91,7 @@ impl AHT10 <'a> {
     pub fn trigger_slave(&mut self) {
         
         self.vec.clear();
-        self.vec.push(self.AHT10_START_MEASURMENT_CMD);
+        self.vec.push(AHT10_START_MEASURMENT_CMD);
         self.vec.push(0x33);
         self.vec.push(0x00);
         
@@ -101,7 +101,7 @@ impl AHT10 <'a> {
     }
 
     pub fn wait_for_idle(&mut self) {
-        while (self.status() && self.AHT10_INIT_BUSY) == true {
+        while (self.status()==0 && AHT10_INIT_BUSY==0) == true {
             delay_ms(5);
         }
     }
