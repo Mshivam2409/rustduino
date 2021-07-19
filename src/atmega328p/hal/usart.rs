@@ -14,17 +14,19 @@
 //     You should have received a copy of the GNU Affero General Public License
 //     along with this program.  If not, see <https://www.gnu.org/licenses/>
 
+/// Other source code files to be used
+use crate::rustduino::atmega328p::hal::interrupt;
+use crate::rustduino::atmega328p::hal::port;
+use crate::rustduino::atmega328p::hal::power;
 
 /// Crates which would be used in the implementation.
 /// We will be using standard volatile and bit_field crates now for a better read and write.
-use core::ptr::{read_volatile,write_volatile};
+use crate::delay::delay_ms;
 use bit_field::BitField;
+use core::ptr::{read_volatile,write_volatile};
+use core::{f64,u32,u8};
 use volatile::Volatile;
-use crate::avr::__nop;
-use crate::rustduino::atmega328p::hal::interrupts;
-use crate::rustduino::atmega328p::hal::port;
-use crate::rustduino::atmega328p::hal::power;
-use crate::delay::{delay_s,delay_ms,delay_us};
+
 
 /// Some useful constants regarding bit manipulation for USART.
 /// Position of clock mode adjuster (xck) bit.
