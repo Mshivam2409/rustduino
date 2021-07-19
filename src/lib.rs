@@ -18,7 +18,9 @@ pub mod atmega328p {
     }
 
     // #[cfg(feature = "com")]
-    pub mod com {
+    pub mod com { 
+        pub mod serial;
+
          pub mod usart;
 
          pub mod usart_initialize;
