@@ -104,6 +104,26 @@ const MPU6050_REG_FIFO_COUNTL: u8 = 0x73;
 const MPU6050_REG_FIFO_R_W: u8 = 0x74;
 const MPU6050_REG_WHO_AM_I: u8 = 0x75; // Who Am I
 
+pub struct Vector {
+    pub x: f32,
+    pub y: f32,
+    pub z: f32
+}
+
+pub struct Activities {
+    pub overflow: bool,
+    pub free_fall: bool,
+    pub activity: bool,
+    pub in_activity: bool,
+    pub data_ready: bool,
+    pub pos_activity_on_x: bool,
+    pub pos_activity_on_y: bool,
+    pub pos_activity_on_z: bool,
+    pub neg_activity_on_x: bool,
+    pub neg_activity_on_y: bool,
+    pub neg_activity_on_z: bool,
+}
+
 pub enum MPUClockSourceT  {
     MPU6050ClockInternal8MHZ = 0,
     MPU6050ClockPllGyrox = 1,
@@ -140,7 +160,7 @@ pub enum MPUdhpfT  {
     MPU6050dhpf5HZ ,
     MPU6050dhpf2_5HZ ,
     MPU6050dhpf1_25HZ ,
-    MPU605dhpf0_63HZ ,
+    MPU6050dhpf0_63HZ ,
     MPU6050dhpfHold ,
 }
 
@@ -199,14 +219,15 @@ impl MPU6050 {
         value = self.readregister(MPU6050_REG_CONFIG);
         value &= 0b11111000;
         value |= match dlpf {
-            MPU6050dlpf6 => 0b110,
-            MPU6050dlpf5 => 0b101,
-            MPU6050dlpf4 => 0b100,
-            MPU6050dlpf3 => 0b011,
-            MPU6050dlpf2 => 0b010,
-            MPU6050dlpf1 => 0b001,
-            MPU6050dlpf0 => 0b000,
-        }
+            MPUdlpfT::MPU6050dlpf6 => 0b110,
+            MPUdlpfT::MPU6050dlpf5 => 0b101,
+            MPUdlpfT::MPU6050dlpf4 => 0b100,
+            MPUdlpfT::MPU6050dlpf3 => 0b011,
+            MPUdlpfT::MPU6050dlpf2 => 0b010,
+            MPUdlpfT::MPU6050dlpf1 => 0b001,
+            MPUdlpfT::MPU6050dlpf0 => 0b000,
+        };
+        self.writeregister(MPU6050_REG_CONFIG, value);
     }
     
     pub fn SetDHPFMode(&mut self,dhpf: MPUdhpfT) {
@@ -214,18 +235,32 @@ impl MPU6050 {
         value = self.readregister(MPU6050_REG_CONFIG);
         value &= 0b11111100;
         value |= match dhpf {
-            MPU6050dhpfReset => 0b000,
-            MPU6050dhpf5HZ => 0b001,
-            MPU6050dhpf2_5HZ => 0b010,
-            MPU6050dhpf1_25HZ => 0b011,
-            MPU6050dhpf0_63HZ => 0b100,
-            MPU6050dhpfHold => 0b111,
+            MPUdhpfT::MPU6050dhpfReset => 0b000,
+            MPUdhpfT::MPU6050dhpf5HZ => 0b001,
+            MPUdhpfT::MPU6050dhpf2_5HZ => 0b010,
+            MPUdhpfT::MPU6050dhpf1_25HZ => 0b011,
+            MPUdhpfT::MPU6050dhpf0_63HZ => 0b100,
+            MPUdhpfT::MPU6050dhpfHold => 0b101,
         };
         self.writeregister(MPU6050_REG_CONFIG, value);
     }
     
     pub fn SetScale(&mut self , scale: MPUdpsT) {
-        
+
+
+
+
+
+        let mut value: u8;
+        value = self.readregister(MPU6050_REG_GYRO_CONFIG);
+        value &= 0b11100111;
+        value |= (match scale {
+            MPUdpsT::MPU6050Scale2000DPS => 3,
+            MPUdpsT::MPU6050Scale1000DPS => 2,
+            MPUdpsT::MPU6050Scale500DPS => 1,
+            MPUdpsT::MPU6050Scale250DPS => 0,
+        } << 3);
+        self.writeregister(MPU6050_REG_GYRO_CONFIG, value);
     }
     
     pub fn GetScale(&mut self ) -> MPUdpsT {
@@ -233,16 +268,31 @@ impl MPU6050 {
         value = self.readregister(MPU6050_REG_GYRO_CONFIG);
         value &= 0b00011000;
         value >>= 3;
-        match value {
-            MPU6050Scale2000DPS => MPUdpsT::MPU6050Scale2000DPS,
-            MPU6050Scale1000DPS => MPUdpsT::MPU6050Scale1000DPS,
-            MPU6050Scale500DPS => MPUdpsT::MPU6050Scale500DPS,
-            MPU6050Scale250DPS => MPUdpsT::MPU6050Scale250DPS,
-        }
+        return match value {
+            3 => MPUdpsT::MPU6050Scale2000DPS,
+            2 => MPUdpsT::MPU6050Scale1000DPS,
+            1 => MPUdpsT::MPU6050Scale500DPS,
+            0 => MPUdpsT::MPU6050Scale250DPS,
+        };
     }
-    
+
     pub fn SetRange(&mut self , range: MPURangeT) {
-        
+
+
+
+
+
+
+        let mut value : u8;
+        value = self.readregister(MPU6050_REG_ACCEL_CONFIG);
+        value &= 0b11100111;
+        value |= (match range {
+            MPURangeT::MPU6050Range2G => 0,
+            MPURangeT::MPU6050Range4G => 1,
+            MPURangeT::MPU6050Range8G => 2,
+            MPURangeT::MPU6050Range16G => 3,
+        } << 3);
+        self.writeregister(MPU6050_REG_ACCEL_CONFIG, value);
     }
     
     pub fn GetRange(&mut self ) -> MPURangeT {
@@ -250,16 +300,28 @@ impl MPU6050 {
         value = self.readregister(MPU6050_REG_ACCEL_CONFIG);
         value &= 0b00011000;
         value >>= 3;
-        match value {
+        return match value {
             MPU6050Range2G => MPURangeT::MPU6050Range2G,
             MPU6050Range4G => MPURangeT::MPU6050Range4G,
             MPU6050Range8G => MPURangeT::MPU6050Range8G,
             MPU6050Range16G => MPURangeT::MPU6050Range16G,
-        }
+        };
     }
     
     pub fn SetClockSource(&mut self , source: MPUClockSourceT) {
-        
+        let mut value : u8;
+        value = self.readregister(MPU6050_REG_PWR_MGMT_1);
+        value &= 0b11111000;
+        value |= match source {
+            MPUClockSourceT::MPU6050ClockInternal8MHZ => 0,
+            MPUClockSourceT::MPU6050ClockPllGyrox => 1,
+            MPUClockSourceT::MPU6050ClockPllGyroy => 2,
+            MPUClockSourceT::MPU6050ClockPllGyroz => 3,
+            MPUClockSourceT::MPU6050ClockExternal32MHZ => 4,
+            MPUClockSourceT::MPU6050ClockExternal19MHZ => 5,
+            MPUClockSourceT::MPU6050ClockKeepReset => 7,
+        };
+        self.writeregister(MPU6050_REG_PWR_MGMT_1, value);
     }
 
     pub fn GetClockSource(&mut self ) -> MPUClockSourceT {
@@ -267,14 +329,23 @@ impl MPU6050 {
         value = self.readregister(MPU6050_REG_PWR_MGMT_1);
         value &= 0b00000111;
         match value {
-            MPU6050ClockInternal8MHZ => MPUClockSourceT::MPU6050ClockInternal8MHZ,
-            MPU6050ClockPllGyrox => MPUClockSourceT::MPU6050ClockPllGyrox,
-            MPU6050ClockPllGyroy => MPUClockSourceT::MPU6050ClockPllGyroy,
-            MPU6050ClockPllGyroz => MPUClockSourceT::MPU6050ClockPllGyroz,
-            MPU6050ClockExternal32MHZ => MPUClockSourceT::MPU6050ClockExternal32MHZ,
-            MPU6050ClockExternal19MHZ => MPUClockSourceT::MPU6050ClockExternal19MHZ,
-            MPU6050ClockKeepReset => MPUClockSourceT::MPU6050ClockKeepReset,
+            0 => MPUClockSourceT::MPU6050ClockInternal8MHZ,
+            1 => MPUClockSourceT::MPU6050ClockPllGyrox,
+            2 => MPUClockSourceT::MPU6050ClockPllGyroy,
+            3 => MPUClockSourceT::MPU6050ClockPllGyroz,
+            4 => MPUClockSourceT::MPU6050ClockExternal32MHZ,
+            5 => MPUClockSourceT::MPU6050ClockExternal19MHZ,
+            7 => MPUClockSourceT::MPU6050ClockKeepReset,
         }
+    }
+
+    pub fn ReadActivities(&mut self , activities: Activities) -> Activities{
+        let mut data = self.readregister(MPU6050_REG_INT_STATUS);
+        activities.overflow = (data >> 4) & 1;
+
+
+        return activities;
+
     }
 
     pub fn SetIntFreeFallEnabled(&mut self ,state: bool){
@@ -286,12 +357,29 @@ impl MPU6050 {
         return get_bit(value,6);
     }
 
-    pub fn SetAccelPowerOnDelay(){
-        
+    pub fn SetAccelPowerOnDelay(&mut self, delay: MPUOnDelayT){
+        let mut value : u8;
+        value = self.readregister(MPU6050_REG_MOT_DETECT_CTRL);
+        value &= 0b11001111;
+        value |= match delay {
+            MPUOnDelayT::MPU6050Delay3MS => 3,
+            MPUOnDelayT::MPU6050Delay2MS => 2,
+            MPUOnDelayT::MPU6050Delay1MS => 1,
+            MPUOnDelayT::MPU6050NoDelay => 0,
+        };
+        self.writeregister(MPU6050_REG_MOT_DETECT_CTRL, value);
     }
 
-    pub fn GetAccelPowerOnDelay(){
-
+    pub fn GetAccelPowerOnDelay(&mut self) -> MPUOnDelayT {
+        let mut value: u8;
+        value = self.readregister(MPU6050_REG_MOT_DETECT_CTRL);
+        value &= 0b00110000;
+        match value {
+            MPU6050Delay3MS => MPUOnDelayT::MPU6050Delay3MS,
+            MPU6050Delay2MS => MPUOnDelayT::MPU6050Delay2MS,
+            MPU6050Delay1MS => MPUOnDelayT::MPU6050Delay1MS,
+            MPU6050NoDelay => MPUOnDelayT::MPU6050NoDelay,
+        }
     }
 
     pub fn SetMotionDetectionThreshold(&mut self,threshold: u8){
