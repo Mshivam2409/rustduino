@@ -242,7 +242,18 @@ impl MPU6050 {
     }
     
     pub fn SetRange(&mut self , range: MPURangeT) {
-        
+        let mut value:u8;
+        let mut rangePerDigit=match range{
+            MPU6050Range2G=> 0.000061f64,
+            MPU6050Range4G=> 0.000122f64,
+            MPU6050Range8G=> 0.000244f64,
+            MPU6050Range16G=> 0.0004882f64,
+        };
+        value=self.readregister(MPU6050_REG_ACCEL_CONFIG);
+        value &= 0b11100111;
+        value |= range.set_bit(3,true);
+        self.writeregister(MPU6050_REG_ACCEL_CONFIG, value);
+
     }
     
     pub fn GetRange(&mut self ) -> MPURangeT {
@@ -259,6 +270,12 @@ impl MPU6050 {
     }
     
     pub fn SetClockSource(&mut self , source: MPUClockSourceT) {
+        let mut value:u8;
+        value=self.readregister(MPU6050_REG_PWR_MGMT_1);
+        value &= 0b11111000;
+        value |= source;
+        self.writeregister(MPU6050_REG_PWR_MGMT_1, value);
+
         
     }
 
@@ -286,8 +303,12 @@ impl MPU6050 {
         return get_bit(value,6);
     }
 
-    pub fn SetAccelPowerOnDelay(){
-        
+    pub fn SetAccelPowerOnDelay(&mut self,delay:MPUOnDelayT){
+        let mut value:u8;
+        value=self.readregister(MPU6050_REG_MOT_DETECT_CTRL);
+        value &= 0b11001111;
+        value |= delay << 4;
+        self.writeregister(MPU6050_REG_MOT_DETECT_CTRL, value);   
     }
 
     pub fn GetAccelPowerOnDelay(){
