@@ -17,7 +17,6 @@ const AHT10_ADDRESS_0X38: u8 = 0x38; //chip I2C address no.1 for AHT10/AHT15/AHT
 const AHT10_ADDRESS_0X39: u8 = 0x39; //chip I2C address no.2 for AHT10 only, address pin connected to Vcc
 
 const AHT10_INIT_CMD: u8 = 0xE1; //initialization command for AHT10/AHT15
-const AHT20_INIT_CMD: u8 = 0xBE; //initialization command for AHT20
 const AHT10_START_MEASURMENT_CMD: u8 = 0xAC; //start measurment command
 const AHT10_NORMAL_CMD: u8 = 0xA8; //normal cycle mode command, no info in datasheet!!!
 const AHT10_SOFT_RESET_CMD: u8 = 0xBA; //soft reset command
@@ -40,14 +39,26 @@ const AHT10_FORCE_READ_DATA: bool = true; //force to read data
 const AHT10_USE_READ_DATA: bool = false; //force to use data from previous read
 const AHT10_ERROR: u8 = 0xFF; //returns 255, if communication error is occurred
 
-//let mut address=AHT10_ADDRESS_0X38; //isko bhi global karna hoga kya
+
 impl AHT10 <'a> {
+    pub fn new(&mut self) -> &'static mut Self {
+        delay_ms(20); //20ms delay to wake up
+   
+        self.soft_reset(); 
+
+        if !self.initialise() {
+            unreachable!("Could not intialise!");
+        }
+        unsafe { &mut *(0x38 as *mut Self) }
+    }
+
     pub fn initialise(&mut self) -> bool {
-        //let mut vec : FixedSliceVec<u8> = FixedSliceVec::new(&mut []);
+        
+        self.vec.clear();
         self.vec.push(AHT10_INIT_CMD);
         self.vec.push(0x33);
         self.vec.push(0x00);
-        //vec=vec![u8,AHT10_INIT_CMD,0x08,0x00];
+        
         if !self.i2c.write_to_slave(self.address, &self.vec) {
             unreachable!("error!");
         }
@@ -59,41 +70,31 @@ impl AHT10 <'a> {
     }
 
     pub fn soft_reset(&mut self) {
-        //let mut vec : FixedSliceVec<u8> = FixedSliceVec::new(&mut []);
-        //let dum1 :u8;
-        vec.clear();
+        
+        self.vec.clear();
         self.vec.push(AHT10_SOFT_RESET_CMD);
-        //vec=vec![dum1,AHT10_SOFT_RESET_CMD];
+        
         if !self.i2c.write_to_slave(self.address, &self.vec) {  
             unreachable!("Error!");
-        } //yeh bool return kar raha hai...ese likhna sahi hoga kya ?
+        } 
         delay_ms(20);
     }
 
-    pub fn new(&mut self) -> &'static mut Self {
-        delay_ms(20); //20ms delay to wake up
-                      //let mut address=AHT10_ADDRESS_0X38;//isko bhi global karna hoga kya
-        self.soft_reset(); // not sure on this
-
-        if !self.initialise() {
-            unreachable!("Could not intialise!");
-        }
-        unsafe { &mut *(0x38 as *mut Self) }
-    }
+    
 
     pub fn read_to_buffer(&mut self) {
-        if !self.i2c.read_from_slave(self.address, self., data) {
+        if !self.i2c.read_from_slave(self.address, self.data) {
             unreachable!("Error!");
         }
     }
 
     pub fn trigger_slave(&mut self) {
-        //let mut vec : FixedSliceVec<u8> = FixedSliceVec::new(&mut []);
-        vec.clear();
+        
+        self.vec.clear();
         self.vec.push(self.AHT10_START_MEASURMENT_CMD);
         self.vec.push(0x33);
         self.vec.push(0x00);
-        //vec=vec![u8,AHT10_START_MEASURMENT_CMD,0x33,0x00];//start measurement
+        
         if !self.i2c.write_to_slave(self.address, self.vec) {
             unreachable!("Error!");
         }
