@@ -189,9 +189,55 @@ impl Usart {
             self.transmit_data(vec[(vec.len) - 1 - i]);
         }
     }
-    /*
-    /// This function send data type of float(f32) byte by byte.
-    pub fn write_float(&mut self,data : Cf32) {
+    
+    /// This function send data type of float(f64) byte by byte.
+    pub fn write_float(&mut self,data : f64) {
+    let mut vec: FixedSliceVec<u8> = FixedSliceVec::new(&mut []);
+    let mut a:f64 = data;
+    let mut f:f64 = 0.0;
+    let mut i:i64 = a-(a%1.0);
+    f = a%1.0;
+    while f%1.0 {
+        let t = f;
+        let k:f64 = f*(10.0) -((f*10.0)%1.0); // gives you decimal digit of data one by one from left to right 
+                match k {
+                0 => vec.push('0' as u8),
+                1 => vec.push('1' as u8),
+                2 => vec.push('2' as u8),
+                3 => vec.push('3' as u8),
+                4 => vec.push('4' as u8),
+                5 => vec.push('5' as u8),
+                6 => vec.push('6' as u8),
+                7 => vec.push('7' as u8),
+                8 => vec.push('8' as u8),
+                9 => vec.push('9' as u8),
+                _ => (),
+            }
+        f = (f*10.0)%1.0; // then f loses its left most digit (in decimal part) 
     }
-    */
+    vec.push('.' as char);
+
+            while i != 0 {
+            let rem = i % 10;
+            i = i / 10;
+            match rem {
+                0 => vec.push('0' as u8),
+                1 => vec.push('1' as u8),
+                2 => vec.push('2' as u8),
+                3 => vec.push('3' as u8),
+                4 => vec.push('4' as u8),
+                5 => vec.push('5' as u8),
+                6 => vec.push('6' as u8),
+                7 => vec.push('7' as u8),
+                8 => vec.push('8' as u8),
+                9 => vec.push('9' as u8),
+                _ => (),
+            }
+        }
+
+        for i in 0..(vec.len()) {
+            self.transmit_data(vec[(vec.len) - 1 - i]);
+        }
+    }
+    
 }
