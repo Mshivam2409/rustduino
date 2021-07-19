@@ -19,3 +19,15 @@ impl Usart
             });
         }
     }
+      /// This function checks if the data is avialable for reading or not.
+    /// If no data is available for reading then 0 is returned.
+    /// If data is available then 1 is returned.
+    pub fn available(&mut self) -> bool {
+        let ucsra = self.ucsra.read();
+        if ucsra.get_bit(7) == true {
+            true
+        } else {
+            false
+        }
+    }
+}
