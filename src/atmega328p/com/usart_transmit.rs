@@ -21,4 +21,144 @@ impl Usart {
             });
         }
     }
+
+    /// Storing data in Transmit Buffer which takes parameter as a u32 and and data bit length.
+    pub fn transmitting_data(&self, data: u32, len: UsartDataSize) {
+        unsafe {
+            // Checks if the Transmit buffer is empty to receive data.
+            // If not the program waits till the time comes.
+            let mut i: i32 = 10;
+            while self.avai_write() == false {
+                if i != 0 {
+                    delay_ms(1000);
+                    i = i - 1;
+                } else {
+                    unreachable!()
+                }
+            }
+
+            let udr = self.udr.read();
+
+            // If the frame is ready for transmission then the appropriate place is written.
+            match len {
+                UsartDataSize::Five => {
+                    udr.set_bits(0..5, data.get_bits(0..5) as u8);
+                }
+                UsartDataSize::Six => {
+                    udr.set_bits(0..6, data.get_bits(0..6) as u8);
+                }
+                UsartDataSize::Seven => {
+                    udr.set_bits(0..7, data.get_bits(0..7) as u8);
+                }
+                UsartDataSize::Eight => {
+                    udr.set_bits(0..8, data.get_bits(0..8) as u8);
+                }
+                UsartDataSize::Nine => {
+                    self.ucsrb.update(|ctrl| {
+                        ctrl.set_bit(0, data.get_bit(8));
+                    });
+                    udr.set_bits(0..8, data.get_bits(0..8) as u8);
+                }
+            }
+        }
+    }
+    ///This function checks that transmission buffer is ready to be
+    pub fn avai_write(&mut self) -> bool {
+        let ucsra = self.ucsra.read();
+        if ucsra.get_bit(5) == true {
+            true
+        } else {
+            false
+        }
+    }
+
+    /// This functions waits for the transmission to complete by checking TXCn bit in the ucsrna register
+    /// TXCn is set 1 when the transmit is completed and it can start transmitting new data
+    pub fn flush_transmit(&mut self) {
+        let mut ucsra = self.ucsra.read();
+        let mut i: i32 = 10;
+        while ucsra.get_bit(6) == false {
+            ucsra = self.ucsra.read();
+            if i != 0 {
+                delay_ms(1000);
+                i = i - 1;
+            } else {
+                unreachable!()
+            }
+        }
+    }
+
+    /// This function is used to disable the Transmitter and once disabled the TXDn pin is no longer
+    /// used as the transmitter output pin and functions as a normal I/O pin
+    pub fn transmit_disable(&mut self) {
+        let ucsra = self.ucsra.read();
+        let mut uscra6 = ucsra.get_bit(6);
+        let mut uscra5 = ucsra.get_bit(5);
+        let mut i: i32 = 100;
+
+        // Check for data in Transmit Buffer and Transmit shift register,
+        // if data is present in either then disabling of transmitter is not effective
+        while uscra6 == false || uscra5 == false {
+            uscra6 = ucsra.get_bit(6);
+            uscra5 = ucsra.get_bit(5);
+            if i != 0 {
+                delay_ms(1000);
+                i = i - 1;
+            } else {
+                unreachable!()
+            }
+        }
+
+        unsafe {
+            self.ucsrb.update(|srb| {
+                srb.set_bit(3, false);
+            });
+        }
+    }
+
+
+    
+    /// This function sends a character byte of 5,6,7 or 8 bits
+    pub fn transmit_data(&self, data: u8) {
+       //complete the fn
+    }
+
+     /// This function send data type of string byte by byte.
+     pub fn write(&mut self, data: &mut str) {
+        self.Transmit_enable();
+        let mut vec: FixedSliceVec<u8> = unsafe { FixedSliceVec::from_bytes((data).as_bytes()) };
+        for i in 0..(vec.len()) {
+            self.transmit_data(vec[i]);
+        }
+        self.transmit_disable();
+    }
+
+    /// This function send data type of int(u32) byte by byte.
+    pub fn write_integer(&mut self, data: u32) {
+        let s2 = "0123456789";
+        use core::mem::MaybeUninit;
+        let mut dat: [MaybeUninit<u8>; 10] = unsafe { MaybeUninit::uninit().assume_init() };
+
+        let mut vec: FixedSliceVec<u8> = FixedSliceVec::from(&mut dat[..]);
+        let mut a = data;
+        while a != 0 {
+            let rem = a % 10;
+            a = a / 10;
+            let s3 = &s2[rem..(rem + 1)];
+            vec.push(s3.as_bytes());
+        }
+        for i in 0..(vec.len()) {
+            self.transmit_data(vec[(vec.len) - 1 - i]);
+        }
+    }
+    /*
+    /// This function send data type of float(f32) byte by byte.
+    pub fn write_float(&mut self,data : Cf32) {
+    }
+    */
+}
+
+
+
+
 }
