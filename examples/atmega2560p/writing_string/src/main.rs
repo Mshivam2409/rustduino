@@ -13,12 +13,15 @@ pub fn main() {
     // This initializes USART0 and makes it ready to transmit and recieve.
     serial.usart[0].begin_set_baud(9600);
 
-    // Loop to send a string using the USART.
-    loop {
+    // Loop to send a string using the USART multiple times.
+    let mut i: u8 = 10;
+    while i!=0 {
         // This sends string from arduino through TxD0 pin.
         serial.usart[0].write_string("Hello World!");
 
         rustduino::delay::delay_ms(1000);
+
+        i = i - 1;
     }
 
     // This disables USART0.

@@ -26,7 +26,7 @@ use crate::atmega2560p::com::usart_initialize::{Usart, UsartNum};
 /// First a new Serial is needed to be created to access all USARTs.
 /// Each USART can be accesed through Serial.usart[n], where 0<= n <=3
 pub struct Serial {
-    usart: [Usart; 4],
+    pub usart: [&'static mut Usart; 4],
 }
 
 impl Serial {
@@ -36,10 +36,10 @@ impl Serial {
         unsafe {
             Serial {
                 usart: [
-                    *Usart::new(UsartNum::Usart0),
-                    *Usart::new(UsartNum::Usart1),
-                    *Usart::new(UsartNum::Usart2),
-                    *Usart::new(UsartNum::Usart3),
+                    Usart::new(UsartNum::Usart0),
+                    Usart::new(UsartNum::Usart1),
+                    Usart::new(UsartNum::Usart2),
+                    Usart::new(UsartNum::Usart3),
                 ],
             }
         }

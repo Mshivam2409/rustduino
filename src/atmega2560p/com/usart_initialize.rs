@@ -37,23 +37,13 @@ use volatile::Volatile;
 
 /// Some useful constants regarding bit manipulation for USART.
 /// Position of clock mode adjuster (xck) bit.
-const usart0_xck: u8 = 2;
-const usart1_xck: u8 = 5;
-const usart2_xck: u8 = 2;
-const usart3_xck: u8 = 2;
-/// Position of Transmission bit for various USART.
-const usart0_td: u8 = 1;
-const usart1_td: u8 = 3;
-const usart2_td: u8 = 1;
-const usart3_td: u8 = 1;
-/// Position of Reciever bit for various USART.
-const usart0_rd: u8 = 0;
-const usart1_rd: u8 = 2;
-const usart2_rd: u8 = 0;
-const usart3_rd: u8 = 0;
+const USART0_XCK: u8 = 2;
+const USART1_XCK: u8 = 5;
+const USART2_XCK: u8 = 2;
+const USART3_XCK: u8 = 2;
 /// System Clock Crystal Oscillator Frequency in mHz.
-const f_osc: f64 = 1.0000;
-const multiply: f64 = 1000000.00;
+const F_OSC: f64 = 1.0000;
+const MULTIPLY: f64 = 1000000.00;
 
 /// Selection of which USART is to be used.
 #[derive(Clone, Copy)]
@@ -109,12 +99,12 @@ pub enum UsartPolarity {
 /// through ATMEGA2560P device.
 /// Each USARTn ( n=0,1,2,3 ) is controlled by a total of 6 registers stored through this structure.
 #[repr(C, packed)]
-#[derive(Clone, Copy)]
+// #[derive(Clone, Copy)]
 pub struct Usart {
     pub ucsra: Volatile<u8>,
     pub ucsrb: Volatile<u8>,
     pub ucsrc: Volatile<u8>,
-    _pad: u8,                          // Padding to look for empty memory space.
+    _pad: u8, // Padding to look for empty memory space.
     pub ubrrl: Volatile<u8>,
     pub ubrrh: Volatile<u8>,
     pub udr: Volatile<u8>,
@@ -183,52 +173,19 @@ impl Usart {
 
     /// Function to get the port containing bits to
     /// manipulate Recieve,Transmit and XCK bit of the particular USART.
-    fn get_port(&mut self) -> &mut port::Port {
+    fn get_port_xck(&mut self) -> (&mut port::Port, u8) {
         let num: UsartNum = self.get_num();
         match num {
-            UsartNum::Usart0 => port::Port::new(port::PortName::E),
-            UsartNum::Usart1 => port::Port::new(port::PortName::D),
-            UsartNum::Usart2 => port::Port::new(port::PortName::H),
-            UsartNum::Usart3 => port::Port::new(port::PortName::J),
-        }
-    }
-
-    /// Function to return the index of xck bit in the port.
-    fn get_xck(&self) -> u8 {
-        let num: UsartNum = self.get_num();
-        match num {
-            UsartNum::Usart0 => usart0_xck,
-            UsartNum::Usart1 => usart1_xck,
-            UsartNum::Usart2 => usart2_xck,
-            UsartNum::Usart3 => usart3_xck,
-        }
-    }
-
-    /// Function to return the index of transmit bit in the port.
-    fn get_td(&self) -> u8 {
-        let num: UsartNum = self.get_num();
-        match num {
-            UsartNum::Usart0 => usart0_td,
-            UsartNum::Usart1 => usart1_td,
-            UsartNum::Usart2 => usart2_td,
-            UsartNum::Usart3 => usart3_td,
-        }
-    }
-
-    /// Function to return the index of recieve bit in the port.
-    fn get_rd(&self) -> u8 {
-        let num: UsartNum = self.get_num();
-        match num {
-            UsartNum::Usart0 => usart0_rd,
-            UsartNum::Usart1 => usart1_rd,
-            UsartNum::Usart2 => usart2_rd,
-            UsartNum::Usart3 => usart3_rd,
+            UsartNum::Usart0 => (port::Port::new(port::PortName::E), USART0_XCK),
+            UsartNum::Usart1 => (port::Port::new(port::PortName::D), USART1_XCK),
+            UsartNum::Usart2 => (port::Port::new(port::PortName::H), USART2_XCK),
+            UsartNum::Usart3 => (port::Port::new(port::PortName::J), USART3_XCK),
         }
     }
 
     /// Function to check the mode of the USART.
     /// Returns 0 for asynchronous and 1 for synchronous.
-    fn get_mode(&self) -> bool {
+    fn get_mode(&mut self) -> bool {
         let mut src = self.ucsrc.read();
         src = src & (1 << 6);
         if src == 0 {
@@ -297,8 +254,7 @@ impl Usart {
             }
             UsartModes::Mastersync => {
                 // Puts the USART into master synchronous mode
-                let port: &mut port::Port = self.get_port();
-                let xck: u8 = self.get_xck();
+                let (port, xck) = self.get_port_xck();
                 unsafe {
                     write_volatile(&mut port.ddr, port.ddr | 1 << xck);
                 }
@@ -308,8 +264,7 @@ impl Usart {
             }
             UsartModes::Slavesync => {
                 // Puts the USART into slave synchronous mode
-                let port: &mut port::Port = self.get_port();
-                let xck: u8 = self.get_xck();
+                let (port, xck) = self.get_port_xck();
                 unsafe {
                     write_volatile(&mut port.ddr, port.ddr & !(1 << xck));
                 }
@@ -364,7 +319,7 @@ impl Usart {
 
     /// Sets the interrupt bits in UCSRB so that ongoing
     /// data transfers can be tracked.
-    fn check(&mut self) {
+    fn _check(&mut self) {
         self.ucsrb.update(|srb| {
             srb.set_bit(6, true);
             srb.set_bit(7, true);
@@ -392,13 +347,13 @@ impl Usart {
         let ubrr: u32;
         match mode {
             UsartModes::Normasync => {
-                ubrr = (((f_osc * multiply) / (16.00 * baud as f64)) - 1.00) as u32;
+                ubrr = (((F_OSC * MULTIPLY) / (16.00 * baud as f64)) - 1.00) as u32;
             }
             UsartModes::Douasync => {
-                ubrr = (((f_osc * multiply) / (8.00 * baud as f64)) - 1.00) as u32;
+                ubrr = (((F_OSC * MULTIPLY) / (8.00 * baud as f64)) - 1.00) as u32;
             }
             UsartModes::Mastersync => {
-                ubrr = (((f_osc * multiply) / (2.00 * baud as f64)) - 1.00) as u32;
+                ubrr = (((F_OSC * MULTIPLY) / (2.00 * baud as f64)) - 1.00) as u32;
             }
             _ => unreachable!(),
         }

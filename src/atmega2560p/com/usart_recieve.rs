@@ -122,12 +122,12 @@ impl Usart {
 
     /// This function clears the unread data in the receive buffer by flushing it
     pub fn flush_recieve(&mut self) {
-        let mut udr = self.udr.read();
+        let mut _udr = self.udr.read();
         let mut ucsra = self.ucsra.read();
         let mut i: i32 = 100;
         while ucsra.get_bit(7) == true {
             ucsra = self.ucsra.read();
-            udr = self.udr.read();
+            _udr = self.udr.read();
             if i != 0 {
                 delay_ms(1000);
                 i = i - 1;

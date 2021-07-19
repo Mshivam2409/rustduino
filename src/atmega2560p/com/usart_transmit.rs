@@ -152,8 +152,13 @@ impl Usart {
     }
 
     /// This function send data type of string byte by byte.
-    pub fn write_string(&mut self, data: &mut str) {
-        let vec: FixedSliceVec<u8> = unsafe { FixedSliceVec::from_bytes(&mut (data).as_bytes()) };
+    pub fn write_string(&mut self, data: &'static str) {
+        let mut vec: FixedSliceVec<u8> = FixedSliceVec::new(&mut []);
+
+        for c in data.chars() {
+            vec.push(c as u8);
+        }
+
         for i in 0..(vec.len()) {
             self.transmit_data(vec[i]);
         }
