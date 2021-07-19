@@ -30,4 +30,26 @@ impl Usart
             false
         }
     }
+
+    /// This function is used to recieve data of one frame.
+    /// Either 5 to 8 bits and 9 bits of data can be recieved from this function.
+    /// In case of 5 to 8 bits this function returns u8.
+    /// In case of 9 bits it retuns u32 of which first 9 bits are data recieved and remaining bits are insignificant.
+    /// In case ,if an frame error or parity error occurs, this function returns Nothing.
+    pub fn recieve_data(&mut self) -> Option<u32> {
+        unsafe {
+            let ucsrc = self.ucsrc.read();
+            let ucsrb = self.ucsrb.read();
+
+            let mut i: i32 = 10;
+            while self.available() == false {
+                if i != 0 {
+                    delay_ms(1000);
+                    i = i - 1;
+                } else {
+                    unreachable!()
+                }
+            }
+
+            
 }
