@@ -76,7 +76,7 @@ pub enum SleepMode {
 /// Section 9.11 of ATmega328p Datasheet
 pub struct Sleep {
     /// The sleep mode control register contains control bits for power management.
-    smcr: u8,
+   pub smcr: u8,
 }
 
 impl Sleep {
