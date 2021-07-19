@@ -3,7 +3,7 @@
 #![deny(warnings)]
 
 /// Crates included to show the Transmission of String example.
-use rustduino::com::serial::Serial;
+use rustduino::atmega2560p::com::serial::Serial;
 
 #[no_mangle]
 pub fn main() {
@@ -15,7 +15,7 @@ pub fn main() {
 
     // Loop to send a string using the USART multiple times.
     let mut i: u8 = 10;
-    while i!=0 {
+    while i != 0 {
         // This sends string from arduino through TxD0 pin.
         serial.usart[0].write_string("Hello World!");
 
