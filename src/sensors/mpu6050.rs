@@ -111,13 +111,13 @@ pub struct Vector {
 }
 
 pub enum MPUClockSourceT  {
-    MPU6050ClockInternal8MHZ = 0,
-    MPU6050ClockPllGyrox = 1,
-    MPU6050ClockPllGyroy = 2,
-    MPU6050ClockPllGyroz = 3,
-    MPU6050ClockExternal32MHZ = 4, 
-    MPU6050ClockExternal19MHZ = 5,
-    MPU6050ClockKeepReset = 7,
+    MPU6050ClockInternal8MHZ ,
+    MPU6050ClockPllGyrox ,
+    MPU6050ClockPllGyroy ,
+    MPU6050ClockPllGyroz ,
+    MPU6050ClockExternal32MHZ , 
+    MPU6050ClockExternal19MHZ ,
+    MPU6050ClockKeepReset ,
 }
 
 pub enum MPUdpsT  {
