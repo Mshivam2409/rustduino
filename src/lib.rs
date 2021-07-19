@@ -30,10 +30,8 @@ pub mod atmega2560p {
 // #[cfg(feature = "atmega2560p")]
 pub use atmega2560p::*;
 
-
 pub mod atmega328p {
-    
-    
+
     pub mod hal {
         pub mod port;
 
@@ -52,7 +50,6 @@ pub mod atmega328p {
         pub mod i2c;
     }
 }
-
 
 pub mod sensors {
     pub mod aht10;

@@ -6,7 +6,7 @@ pub enum Tempsensor {
     Aht10sensor,
 }
 
-pub struct AHT10<'a>{
+pub struct AHT10<'a> {
     address: u8,
     i2c: i2c::Twi,
     vec: FixedSliceVec<'a, u8>,
@@ -38,12 +38,11 @@ const AHT10_FORCE_READ_DATA: bool = true; //force to read data
 const AHT10_USE_READ_DATA: bool = false; //force to use data from previous read
 const AHT10_ERROR: u8 = 0xFF; //returns 255, if communication error is occurred
 
-
-impl <'a> AHT10 <'a> {
+impl<'a> AHT10<'a> {
     pub fn new(&mut self) -> &'static mut Self {
         delay_ms(20); //20ms delay to wake up
-   
-        self.soft_reset(); 
+
+        self.soft_reset();
 
         if !self.initialise() {
             unreachable!("Could not intialise!");
@@ -52,55 +51,53 @@ impl <'a> AHT10 <'a> {
     }
 
     pub fn initialise(&mut self) -> bool {
-        
         self.vec.clear();
         self.vec.push(AHT10_INIT_CMD);
         self.vec.push(0x33);
         self.vec.push(0x00);
-        
+
         if !self.i2c.write_to_slave(self.address, &self.vec) {
             unreachable!("error!");
         }
         self.wait_for_idle();
-        if !(self.status()==0 && AHT10_INIT_CAL_ENABLE==0) {
+        if !(self.status() == 0 && AHT10_INIT_CAL_ENABLE == 0) {
             return false;
         }
         return true;
     }
 
     pub fn soft_reset(&mut self) {
-        
         self.vec.clear();
         self.vec.push(AHT10_SOFT_RESET_CMD);
-        
-        if !self.i2c.write_to_slave(self.address, &self.vec) {  
+
+        if !self.i2c.write_to_slave(self.address, &self.vec) {
             unreachable!("Error!");
-        } 
+        }
         delay_ms(20);
     }
 
-    
-
     pub fn read_to_buffer(&mut self) {
-        if !self.i2c.read_from_slave(self.address, self.vec.len(),  &mut self.vec) {
+        if !self
+            .i2c
+            .read_from_slave(self.address, self.vec.len(), &mut self.vec)
+        {
             unreachable!("Error!");
         }
     }
 
     pub fn trigger_slave(&mut self) {
-        
         self.vec.clear();
         self.vec.push(AHT10_START_MEASURMENT_CMD);
         self.vec.push(0x33);
         self.vec.push(0x00);
-        
+
         if !self.i2c.write_to_slave(self.address, &self.vec) {
             unreachable!("Error!");
         }
     }
 
     pub fn wait_for_idle(&mut self) {
-        while (self.status()==0 && AHT10_INIT_BUSY==0) == true {
+        while (self.status() == 0 && AHT10_INIT_BUSY == 0) == true {
             delay_ms(5);
         }
     }
