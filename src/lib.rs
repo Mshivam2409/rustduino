@@ -1,3 +1,9 @@
+
+#![no_std]
+#![deny(warnings)]
+#![feature(asm)]
+#![feature(llvm_asm)]
+
 /// Library for ATmega328P chip.
 // #[cfg(feature = "atmega328p")]
 pub mod atmega328p {
@@ -36,4 +42,6 @@ pub mod atmega328p {
 // #[cfg(feature = "atmega328p")]
 pub use atmega328p::*;
 
+pub mod avr;
+pub mod config;
 pub mod delay;
