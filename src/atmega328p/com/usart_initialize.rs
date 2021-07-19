@@ -277,10 +277,8 @@ impl Usart
             UsartNum::Usart0 => { 
                 unsafe {
                     write_volatile(&mut pow.smcr,pow.smcr & !(1 << 1));
-                }
-              
-            },
-            
+                }   
+            }    
         }
     }
 
@@ -293,7 +291,17 @@ impl Usart
               srb.set_bit(7,true);
         });
     }
-
+     
+    /// Return 1 if no ongoing transmission or recieval from the USART.
+    /// Return 0 if their is some transfer going on.
+    fn check_ongoing(&self) -> bool {
+        let ucsra = self.ucsra.read();
+        if ucsra.get_bit(6) == true && ucsra.get_bit(7) == false {
+            true
+        } else {
+            false
+        }
+    }
 
     /// Clock Generation is one of the initialization steps for the USART.
     /// If the USART is in Asynchronous mode or Master Synchronous mode then a internal
@@ -301,149 +309,167 @@ impl Usart
     /// clock generator.
     /// Set the baud rate frequency for USART.
     /// Baud rate settings is used to set the clock for USART.
-    fn set_clock(&self,baud : i64,mode : UsartModes) {
+    fn set_clock(&self, baud: i64, mode: UsartModes) {
+        let mut ubrr: u32 = 0;
         match mode {
-            UsartModes::norm_async => { 
-                let mut ubrr : u32 = ((f_osc*multiply)/(16*baud))-1; 
-            },
-            UsartModes::dou_async => {
-                let mut ubrr : u32 = ((f_osc*multiply)/(8*baud))-1;
-            },
-            UsartModes::master_sync => {
-                let mut ubrr : u32 = ((f_osc*multiply)/(2*baud))-1;
-            },
+            UsartModes::Normasync => {
+                ubrr = (((f_osc * multiply) / (16.00 * baud as f64)) - 1.00) as u32;
+            }
+            UsartModes::Douasync => {
+                ubrr = (((f_osc * multiply) / (8.00 * baud as f64)) - 1.00) as u32;
+            }
+            UsartModes::Mastersync => {
+                ubrr = (((f_osc * multiply) / (2.00 * baud as f64)) - 1.00) as u32;
+            }
             _ => unreachable!(),
         }
-        self.ubrrl.set_bits(0..8,ubrr);
-        self.ubrrh.set_bits(0..4,(ubrr>>8));
+        self.ubrrl.update(|ubrrl| {
+            for i in 0..8 {
+                ubrrl.set_bit(i, ubrr.get_bit(i));
+            }
+        });
+        self.ubrrh.update(|ubrrh| {
+            for i in 0..4 {
+                ubrrh.set_bit(i, ubrr.get_bit(i + 8));
+            }
+        });
     }
     
-/// Function to set the limit of data to be handled by USART.
-fn set_size(&self,size : UsartDataSize) {
+   /// Function to set the limit of data to be handled by USART.
+   fn set_size(&self,size : UsartDataSize) {
     match size {
-        UsartDataSize::five
-        | UsartDataSize::six
-        | UsartDataSize::seven
-        | UsartDataSize::eight => { 
+        UsartDataSize::Five
+        | UsartDataSize::Six
+        | UsartDataSize::Seven
+        | UsartDataSize::Eight => { 
             self.ucsrb.update( |srb| {
                 srb.set_bit(2,false);
             });       
-        },
-        UsartDataSize::nine => { 
+        }
+        UsartDataSize::Nine => { 
             self.ucsrb.update( |srb| {
                 srb.set_bit(2,true);
             });
-        },
+        }
     }
     match size {
-        UsartDataSize::five
-        | UsartDataSize::six => { 
-            self.ucsrc.update( |src| {
-                src.set_bit(2,false);
-            });       
-        },
-        UsartDataSize::nine
-        | UsartDataSize::seven
-        | UsartDataSize::eight => { 
-            self.ucsrc.update( |src| {
-                src.set_bit(2,true);
+        UsartDataSize::Five | UsartDataSize::Six => {
+            self.ucsrc.update(|src| {
+                src.set_bit(2, false);
             });
-        },
+        }
+        UsartDataSize::Nine | UsartDataSize::Seven | UsartDataSize::Eight => {
+            self.ucsrc.update(|src| {
+                src.set_bit(2, true);
+            });
+        }
     }
     match size {
-        UsartDataSize::five
-        | UsartDataSize::seven => { 
-            self.ucsrc.update( |src| {
-                src.set_bit(1,false);
-            });       
-        },
-        UsartDataSize::nine
-        | UsartDataSize::six
-        | UsartDataSize::eight => { 
-            self.ucsrc.update( |src| {
-                src.set_bit(1,true);
+        UsartDataSize::Five | UsartDataSize::Seven => {
+            self.ucsrc.update(|src| {
+                src.set_bit(1, false);
             });
-        },
+        }
+        UsartDataSize::Nine | UsartDataSize::Six | UsartDataSize::Eight => {
+            self.ucsrc.update(|src| {
+                src.set_bit(1, true);
+            });
+        }
     }
 }
 
-
     /// Function to set the parity bit in the frame of USART.
-    fn set_parity(&self,parity : UsartParity) {
+    fn set_parity(&self, parity : UsartParity) {
         match parity {
-            UsartParity::no => { 
-                self.ucsrc.update( |src| {
+            UsartParity::No => { 
+                self.ucsrc.update(|src| {
                     src.set_bit(4,false);
                     src.set_bit(5,false);
                 });
             },
-            UsartParity::even => { 
-                self.ucsrc.update( |src| {
+            UsartParity::Even => { 
+                self.ucsrc.update(|src| {
                     src.set_bit(4,false);
                     src.set_bit(5,true);
                 });
             },
-            UsartParity::odd => { 
-                self.ucsrc.update( |src| {
+            UsartParity::Odd => { 
+                self.ucsrc.update(|src| {
                     src.set_bit(4,true);
                     src.set_bit(5,true);
                 });
-            },
+            }
         }
     }
 
     /// Function to set the number of stop bits in the USART.
-    fn set_stop(&self,stop : UsartStop) {
+    fn set_stop(&self, stop : UsartStop) {
         match stop {
-            UsartStop::one => { 
-                self.ucsrc.update( |src| {
+            UsartStop::One => { 
+                self.ucsrc.update(|src| {
                     src.set_bit(3,false);
                 });
             },
-            UsartStop::two => { 
-                self.ucsrc.update( |src| {
+            UsartStop::Two => { 
+                self.ucsrc.update(|src| {
                     src.set_bit(3,true);
                 });
-            },
+            }
         }
     }
 
- /// Set the frame format for USART.
-    /// A serial frame is defined to be one character of data bits with 
+    /// Set the frame format for USART.
+    /// A serial frame is defined to be one character of data bits with
     /// synchronization bits (start and stop bits), and optionally
     /// a parity bit for error checking.
     /// The USART accepts all 30 combinations of the following as valid frame formats.
-    fn set_frame(&self,stop : UsartStop,size : UsartDataSize,parity : UsartParity) {
+    fn set_frame(&self, stop: UsartStop, size: UsartDataSize, parity: UsartParity) {
         self.set_size(size);
         self.set_parity(parity);
         self.set_stop(stop);
     }
-    
 
     /// This is the cumulative function for initializing a particular
     /// USART and it will take all the necessary details about the mode
     /// in which the USART pin is to be used.
-    pub fn initialize(&mut self,mode : UsartModes,baud : i64,stop : UsartStop,size : UsartDataSize,parity : UsartParity) {
+    pub fn initialize(
+        &mut self,
+        mode: UsartModes,
+        baud: i64,
+        stop: UsartStop,
+        size: UsartDataSize,
+        parity: UsartParity,
+    ) {
         // Check that recieve and transmit buffers are completely cleared
         // and no transmission or recieve of data is already in process.
-        self.enable();                                             //  Enable Global interrupts.
-        self.check();
-        
-        self.disable();                                            //  Disable Global interrupts.
-        let num : UsartNum = self.get_num();
-        
-        self.set_power(num);                                       //  Set Power reduction register.
-        
-        self.mode_select(mode);                                    //  Set the USART at the given mode.
-        
+        let mut i: i32 = 10;
+        while self.check_ongoing() == false {
+            if i != 0 {
+                delay_ms(1000);
+                i = i - 1;
+            } else {
+                unreachable!()
+            }
+        }
+
+        self.disable(); //  Disable Global interrupts.
+        let num: UsartNum = self.get_num();
+
+        self.set_power(num); //  Set Power reduction register.
+
+        self.mode_select(mode); //  Set the USART at the given mode.
+
         //  Set the clock for USART according to user input.
-        if( mode == UsartModes::slave_sync )  { }
-        else { self.set_clock(baud,mode) }                         
-        
+        match mode {
+            UsartModes::Slavesync => {}
+            _ => {
+                self.set_clock(baud, mode);
+            }
+        }
+
         //  Set the frame format according to input.
-        self.set_frame(stop,size,parity);                                     
+        self.set_frame(stop, size, parity);
 
-        self.enable();                                             //  Enable Global interrupts.
+        self.enable(); //  Enable Global interrupts.
     }
-
 }
