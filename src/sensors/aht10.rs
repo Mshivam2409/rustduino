@@ -61,7 +61,8 @@ impl AHT10 <'a> {
     pub fn soft_reset(&mut self) {
         //let mut vec : FixedSliceVec<u8> = FixedSliceVec::new(&mut []);
         //let dum1 :u8;
-        self.vec[0] = AHT10_SOFT_RESET_CMD;
+        vec.clear();
+        self.vec.push(AHT10_SOFT_RESET_CMD);
         //vec=vec![dum1,AHT10_SOFT_RESET_CMD];
         if !self.i2c.write_to_slave(self.address, &self.vec) {  
             unreachable!("Error!");
@@ -88,9 +89,10 @@ impl AHT10 <'a> {
 
     pub fn trigger_slave(&mut self) {
         //let mut vec : FixedSliceVec<u8> = FixedSliceVec::new(&mut []);
-        self.vec[0] = self.AHT10_START_MEASURMENT_CMD;
-        self.vec[1] = 0x33;
-        self.vec[2] = 0x00;
+        vec.clear();
+        self.vec.push(self.AHT10_START_MEASURMENT_CMD);
+        self.vec.push(0x33);
+        self.vec.push(0x00);
         //vec=vec![u8,AHT10_START_MEASURMENT_CMD,0x33,0x00];//start measurement
         if !self.i2c.write_to_slave(self.address, self.vec) {
             unreachable!("Error!");
