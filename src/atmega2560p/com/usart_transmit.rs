@@ -167,9 +167,9 @@ impl Usart {
     }
 
     /// This function send data type of string byte by byte.
-    pub fn write_string(&mut self, data: DataType) {
+    pub fn write_string(&mut self, data: &mut str) {
         self.transmit_enable();
-        let mut vec: FixedSliceVec<u8> = FixedSliceVec::from(data);
+        let mut vec: FixedSliceVec<u8> = unsafe { FixedSliceVec::from_bytes((data).as_bytes()) };
         for i in 0..(vec.len()) {
             self.transmit_data(vec[i]);
         }
@@ -179,13 +179,16 @@ impl Usart {
     /// This function send data type of int(u32) byte by byte.
     pub fn write_integer(&mut self, data: DataType) {
         let s2 = "0123456789";
-        let mut vec: FixedSliceVec<u8> = FixedSliceVec::new();
+        use core::mem::MaybeUninit;
+        let mut dat: [MaybeUninit<u8>; 10] = unsafe { MaybeUninit::uninit().assume_init() };
+
+        let mut vec: FixedSliceVec<u8> = FixedSliceVec::from(&mut dat[..]);
         let mut a = data;
         while a != 0 {
             let rem = a % 10;
             a = a / 10;
             let s3 = &s2[rem..(rem + 1)];
-            vec.push(s3);
+            vec.push(s3.as_bytes());
         }
         for i in 0..(vec.len()) {
             self.transmit_data(vec[(vec.len) - 1 - i]);

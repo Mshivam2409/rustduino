@@ -1,7 +1,7 @@
 #![no_std]
 #![no_main]
 #![deny(warnings)]
-use::rustduino::atmega2560p::com::usart::*;
+use::rustduino::atmega2560p::com::{usart::*,usart_transmit::*};
 fn main() {
    //Create a new Serial struct to access all Usarts
    let serial=Serial::serial_new();
