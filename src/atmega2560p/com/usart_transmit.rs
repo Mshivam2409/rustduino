@@ -190,7 +190,7 @@ impl Usart {
         }
     }
     
-    /// This function send data type of float(f64) byte by byte.
+    /*/// This function send data type of float(f64) byte by byte.
     pub fn write_float(&mut self,data : f64) {
     let mut vec: FixedSliceVec<u8> = FixedSliceVec::new(&mut []);
     let mut a:f64 = data;
@@ -241,3 +241,4 @@ impl Usart {
     }
     
 }
+*/
