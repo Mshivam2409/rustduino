@@ -1,7 +1,7 @@
 use crate::delay::delay_ms;
 use bit_field::BitField;
 use fixed_slice_vec::FixedSliceVec;
-use volatile::Volatile;
+//use volatile::Volatile;
 use crate::atmega2560p::com::i2c;
 
 const MPU6050_ADDRESS: u8 = 0x68; // 0x69 when AD0 pin to Vcc
@@ -110,20 +110,6 @@ pub struct Vector {
     pub z: f32
 }
 
-pub struct Activities {
-    pub overflow: bool,
-    pub free_fall: bool,
-    pub activity: bool,
-    pub in_activity: bool,
-    pub data_ready: bool,
-    pub pos_activity_on_x: bool,
-    pub pos_activity_on_y: bool,
-    pub pos_activity_on_z: bool,
-    pub neg_activity_on_x: bool,
-    pub neg_activity_on_y: bool,
-    pub neg_activity_on_z: bool,
-}
-
 pub enum MPUClockSourceT  {
     MPU6050ClockInternal8MHZ = 0,
     MPU6050ClockPllGyrox = 1,
@@ -174,8 +160,8 @@ pub enum MPUdlpfT {
     MPU6050dlpf0 ,
 }
 
-pub struct MPU6050{
-    address: Volatile<u8>,
+pub struct MPU6050 {
+    //address: Volatile<u8>,
     i2c: i2c::Twi, 
     //atmega2560p::com::i2C::Twi::new(),
     //vec: FixedSliceVec<'a ,u8>,
@@ -183,11 +169,13 @@ pub struct MPU6050{
 
 impl MPU6050 {
 
-    // pub fn new () {
-        //     let Self = MPU6050 {
-            //         i2c: atmega2560p::com::i2C::Twi::new(),
-    //     };
-    // }
+    pub fn new () -> &'static mut MPU6050 {
+            let mut a = MPU6050 {
+                    i2c: atmega2560p::com::i2C::Twi::new(),
+        };
+        return &mut a;
+    }
+
     fn readregister(&mut self,reg: u8) -> u8 {
         let mut vec1 : FixedSliceVec<u8> = FixedSliceVec::new(&mut []);
         vec1.push(reg);
@@ -246,11 +234,6 @@ impl MPU6050 {
     }
     
     pub fn SetScale(&mut self , scale: MPUdpsT) {
-
-
-
-
-
         let mut value: u8;
         value = self.readregister(MPU6050_REG_GYRO_CONFIG);
         value &= 0b11100111;
@@ -277,12 +260,6 @@ impl MPU6050 {
     }
 
     pub fn SetRange(&mut self , range: MPURangeT) {
-
-
-
-
-
-
         let mut value : u8;
         value = self.readregister(MPU6050_REG_ACCEL_CONFIG);
         value &= 0b11100111;
@@ -337,15 +314,6 @@ impl MPU6050 {
             5 => MPUClockSourceT::MPU6050ClockExternal19MHZ,
             7 => MPUClockSourceT::MPU6050ClockKeepReset,
         }
-    }
-
-    pub fn ReadActivities(&mut self , activities: Activities) -> Activities{
-        let mut data = self.readregister(MPU6050_REG_INT_STATUS);
-        activities.overflow = (data >> 4) & 1;
-
-
-        return activities;
-
     }
 
     pub fn SetIntFreeFallEnabled(&mut self ,state: bool){
@@ -479,16 +447,36 @@ impl MPU6050 {
         return self.readregister(MPU6050_REG_INT_STATUS);
     }
 
-    pub fn Calibrategyro(){
+    // pub fn Calibrategyro(){
         
+    // }
+
+    // pub fn SetThreshold(){
+        
+    // }
+
+    // pub fn GetThreshold() -> u8{
+    //     return actualThreshold;
+    // }
+
+    pub fn ReadAccel(&mut self, data: Vector) -> Vector{
+        let mut v : FixedSliceVec<u8> = FixedSliceVec::new(&mut []);
+        v.push(MPU6050_REG_ACCEL_XOUT_H);
+        self.i2c.read_from_slave(MPU6050_ADDRESS , 6, &mut v);
+        data.x = ((v[1] << 8 )| v[2]) as f32;
+        data.y = ((v[3] << 8 )| v[4]) as f32;
+        data.z = ((v[5] << 8 )| v[6]) as f32;
+        return data;
     }
 
-    pub fn SetThreshold(){
-        
-    }
-
-    pub fn GetThreshold() -> u8{
-        return actualThreshold;
+    pub fn ReadGyro(&mut self, data: Vector) -> Vector{
+        let mut v : FixedSliceVec<u8> = FixedSliceVec::new(&mut []);
+        v.push(MPU6050_REG_GYRO_XOUT_H);
+        self.i2c.read_from_slave(MPU6050_ADDRESS , 6, &mut v);
+        data.x = ((v[1] << 8 )| v[2]) as f32;
+        data.y = ((v[3] << 8 )| v[4]) as f32;
+        data.z = ((v[5] << 8 )| v[6]) as f32;
+        return data;
     }
 
 }
