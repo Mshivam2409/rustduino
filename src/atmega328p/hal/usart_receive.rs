@@ -1,4 +1,18 @@
-
+//     RustDuino : A generic HAL implementation for Arduino Boards in Rust
+//     Copyright (C) 2021  Richa Prakash Sachan and Kshitij Kaithal, Indian Institute of Technology Kanpur
+//
+//     This program is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU Affero General Public License as published
+//     by the Free Software Foundation, either version 3 of the License, or
+//     (at your option) any later version.
+//
+//     This program is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU Affero General Public License for more details.
+//
+//     You should have received a copy of the GNU Affero General Public License
+//     along with this program.  If not, see <https://www.gnu.org/licenses/>
 
 /// Other source code files to be used.
 use crate::atmega328p::hal::usart_initialize::Usart;
@@ -134,4 +148,47 @@ impl Usart
         }
     }
 
+    ///  This function is used to recieve data of one frame.
+    ///  But it only functions when already data is available for read.which can be checked by available function.
+    ///  Either 5 to 8 bits and 9 bits of data can be recieved from this function.
+    ///  In case of 5 to 8 bits this function returns u8.
+    ///  In case of 9 bits it retuns u32 of which first 9 bits are data recieved and remaining bits are insignificant.
+    ///  In case ,if an frame error or parity error occurs, this function returns -1.
+    pub fn read(&mut self) -> Option<u32> {
+        unsafe {
+            let ucsrc = self.ucsrc.read();
+            let ucsrb = self.ucsrb.read();
+
+            let mut i: i32 = 10;
+            while self.available() == false {
+                if i != 0 {
+                    delay_ms(1000);
+                    i = i - 1;
+                } else {
+                    unreachable!()
+                }
+            }
+
+            if ucsrc.get_bits(1..3) == 0b11 && ucsrb.get_bit(2) == true {
+                let ucsra = self.ucsra.read();
+                let ucsrb = self.ucsrb.read();
+                let mut udr: u32 = self.udr.read() as u32;
+                if ucsra.get_bits(2..5) != 0b000 {
+                    None
+                } else {
+                    let rxb8: u32 = ucsrb.get_bits(1..2) as u32;
+                    udr.set_bits(8..9, rxb8);
+                    Some(udr)
+                }
+            } else {
+                let ucsra = self.ucsra.read();
+                let udr: u32 = self.udr.read() as u32;
+                if ucsra.get_bits(2..5) != 0b000 {
+                    None
+                } else {
+                    Some(udr)
+                }
+            }
+        }
+    }
 }
