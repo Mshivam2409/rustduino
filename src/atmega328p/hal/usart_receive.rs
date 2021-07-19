@@ -62,6 +62,20 @@ impl Usart
                     Some(udr)
                 }
             }
+
+            //  when there is a case of 5 to 8 bits.
+            else {
+                let ucsra = self.ucsra.read();
+                let mut udr: u32 = self.udr.read() as u32;
+                if ucsra.get_bits(2..5) != 0b000 {
+                    None
+                } else {
+                    Some(udr)
+                }
+            }
+
+
+            .....
         }
     }
 }
