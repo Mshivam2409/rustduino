@@ -73,9 +73,19 @@ impl Usart
                     Some(udr)
                 }
             }
+        }
+    }
 
-
-            .....
+    /// This function can be used to check frame error,Data OverRun and Parity errors.
+    /// It returns true if error occurs,else false.
+    pub fn error_check(&mut self) -> bool {
+        unsafe {
+            let ucsra = self.ucsra.read();
+            if ucsra.get_bits(3..5) != 0b00 {
+                true
+            } else {
+                false
+            }
         }
     }
 }
