@@ -22,18 +22,11 @@
 use crate::atmega2560p::com::usart_initialize::{Usart, UsartDataSize};
 use crate::delay::delay_ms;
 
-
+use bit_field::BitField;
 /// Crates which would be used in the implementation.
 /// We will be using standard volatile and bit_field crates now for a better read and write.
-use bit_field::BitField;
+use core::{f64, u8};
 use fixed_slice_vec::FixedSliceVec;
-
-/// Data Type selection for which data is to be transmitted using USART.
-pub enum DataType {
-    String(&'static mut str),
-    Integer(u32),
-    Float(f32),
-}
 
 //This is a implementation for Usart
 impl Usart {
@@ -41,50 +34,46 @@ impl Usart {
     /// This function is to enable the Transmitter
     /// Once it is enabled it takes control of the TXDn pin as a transmitting output.   
     pub fn transmit_enable(&mut self) {
-        unsafe {
-            self.ucsrb.update(|srb| {
-                srb.set_bit(3, true);
-            });
-        }
+        self.ucsrb.update(|srb| {
+            srb.set_bit(3, true);
+        });
     }
 
     /// Storing data in Transmit Buffer which takes parameter as a u32 and and data bit length.
-    pub fn transmitting_data(&self, data: u32, len: UsartDataSize) {
-        unsafe {
-            // Checks if the Transmit buffer is empty to receive data.
-            // If not the program waits till the time comes.
-            let mut i: i32 = 10;
-            while self.avai_write() == false {
-                if i != 0 {
-                    delay_ms(1000);
-                    i = i - 1;
-                } else {
-                    unreachable!()
-                }
+    pub fn transmitting_data(&mut self, data: u32, len: UsartDataSize) {
+        // Checks if the Transmit buffer is empty to receive data.
+        // If not the program waits till the time comes.
+        let mut i: i32 = 10;
+        while self.avai_write() == false {
+            if i != 0 {
+                delay_ms(1000);
+                i = i - 1;
+            } else {
+                unreachable!()
             }
+        }
 
-            let udr = self.udr.read();
+        let mut udr = self.udr.read();
 
-            // If the frame is ready for transmission then the appropriate place is written.
-            match len {
-                UsartDataSize::Five => {
-                    udr.set_bits(0..5, data.get_bits(0..5) as u8);
-                }
-                UsartDataSize::Six => {
-                    udr.set_bits(0..6, data.get_bits(0..6) as u8);
-                }
-                UsartDataSize::Seven => {
-                    udr.set_bits(0..7, data.get_bits(0..7) as u8);
-                }
-                UsartDataSize::Eight => {
-                    udr.set_bits(0..8, data.get_bits(0..8) as u8);
-                }
-                UsartDataSize::Nine => {
-                    self.ucsrb.update(|ctrl| {
-                        ctrl.set_bit(0, data.get_bit(8));
-                    });
-                    udr.set_bits(0..8, data.get_bits(0..8) as u8);
-                }
+        // If the frame is ready for transmission then the appropriate place is written.
+        match len {
+            UsartDataSize::Five => {
+                udr.set_bits(0..5, data.get_bits(0..5) as u8);
+            }
+            UsartDataSize::Six => {
+                udr.set_bits(0..6, data.get_bits(0..6) as u8);
+            }
+            UsartDataSize::Seven => {
+                udr.set_bits(0..7, data.get_bits(0..7) as u8);
+            }
+            UsartDataSize::Eight => {
+                udr.set_bits(0..8, data.get_bits(0..8) as u8);
+            }
+            UsartDataSize::Nine => {
+                self.ucsrb.update(|ctrl| {
+                    ctrl.set_bit(0, data.get_bit(8));
+                });
+                udr.set_bits(0..8, data.get_bits(0..8) as u8);
             }
         }
     }
@@ -136,65 +125,117 @@ impl Usart {
             }
         }
 
-        unsafe {
-            self.ucsrb.update(|srb| {
-                srb.set_bit(3, false);
-            });
-        }
+        self.ucsrb.update(|srb| {
+            srb.set_bit(3, false);
+        });
     }
 
     /// This function sends a character byte of 5,6,7 or 8 bits
-    pub fn transmit_data(&self, data: u8) {
-        unsafe {
-            let ucsra = self.ucsra.read();
-            let udre = ucsra.get_bit(5);
+    pub fn transmit_data(&mut self, data: u8) {
+        let mut ucsra = self.ucsra.read();
+        let mut udre = ucsra.get_bit(5);
 
-            let mut i: i32 = 100;
-            while udre == false {
-                let ucsra = self.ucsra.read();
-                let udre = ucsra.get_bit(5);
+        let mut i: i32 = 100;
+        while udre == false {
+            ucsra = self.ucsra.read();
+            udre = ucsra.get_bit(5);
 
-                if i != 0 {
-                    delay_ms(1000);
-                    i = i - 1;
-                } else {
-                    unreachable!();
-                }
+            if i != 0 {
+                delay_ms(1000);
+                i = i - 1;
+            } else {
+                unreachable!();
             }
-
-            self.udr.write(data);
         }
+
+        self.udr.write(data);
     }
 
     /// This function send data type of string byte by byte.
     pub fn write_string(&mut self, data: &mut str) {
-        self.transmit_enable();
-        let mut vec: FixedSliceVec<u8> = unsafe { FixedSliceVec::from_bytes((data).as_bytes()) };
+        let vec: FixedSliceVec<u8> = unsafe { FixedSliceVec::from_bytes(&mut (data).as_bytes()) };
         for i in 0..(vec.len()) {
             self.transmit_data(vec[i]);
         }
-        self.transmit_disable();
     }
 
     /// This function send data type of int(u32) byte by byte.
-    pub fn write_integer(&mut self, data: DataType) {
-        let s2 = "0123456789";
-        use core::mem::MaybeUninit;
-        let mut dat: [MaybeUninit<u8>; 10] = unsafe { MaybeUninit::uninit().assume_init() };
-
-        let mut vec: FixedSliceVec<u8> = FixedSliceVec::from(&mut dat[..]);
+    pub fn write_integer(&mut self, data: u32) {
+        let mut vec: FixedSliceVec<u8> = FixedSliceVec::new(&mut []);
         let mut a = data;
         while a != 0 {
             let rem = a % 10;
             a = a / 10;
-            let s3 = &s2[rem..(rem + 1)];
-            vec.push(s3.as_bytes());
+            match rem {
+                0 => vec.push('0' as u8),
+                1 => vec.push('1' as u8),
+                2 => vec.push('2' as u8),
+                3 => vec.push('3' as u8),
+                4 => vec.push('4' as u8),
+                5 => vec.push('5' as u8),
+                6 => vec.push('6' as u8),
+                7 => vec.push('7' as u8),
+                8 => vec.push('8' as u8),
+                9 => vec.push('9' as u8),
+                _ => unreachable!(),
+            }
         }
         for i in 0..(vec.len()) {
-            self.transmit_data(vec[(vec.len) - 1 - i]);
+            self.transmit_data(vec[vec.len() - 1 - i]);
         }
     }
 
     /// This function send data type of float(f32) byte by byte.
-    pub fn write_float(&mut self, data: DataType) {}
+    pub fn write_float(&mut self, data: f64) {
+        let mut vec: FixedSliceVec<u8> = FixedSliceVec::new(&mut []);
+        let mut temp: FixedSliceVec<u8> = FixedSliceVec::new(&mut []);
+        let a:f64 = data;
+        let mut f:f64 = a % 1.0;
+        let mut i:i64 = (a- (a % 1.0)) as i64 ;
+        while f != 0.00 {
+            let k : i64 = ((f*10.0) - ((f*10.0) % 1.0 )) as i64;            // gives you decimal digit of data one by one from left to right 
+            match k {
+                0 => temp.push('0' as u8),
+                1 => temp.push('1' as u8),
+                2 => temp.push('2' as u8),
+                3 => temp.push('3' as u8),
+                4 => temp.push('4' as u8),
+                5 => temp.push('5' as u8),
+                6 => temp.push('6' as u8),
+                7 => temp.push('7' as u8),
+                8 => temp.push('8' as u8),
+                9 => temp.push('9' as u8),
+                _ => unreachable!(),
+            }
+            f = (f*10.0)%1.0;                               // then f loses its left most digit (in decimal part) 
+        }
+
+        for i in 0..(temp.len()) {
+            vec.push(temp[temp.len() - 1 - i]);
+        }
+
+        vec.push('.' as u8);
+        
+        while i != 0 {
+            let rem = i % 10;
+            i = i / 10;
+            match rem {
+                0 => vec.push('0' as u8),
+                1 => vec.push('1' as u8),
+                2 => vec.push('2' as u8),
+                3 => vec.push('3' as u8),
+                4 => vec.push('4' as u8),
+                5 => vec.push('5' as u8),
+                6 => vec.push('6' as u8),
+                7 => vec.push('7' as u8),
+                8 => vec.push('8' as u8),
+                9 => vec.push('9' as u8),
+                _ => unreachable!(),
+            }
+        }
+        
+        for i in 0..(vec.len()) {
+            self.transmit_data(vec[vec.len() - 1 - i]);
+        }        
+    }
 }
