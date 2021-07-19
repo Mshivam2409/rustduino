@@ -189,9 +189,72 @@ impl Usart {
             self.transmit_data(vec[(vec.len) - 1 - i]);
         }
     }
-    /*
+
     /// This function send data type of float(f32) byte by byte.
-    pub fn write_float(&mut self,data : Cf32) {
+    pub fn write_float(&mut self, data: f64) {
+        let mut vec: FixedSliceVec<u8> = FixedSliceVec::new(&mut []);
+        let mut i = data as u64;
+        let mut f = data % 1.0;
+
+        match afterdecimal {
+            0 => f = f * 1.0,
+            1 => f = f * 10.0,
+            2 => f = f * 100.0,
+            3 => f = f * 1000.0,
+            4 => f = f * 10000.0,
+            5 => f = f * 100000.0,
+            _ => {
+                for m in 0..afterdecimal {
+                    f = f * 10.0;
+                }
+            }
+        }
+        let mut f = f as u64;
+        let mut n = 0;
+        while i != 0 {
+            let rem = i % 10;
+            i = i / 10;
+            n = n + 1;
+            match rem {
+                0 => vec.push('0' as u8),
+                1 => vec.push('1' as u8),
+                2 => vec.push('2' as u8),
+                3 => vec.push('3' as u8),
+                4 => vec.push('4' as u8),
+                5 => vec.push('5' as u8),
+                6 => vec.push('6' as u8),
+                7 => vec.push('7' as u8),
+                8 => vec.push('8' as u8),
+                9 => vec.push('9' as u8),
+                _ => (),
+            }
+        }
+
+        while f != 0 {
+            let rem = f % 10;
+            f = f / 10;
+            match rem {
+                0 => vec.push('0' as u8),
+                1 => vec.push('1' as u8),
+                2 => vec.push('2' as u8),
+                3 => vec.push('3' as u8),
+                4 => vec.push('4' as u8),
+                5 => vec.push('5' as u8),
+                6 => vec.push('6' as u8),
+                7 => vec.push('7' as u8),
+                8 => vec.push('8' as u8),
+                9 => vec.push('9' as u8),
+                _ => (),
+            }
+        }
+        for i in 0..(vec.len() + 1) {
+            if i < n {
+                self.transmit_data(vec[n - 1 - i]);
+            } else if n == i {
+                self.transmit_data('0' as u8);
+            } else {
+                self.transmit_data(vec[(vec.len()) - i]);
+            }
+        }
     }
-    */
 }
