@@ -1,8 +1,8 @@
 use crate::delay::delay_ms;
 use bit_field::BitField;
 use fixed_slice_vec::FixedSliceVec;
-//use volatile::Volatile;
-use crate::atmega2560p::com::i2c::*;
+use volatile::Volatile;
+use crate::atmega2560p::com::i2c;
 
 const MPU6050_ADDRESS: u8 = 0x68; // 0x69 when AD0 pin to Vcc
 const MPU6050_REG_ACCEL_XOFFS_H: u8 = 0x06;
@@ -154,14 +154,14 @@ pub enum mpu_dlpf_t  {
     MPU6050_DLPF_0 = 0b000,
 }
 
-pub struct MPU6050 <'a> {
+pub struct MPU6050{
     address: Volatile<u8>,
     i2c: i2c::Twi, 
     //atmega2560p::com::i2C::Twi::new(),
     //vec: FixedSliceVec<'a ,u8>,
 }
 
-impl MPU6050 <'a> {
+impl MPU6050 {
 
     // pub fn new () {
         //     let Self = MPU6050 {
@@ -171,7 +171,7 @@ impl MPU6050 <'a> {
     fn readregister(&mut self,reg: u8) -> u8 {
         let mut vec1 : FixedSliceVec<u8> = FixedSliceVec::new(&mut []);
         vec1.push(reg);
-        self.i2c.read_from_slave(MPU6050_ADDRESS, 1, vec);
+        self.i2c.read_from_slave(MPU6050_ADDRESS, 1, &vec1);
         return vec1[1];
     }
     
@@ -179,7 +179,7 @@ impl MPU6050 <'a> {
         let mut vec2 : FixedSliceVec<u8> = FixedSliceVec::new(&mut []);
         vec2.push(reg);
         vec2.push(value);
-        self.i2c.write_to_slave(MPU6050_ADDRESS, vec2)
+        self.i2c.write_to_slave(MPU6050_ADDRESS, &vec2);
     }
     
     fn writeregisterBit(&mut self,reg: u8, pos: u8, state: bool){
@@ -198,7 +198,7 @@ impl MPU6050 <'a> {
         
     }
     
-    pub fn SetDHPFMode(dlpf: mpu_dhpf_t) {
+    pub fn SetDHPFMode(&mut self,dlpf: mpu_dhpf_t) {
         let mut value: u8;
         value = self.readregister(MPU6050_REG_CONFIG);
         value &= 0b11111100;
@@ -230,13 +230,13 @@ impl MPU6050 <'a> {
 
     }
 
-    pub fn SetIntFreeFallEnabled(state: bool){
-        
+    pub fn SetIntFreeFallEnabled(&mut self ,state: bool){
+        self.writeregisterBit(MPU6050_REG_INT_ENABLE, 7, state);
     }
 
-    pub fn GetIntFreeFallEnabled(&mutself) -> bool {
-        return self.readregisterBit(MPU6050_REG_INT_ENABLE, 7);
-
+    pub fn GetIntFreeFallEnabled(&mut self) -> bool {
+        let mut value = self.readregister(MPU6050_REG_INT_ENABLE);
+        return get_bit(value,6);
     }
 
     pub fn SetAccelPowerOnDelay(){
@@ -248,97 +248,95 @@ impl MPU6050 <'a> {
     }
 
     pub fn SetMotionDetectionThreshold(&mut self,threshold: u8){
-        self.writeRegister(MPU6050_REG_MOT_THRESHOLD, threshold);
+        self.writeregister(MPU6050_REG_MOT_THRESHOLD, threshold);
         
     }
 
-    pub fn GetMotionDetectionThreshold() -> u8 {
-        
+    pub fn GetMotionDetectionThreshold(&mut self,) -> u8 {
+        return self.readregister(MPU6050_REG_MOT_THRESHOLD);
     }
 
-    pub fn SetMotionDetectionDuration(duration: u8){
-        
+    pub fn SetMotionDetectionDuration(&mut self, duration: u8){
+        self.writeregister(MPU6050_REG_MOT_DURATION, duration);
     }
 
-    pub fn GetMotionDetectionDuration() -> u8 {
-
+    pub fn GetMotionDetectionDuration(&mut self,) -> u8 {
+        return self.readregister(MPU6050_REG_MOT_DURATION);
     }
 
-    pub fn SetZeroMotionDetectionThreshold(threshold: u8){
-        
+    pub fn SetZeroMotionDetectionThreshold(&mut self,threshold: u8){
+        self.writeregister(MPU6050_REG_ZMOT_THRESHOLD, threshold);
     }
 
     pub fn GetZeroMotionDetectionThreshold(&mut self) -> u8 {
-        return self.readregisterBit(MPU6050_REG_ZMOT_THRESHOLD);
-        
+        return self.readregister(MPU6050_REG_ZMOT_THRESHOLD);
     }
 
-    pub fn SetZeroMotionDetectionDuration(){
-        
+    pub fn SetZeroMotionDetectionDuration(&mut self, duration: u8){
+        self.writeregister(MPU6050_REG_ZMOT_DURATION, duration);
     }
 
     pub fn GetZeroMotionDetectionDuration(&mut self)->u8{
-        return self.readregisterBit(MPU6050_REG_ZMOT_DURATION);
-        
+        return self.readregister(MPU6050_REG_ZMOT_DURATION);
     }
 
-    pub fn SetFreeFallDetectionThreshold(){
-        
+    pub fn SetFreeFallDetectionThreshold(&mut self, threshold: u8){
+        self.writeregister(MPU6050_REG_FF_THRESHOLD, threshold);
     }
 
-    pub fn GetFreeFallDetectionThreshold(){
-        
+    pub fn GetFreeFallDetectionThreshold(&mut self) -> u8 {
+        return self.readregister(MPU6050_REG_FF_THRESHOLD);
     }
 
-    pub fn SetFreeFallDetectionDuration(){
-        
+    pub fn SetFreeFallDetectionDuration(&mut self, duration: u8){
+        self.writeregister(MPU6050_REG_FF_DURATION, duration);
     }
 
-    pub fn GetFreeFallDetectionDuration(){
-        
+    pub fn GetFreeFallDetectionDuration(&mut self) -> u8 {
+        return self.readregister(MPU6050_REG_FF_DURATION);
     }
 
-    pub fn SetSleepEnabled(state: bool){
+    pub fn SetSleepEnabled(&mut self, state: bool){
         self.writeregisterBit(MPU6050_REG_PWR_MGMT_1, 6, state);
     }
 
-    pub fn GetSleepEnabled() -> bool{
-        value = self.readregister(MPU6050_REG_PWR_MGMT_1);
+    pub fn GetSleepEnabled(&mut self) -> bool{
+        let mut value = self.readregister(MPU6050_REG_PWR_MGMT_1);
         return get_bit(value,6);
     }
 
-    pub fn GetIntZeroMotionEnabled() -> bool{
+    pub fn GetIntZeroMotionEnabled(&mut self) -> bool{
         let mut value = self.readregister(MPU6050_REG_INT_ENABLE);
         return get_bit(value,5);
     }
 
-    pub fn SetIntZeroMotionEnabled(state: bool){
+    pub fn SetIntZeroMotionEnabled(&mut self, state: bool){
         self.writeregisterBit(MPU6050_REG_INT_ENABLE, 5, state);
     }
 
-    pub fn GetIntMotionEnabled() -> bool{
+    pub fn GetIntMotionEnabled(&mut self) -> bool{
        let mut value = self.readregister(MPU6050_REG_INT_ENABLE);
         return get_bit(value,6);
     }
 
-    pub fn SetIntMotionEnabled(state: bool){
+    pub fn SetIntMotionEnabled(&mut self, state: bool){
         self.writeregisterBit(MPU6050_REG_INT_ENABLE, 6, state);
     }
 
-    pub fn SetI2CMasterModeEnabled(state: bool){
+    pub fn SetI2CMasterModeEnabled(&mut self, state: bool){
         self.writeregisterBit(MPU6050_REG_USER_CTRL, 5, state);
     }
 
-    pub fn GetI2CMasterModeEnabled() -> bool{
+    pub fn GetI2CMasterModeEnabled(&mut self) -> bool{
         let mut value = self.readregister(MPU6050_REG_USER_CTRL);
         return get_bit(value,5);
     }
 
-    pub fn SetI2CByepassEnabled(state: bool){
+    pub fn SetI2CByepassEnabled(&mut self, state: bool){
         self.writeregisterBit(MPU6050_REG_INT_PIN_CFG , 1, state); ;
     }
 
-    pub fn GetI2CByepassEnabled() -> bool{
+    pub fn GetI2CByepassEnabled(&mut self) -> bool{
         let mut value = self.readregister(MPU6050_REG_INT_PIN_CFG);
         return get_bit(value,1);
     }
@@ -346,8 +344,6 @@ impl MPU6050 <'a> {
     pub fn getMotionDetectionDuration(&mut self)->u8{
         return self.readregisterBit(MPU6050_REG_MOT_DURATION);
     }
-
-
 
     pub fn Calibrategyro(){
         
