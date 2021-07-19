@@ -50,6 +50,5 @@ impl Usart
                     unreachable!()
                 }
             }
-
-            
+    
 }
