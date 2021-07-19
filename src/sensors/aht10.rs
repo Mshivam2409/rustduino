@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>
 
-
 use crate::atmega328p::com::i2c;
 use crate::delay::delay_ms;
 use fixed_slice_vec::FixedSliceVec;
@@ -23,7 +22,7 @@ pub enum Tempsensor {
     Aht10sensor,
 }
 
-pub struct AHT10<'a>{
+pub struct AHT10<'a> {
     address: u8,
     i2c: i2c::Twi,
     vec: FixedSliceVec<'a, u8>,
@@ -55,12 +54,11 @@ const AHT10_FORCE_READ_DATA: bool = true; //force to read data
 const AHT10_USE_READ_DATA: bool = false; //force to use data from previous read
 const AHT10_ERROR: u8 = 0xFF; //returns 255, if communication error is occurred
 
-
-impl <'a> AHT10 <'a> {
+impl<'a> AHT10<'a> {
     pub fn new(&mut self) -> &'static mut Self {
         delay_ms(20); //20ms delay to wake up
-   
-        self.soft_reset(); 
+
+        self.soft_reset();
 
         if !self.initialise() {
             unreachable!("Could not intialise!");
@@ -69,55 +67,53 @@ impl <'a> AHT10 <'a> {
     }
 
     pub fn initialise(&mut self) -> bool {
-        
         self.vec.clear();
         self.vec.push(AHT10_INIT_CMD);
         self.vec.push(0x33);
         self.vec.push(0x00);
-        
+
         if !self.i2c.write_to_slave(self.address, &self.vec) {
             unreachable!();
         }
         self.wait_for_idle();
-        if !(self.status()==0 && AHT10_INIT_CAL_ENABLE==0) {
+        if !(self.status() == 0 && AHT10_INIT_CAL_ENABLE == 0) {
             return false;
         }
         return true;
     }
 
     pub fn soft_reset(&mut self) {
-        
         self.vec.clear();
         self.vec.push(AHT10_SOFT_RESET_CMD);
-        
-        if !self.i2c.write_to_slave(self.address, &self.vec) {  
+
+        if !self.i2c.write_to_slave(self.address, &self.vec) {
             unreachable!();
-        } 
+        }
         delay_ms(20);
     }
 
-    
-
     pub fn read_to_buffer(&mut self) {
-        if !self.i2c.read_from_slave(self.address, self.vec.len(),  &mut self.vec) {
+        if !self
+            .i2c
+            .read_from_slave(self.address, self.vec.len(), &mut self.vec)
+        {
             unreachable!();
         }
     }
 
     pub fn trigger_slave(&mut self) {
-        
         self.vec.clear();
         self.vec.push(AHT10_START_MEASURMENT_CMD);
         self.vec.push(0x33);
         self.vec.push(0x00);
-        
+
         if !self.i2c.write_to_slave(self.address, &self.vec) {
             unreachable!();
         }
     }
 
     pub fn wait_for_idle(&mut self) {
-        while (self.status()==0 && AHT10_INIT_BUSY==0) == true {
+        while (self.status() == 0 && AHT10_INIT_BUSY == 0) == true {
             delay_ms(5);
         }
     }
@@ -134,14 +130,18 @@ impl <'a> AHT10 <'a> {
 
     pub fn relative_humidity(&mut self) -> f64 {
         self.perform_measurement();
-        let mut humid: f64 = ((self.vec[1] << 12) | (self.vec[2] << 4) | (self.vec[3] >> 4)) as f64;
+        let mut humid: f64 = (((self.vec[1] as u32) << 12)
+            | ((self.vec[2] as u32) << 4)
+            | ((self.vec[3] as u32) >> 4)) as f64;
         humid = (humid * 100.0) / 0x100000 as f64;
         return humid;
     }
 
     pub fn temperature(&mut self) -> f64 {
         self.perform_measurement();
-        let mut temp: f64 = (((self.vec[3] & 0xF) << 16) | self.vec[4] << 8 | self.vec[5]) as f64;
+        let mut temp: f64 = ((((self.vec[3] as u32) & 0xF) << 16)
+            | (self.vec[4] as u32) << 8
+            | (self.vec[5]) as u32) as f64;
         temp = ((temp as f64 * 200.0) / 0x100000 as f64) - 50.0;
         return temp;
     }
