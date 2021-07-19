@@ -2,7 +2,7 @@ use crate::delay::delay_ms;
 use bit_field::BitField;
 use fixed_slice_vec::FixedSliceVec;
 //use volatile::Volatile;
-use crate::atmega2560p::com::i2c;
+use crate::atmega2560p::com::i2c::*;
 
 const MPU6050_ADDRESS: u8 = 0x68; // 0x69 when AD0 pin to Vcc
 const MPU6050_REG_ACCEL_XOFFS_H: u8 = 0x06;
@@ -107,90 +107,89 @@ const MPU6050_REG_WHO_AM_I: u8 = 0x75; // Who Am I
 pub struct Vector {
     pub x: f32,
     pub y: f32,
-    pub z: f32
+    pub z: f32,
 }
 
-pub enum MPUClockSourceT  {
-    MPU6050ClockInternal8MHZ ,
-    MPU6050ClockPllGyrox ,
-    MPU6050ClockPllGyroy ,
-    MPU6050ClockPllGyroz ,
-    MPU6050ClockExternal32MHZ , 
-    MPU6050ClockExternal19MHZ ,
-    MPU6050ClockKeepReset ,
+pub enum MPUClockSourceT {
+    MPU6050ClockInternal8MHZ,
+    MPU6050ClockPllGyrox,
+    MPU6050ClockPllGyroy,
+    MPU6050ClockPllGyroz,
+    MPU6050ClockExternal32MHZ,
+    MPU6050ClockExternal19MHZ,
+    MPU6050ClockKeepReset,
 }
 
-pub enum MPUdpsT  {
-    MPU6050Scale2000DPS ,
-    MPU6050Scale1000DPS ,
-    MPU6050Scale500DPS ,
-    MPU6050Scale250DPS ,
+pub enum MPUdpsT {
+    MPU6050Scale2000DPS,
+    MPU6050Scale1000DPS,
+    MPU6050Scale500DPS,
+    MPU6050Scale250DPS,
 }
 
-pub enum MPURangeT  {
-    MPU6050Range2G ,
-    MPU6050Range4G ,
-    MPU6050Range8G ,
-    MPU6050Range16G ,
+pub enum MPURangeT {
+    MPU6050Range2G,
+    MPU6050Range4G,
+    MPU6050Range8G,
+    MPU6050Range16G,
 }
 
-pub enum MPUOnDelayT  {
-    MPU6050Delay3MS ,
-    MPU6050Delay2MS ,
-    MPU6050Delay1MS ,
-    MPU6050NoDelay ,
+pub enum MPUOnDelayT {
+    MPU6050Delay3MS,
+    MPU6050Delay2MS,
+    MPU6050Delay1MS,
+    MPU6050NoDelay,
 }
 
-pub enum MPUdhpfT  {
-    MPU6050dhpfReset ,
-    MPU6050dhpf5HZ ,
-    MPU6050dhpf2_5HZ ,
-    MPU6050dhpf1_25HZ ,
-    MPU6050dhpf0_63HZ ,
-    MPU6050dhpfHold ,
+pub enum MPUdhpfT {
+    MPU6050dhpfReset,
+    MPU6050dhpf5HZ,
+    MPU6050dhpf2_5HZ,
+    MPU6050dhpf1_25HZ,
+    MPU6050dhpf0_63HZ,
+    MPU6050dhpfHold,
 }
 
 pub enum MPUdlpfT {
-    MPU6050dlpf6 ,
-    MPU6050dlpf5 ,
-    MPU6050dlpf4 ,
-    MPU6050dlpf3 ,
-    MPU6050dlpf2 ,
-    MPU6050dlpf1 ,
-    MPU6050dlpf0 ,
+    MPU6050dlpf6,
+    MPU6050dlpf5,
+    MPU6050dlpf4,
+    MPU6050dlpf3,
+    MPU6050dlpf2,
+    MPU6050dlpf1,
+    MPU6050dlpf0,
 }
 
 pub struct MPU6050 {
     //address: Volatile<u8>,
-    i2c: i2c::Twi, 
+    i2c: i2c::Twi,
     //atmega2560p::com::i2C::Twi::new(),
     //vec: FixedSliceVec<'a ,u8>,
 }
 
 impl MPU6050 {
-
-    pub fn new () -> &'static mut MPU6050 {
-            let mut a = MPU6050 {
-                    i2c: atmega2560p::com::i2C::Twi::new(),
+    pub fn new() -> &'static mut MPU6050 {
+        let mut a = MPU6050 {
+            i2c: atmega2560p::com::i2C::Twi::new(),
         };
         return &mut a;
     }
 
-    fn readregister(&mut self,reg: u8) -> u8 {
-        let mut vec1 : FixedSliceVec<u8> = FixedSliceVec::new(&mut []);
+    fn readregister(&mut self, reg: u8) -> u8 {
+        let mut vec1: FixedSliceVec<u8> = FixedSliceVec::new(&mut []);
         vec1.push(reg);
         self.i2c.read_from_slave(MPU6050_ADDRESS, 1, &mut vec1);
         return vec1[1];
     }
-    
-    fn writeregister(&mut self, reg: u8, value: u8){
-        let mut vec2 : FixedSliceVec<u8> = FixedSliceVec::new(&mut []);
+
+    fn writeregister(&mut self, reg: u8, value: u8) {
+        let mut vec2: FixedSliceVec<u8> = FixedSliceVec::new(&mut []);
         vec2.push(reg);
         vec2.push(value);
         self.i2c.write_to_slave(MPU6050_ADDRESS, &vec2);
     }
-    
-    fn writeregisterBit(&mut self,reg: u8, pos: u8, state: bool){
+
+    fn writeregisterBit(&mut self, reg: u8, pos: u8, state: bool) {
         let mut value: u8;
         value = self.readregister(reg);
         if state {
@@ -200,10 +199,9 @@ impl MPU6050 {
         }
         self.writeregister(reg, value);
     }
-    
-    
-    pub fn set_dlpf_mode(&mut self,dlpf: MPUdlpfT) {
-        let mut value : u8;
+
+    pub fn set_dlpf_mode(&mut self, dlpf: MPUdlpfT) {
+        let mut value: u8;
         value = self.readregister(MPU6050_REG_CONFIG);
         value &= 0b11111000;
         value |= match dlpf {
@@ -217,8 +215,8 @@ impl MPU6050 {
         };
         self.writeregister(MPU6050_REG_CONFIG, value);
     }
-    
-    pub fn set_dhpf_mode(&mut self,dhpf: MPUdhpfT) {
+
+    pub fn set_dhpf_mode(&mut self, dhpf: MPUdhpfT) {
         let mut value: u8;
         value = self.readregister(MPU6050_REG_CONFIG);
         value &= 0b11111100;
@@ -232,8 +230,8 @@ impl MPU6050 {
         };
         self.writeregister(MPU6050_REG_CONFIG, value);
     }
-    
-    pub fn set_scale(&mut self , scale: MPUdpsT) {
+
+    pub fn set_scale(&mut self, scale: MPUdpsT) {
         let mut value: u8;
         value = self.readregister(MPU6050_REG_GYRO_CONFIG);
         value &= 0b11100111;
@@ -245,9 +243,9 @@ impl MPU6050 {
         } << 3);
         self.writeregister(MPU6050_REG_GYRO_CONFIG, value);
     }
-    
-    pub fn get_scale(&mut self ) -> MPUdpsT {
-        let mut value : u8;
+
+    pub fn get_scale(&mut self) -> MPUdpsT {
+        let mut value: u8;
         value = self.readregister(MPU6050_REG_GYRO_CONFIG);
         value &= 0b00011000;
         value >>= 3;
@@ -259,8 +257,8 @@ impl MPU6050 {
         };
     }
 
-    pub fn set_range(&mut self , range: MPURangeT) {
-        let mut value : u8;
+    pub fn set_range(&mut self, range: MPURangeT) {
+        let mut value: u8;
         value = self.readregister(MPU6050_REG_ACCEL_CONFIG);
         value &= 0b11100111;
         value |= (match range {
@@ -271,9 +269,9 @@ impl MPU6050 {
         } << 3);
         self.writeregister(MPU6050_REG_ACCEL_CONFIG, value);
     }
-    
-    pub fn get_range(&mut self ) -> MPURangeT {
-        let mut value : u8;
+
+    pub fn get_range(&mut self) -> MPURangeT {
+        let mut value: u8;
         value = self.readregister(MPU6050_REG_ACCEL_CONFIG);
         value &= 0b00011000;
         value >>= 3;
@@ -284,9 +282,9 @@ impl MPU6050 {
             MPU6050Range16G => MPURangeT::MPU6050Range16G,
         };
     }
-    
-    pub fn set_clock_source(&mut self , source: MPUClockSourceT) {
-        let mut value : u8;
+
+    pub fn set_clock_source(&mut self, source: MPUClockSourceT) {
+        let mut value: u8;
         value = self.readregister(MPU6050_REG_PWR_MGMT_1);
         value &= 0b11111000;
         value |= match source {
@@ -301,8 +299,8 @@ impl MPU6050 {
         self.writeregister(MPU6050_REG_PWR_MGMT_1, value);
     }
 
-    pub fn get_clock_source(&mut self ) -> MPUClockSourceT {
-        let mut value : u8;
+    pub fn get_clock_source(&mut self) -> MPUClockSourceT {
+        let mut value: u8;
         value = self.readregister(MPU6050_REG_PWR_MGMT_1);
         value &= 0b00000111;
         match value {
@@ -316,17 +314,17 @@ impl MPU6050 {
         }
     }
 
-    pub fn set_int_free_fall_enabled(&mut self ,state: bool){
+    pub fn set_int_free_fall_enabled(&mut self, state: bool) {
         self.writeregisterBit(MPU6050_REG_INT_ENABLE, 7, state);
     }
 
     pub fn get_int_free_fall_enabled(&mut self) -> bool {
         let mut value = self.readregister(MPU6050_REG_INT_ENABLE);
-        return get_bit(value,6);
+        return get_bit(value, 6);
     }
 
-    pub fn set_accel_power_on_delay(&mut self, delay: MPUOnDelayT){
-        let mut value : u8;
+    pub fn set_accel_power_on_delay(&mut self, delay: MPUOnDelayT) {
+        let mut value: u8;
         value = self.readregister(MPU6050_REG_MOT_DETECT_CTRL);
         value &= 0b11001111;
         value |= match delay {
@@ -350,23 +348,23 @@ impl MPU6050 {
         }
     }
 
-    pub fn set_motion_detection_threshold(&mut self,threshold: u8){
+    pub fn set_motion_detection_threshold(&mut self, threshold: u8) {
         self.writeregister(MPU6050_REG_MOT_THRESHOLD, threshold);
     }
 
-    pub fn get_motion_detection_threshold(&mut self,) -> u8 {
+    pub fn get_motion_detection_threshold(&mut self) -> u8 {
         return self.readregister(MPU6050_REG_MOT_THRESHOLD);
     }
 
-    pub fn set_motion_detection_duration(&mut self, duration: u8){
+    pub fn set_motion_detection_duration(&mut self, duration: u8) {
         self.writeregister(MPU6050_REG_MOT_DURATION, duration);
     }
 
-    pub fn get_motion_detection_duration(&mut self,) -> u8 {
+    pub fn get_motion_detection_duration(&mut self) -> u8 {
         return self.readregister(MPU6050_REG_MOT_DURATION);
     }
 
-    pub fn set_zero_motion_detection_threshold(&mut self,threshold: u8){
+    pub fn set_zero_motion_detection_threshold(&mut self, threshold: u8) {
         self.writeregister(MPU6050_REG_ZMOT_THRESHOLD, threshold);
     }
 
@@ -374,15 +372,15 @@ impl MPU6050 {
         return self.readregister(MPU6050_REG_ZMOT_THRESHOLD);
     }
 
-    pub fn set_zero_motion_detection_duration(&mut self, duration: u8){
+    pub fn set_zero_motion_detection_duration(&mut self, duration: u8) {
         self.writeregister(MPU6050_REG_ZMOT_DURATION, duration);
     }
 
-    pub fn get_zero_motion_detection_duration(&mut self)->u8{
+    pub fn get_zero_motion_detection_duration(&mut self) -> u8 {
         return self.readregister(MPU6050_REG_ZMOT_DURATION);
     }
 
-    pub fn set_free_fall_detection_threshold(&mut self, threshold: u8){
+    pub fn set_free_fall_detection_threshold(&mut self, threshold: u8) {
         self.writeregister(MPU6050_REG_FF_THRESHOLD, threshold);
     }
 
@@ -390,7 +388,7 @@ impl MPU6050 {
         return self.readregister(MPU6050_REG_FF_THRESHOLD);
     }
 
-    pub fn set_free_fall_detection_duration(&mut self, duration: u8){
+    pub fn set_free_fall_detection_duration(&mut self, duration: u8) {
         self.writeregister(MPU6050_REG_FF_DURATION, duration);
     }
 
@@ -398,49 +396,49 @@ impl MPU6050 {
         return self.readregister(MPU6050_REG_FF_DURATION);
     }
 
-    pub fn set_sleep_enabled(&mut self, state: bool){
+    pub fn set_sleep_enabled(&mut self, state: bool) {
         self.writeregisterBit(MPU6050_REG_PWR_MGMT_1, 6, state);
     }
 
-    pub fn get_sleep_enabled(&mut self) -> bool{
+    pub fn get_sleep_enabled(&mut self) -> bool {
         let mut value = self.readregister(MPU6050_REG_PWR_MGMT_1);
-        return get_bit(value,6);
+        return get_bit(value, 6);
     }
 
-    pub fn get_int_zero_motion_enabled(&mut self) -> bool{
+    pub fn get_int_zero_motion_enabled(&mut self) -> bool {
         let mut value = self.readregister(MPU6050_REG_INT_ENABLE);
-        return get_bit(value,5);
+        return get_bit(value, 5);
     }
 
-    pub fn set_int_zero_motion_enabled(&mut self, state: bool){
+    pub fn set_int_zero_motion_enabled(&mut self, state: bool) {
         self.writeregisterBit(MPU6050_REG_INT_ENABLE, 5, state);
     }
 
-    pub fn get_int_motion_enabled(&mut self) -> bool{
-       let mut value = self.readregister(MPU6050_REG_INT_ENABLE);
-        return get_bit(value,6);
+    pub fn get_int_motion_enabled(&mut self) -> bool {
+        let mut value = self.readregister(MPU6050_REG_INT_ENABLE);
+        return get_bit(value, 6);
     }
 
-    pub fn set_int_motion_enabled(&mut self, state: bool){
+    pub fn set_int_motion_enabled(&mut self, state: bool) {
         self.writeregisterBit(MPU6050_REG_INT_ENABLE, 6, state);
     }
 
-    pub fn set_i2c_master_mode_enabled(&mut self, state: bool){
+    pub fn set_i2c_master_mode_enabled(&mut self, state: bool) {
         self.writeregisterBit(MPU6050_REG_USER_CTRL, 5, state);
     }
 
-    pub fn get_i2c_master_mode_enabled(&mut self) -> bool{
+    pub fn get_i2c_master_mode_enabled(&mut self) -> bool {
         let mut value = self.readregister(MPU6050_REG_USER_CTRL);
-        return get_bit(value,5);
+        return get_bit(value, 5);
     }
 
-    pub fn set_i2c_byepass_enabled(&mut self, state: bool){
-        self.writeregisterBit(MPU6050_REG_INT_PIN_CFG , 1, state);
+    pub fn set_i2c_byepass_enabled(&mut self, state: bool) {
+        self.writeregisterBit(MPU6050_REG_INT_PIN_CFG, 1, state);
     }
 
-    pub fn get_i2c_byepass_enabled(&mut self) -> bool{
+    pub fn get_i2c_byepass_enabled(&mut self) -> bool {
         let mut value = self.readregister(MPU6050_REG_INT_PIN_CFG);
-        return get_bit(value,1);
+        return get_bit(value, 1);
     }
 
     pub fn get_int_status(&mut self) -> u8 {
@@ -448,38 +446,38 @@ impl MPU6050 {
     }
 
     // pub fn Calibrategyro(){
-        
+
     // }
 
     // pub fn SetThreshold(){
-        
+
     // }
 
     // pub fn GetThreshold() -> u8{
     //     return actualThreshold;
     // }
 
-    pub fn read_accel(&mut self, data: Vector) -> Vector{
-        let mut v : FixedSliceVec<u8> = FixedSliceVec::new(&mut []);
+    pub fn read_accel(&mut self, data: Vector) -> Vector {
+        let mut v: FixedSliceVec<u8> = FixedSliceVec::new(&mut []);
         v.push(MPU6050_REG_ACCEL_XOUT_H);
-        self.i2c.read_from_slave(MPU6050_ADDRESS , 6, &mut v);
-        data.x = ((v[1] << 8 )| v[2]) as f32;
-        data.y = ((v[3] << 8 )| v[4]) as f32;
-        data.z = ((v[5] << 8 )| v[6]) as f32;
+        self.i2c.read_from_slave(MPU6050_ADDRESS, 6, &mut v);
+        data.x = ((v[1] << 8) | v[2]) as f32;
+        data.y = ((v[3] << 8) | v[4]) as f32;
+        data.z = ((v[5] << 8) | v[6]) as f32;
         return data;
     }
 
-    pub fn read_gyro(&mut self, data: Vector) -> Vector{
-        let mut v : FixedSliceVec<u8> = FixedSliceVec::new(&mut []);
+    pub fn read_gyro(&mut self, data: Vector) -> Vector {
+        let mut v: FixedSliceVec<u8> = FixedSliceVec::new(&mut []);
         v.push(MPU6050_REG_GYRO_XOUT_H);
-        self.i2c.read_from_slave(MPU6050_ADDRESS , 6, &mut v);
-        data.x = ((v[1] << 8 )| v[2]) as f32;
-        data.y = ((v[3] << 8 )| v[4]) as f32;
-        data.z = ((v[5] << 8 )| v[6]) as f32;
+        self.i2c.read_from_slave(MPU6050_ADDRESS, 6, &mut v);
+        data.x = ((v[1] << 8) | v[2]) as f32;
+        data.y = ((v[3] << 8) | v[4]) as f32;
+        data.z = ((v[5] << 8) | v[6]) as f32;
         return data;
     }
 
-    pub fn begin(&mut self, scale: MPUdpsT , range: MPURangeT) -> bool{
+    pub fn begin(&mut self, scale: MPUdpsT, range: MPURangeT) -> bool {
         delay_ms(5);
 
         //Set clock source.
@@ -494,5 +492,4 @@ impl MPU6050 {
 
         return true;
     }
-
 }
