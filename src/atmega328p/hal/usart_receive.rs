@@ -88,4 +88,30 @@ impl Usart
             }
         }
     }
+
+
+    /// This function can be used to check parity error.
+    /// It returns true if error occurs else false.
+    pub fn parity_check(&mut self) -> bool {
+        unsafe {
+            let ucsra = self.ucsra.read();
+            if ucsra.get_bit(2) == true {
+                true
+            } else {
+                false
+            }
+        }
+    }
+
+    /// This function disables the reciever function of microcontroller.
+    pub fn recieve_disable(&mut self) {
+        unsafe {
+            self.ucsrb.update(|ucsrb| {
+                ucsrb.set_bit(4, false);
+            });
+        }
+    }
+
+
+
 }
