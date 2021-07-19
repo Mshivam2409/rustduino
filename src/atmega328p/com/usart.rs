@@ -26,32 +26,25 @@
 use crate::atmega328p::com::serial::Serial;
 use crate::atmega328p::com::usart_initialize::Usart;
 use crate::atmega328p::com::usart_initialize::{
-    UsartDataSize, UsartModes, UsartNum, UsartParity, UsartStop,
+    UsartDataSize, UsartModes, UsartNum, UsartParity, UsartStop,UsartPolarity,
 };
-// use crate::atmega2560p::com::usart_recieve;
-// use crate::atmega2560p::com::usart_transmit;
+//Standard datatypes to be used
+use core::{f64,u32};
 
 /// Default setting parameters for various modes of USART in case user want's to skip them.
 /// Baud Rate.
 const baud: i64 = 2400;
 /// Frame Settings.
-const size: UsartDataSize = Eight;
+const size: UsartDataSize = UsartDataSize::Eight;
 
-const parity: (usart_initialize::UsartParity) = no;
-const stop: (usart_initialize::UsartStop) = one;
+const parity: UsartParity = UsartParity::No;
+const stop: UsartStop = UsartStop::One;
 /// USART mode.
-const mode: (usart_initialize::UsartModes) = norm_async;
+const mode: UsartModes = UsartModes::Normasync;
 /// Default USART number to be used.
-const num: (usart_initialize::UsartNum) = usart0;
+const num: UsartNum = UsartNum::Usart0;
 /// Default clock polarity mode.
-const polarity: (usart_initialize::UsartPolarity) = output_rise;
-
-/// Data Type selection for which data is to be transmitted using USART.
-pub enum DataType {
-    string(Cstr),
-    integer(u32),
-    float(f32),
-}
+const polarity: UsartPolarity = UsartPolarity::Outputrise;
 
 impl Serial {
     /// Gives a new serial port object which can be used to control all the
