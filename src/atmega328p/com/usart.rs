@@ -1,5 +1,5 @@
 //     RustDuino : A generic HAL implementation for Arduino Boards in Rust
-//     Copyright (C) 2021  Richa Prakash Sachan, Indian Institute of Technology Kanpur
+//     Copyright (C) 2021   Kshitij Kaithal and Richa Prakash Sachan, Indian Institute of Technology Kanpur
 //
 //     This program is free software: you can redistribute it and/or modify
 //     it under the terms of the GNU Affero General Public License as published
@@ -16,7 +16,7 @@
 
 //! Functions provided to the user for ATMEGA328P USART implementation.
 //! This file contains the println() functions in various versions which the user will
-//! use to transmit data using USART on ATMEGA2560P.
+//! use to transmit data using USART on ATMEGA328P.
 //! This file combines all the functions in other USART source code to make useful functions.
 
 //! https://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-7810-Automotive-Microcontrollers-ATmega328P_Datasheet.pdf
