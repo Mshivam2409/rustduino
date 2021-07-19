@@ -50,6 +50,18 @@ impl Usart
                     unreachable!()
                 }
             }
+               //  Case when there is 9 bits mode.
+               if ucsrc.get_bits(1..3) == 0b11 && ucsrb.get_bit(2) == true {
+                let ucsra = self.ucsra.read();
+                let mut udr: u32 = self.udr.read() as u32;
+                if ucsra.get_bits(2..5) != 0b000 {
+                    None
+                } else {
+                    let rxb8: u32 = ucsrb.get_bits(1..2) as u32;
+                    udr.set_bits(8..9, rxb8);
+                    Some(udr)
+                }
+            }
         }
     }
 }
