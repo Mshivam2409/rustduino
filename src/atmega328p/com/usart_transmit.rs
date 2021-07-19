@@ -1,9 +1,25 @@
+//     RustDuino : A generic HAL implementation for Arduino Boards in Rust
+//     Copyright (C) 2021  Richa Prakash Sachan and Kshitij Kaithal, Indian Institute of Technology Kanpur
+//
+//     This program is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU Affero General Public License as published
+//     by the Free Software Foundation, either version 3 of the License, or
+//     (at your option) any later version.
+//
+//     This program is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU Affero General Public License for more details.
+//
+//     You should have received a copy of the GNU Affero General Public License
+//     along with this program.  If not, see <https://www.gnu.org/licenses/>
+
 //! This file contains functions to enable transmission through the USART and do the transmission.
 //! Flushing data in case of error and writing string are some complex implementations provided.
 //! See the section 19 of ATMEGA328P datasheet.
 //! https://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-7810-Automotive-Microcontrollers-ATmega328P_Datasheet.pdf
 
-use crate::atmega320p::hal::usart_initialize::{Usart, UsartDataSize};
+use crate::atmega328p::com::usart_initialize::{Usart, UsartDataSize};
 use crate::delay::delay_ms;
 /// Crates which would be used in the implementation.
 /// We will be using standard volatile and bit_field crates now for a better read and write.
@@ -116,11 +132,27 @@ impl Usart {
         }
     }
 
+      /// This function sends a character byte of 5,6,7 or 8 bits
+      pub fn transmit_data(&self, data: u8) {
+        unsafe {
+            let ucsra = self.ucsra.read();
+            let udre = ucsra.get_bit(5);
 
-    
-    /// This function sends a character byte of 5,6,7 or 8 bits
-    pub fn transmit_data(&self, data: u8) {
-       //complete the fn
+            let mut i: i32 = 100;
+            while udre == false {
+                let ucsra = self.ucsra.read();
+                let udre = ucsra.get_bit(5);
+
+                if i != 0 {
+                    delay_ms(1000);
+                    i = i - 1;
+                } else {
+                    unreachable!();
+                }
+            }
+
+            self.udr.write(data);
+        }
     }
 
      /// This function send data type of string byte by byte.
@@ -133,32 +165,34 @@ impl Usart {
         self.transmit_disable();
     }
 
-    /// This function send data type of int(u32) byte by byte.
-    pub fn write_integer(&mut self, data: u32) {
-        let s2 = "0123456789";
-        use core::mem::MaybeUninit;
-        let mut dat: [MaybeUninit<u8>; 10] = unsafe { MaybeUninit::uninit().assume_init() };
-
-        let mut vec: FixedSliceVec<u8> = FixedSliceVec::from(&mut dat[..]);
-        let mut a = data;
-        while a != 0 {
-            let rem = a % 10;
-            a = a / 10;
-            let s3 = &s2[rem..(rem + 1)];
-            vec.push(s3.as_bytes());
-        }
-        for i in 0..(vec.len()) {
-            self.transmit_data(vec[(vec.len) - 1 - i]);
+   /// This function send data type of int(u32) byte by byte.
+   pub fn write_integer(&mut self, data: u32) {
+    let mut vec: FixedSliceVec<u8> = FixedSliceVec::new(&mut []);
+    let mut a = data;
+    while a != 0 {
+        let rem = a % 10;
+        a = a / 10;
+        match rem {
+            0 => vec.push('0' as u8),
+            1 => vec.push('1' as u8),
+            2 => vec.push('2' as u8),
+            3 => vec.push('3' as u8),
+            4 => vec.push('4' as u8),
+            5 => vec.push('5' as u8),
+            6 => vec.push('6' as u8),
+            7 => vec.push('7' as u8),
+            8 => vec.push('8' as u8),
+            9 => vec.push('9' as u8),
+            _ => (),
         }
     }
-    /*
-    /// This function send data type of float(f32) byte by byte.
-    pub fn write_float(&mut self,data : Cf32) {
+    for i in 0..(vec.len()) {
+        self.transmit_data(vec[(vec.len) - 1 - i]);
     }
-    */
 }
-
-
-
-
+/*
+/// This function send data type of float(f32) byte by byte.
+pub fn write_float(&mut self,data : Cf32) {
+}
+*/
 }
