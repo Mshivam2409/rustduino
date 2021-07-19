@@ -40,6 +40,29 @@ const TWWC: u8 = 4;
 const TWEN: u8 = 5;
 const TWIE: u8 = 7;
 
+static TWI_FREQUENCY: u32 = 100000;
+
+pub fn prescaler() -> (u8, bool, bool) {
+    if (crate::config::CPU_FREQUENCY_HZ / TWI_FREQUENCY - 16) / (2 * 1) >= 10
+        && (crate::config::CPU_FREQUENCY_HZ / TWI_FREQUENCY - 16) / (2 * 1) <= 0xFF
+    {
+        return (1, false, false);
+    } else if (crate::config::CPU_FREQUENCY_HZ / TWI_FREQUENCY - 16) / (2 * 4) >= 10
+        && (crate::config::CPU_FREQUENCY_HZ / TWI_FREQUENCY - 16) / (2 * 4) <= 0xFF
+    {
+        return (4, true, false);
+    } else if (crate::config::CPU_FREQUENCY_HZ / TWI_FREQUENCY - 16) / (2 * 16) >= 10
+        && (crate::config::CPU_FREQUENCY_HZ / TWI_FREQUENCY - 16) / (2 * 16) <= 0xFF
+    {
+        return (16, false, true);
+    } else if (crate::config::CPU_FREQUENCY_HZ / TWI_FREQUENCY - 16) / (2 * 64) >= 10
+        && (crate::config::CPU_FREQUENCY_HZ / TWI_FREQUENCY - 16) / (2 * 64) <= 0xFF
+    {
+        return (64, true, true);
+    } else {
+        panic!("TWI_FREQUENCY too low!");
+    }
+}
 /// ## TWCR register's bits definitions
 const TWPS1: u8 = 6;
 const TWPS0: u8 = 7;
@@ -133,12 +156,19 @@ impl Twi {
     }
 
     pub fn init(&mut self) {
-        self.twbr.update(|x| {
-            x.set_bit(TWEN, true);
-        });
+        unsafe {
+            self.twsr.update(|sr| {
+                sr.set_bit(TWPS0, prescaler().1);
+                sr.set_bit(TWPS1, prescaler().2);
+            });
+            self.twcr.update(|cr| {
+                cr.set_bit(TWEN, true);
+            })
+        }
     }
 
     pub fn start(&mut self) -> bool {
+        write_sda();
         self.twcr.update(|x| {
             // TWCR: Enable TWI module
             x.set_bit(TWSTA, true);
@@ -254,12 +284,7 @@ impl Twi {
         return x + 1;
     }
 
-    pub fn read_from_slave(
-        &mut self,
-        address: u8,
-        length: usize,
-        data: &mut FixedSliceVec<u8>,
-    ) -> bool {
+    pub fn read_from_slave(&mut self, address: u8, length: usize,data: &mut FixedSliceVec<u8>,) -> bool {
         delay_ms(1);
         read_sda();
 
