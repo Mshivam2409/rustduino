@@ -171,9 +171,19 @@ impl Usart {
         while a != 0 {
             let rem = a % 10;
             a = a / 10;
-            let s3 = core::char::from_digit(rem, 10);
-
-            vec.push(s3 as u8);
+            match rem {
+                0 => vec.push('0' as u8),
+                1 => vec.push('1' as u8),
+                2 => vec.push('2' as u8),
+                3 => vec.push('3' as u8),
+                4 => vec.push('4' as u8),
+                5 => vec.push('5' as u8),
+                6 => vec.push('6' as u8),
+                7 => vec.push('7' as u8),
+                8 => vec.push('8' as u8),
+                9 => vec.push('9' as u8),
+                _ => (),
+            }
         }
         for i in 0..(vec.len()) {
             self.transmit_data(vec[(vec.len) - 1 - i]);
