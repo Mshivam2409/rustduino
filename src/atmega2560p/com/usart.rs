@@ -108,11 +108,11 @@ pub fn println_integer(data: u32) {
 /// Then the function takes the usart and initializes it.
 /// Then the string given by the user is transmitted through the USART.
 /// This will be used to transmit float data.
-pub fn println_float(data: f64) {
+pub fn println_float(data: f64, precision: u32) {
     let mut u: Usart = unsafe { *Usart::new(num) };
     u.transmit_enable();
     u.initialize(mode, baud, stop, size, parity);
-    u.write_float(data);
+    u.write_float(data, precision);
     u.transmit_disable();
 }
 

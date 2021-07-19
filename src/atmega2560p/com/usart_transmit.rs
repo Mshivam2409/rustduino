@@ -186,14 +186,15 @@ impl Usart {
     }
 
     /// This function send data type of float(f32) byte by byte.
-    pub fn write_float(&mut self, data: f64) {
+    pub fn write_float(&mut self, data: f64, precision: u32) {
         let mut vec: FixedSliceVec<u8> = FixedSliceVec::new(&mut []);
         let mut temp: FixedSliceVec<u8> = FixedSliceVec::new(&mut []);
-        let a:f64 = data;
-        let mut f:f64 = a % 1.0;
-        let mut i:i64 = (a- (a % 1.0)) as i64 ;
-        while f != 0.00 {
-            let k : i64 = ((f*10.0) - ((f*10.0) % 1.0 )) as i64;            // gives you decimal digit of data one by one from left to right 
+        let a: f64 = data;
+        let mut f: f64 = a % 1.0;
+        let mut i: i64 = (a - (a % 1.0)) as i64;
+        let mut x: u32 = precision;
+        while f != 0.00 && x != 0 {
+            let k: i64 = ((f * 10.0) - ((f * 10.0) % 1.0)) as i64; // gives you decimal digit of data one by one from left to right
             match k {
                 0 => temp.push('0' as u8),
                 1 => temp.push('1' as u8),
@@ -207,7 +208,8 @@ impl Usart {
                 9 => temp.push('9' as u8),
                 _ => unreachable!(),
             }
-            f = (f*10.0)%1.0;                               // then f loses its left most digit (in decimal part) 
+            f = (f * 10.0) % 1.0; // then f loses its left most digit (in decimal part)
+            x = x - 1;
         }
 
         for i in 0..(temp.len()) {
@@ -215,7 +217,7 @@ impl Usart {
         }
 
         vec.push('.' as u8);
-        
+
         while i != 0 {
             let rem = i % 10;
             i = i / 10;
@@ -233,9 +235,9 @@ impl Usart {
                 _ => unreachable!(),
             }
         }
-        
+
         for i in 0..(vec.len()) {
             self.transmit_data(vec[vec.len() - 1 - i]);
-        }        
+        }
     }
 }
