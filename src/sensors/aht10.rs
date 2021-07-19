@@ -76,7 +76,7 @@ impl <'a> AHT10 <'a> {
         self.vec.push(0x00);
         
         if !self.i2c.write_to_slave(self.address, &self.vec) {
-            unreachable!("error!");
+            unreachable!();
         }
         self.wait_for_idle();
         if !(self.status()==0 && AHT10_INIT_CAL_ENABLE==0) {
@@ -91,7 +91,7 @@ impl <'a> AHT10 <'a> {
         self.vec.push(AHT10_SOFT_RESET_CMD);
         
         if !self.i2c.write_to_slave(self.address, &self.vec) {  
-            unreachable!("Error!");
+            unreachable!();
         } 
         delay_ms(20);
     }
@@ -100,7 +100,7 @@ impl <'a> AHT10 <'a> {
 
     pub fn read_to_buffer(&mut self) {
         if !self.i2c.read_from_slave(self.address, self.vec.len(),  &mut self.vec) {
-            unreachable!("Error!");
+            unreachable!();
         }
     }
 
@@ -112,7 +112,7 @@ impl <'a> AHT10 <'a> {
         self.vec.push(0x00);
         
         if !self.i2c.write_to_slave(self.address, &self.vec) {
-            unreachable!("Error!");
+            unreachable!();
         }
     }
 
