@@ -2,7 +2,7 @@ use crate::delay::delay_ms;
 use bit_field::BitField;
 use fixed_slice_vec::FixedSliceVec;
 //use volatile::Volatile;
-use crate::atmega2560p::com::i2c::*;
+use crate::atmega2560p::com::i2c;
 
 const MPU6050_ADDRESS: u8 = 0x68; // 0x69 when AD0 pin to Vcc
 const MPU6050_REG_ACCEL_XOFFS_H: u8 = 0x06;
