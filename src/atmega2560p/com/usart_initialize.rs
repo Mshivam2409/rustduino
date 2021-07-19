@@ -221,7 +221,7 @@ impl Usart {
 
     /// Function to set the clock polarity mode which is of use in the
     /// recieve and transmission implementation of USART.
-    pub fn set_polarity(&self, mode: UsartPolarity) {
+    pub fn set_polarity(&mut self, mode: UsartPolarity) {
         if self.get_mode() == false {
             self.ucsrc.update(|src| {
                 src.set_bit(0, false);
@@ -278,7 +278,7 @@ impl Usart {
             }
             UsartModes::Mastersync => {
                 // Puts the USART into master synchronous mode
-                let port: port::Port = self.get_port();
+                let mut port: port::Port = self.get_port();
                 let xck: u8 = self.get_xck();
                 unsafe {
                     write_volatile(&mut port.ddr, port.ddr | 1 << xck);
@@ -289,7 +289,7 @@ impl Usart {
             }
             UsartModes::Slavesync => {
                 // Puts the USART into slave synchronous mode
-                let port: port::Port = self.get_port();
+                let mut port: port::Port = self.get_port();
                 let xck: u8 = self.get_xck();
                 unsafe {
                     write_volatile(&mut port.ddr, port.ddr & !(1 << xck));
@@ -345,7 +345,7 @@ impl Usart {
 
     /// Sets the interrupt bits in UCSRB so that ongoing
     /// data transfers can be tracked.
-    fn check(&self) {
+    fn check(&mut self) {
         self.ucsrb.update(|srb| {
             srb.set_bit(6, true);
             srb.set_bit(7, true);
@@ -369,8 +369,8 @@ impl Usart {
     /// clock generator.
     /// Set the baud rate frequency for USART.
     /// Baud rate settings is used to set the clock for USART.
-    fn set_clock(&self, baud: i64, mode: UsartModes) {
-        let mut ubrr: u32 = 0;
+    fn set_clock(&mut self, baud: i64, mode: UsartModes) {
+        let ubrr: u32;
         match mode {
             UsartModes::Normasync => {
                 ubrr = (((f_osc * multiply) / (16.00 * baud as f64)) - 1.00) as u32;
@@ -396,7 +396,7 @@ impl Usart {
     }
 
     /// Function to set the limit of data to be handled by USART.
-    fn set_size(&self, size: UsartDataSize) {
+    fn set_size(&mut self, size: UsartDataSize) {
         match size {
             UsartDataSize::Five
             | UsartDataSize::Six
@@ -439,7 +439,7 @@ impl Usart {
     }
 
     /// Function to set the parity bit in the frame of USART.
-    fn set_parity(&self, parity: UsartParity) {
+    fn set_parity(&mut self, parity: UsartParity) {
         match parity {
             UsartParity::No => {
                 self.ucsrc.update(|src| {
@@ -463,7 +463,7 @@ impl Usart {
     }
 
     /// Function to set the number of stop bits in the USART.
-    fn set_stop(&self, stop: UsartStop) {
+    fn set_stop(&mut self, stop: UsartStop) {
         match stop {
             UsartStop::One => {
                 self.ucsrc.update(|src| {
@@ -483,7 +483,7 @@ impl Usart {
     /// synchronization bits (start and stop bits), and optionally
     /// a parity bit for error checking.
     /// The USART accepts all 30 combinations of the following as valid frame formats.
-    fn set_frame(&self, stop: UsartStop, size: UsartDataSize, parity: UsartParity) {
+    fn set_frame(&mut self, stop: UsartStop, size: UsartDataSize, parity: UsartParity) {
         self.set_size(size);
         self.set_parity(parity);
         self.set_stop(stop);
