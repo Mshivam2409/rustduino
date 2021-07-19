@@ -105,11 +105,11 @@ impl Usart {
 /// Then the function takes the usart and initializes it.
 /// Then the string given by the user is transmitted through the USART.
 pub fn println(data: &str) {
-    let u: Usart = Usart::new(num);
+  unsafe{  let u: Usart = Usart::new(num);
     u.transmit_enable();
     u.initialize(mode, baud, stop, size, parity);
     u.write_string(data);
-    u.transmit_disable();
+    u.transmit_disable(); }
 }
 
 /// println() function for using USART according to default used values and user defined value of baud rate.
@@ -117,11 +117,11 @@ pub fn println(data: &str) {
 /// Then the function takes the usart and initializes it with user defined.
 /// Then the string given by the user is transmitted through the USART.
 pub fn println_set_baud(data: &str, baud1: i64) {
-    let u: Usart = Usart::new(num);
+   unsafe{ let u: Usart = Usart::new(num);
     u.transmit_enable();
     u.initialize(mode, baud1, stop, size, parity);
     u.write_string(data);
-    u.transmit_disable();
+    u.transmit_disable();}
 }
 
 /// Main println() function for using USART according to default used values and user defined value of frame.
@@ -129,11 +129,11 @@ pub fn println_set_baud(data: &str, baud1: i64) {
 /// Then the function takes the usart and initializes it.
 /// Then the string given by the user is transmitted through the USART.
 pub fn println_set_frame(data: &str, size1: UsartDataSize, parity1: UsartParity, stop1: UsartStop) {
-    let u: Usart = Usart::new(num);
+  unsafe{  let u: Usart = Usart::new(num);
     u.transmit_enable();
     u.initialize(mode, baud, stop1, size1, parity1);
     u.write_string(data);
-    u.transmit_disable();
+    u.transmit_disable(); }
 }
 
 /// Main println() function for using USART according to user defined mode parameters.
@@ -149,9 +149,9 @@ pub fn println_detail(
     parity1: UsartParity,
     stop1: UsartStop,
 ) {
-    let u: Usart = Usart::new(num1);
+   unsafe{ let u: Usart = Usart::new(num1);
     u.transmit_enable();
     u.initialize(mode1, baud1, stop1, size1, parity1);
     u.write_string(data);
-    u.transmit_disable();
+    u.transmit_disable(); }
 }
