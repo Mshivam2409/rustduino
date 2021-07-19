@@ -15,7 +15,7 @@
 //     along with this program.  If not, see <https://www.gnu.org/licenses/>
 
 /// Other source code files to be used.
-use crate::atmega328p::hal::usart_initialize::Usart;
+use crate::atmega328p::com::usart_initialize::Usart;
 
 /// Crates which would be used in the implementation.
 /// We will be using standard volatile and bit_field crates now for a better read and write.
