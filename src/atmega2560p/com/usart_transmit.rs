@@ -239,6 +239,6 @@ impl Usart {
             self.transmit_data(vec[(vec.len) - 1 - i]);
         }
     }
-    
+   */ 
 }
-*/
+
