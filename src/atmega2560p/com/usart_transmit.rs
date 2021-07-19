@@ -25,7 +25,7 @@ use crate::delay::delay_ms;
 use bit_field::BitField;
 /// Crates which would be used in the implementation.
 /// We will be using standard volatile and bit_field crates now for a better read and write.
-use core::{f64, u8};
+use core::{f64, u8, usize};
 use fixed_slice_vec::FixedSliceVec;
 
 //This is a implementation for Usart
@@ -188,32 +188,29 @@ impl Usart {
     /// This function send data type of float(f32) byte by byte.
     pub fn write_float(&mut self, data: f64, precision: u32) {
         let mut vec: FixedSliceVec<u8> = FixedSliceVec::new(&mut []);
-        let mut temp: FixedSliceVec<u8> = FixedSliceVec::new(&mut []);
         let a: f64 = data;
         let mut f: f64 = a % 1.0;
         let mut i: i64 = (a - (a % 1.0)) as i64;
         let mut x: u32 = precision;
+        let mut n: usize = 0;
         while f != 0.00 && x != 0 {
             let k: i64 = ((f * 10.0) - ((f * 10.0) % 1.0)) as i64; // gives you decimal digit of data one by one from left to right
             match k {
-                0 => temp.push('0' as u8),
-                1 => temp.push('1' as u8),
-                2 => temp.push('2' as u8),
-                3 => temp.push('3' as u8),
-                4 => temp.push('4' as u8),
-                5 => temp.push('5' as u8),
-                6 => temp.push('6' as u8),
-                7 => temp.push('7' as u8),
-                8 => temp.push('8' as u8),
-                9 => temp.push('9' as u8),
+                0 => vec.push('0' as u8),
+                1 => vec.push('1' as u8),
+                2 => vec.push('2' as u8),
+                3 => vec.push('3' as u8),
+                4 => vec.push('4' as u8),
+                5 => vec.push('5' as u8),
+                6 => vec.push('6' as u8),
+                7 => vec.push('7' as u8),
+                8 => vec.push('8' as u8),
+                9 => vec.push('9' as u8),
                 _ => unreachable!(),
             }
             f = (f * 10.0) % 1.0; // then f loses its left most digit (in decimal part)
             x = x - 1;
-        }
-
-        for i in 0..(temp.len()) {
-            vec.push(temp[temp.len() - 1 - i]);
+            n = n + 1;
         }
 
         vec.push('.' as u8);
@@ -232,12 +229,16 @@ impl Usart {
                 7 => vec.push('7' as u8),
                 8 => vec.push('8' as u8),
                 9 => vec.push('9' as u8),
-                _ => unreachable!(),
+                _ => (),
             }
         }
 
-        for i in 0..(vec.len()) {
-            self.transmit_data(vec[vec.len() - 1 - i]);
+        for ia in 0..(vec.len() - n - 1) {
+            self.transmit_data(vec[vec.len() - 1 - ia]);
+        }
+
+        for ia in 0..n - 1 {
+            vec.push(vec[ia]);
         }
     }
 }

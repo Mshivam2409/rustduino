@@ -109,17 +109,25 @@ pub enum UsartPolarity {
 /// through ATMEGA2560P device.
 /// Each USARTn ( n=0,1,2,3 ) is controlled by a total of 6 registers stored through this structure.
 #[repr(C, packed)]
+#[derive(Clone, Copy)]
 pub struct Usart {
     pub ucsra: Volatile<u8>,
     pub ucsrb: Volatile<u8>,
     pub ucsrc: Volatile<u8>,
-    _pad: Volatile<u8>, // Padding to look for empty memory space.
+    _pad: u8,                          // Padding to look for empty memory space.
     pub ubrrl: Volatile<u8>,
     pub ubrrh: Volatile<u8>,
     pub udr: Volatile<u8>,
 }
 
-/// Various implementation functions for the USART protocol.
+/// This is the structure which assumes a USART as an object and runs the code.
+/// This is a structure which will actually take up the space and not only pointers.
+#[repr(C, packed)]
+pub struct UsartObject {
+    usart: *mut Usart,
+}
+
+/// USART pointers declaration.
 impl Usart {
     /// This creates a new memory mapped structure of the type USART for it's control.
     pub unsafe fn new(num: UsartNum) -> &'static mut Usart {
@@ -130,6 +138,19 @@ impl Usart {
             UsartNum::Usart3 => &mut *(0x130 as *mut Usart),
         }
     }
+
+    /// Function to create object of USART.
+    pub fn object_create(&mut self) -> UsartObject {
+        UsartObject { usart: self }
+    }
+}
+
+/// Various implementation functions for the USART protocol.
+impl Usart {
+    // /// Function to create a new object for USART.
+    // pub unsafe fn new(num: UsartNum) -> UsartObject {
+    //     Usart::new(num).object_create()
+    // }
 
     /// Function to disable global interrupts for smooth non-interrupted functioning of USART.
     fn disable(&mut self) {
@@ -148,8 +169,8 @@ impl Usart {
     }
 
     /// This function will return the Number of the USART according to the address.
-    fn get_num(&self) -> UsartNum {
-        let address = (self as *const Usart) as u8; // Gets address of usart structure.
+    fn get_num(&mut self) -> UsartNum {
+        let address = (self as *const Usart) as usize; // Gets address of usart structure.
         match address {
             // Return the number of USART used based on the address read.
             0xC0 => UsartNum::Usart0,
@@ -162,15 +183,13 @@ impl Usart {
 
     /// Function to get the port containing bits to
     /// manipulate Recieve,Transmit and XCK bit of the particular USART.
-    fn get_port(&self) -> port::Port {
+    fn get_port(&mut self) -> &mut port::Port {
         let num: UsartNum = self.get_num();
-        unsafe {
-            match num {
-                UsartNum::Usart0 => *port::Port::new(port::PortName::E),
-                UsartNum::Usart1 => *port::Port::new(port::PortName::D),
-                UsartNum::Usart2 => *port::Port::new(port::PortName::H),
-                UsartNum::Usart3 => *port::Port::new(port::PortName::J),
-            }
+        match num {
+            UsartNum::Usart0 => port::Port::new(port::PortName::E),
+            UsartNum::Usart1 => port::Port::new(port::PortName::D),
+            UsartNum::Usart2 => port::Port::new(port::PortName::H),
+            UsartNum::Usart3 => port::Port::new(port::PortName::J),
         }
     }
 
@@ -278,7 +297,7 @@ impl Usart {
             }
             UsartModes::Mastersync => {
                 // Puts the USART into master synchronous mode
-                let mut port: port::Port = self.get_port();
+                let port: &mut port::Port = self.get_port();
                 let xck: u8 = self.get_xck();
                 unsafe {
                     write_volatile(&mut port.ddr, port.ddr | 1 << xck);
@@ -289,7 +308,7 @@ impl Usart {
             }
             UsartModes::Slavesync => {
                 // Puts the USART into slave synchronous mode
-                let mut port: port::Port = self.get_port();
+                let port: &mut port::Port = self.get_port();
                 let xck: u8 = self.get_xck();
                 unsafe {
                     write_volatile(&mut port.ddr, port.ddr & !(1 << xck));
@@ -303,9 +322,9 @@ impl Usart {
 
     /// Function to set the power reduction register so that USART functioning is allowed.
     fn set_power(&self, num: UsartNum) {
-        let mut pow: power::Power;
+        let pow: &mut power::Power;
         unsafe {
-            pow = *power::Power::new();
+            pow = power::Power::new();
         }
         match num {
             UsartNum::Usart0 => {
