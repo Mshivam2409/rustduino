@@ -71,13 +71,13 @@ impl Usart {
     /// Generic function to transmit data through the USART.
     pub fn write(&mut self, data: DataType) {
         match data {
-            DataType::String => {
+            DataType::String(_) => {
                 self.write_string(data);
             }
-            DataType::Integer => {
+            DataType::Integer(_) => {
                 self.write_integer(data);
             }
-            DataType::Float => {
+            DataType::Float(_) => {
                 self.write_float(data);
             }
         }
@@ -96,7 +96,7 @@ impl Usart {
 /// Then the string given by the user is transmitted through the USART.
 pub fn println(data: &'static mut str) {
     let u: Usart = unsafe { *Usart::new(num) };
-
+    // let d : DataType::String = str::from(*data);
     u.transmit_enable();
     u.initialize(mode, baud, stop, size, parity);
     u.write_string(data);
