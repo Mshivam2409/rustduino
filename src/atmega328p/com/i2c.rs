@@ -1,9 +1,23 @@
-use bit_field::BitField;
-// use core::{array, u32, u8};
+// RustDuino : A generic HAL implementation for Arduino Boards in Rust
+// Copyright (C) 2021  Akshit Verma, Indian Institute of Technology Kanpur
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as published
+// by the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+
+// You should have received a copy of the GNU Affero General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>
+
 use crate::delay::delay_ms;
+use bit_field::BitField;
 use fixed_slice_vec::FixedSliceVec;
 use volatile::Volatile;
-// use core::mem::MaybeUninit;
 
 pub struct Twi {
     twbr: Volatile<u8>,

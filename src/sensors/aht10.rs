@@ -1,3 +1,19 @@
+// RustDuino : A generic HAL implementation for Arduino Boards in Rust
+// Copyright (C) 2021  Sanmati Pande, Indian Institute of Technology Kanpur
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as published
+// by the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+
+// You should have received a copy of the GNU Affero General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>
+
 use crate::atmega328p::com::i2c;
 use crate::delay::delay_ms;
 use fixed_slice_vec::FixedSliceVec;
@@ -57,7 +73,7 @@ impl<'a> AHT10<'a> {
         self.vec.push(0x00);
 
         if !self.i2c.write_to_slave(self.address, &self.vec) {
-            unreachable!("error!");
+            unreachable!();
         }
         self.wait_for_idle();
         if !(self.status() == 0 && AHT10_INIT_CAL_ENABLE == 0) {
@@ -71,7 +87,11 @@ impl<'a> AHT10<'a> {
         self.vec.push(AHT10_SOFT_RESET_CMD);
 
         if !self.i2c.write_to_slave(self.address, &self.vec) {
+<<<<<<< HEAD
             unreachable!("Error!");
+=======
+            unreachable!();
+>>>>>>> 0ab5b4ee0de4ec5b903be34d9842e442581ec584
         }
         delay_ms(20);
     }
@@ -81,7 +101,11 @@ impl<'a> AHT10<'a> {
             .i2c
             .read_from_slave(self.address, self.vec.len(), &mut self.vec)
         {
+<<<<<<< HEAD
             unreachable!("Error!");
+=======
+            unreachable!();
+>>>>>>> 0ab5b4ee0de4ec5b903be34d9842e442581ec584
         }
     }
 
@@ -92,7 +116,7 @@ impl<'a> AHT10<'a> {
         self.vec.push(0x00);
 
         if !self.i2c.write_to_slave(self.address, &self.vec) {
-            unreachable!("Error!");
+            unreachable!();
         }
     }
 
@@ -114,14 +138,18 @@ impl<'a> AHT10<'a> {
 
     pub fn relative_humidity(&mut self) -> f64 {
         self.perform_measurement();
-        let mut humid: f64 = ((self.vec[1] << 12) | (self.vec[2] << 4) | (self.vec[3] >> 4)) as f64;
+        let mut humid: f64 = (((self.vec[1] as u32) << 12)
+            | ((self.vec[2] as u32) << 4)
+            | ((self.vec[3] as u32) >> 4)) as f64;
         humid = (humid * 100.0) / 0x100000 as f64;
         return humid;
     }
 
     pub fn temperature(&mut self) -> f64 {
         self.perform_measurement();
-        let mut temp: f64 = (((self.vec[3] & 0xF) << 16) | self.vec[4] << 8 | self.vec[5]) as f64;
+        let mut temp: f64 = ((((self.vec[3] as u32) & 0xF) << 16)
+            | (self.vec[4] as u32) << 8
+            | (self.vec[5]) as u32) as f64;
         temp = ((temp as f64 * 200.0) / 0x100000 as f64) - 50.0;
         return temp;
     }
