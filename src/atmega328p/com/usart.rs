@@ -14,7 +14,7 @@
 //     You should have received a copy of the GNU Affero General Public License
 //     along with this program.  If not, see <https://www.gnu.org/licenses/>
 
-//! Functions provided to the user for ATMEGA2560P USART implementation.
+//! Functions provided to the user for ATMEGA328P USART implementation.
 //! This file contains the println() functions in various versions which the user will
 //! use to transmit data using USART on ATMEGA2560P.
 //! This file combines all the functions in other USART source code to make useful functions.
@@ -23,7 +23,7 @@
 
 /// Crates which would be used in the implementation.
 /// 
-// use crate::atmega328p::com::serial::Serial;( include serial.rs for this crate to function )
+use crate::atmega328p::com::serial::Serial;
 use crate::atmega328p::com::usart_initialize::Usart;
 use crate::atmega328p::com::usart_initialize::{
     UsartDataSize, UsartModes, UsartNum, UsartParity, UsartStop,
