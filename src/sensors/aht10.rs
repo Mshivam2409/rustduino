@@ -1,7 +1,6 @@
 use crate::atmega328p::com::i2c;
 use crate::delay::delay_ms;
 use fixed_slice_vec::FixedSliceVec;
-// use volatile::Volatile;
 
 pub enum Tempsensor {
     Aht10sensor,
@@ -83,7 +82,7 @@ impl <'a> AHT10 <'a> {
     
 
     pub fn read_to_buffer(&mut self) {
-        if !self.i2c.read_from_slave(self.address, self.data) {
+        if !self.i2c.read_from_slave(self.address, self.vec.len(),  &mut self.vec) {
             unreachable!("Error!");
         }
     }
@@ -95,7 +94,7 @@ impl <'a> AHT10 <'a> {
         self.vec.push(0x33);
         self.vec.push(0x00);
         
-        if !self.i2c.write_to_slave(self.address, self.vec) {
+        if !self.i2c.write_to_slave(self.address, &self.vec) {
             unreachable!("Error!");
         }
     }
