@@ -1,8 +1,8 @@
-use crate::delay::delay_ms;
+use crate::{com::{self, i2c}, delay::delay_ms};
 use bit_field::BitField;
 use fixed_slice_vec::FixedSliceVec;
 //use volatile::Volatile;
-use crate::atmega2560p::com::i2c::*;
+//use crate::atmega2560p::com::i2c::*;
 
 const MPU6050_ADDRESS: u8 = 0x68; // 0x69 when AD0 pin to Vcc
 const MPU6050_REG_ACCEL_XOFFS_H: u8 = 0x06;
@@ -162,7 +162,7 @@ pub enum MPUdlpfT {
 
 pub struct MPU6050 {
     //address: Volatile<u8>,
-    i2c: i2c::Twi,
+    i2c: &'static mut i2c::Twi,
     //atmega2560p::com::i2C::Twi::new(),
     //vec: FixedSliceVec<'a ,u8>,
 }
@@ -170,7 +170,7 @@ pub struct MPU6050 {
 impl MPU6050 {
     pub fn new() -> &'static mut MPU6050 {
         let mut a = MPU6050 {
-            i2c: atmega2560p::com::i2C::Twi::new(),
+            i2c: com::i2c::Twi::new(),
         };
         return &mut a;
     }
@@ -276,10 +276,10 @@ impl MPU6050 {
         value &= 0b00011000;
         value >>= 3;
         return match value {
-            MPU6050Range2G => MPURangeT::MPU6050Range2G,
-            MPU6050Range4G => MPURangeT::MPU6050Range4G,
-            MPU6050Range8G => MPURangeT::MPU6050Range8G,
-            MPU6050Range16G => MPURangeT::MPU6050Range16G,
+            0 => MPURangeT::MPU6050Range2G,
+            1 => MPURangeT::MPU6050Range4G,
+            2 => MPURangeT::MPU6050Range8G,
+            3 => MPURangeT::MPU6050Range16G,
         };
     }
 
@@ -341,10 +341,10 @@ impl MPU6050 {
         value = self.readregister(MPU6050_REG_MOT_DETECT_CTRL);
         value &= 0b00110000;
         match value {
-            MPU6050Delay3MS => MPUOnDelayT::MPU6050Delay3MS,
-            MPU6050Delay2MS => MPUOnDelayT::MPU6050Delay2MS,
-            MPU6050Delay1MS => MPUOnDelayT::MPU6050Delay1MS,
-            MPU6050NoDelay => MPUOnDelayT::MPU6050NoDelay,
+            3 => MPUOnDelayT::MPU6050Delay3MS,
+            2 => MPUOnDelayT::MPU6050Delay2MS,
+            1 => MPUOnDelayT::MPU6050Delay1MS,
+            0 => MPUOnDelayT::MPU6050NoDelay,
         }
     }
 
