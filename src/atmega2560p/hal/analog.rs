@@ -65,7 +65,7 @@ impl Digital {
 impl Analog {
     /// New pointer object created for Analog Structure.
     pub unsafe fn new() -> &'static mut Analog {
-        &mut *(0x78 as *mut Analog)
+        &mut *(0x78 as *mut Analog)       // check correct address
     }
 
     /// Function to create a reference for Analog signals.
