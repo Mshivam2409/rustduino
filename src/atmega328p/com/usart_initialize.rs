@@ -32,10 +32,10 @@ use volatile::Volatile;
 /// Position of clock mode adjuster (xck) bit.
 const usart0_xck: u8 = 4;
 /// Position of Transmission bit for various USART.
-const usart0_td: u8 = 1;
-/// Position of Reciever bit for various USART.
-const usart0_rd: u8 = 0;
-/// System Clock Crystal Oscillator Frequency in mHz.
+// const usart0_td: u8 = 1;
+// /// Position of Reciever bit for various USART.
+// const usart0_rd: u8 = 0;
+// /// System Clock Crystal Oscillator Frequency in mHz.
 const f_osc: f64 = 1.0000;
 const multiply: f64 = 1000000.00;
 
@@ -158,29 +158,29 @@ impl Usart
         }
     
 
-    /// Function to return the index of xck bit in the port.
-    fn get_xck(&self) -> u8 {
-        let num : UsartNum = self.get_num();
-        match num {
-            UsartNum::Usart0 => usart0_xck,
-        }
-    }
+    // /// Function to return the index of xck bit in the port.
+    // fn get_xck(&self) -> u8 {
+    //     let num : UsartNum = self.get_num();
+    //     match num {
+    //         UsartNum::Usart0 => usart0_xck,
+    //     }
+    // }
     
-    /// Function to return the index of transmit bit in the port.
-    fn get_td(&self) -> u8 {
-        let num : UsartNum = self.get_num();
-        match num {
-            UsartNum::Usart0 => usart0_td,
-        }
-    }
+    // /// Function to return the index of transmit bit in the port.
+    // fn get_td(&self) -> u8 {
+    //     let num : UsartNum = self.get_num();
+    //     match num {
+    //         UsartNum::Usart0 => usart0_td,
+    //     }
+    // }
 
-    /// Function to return the index of recieve bit in the port.
-    fn get_rd(&self) -> u8 {
-        let num : UsartNum = self.get_num();
-        match num {
-            UsartNum::Usart0 => usart0_rd,
-        }
-    }
+    // /// Function to return the index of recieve bit in the port.
+    // fn get_rd(&self) -> u8 {
+    //     let num : UsartNum = self.get_num();
+    //     match num {
+    //         UsartNum::Usart0 => usart0_rd,
+    //     }
+    // }
 
     /// Function to check the mode of the USART.
     /// Returns 0 for asynchronous and 1 for synchronous.

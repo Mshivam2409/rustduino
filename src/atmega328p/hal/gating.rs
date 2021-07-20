@@ -37,7 +37,7 @@ pub enum Peripherals {
 ///
 ///Power Reduction Register control bits for power management.
 pub struct Power {
-    prr: u8,
+   prr: u8,
 }
 
 impl Power {
