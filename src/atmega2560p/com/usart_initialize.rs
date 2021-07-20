@@ -99,22 +99,14 @@ pub enum UsartPolarity {
 /// through ATMEGA2560P device.
 /// Each USARTn ( n=0,1,2,3 ) is controlled by a total of 6 registers stored through this structure.
 #[repr(C, packed)]
-// #[derive(Clone, Copy)]
 pub struct Usart {
     pub ucsra: Volatile<u8>,
     pub ucsrb: Volatile<u8>,
     pub ucsrc: Volatile<u8>,
-    _pad: u8, // Padding to look for empty memory space.
+    _pad: Volatile<u8>, // Padding to look for empty memory space.
     pub ubrrl: Volatile<u8>,
     pub ubrrh: Volatile<u8>,
     pub udr: Volatile<u8>,
-}
-
-/// This is the structure which assumes a USART as an object and runs the code.
-/// This is a structure which will actually take up the space and not only pointers.
-#[repr(C, packed)]
-pub struct UsartObject {
-    usart: *mut Usart,
 }
 
 /// USART pointers declaration.
@@ -128,20 +120,10 @@ impl Usart {
             UsartNum::Usart3 => &mut *(0x130 as *mut Usart),
         }
     }
-
-    /// Function to create object of USART.
-    pub fn object_create(&mut self) -> UsartObject {
-        UsartObject { usart: self }
-    }
 }
 
 /// Various implementation functions for the USART protocol.
 impl Usart {
-    // /// Function to create a new object for USART.
-    // pub unsafe fn new(num: UsartNum) -> UsartObject {
-    //     Usart::new(num).object_create()
-    // }
-
     /// Function to disable global interrupts for smooth non-interrupted functioning of USART.
     fn disable(&mut self) {
         unsafe {
