@@ -257,10 +257,11 @@ impl Usart
                     }
                     
             }
-            UsartModes::Slavesync => {                              // Puts the USART into slave synchronous mode
-                    let port : port::Port = self.get_port();
-                    let xck : u8 = self.get_xck();
-                    unsafe {
+            UsartModes::Slavesync => {   
+                     // Puts the USART into slave  synchronous mode
+                let (port, xck) = self.get_port_xck();
+
+                    unsafe{
                         write_volatile(&mut port.ddr, port.ddr & !(1 << xck));
                     }          
             }
@@ -269,9 +270,9 @@ impl Usart
 
     /// Function to set the power reduction register so that USART functioning is allowed. 
     fn set_power(&self,num : UsartNum){
-    let mut pow: power::Sleep;
+        let pow: &mut power::Power;
     unsafe {
-        pow = *power::Sleep::new();
+        pow = power::Power::new();
     }  
         match num {
             UsartNum::Usart0 => { 
