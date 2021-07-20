@@ -14,34 +14,31 @@
 //     You should have received a copy of the GNU Affero General Public License
 //     along with this program.  If not, see <https://www.gnu.org/licenses/>
 
+use crate::atmega328p::hal::gating;
 /// Other source code files to be used
 use crate::atmega328p::hal::interrupt;
 use crate::atmega328p::hal::port;
-use crate::atmega328p::hal::gating;
 
 /// Crates which would be used in the implementation.
 /// We will be using standard volatile and bit_field crates now for a better read and write.
 use crate::delay::delay_ms;
 use bit_field::BitField;
 use core::ptr::write_volatile;
-use core::{f64,u32,u8};
+use core::{f64, u32, u8};
 use volatile::Volatile;
-
 
 /// Some useful constants regarding bit manipulation for USART.
 /// Position of clock mode adjuster (xck) bit.
 const USART0_XCK: u8 = 4;
- /// System Clock Crystal Oscillator Frequency in mHz.
+/// System Clock Crystal Oscillator Frequency in mHz.
 const F_OSC: f64 = 1.0000;
 const MULTIPLY: f64 = 1000000.00;
-
 
 /// Selection of which USART is to be used.
 #[derive(Clone, Copy)]
 pub enum UsartNum {
     Usart0,
 }
-
 
 /// Selection of synchronous or asynchronous modes for USART.
 #[derive(Clone, Copy)]
@@ -51,7 +48,6 @@ pub enum UsartModes {
     Mastersync,
     Slavesync,
 }
-
 
 /// Selection of the parity mode for USART.
 #[derive(Clone, Copy)]
@@ -85,10 +81,9 @@ pub enum UsartPolarity {
     Inputrise,
 }
 
-
 /// This structure contains various registers needed to control usart communication
 /// through ATMEGA320P device.
-/// USART0 is controlled by a total of 6 registers stored through this structure. 
+/// USART0 is controlled by a total of 6 registers stored through this structure.
 #[repr(C, packed)]
 pub struct Usart {
     pub ucsra: Volatile<u8>,
@@ -100,62 +95,52 @@ pub struct Usart {
     pub udr: Volatile<u8>,
 }
 
-
 /// Various implementation functions for the USART protocol.
-impl Usart 
-{
+impl Usart {
     /// This creates a new memory mapped structure of the USART0 for it's control.
-    pub unsafe fn new(num: UsartNum) -> &'static mut Usart
-     {
-        match num 
-        {
-           UsartNum::Usart0 => &mut *(0xC0 as *mut Usart),
+    pub unsafe fn new(num: UsartNum) -> &'static mut Usart {
+        match num {
+            UsartNum::Usart0 => &mut *(0xC0 as *mut Usart),
         }
     }
 }
 
-impl Usart
-{
+impl Usart {
     /// Function to disable global interrupts for smooth non-interrupted functioning of USART.
-    fn disable(&mut self) 
-    {
-        unsafe 
-        {
+    fn disable(&mut self) {
+        unsafe {
             // Disable global interrupts.
             interrupt::Interrupt::disable(&mut interrupt::Interrupt::new());
         }
     }
 
     /// Function to re-enable global interrupts.
-    fn enable(&mut self) 
-    {
-        unsafe
-        {
+    fn enable(&mut self) {
+        unsafe {
             // Enable global interrupts.
             interrupt::Interrupt::enable(&mut interrupt::Interrupt::new());
         }
     }
 
-     /// This function will return the Number of the USART according to the address.
-     fn get_num(&mut self) -> UsartNum {
-        let address = (self as *const Usart) as u8;             // Gets address of usart structure.
+    /// This function will return the Number of the USART according to the address.
+    fn get_num(&mut self) -> UsartNum {
+        let address = (self as *const Usart) as u8; // Gets address of usart structure.
         match address {
             // Return the number of USART used based on the address read.
-            0xC0  => UsartNum::Usart0,
-            _     => unreachable!(),
+            0xC0 => UsartNum::Usart0,
+            _ => unreachable!(),
         }
     }
 
     /// Function to get the port containing bits to
     /// manipulate Recieve,Transmit and XCK bit of the particular USART.
-    fn get_port_xck(&mut self) -> (&mut port::Port,u8) {
-        let num : UsartNum = self.get_num();
-        
-            match num {
-                UsartNum::Usart0 => (port::Port::new(port::PortName::D),USART0_XCK),
-            }
+    fn get_port_xck(&mut self) -> (&mut port::Port, u8) {
+        let num: UsartNum = self.get_num();
+
+        match num {
+            UsartNum::Usart0 => (port::Port::new(port::PortName::D), USART0_XCK),
         }
-    
+    }
 
     // /// Function to return the index of xck bit in the port.
     // fn get_xck(&self) -> u8 {
@@ -164,7 +149,7 @@ impl Usart
     //         UsartNum::Usart0 => usart0_xck,
     //     }
     // }
-    
+
     // /// Function to return the index of transmit bit in the port.
     // fn get_td(&self) -> u8 {
     //     let num : UsartNum = self.get_num();
@@ -183,7 +168,7 @@ impl Usart
 
     /// Function to check the mode of the USART.
     /// Returns 0 for asynchronous and 1 for synchronous.
-    fn get_mode(& mut self) -> bool {
+    fn get_mode(&mut self) -> bool {
         let mut src = self.ucsrc.read();
         src = src & (1 << 6);
         if src == 0 {
@@ -195,36 +180,35 @@ impl Usart
 
     /// Function to set the clock polarity mode which is of use in the
     /// recieve and transmission implementation of USART.
-    pub fn set_polarity(&mut self,mode: UsartPolarity) {
-        if self.get_mode() ==false { 
-            self.ucsrc.update( |src| {
-                src.set_bit(0,false);
-            }); 
-        }
-        else {
+    pub fn set_polarity(&mut self, mode: UsartPolarity) {
+        if self.get_mode() == false {
+            self.ucsrc.update(|src| {
+                src.set_bit(0, false);
+            });
+        } else {
             match mode {
-                UsartPolarity::Outputrise => { 
-                    self.ucsrc.update( |src| {
-                        src.set_bit(0,false);
+                UsartPolarity::Outputrise => {
+                    self.ucsrc.update(|src| {
+                        src.set_bit(0, false);
                     });
-                },
-                UsartPolarity::Inputrise => { 
-                    self.ucsrc.update( |src| {
-                        src.set_bit(0,true);
+                }
+                UsartPolarity::Inputrise => {
+                    self.ucsrc.update(|src| {
+                        src.set_bit(0, true);
                     });
                 }
             }
         }
     }
-     /// Function to set various modes of the USART which is activated.
-     pub fn mode_select(&mut self,mode : UsartModes) {
+    /// Function to set various modes of the USART which is activated.
+    pub fn mode_select(&mut self, mode: UsartModes) {
         match mode {
             UsartModes::Normasync                                  // Puts the USART into asynchronous mode.
             | UsartModes::Douasync => {
                     self.ucsrc.update( |src| {
                         src.set_bit(6,false);
                         src.set_bit(7,false);
-                    }); 
+                    });
             },
             UsartModes::Mastersync
             | UsartModes::Slavesync => {                           // Puts the USART into synchronous mode.
@@ -238,54 +222,53 @@ impl Usart
             },
         }
         match mode {
-            UsartModes::Normasync => {                              // Keeps the USART into normal asynchronous mode.
-                    self.ucsra.update( |sra| {
-                        sra.set_bit(1,false);
-                    });
-            },
-            UsartModes::Douasync => {                               // Puts the USART into double speed asynchronous mode.
-                    self.ucsra.update( |sra| {
-                        sra.set_bit(1,true);
-                    });
-            },
-            UsartModes::Mastersync => {                             // Puts the USART into master synchronous mode
-                     // Puts the USART into master synchronous mode
-                let (port, xck) = self.get_port_xck();
-                    unsafe {
-                        write_volatile(&mut port.ddr, port.ddr | 1 << xck);
-                    }
-                    
+            UsartModes::Normasync => {
+                // Keeps the USART into normal asynchronous mode.
+                self.ucsra.update(|sra| {
+                    sra.set_bit(1, false);
+                });
             }
-            UsartModes::Slavesync => {   
-                     // Puts the USART into slave  synchronous mode
-                let (port, xck) = self.get_port_xck();
-
-                    unsafe{
-                        write_volatile(&mut port.ddr, port.ddr & !(1 << xck));
-                    }          
+            UsartModes::Douasync => {
+                // Puts the USART into double speed asynchronous mode.
+                self.ucsra.update(|sra| {
+                    sra.set_bit(1, true);
+                });
             }
-        }
-    }
-
-    /// Function to set the power reduction register so that USART functioning is allowed. 
-    fn set_power(&mut self,num : UsartNum){
-        let pow: &mut gating::Power;
-    
-        pow = gating::Power::new();
-      
-        match num {
-            UsartNum::Usart0 => { 
+            UsartModes::Mastersync => {
+                // Puts the USART into master synchronous mode
+                // Puts the USART into master synchronous mode
+                let (port, xck) = self.get_port_xck();
                 unsafe {
-                    write_volatile(&mut pow.prr,pow.prr & !(1 << 1));
-                }   
-            }    
+                    write_volatile(&mut port.ddr, port.ddr | 1 << xck);
+                }
+            }
+            UsartModes::Slavesync => {
+                // Puts the USART into slave  synchronous mode
+                let (port, xck) = self.get_port_xck();
+
+                unsafe {
+                    write_volatile(&mut port.ddr, port.ddr & !(1 << xck));
+                }
+            }
         }
     }
 
+    /// Function to set the power reduction register so that USART functioning is allowed.
+    fn set_power(&mut self, num: UsartNum) {
+        let pow: &mut gating::Power;
+
+        pow = gating::Power::new();
+
+        match num {
+            UsartNum::Usart0 => unsafe {
+                write_volatile(&mut pow.prr, pow.prr & !(1 << 1));
+            },
+        }
+    }
 
     /// Sets the interrupt bits in UCSRB so that ongoing
     /// data transfers can be tracked.
-   /* fn check(&mut self) {
+    /* fn check(&mut self) {
         self.ucsrb.update( |srb| {
               srb.set_bit(6,true);
               srb.set_bit(7,true);
@@ -305,12 +288,12 @@ impl Usart
 
     /// Clock Generation is one of the initialization steps for the USART.
     /// If the USART is in Asynchronous mode or Master Synchronous mode then a internal
-    /// clock generator is used while for Slave Synchronous mode we will use a external 
+    /// clock generator is used while for Slave Synchronous mode we will use a external
     /// clock generator.
     /// Set the baud rate frequency for USART.
     /// Baud rate settings is used to set the clock for USART.
     fn set_clock(&mut self, baud: i64, mode: UsartModes) {
-        let ubrr: u32 ;
+        let ubrr: u32;
         match mode {
             UsartModes::Normasync => {
                 ubrr = (((F_OSC * MULTIPLY) / (16.00 * baud as f64)) - 1.00) as u32;
@@ -334,85 +317,85 @@ impl Usart
             }
         });
     }
-    
-   /// Function to set the limit of data to be handled by USART.
-   fn set_size(&mut self,size : UsartDataSize) {
-    match size {
-        UsartDataSize::Five
-        | UsartDataSize::Six
-        | UsartDataSize::Seven
-        | UsartDataSize::Eight => { 
-            self.ucsrb.update( |srb| {
-                srb.set_bit(2,false);
-            });       
+
+    /// Function to set the limit of data to be handled by USART.
+    fn set_size(&mut self, size: UsartDataSize) {
+        match size {
+            UsartDataSize::Five
+            | UsartDataSize::Six
+            | UsartDataSize::Seven
+            | UsartDataSize::Eight => {
+                self.ucsrb.update(|srb| {
+                    srb.set_bit(2, false);
+                });
+            }
+            UsartDataSize::Nine => {
+                self.ucsrb.update(|srb| {
+                    srb.set_bit(2, true);
+                });
+            }
         }
-        UsartDataSize::Nine => { 
-            self.ucsrb.update( |srb| {
-                srb.set_bit(2,true);
-            });
+        match size {
+            UsartDataSize::Five | UsartDataSize::Six => {
+                self.ucsrc.update(|src| {
+                    src.set_bit(2, false);
+                });
+            }
+            UsartDataSize::Nine | UsartDataSize::Seven | UsartDataSize::Eight => {
+                self.ucsrc.update(|src| {
+                    src.set_bit(2, true);
+                });
+            }
+        }
+        match size {
+            UsartDataSize::Five | UsartDataSize::Seven => {
+                self.ucsrc.update(|src| {
+                    src.set_bit(1, false);
+                });
+            }
+            UsartDataSize::Nine | UsartDataSize::Six | UsartDataSize::Eight => {
+                self.ucsrc.update(|src| {
+                    src.set_bit(1, true);
+                });
+            }
         }
     }
-    match size {
-        UsartDataSize::Five | UsartDataSize::Six => {
-            self.ucsrc.update(|src| {
-                src.set_bit(2, false);
-            });
-        }
-        UsartDataSize::Nine | UsartDataSize::Seven | UsartDataSize::Eight => {
-            self.ucsrc.update(|src| {
-                src.set_bit(2, true);
-            });
-        }
-    }
-    match size {
-        UsartDataSize::Five | UsartDataSize::Seven => {
-            self.ucsrc.update(|src| {
-                src.set_bit(1, false);
-            });
-        }
-        UsartDataSize::Nine | UsartDataSize::Six | UsartDataSize::Eight => {
-            self.ucsrc.update(|src| {
-                src.set_bit(1, true);
-            });
-        }
-    }
-}
 
     /// Function to set the parity bit in the frame of USART.
-    fn set_parity(&mut self, parity : UsartParity) {
+    fn set_parity(&mut self, parity: UsartParity) {
         match parity {
-            UsartParity::No => { 
+            UsartParity::No => {
                 self.ucsrc.update(|src| {
-                    src.set_bit(4,false);
-                    src.set_bit(5,false);
+                    src.set_bit(4, false);
+                    src.set_bit(5, false);
                 });
-            },
-            UsartParity::Even => { 
+            }
+            UsartParity::Even => {
                 self.ucsrc.update(|src| {
-                    src.set_bit(4,false);
-                    src.set_bit(5,true);
+                    src.set_bit(4, false);
+                    src.set_bit(5, true);
                 });
-            },
-            UsartParity::Odd => { 
+            }
+            UsartParity::Odd => {
                 self.ucsrc.update(|src| {
-                    src.set_bit(4,true);
-                    src.set_bit(5,true);
+                    src.set_bit(4, true);
+                    src.set_bit(5, true);
                 });
             }
         }
     }
 
     /// Function to set the number of stop bits in the USART.
-    fn set_stop(&mut self, stop : UsartStop) {
+    fn set_stop(&mut self, stop: UsartStop) {
         match stop {
-            UsartStop::One => { 
+            UsartStop::One => {
                 self.ucsrc.update(|src| {
-                    src.set_bit(3,false);
+                    src.set_bit(3, false);
                 });
-            },
-            UsartStop::Two => { 
+            }
+            UsartStop::Two => {
                 self.ucsrc.update(|src| {
-                    src.set_bit(3,true);
+                    src.set_bit(3, true);
                 });
             }
         }

@@ -24,7 +24,7 @@ use crate::delay::delay_ms;
 /// Crates which would be used in the implementation.
 /// We will be using standard volatile and bit_field crates now for a better read and write.
 use bit_field::BitField;
-use core::{f64,u8,usize};
+use core::{f64, u8, usize};
 use fixed_slice_vec::FixedSliceVec;
 //This is a implementation for Usart
 impl Usart {
@@ -32,49 +32,49 @@ impl Usart {
     /// This function is to enable the Transmitter
     /// Once it is enabled it takes control of the TXDn pin as a transmitting output.   
     pub fn transmit_enable(&mut self) {
-            self.ucsrb.update(|srb| {
-                srb.set_bit(3, true);
-            });
-        }
+        self.ucsrb.update(|srb| {
+            srb.set_bit(3, true);
+        });
+    }
 
     /// Storing data in Transmit Buffer which takes parameter as a u32 and and data bit length.
     pub fn transmitting_data(&mut self, data: u32, len: UsartDataSize) {
-            // Checks if the Transmit buffer is empty to receive data.
-            // If not the program waits till the time comes.
-            let mut i: i32 = 10;
-            while self.avai_write() == false {
-                if i != 0 {
-                    delay_ms(1000);
-                    i = i - 1;
-                } else {
-                    unreachable!()
-                }
-            }
-
-            let mut udr = self.udr.read();
-
-            // If the frame is ready for transmission then the appropriate place is written.
-            match len {
-                UsartDataSize::Five => {
-                    udr.set_bits(0..5, data.get_bits(0..5) as u8);
-                }
-                UsartDataSize::Six => {
-                    udr.set_bits(0..6, data.get_bits(0..6) as u8);
-                }
-                UsartDataSize::Seven => {
-                    udr.set_bits(0..7, data.get_bits(0..7) as u8);
-                }
-                UsartDataSize::Eight => {
-                    udr.set_bits(0..8, data.get_bits(0..8) as u8);
-                }
-                UsartDataSize::Nine => {
-                    self.ucsrb.update(|ctrl| {
-                        ctrl.set_bit(0, data.get_bit(8));
-                    });
-                    udr.set_bits(0..8, data.get_bits(0..8) as u8);
-                }
+        // Checks if the Transmit buffer is empty to receive data.
+        // If not the program waits till the time comes.
+        let mut i: i32 = 10;
+        while self.avai_write() == false {
+            if i != 0 {
+                delay_ms(1000);
+                i = i - 1;
+            } else {
+                unreachable!()
             }
         }
+
+        let mut udr = self.udr.read();
+
+        // If the frame is ready for transmission then the appropriate place is written.
+        match len {
+            UsartDataSize::Five => {
+                udr.set_bits(0..5, data.get_bits(0..5) as u8);
+            }
+            UsartDataSize::Six => {
+                udr.set_bits(0..6, data.get_bits(0..6) as u8);
+            }
+            UsartDataSize::Seven => {
+                udr.set_bits(0..7, data.get_bits(0..7) as u8);
+            }
+            UsartDataSize::Eight => {
+                udr.set_bits(0..8, data.get_bits(0..8) as u8);
+            }
+            UsartDataSize::Nine => {
+                self.ucsrb.update(|ctrl| {
+                    ctrl.set_bit(0, data.get_bit(8));
+                });
+                udr.set_bits(0..8, data.get_bits(0..8) as u8);
+            }
+        }
+    }
     ///This function checks that transmission buffer is ready to be
     pub fn avai_write(&mut self) -> bool {
         let ucsra = self.ucsra.read();
@@ -122,35 +122,35 @@ impl Usart {
             }
         }
 
-            self.ucsrb.update(|srb| {
-                srb.set_bit(3, false);
-            });
-        }
+        self.ucsrb.update(|srb| {
+            srb.set_bit(3, false);
+        });
+    }
 
-      /// This function sends a character byte of 5,6,7 or 8 bits
-      pub fn transmit_data(&mut self, data: u8) {
-            let mut ucsra = self.ucsra.read();
-            let mut udre = ucsra.get_bit(5);
+    /// This function sends a character byte of 5,6,7 or 8 bits
+    pub fn transmit_data(&mut self, data: u8) {
+        let mut ucsra = self.ucsra.read();
+        let mut udre = ucsra.get_bit(5);
 
-            let mut i: i32 = 100;
-            while udre == false {
-                 ucsra = self.ucsra.read();
-                 udre = ucsra.get_bit(5);
+        let mut i: i32 = 100;
+        while udre == false {
+            ucsra = self.ucsra.read();
+            udre = ucsra.get_bit(5);
 
-                if i != 0 {
-                    delay_ms(1000);
-                    i = i - 1;
-                } else {
-                    unreachable!();
-                }
+            if i != 0 {
+                delay_ms(1000);
+                i = i - 1;
+            } else {
+                unreachable!();
             }
-
-            self.udr.write(data);
         }
 
-     /// This function send data type of string byte by byte.
-     /// This function send data type of string byte by byte.
-     pub fn write_string(&mut self, data: &'static str) {
+        self.udr.write(data);
+    }
+
+    /// This function send data type of string byte by byte.
+    /// This function send data type of string byte by byte.
+    pub fn write_string(&mut self, data: &'static str) {
         let mut vec: FixedSliceVec<u8> = FixedSliceVec::new(&mut []);
 
         for c in data.chars() {
@@ -162,8 +162,8 @@ impl Usart {
         }
     }
 
-      /// This function send data type of int(u32) byte by byte.
-      pub fn write_integer(&mut self, data: u32) {
+    /// This function send data type of int(u32) byte by byte.
+    pub fn write_integer(&mut self, data: u32) {
         let mut vec: FixedSliceVec<u8> = FixedSliceVec::new(&mut []);
         let mut a = data;
         while a != 0 {
