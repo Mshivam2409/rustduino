@@ -26,7 +26,7 @@ use crate::atmega328p::com::usart_initialize::{Usart, UsartNum};
 /// First a new Serial is needed to be created to access all USARTs.
 
 pub struct Serial {
-    usart: [Usart; 1],
+   pub usart: [&'static mut Usart; 1],
 }
 
 impl Serial {
@@ -36,7 +36,7 @@ impl Serial {
         unsafe {
             Serial {
                 usart: [
-                    *Usart::new(UsartNum::Usart0),
+                    Usart::new(UsartNum::Usart0),
                     
                 ],
             }
