@@ -14,6 +14,7 @@
 //     You should have received a copy of the GNU Affero General Public License
 //     along with this program.  If not, see <https://www.gnu.org/licenses/>
 
+
 use crate::{
     com::{self, i2c},
     delay::delay_ms,
@@ -24,14 +25,14 @@ use fixed_slice_vec::FixedSliceVec;
 //use crate::atmega2560p::com::i2c::*;
 
 const MPU6050_ADDRESS: u8 = 0x68; // 0x69 when AD0 pin to Vcc
-const MPU6050_REG_ACCEL_XOFFS_H: u8 = 0x06;
+const MPU6050_REG_ACCEL_XOFFS_H: u8 = 0x06;//defining registers for accelerometer X,Y & Z axis for high(H) and low(L).
 const MPU6050_REG_ACCEL_XOFFS_L: u8 = 0x07;
 const MPU6050_REG_ACCEL_YOFFS_H: u8 = 0x08;
 const MPU6050_REG_ACCEL_YOFFS_L: u8 = 0x09;
 const MPU6050_REG_ACCEL_ZOFFS_H: u8 = 0x0A;
 const MPU6050_REG_ACCEL_ZOFFS_L: u8 = 0x0B;
-const MPU6050_REG_ACCEL_SMPLRT_DIV: u8 = 0x0C;
-const MPU6050_REG_GYRO_XOFFS_H: u8 = 0x13;
+const MPU6050_REG_ACCEL_SMPLRT_DIV: u8 = 0x0C; //register for sample rate division
+const MPU6050_REG_GYRO_XOFFS_H: u8 = 0x13;//defining registers for gyroscope X,Y & Z axis for high(H) and low(L).
 const MPU6050_REG_GYRO_XOFFS_L: u8 = 0x14;
 const MPU6050_REG_GYRO_YOFFS_H: u8 = 0x15;
 const MPU6050_REG_GYRO_YOFFS_L: u8 = 0x16;
@@ -46,26 +47,26 @@ const MPU6050_REG_MOT_THRESHOLD: u8 = 0x1F;
 const MPU6050_REG_MOT_DURATION: u8 = 0x20;
 const MPU6050_REG_ZMOT_THRESHOLD: u8 = 0x21;
 const MPU6050_REG_ZMOT_DURATION: u8 = 0x22;
-const MPU6050_REG_FIFO_EN: u8 = 0x23;
-const MPU6050_REG_I2C_MST_CTRL: u8 = 0x24;
-const MPU6050_REG_I2C_SLV0_ADDR: u8 = 0x25;
+const MPU6050_REG_FIFO_EN: u8 = 0x23;           //register for FIFO enabled
+const MPU6050_REG_I2C_MST_CTRL: u8 = 0x24;      //register for master control
+const MPU6050_REG_I2C_SLV0_ADDR: u8 = 0x25;     //register for slave address
 const MPU6050_REG_I2C_SLV0_REG: u8 = 0x26;
 const MPU6050_REG_I2C_SLV0_CTRL: u8 = 0x27;
-const MPU6050_REG_I2C_SLV1_ADDR: u8 = 0x28;
+const MPU6050_REG_I2C_SLV1_ADDR: u8 = 0x28;      //slave1 configuration registers
 const MPU6050_REG_I2C_SLV1_REG: u8 = 0x29;
 const MPU6050_REG_I2C_SLV1_CTRL: u8 = 0x2A;
-const MPU6050_REG_I2C_SLV2_ADDR: u8 = 0x2B;
+const MPU6050_REG_I2C_SLV2_ADDR: u8 = 0x2B;       //slave2 configuration registers
 const MPU6050_REG_I2C_SLV2_REG: u8 = 0x2C;
 const MPU6050_REG_I2C_SLV2_CTRL: u8 = 0x2D;
 const MPU6050_REG_I2C_SLV3_ADDR: u8 = 0x2E;
-const MPU6050_REG_I2C_SLV3_REG: u8 = 0x2F;
+const MPU6050_REG_I2C_SLV3_REG: u8 = 0x2F;         //slave3 configuration registers
 const MPU6050_REG_I2C_SLV3_CTRL: u8 = 0x30;
-const MPU6050_REG_I2C_SLV4_ADDR: u8 = 0x31;
+const MPU6050_REG_I2C_SLV4_ADDR: u8 = 0x31;      //slave4 configuration registers
 const MPU6050_REG_I2C_SLV4_REG: u8 = 0x32;
 const MPU6050_REG_I2C_SLV4_DO: u8 = 0x33;
 const MPU6050_REG_I2C_SLV4_CTRL: u8 = 0x34;
 const MPU6050_REG_I2C_SLV4_DI: u8 = 0x35;
-const MPU6050_REG_I2C_MST_STATUS: u8 = 0x36;
+const MPU6050_REG_I2C_MST_STATUS: u8 = 0x36;             //indicates master control status
 const MPU6050_REG_INT_PIN_CFG: u8 = 0x37; // INT Pin. Bypass Enable Configuration
 const MPU6050_REG_INT_ENABLE: u8 = 0x38; // INT Enable
 const MPU6050_REG_INT_STATUS: u8 = 0x3A; // INT Status
@@ -77,13 +78,13 @@ const MPU6050_REG_ACCEL_ZOUT_H: u8 = 0x3F;
 const MPU6050_REG_ACCEL_ZOUT_L: u8 = 0x40;
 const MPU6050_REG_TEMP_OUT_H: u8 = 0x41;
 const MPU6050_REG_TEMP_OUT_L: u8 = 0x42;
-const MPU6050_REG_GYRO_XOUT_H: u8 = 0x43;
+const MPU6050_REG_GYRO_XOUT_H: u8 = 0x43;           //registers for output of X,Y & Z axis.
 const MPU6050_REG_GYRO_XOUT_L: u8 = 0x44;
 const MPU6050_REG_GYRO_YOUT_H: u8 = 0x45;
 const MPU6050_REG_GYRO_YOUT_L: u8 = 0x46;
 const MPU6050_REG_GYRO_ZOUT_H: u8 = 0x47;
 const MPU6050_REG_GYRO_ZOUT_L: u8 = 0x48;
-const MPU6050_REG_EXT_SENS_DATA_00: u8 = 0x49;
+const MPU6050_REG_EXT_SENS_DATA_00: u8 = 0x49;//These registers store data read from external sensors by the Slave 0, 1, 2, and 3 on the auxiliary I2C interface.
 const MPU6050_REG_EXT_SENS_DATA_01: u8 = 0x4A;
 const MPU6050_REG_EXT_SENS_DATA_02: u8 = 0x4B;
 const MPU6050_REG_EXT_SENS_DATA_03: u8 = 0x4C;
@@ -339,7 +340,7 @@ impl MPU6050 {
 
     pub fn get_int_free_fall_enabled(&mut self) -> bool {
         let mut value = self.readregister(MPU6050_REG_INT_ENABLE);
-        return get_bit(value, 6);
+        return value.get_bit(6);
     }
 
     pub fn set_accel_power_on_delay(&mut self, delay: MPUOnDelayT) {
@@ -421,12 +422,12 @@ impl MPU6050 {
 
     pub fn get_sleep_enabled(&mut self) -> bool {
         let mut value = self.readregister(MPU6050_REG_PWR_MGMT_1);
-        return get_bit(value, 6);
+        return value.get_bit(6);
     }
 
     pub fn get_int_zero_motion_enabled(&mut self) -> bool {
         let mut value = self.readregister(MPU6050_REG_INT_ENABLE);
-        return get_bit(value, 5);
+        return value.get_bit(5);
     }
 
     pub fn set_int_zero_motion_enabled(&mut self, state: bool) {
@@ -435,7 +436,7 @@ impl MPU6050 {
 
     pub fn get_int_motion_enabled(&mut self) -> bool {
         let mut value = self.readregister(MPU6050_REG_INT_ENABLE);
-        return get_bit(value, 6);
+        return value.get_bit(6);
     }
 
     pub fn set_int_motion_enabled(&mut self, state: bool) {
@@ -448,7 +449,7 @@ impl MPU6050 {
 
     pub fn get_i2c_master_mode_enabled(&mut self) -> bool {
         let mut value = self.readregister(MPU6050_REG_USER_CTRL);
-        return get_bit(value, 5);
+        return value.get_bit(5);
     }
 
     pub fn set_i2c_byepass_enabled(&mut self, state: bool) {
@@ -457,7 +458,7 @@ impl MPU6050 {
 
     pub fn get_i2c_byepass_enabled(&mut self) -> bool {
         let mut value = self.readregister(MPU6050_REG_INT_PIN_CFG);
-        return get_bit(value, 1);
+        return value.get_bit(1);
     }
 
     pub fn get_int_status(&mut self) -> u8 {
