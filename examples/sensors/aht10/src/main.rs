@@ -9,8 +9,8 @@ pub fn main(){
     let sensor = unsafe { AHT10::new() };
     
     loop {
-        sensor.relative_humidity();
-        sensor.temperature(); 
+        print!(sensor.relative_humidity());
+        print!(sensor.temperature()); 
         rustduino::delay::delay_ms(2000);
     }
 }
