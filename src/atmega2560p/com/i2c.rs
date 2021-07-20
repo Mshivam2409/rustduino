@@ -115,6 +115,7 @@ const TWSR_STATUS_MASK: u8 = 0xF8;
 //return values
 const I2C_OK: u8 = 0x00;
 const I2C_ERROR_NODEV: u8 = 0x01;
+const I2C_TIMEOUT: u32 = 100;
 
 pub fn write_sda() {
     unsafe {
@@ -133,6 +134,7 @@ pub fn read_sda() {
 }
 
 impl Twi {
+    // Returns a pointer to TWBR
     pub fn new() -> &'static mut Self {
         unsafe { &mut *(0xB8 as *mut Self) }
     }
@@ -141,21 +143,22 @@ impl Twi {
         let mut i: u32 = 0;
         //Waiting for TWINT flag set.
         //This indicates that start condition has been transmitted.
-        while !self.twcr.read().get_bit(TWINT) {
+        while !self.twcr.read().get_bit(TWINT)|| i<=I2C_TIMEOUT{
             unsafe {
                 llvm_asm!("nop");
             }
             i += 1;
         }
         // if TWSR_STATUS_MASK is different from start, error.
-        if self.twsr.read() & TWSR_STATUS_MASK != start {
+        if self.twsr.read() & TWSR_STATUS_MASK != start || i>=I2C_TIMEOUT {
             return false;
         } else {
             return true;
         }
     }
-
+    // Initiates the TWI Bus.
     pub fn init(&mut self) {
+        unsafe {
             self.twsr.update(|sr| {
                 sr.set_bit(TWPS0, prescaler().1);
                 sr.set_bit(TWPS1, prescaler().2);
@@ -163,8 +166,9 @@ impl Twi {
             self.twcr.update(|cr| {
                 cr.set_bit(TWEN, true);
             })
+        }
     }
-
+    // Sends a Start Signal.
     pub fn start(&mut self) -> bool {
         write_sda();
         self.twcr.update(|x| {
@@ -175,7 +179,7 @@ impl Twi {
         });
         return self.wait_to_complete(START);
     }
-
+    // Stops the TWI Bus.
     pub fn stop(&mut self) {
         self.twcr.update(|x| {
             // TWCR: Disable TWI module
@@ -184,7 +188,7 @@ impl Twi {
             x.set_bit(TWEN, true);
         });
     }
-
+    //Sends the Repeated Start Signal.
     pub fn rep_start(&mut self) -> bool {
         self.twcr.update(|x| {
             // TWCR: Enable TWI module
@@ -217,7 +221,9 @@ impl Twi {
         });
         return self.wait_to_complete(MR_SLA_ACK);
     }
-
+    /// Appends the value in TWCR to the given vector.
+    /// Need to set address first.
+    /// Returns true if process is completed.
     pub fn read_ack(&mut self, data: &mut FixedSliceVec<u8>) -> bool {
         self.twcr.update(|x| {
             x.set_bit(TWINT, true);
@@ -227,7 +233,9 @@ impl Twi {
         data.push(self.twdr.read());
         return self.wait_to_complete(MR_DATA_ACK);
     }
-
+    /// Appends the value in TWCR to the given vector.
+    /// Need to set address first.
+    /// Returns true if process is completed.
     pub fn read_ack_burst(&mut self, data: &mut FixedSliceVec<u8>, length: usize) -> usize {
         let mut x: usize = 0;
         while x < length {
@@ -238,7 +246,9 @@ impl Twi {
         }
         return x + 1;
     }
-
+    /// Writes one byte of data to the Slave.
+    /// Need to set address first.
+    /// Returns true if process is successful
     pub fn write(&mut self, data: u8) -> bool {
         delay_ms(1);
         self.twdr.write(data);
@@ -249,7 +259,9 @@ impl Twi {
         });
         return self.wait_to_complete(MT_DATA_ACK);
     }
-
+    /// Writes consecutive bytes of data to the Slave.
+    /// Need to set address first.
+    /// Returns number of bytes written
     pub fn write_burst(&mut self, data: &FixedSliceVec<u8>) -> usize {
         let mut x: usize = 0;
         while x < data.len() {
@@ -281,7 +293,11 @@ impl Twi {
         }
         return x + 1;
     }
-
+    /// * Reads consecutive Data bytes from slave
+    /// * Requires number of bytes ro be read
+    /// * Returns true if process is completed and aborts if any of the steps, i.e
+    /// start, reading address, reading ACK or reading NACK fails.
+    /// * Sends a stop signal if either of the steps fail or reading is successful.
     pub fn read_from_slave(
         &mut self,
         address: u8,
@@ -311,7 +327,10 @@ impl Twi {
 
         return true;
     }
-
+    /// * Writes consecutive Data bytes to slave
+    /// * Returns true if process is completed and aborts if any of the steps, i.e
+    /// start, setting address or writing fails.
+    /// * Sends a stop signal if either of the steps fail or writing is successful.
     pub fn write_to_slave(&mut self, address: u8, data: &FixedSliceVec<u8>) -> bool {
         delay_ms(1);
         if !self.start() {

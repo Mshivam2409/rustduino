@@ -24,14 +24,23 @@ use fixed_slice_vec::FixedSliceVec;
 //use crate::atmega2560p::com::i2c::*;
 
 const MPU6050_ADDRESS: u8 = 0x68; // 0x69 when AD0 pin to Vcc
+<<<<<<< HEAD
 const MPU6050_REG_ACCEL_XOFFS_H: u8 = 0x06;
+=======
+const MPU6050_REG_ACCEL_XOFFS_H: u8 = 0x06; //defining registers for accelerometer X,Y & Z axis for high(H) and low(L).
+>>>>>>> ee65404292b5be92f645e8f1697369298000f645
 const MPU6050_REG_ACCEL_XOFFS_L: u8 = 0x07;
 const MPU6050_REG_ACCEL_YOFFS_H: u8 = 0x08;
 const MPU6050_REG_ACCEL_YOFFS_L: u8 = 0x09;
 const MPU6050_REG_ACCEL_ZOFFS_H: u8 = 0x0A;
 const MPU6050_REG_ACCEL_ZOFFS_L: u8 = 0x0B;
+<<<<<<< HEAD
 const MPU6050_REG_ACCEL_SMPLRT_DIV: u8 = 0x0C;
 const MPU6050_REG_GYRO_XOFFS_H: u8 = 0x13;
+=======
+const MPU6050_REG_ACCEL_SMPLRT_DIV: u8 = 0x0C; //register for sample rate division
+const MPU6050_REG_GYRO_XOFFS_H: u8 = 0x13; //defining registers for gyroscope X,Y & Z axis for high(H) and low(L).
+>>>>>>> ee65404292b5be92f645e8f1697369298000f645
 const MPU6050_REG_GYRO_XOFFS_L: u8 = 0x14;
 const MPU6050_REG_GYRO_YOFFS_H: u8 = 0x15;
 const MPU6050_REG_GYRO_YOFFS_L: u8 = 0x16;
@@ -46,6 +55,7 @@ const MPU6050_REG_MOT_THRESHOLD: u8 = 0x1F;
 const MPU6050_REG_MOT_DURATION: u8 = 0x20;
 const MPU6050_REG_ZMOT_THRESHOLD: u8 = 0x21;
 const MPU6050_REG_ZMOT_DURATION: u8 = 0x22;
+<<<<<<< HEAD
 const MPU6050_REG_FIFO_EN: u8 = 0x23;
 const MPU6050_REG_I2C_MST_CTRL: u8 = 0x24;
 const MPU6050_REG_I2C_SLV0_ADDR: u8 = 0x25;
@@ -61,11 +71,32 @@ const MPU6050_REG_I2C_SLV3_ADDR: u8 = 0x2E;
 const MPU6050_REG_I2C_SLV3_REG: u8 = 0x2F;
 const MPU6050_REG_I2C_SLV3_CTRL: u8 = 0x30;
 const MPU6050_REG_I2C_SLV4_ADDR: u8 = 0x31;
+=======
+const MPU6050_REG_FIFO_EN: u8 = 0x23; //register for FIFO enabled
+const MPU6050_REG_I2C_MST_CTRL: u8 = 0x24; //register for master control
+const MPU6050_REG_I2C_SLV0_ADDR: u8 = 0x25; //register for slave address
+const MPU6050_REG_I2C_SLV0_REG: u8 = 0x26;
+const MPU6050_REG_I2C_SLV0_CTRL: u8 = 0x27;
+const MPU6050_REG_I2C_SLV1_ADDR: u8 = 0x28; //slave1 configuration registers
+const MPU6050_REG_I2C_SLV1_REG: u8 = 0x29;
+const MPU6050_REG_I2C_SLV1_CTRL: u8 = 0x2A;
+const MPU6050_REG_I2C_SLV2_ADDR: u8 = 0x2B; //slave2 configuration registers
+const MPU6050_REG_I2C_SLV2_REG: u8 = 0x2C;
+const MPU6050_REG_I2C_SLV2_CTRL: u8 = 0x2D;
+const MPU6050_REG_I2C_SLV3_ADDR: u8 = 0x2E;
+const MPU6050_REG_I2C_SLV3_REG: u8 = 0x2F; //slave3 configuration registers
+const MPU6050_REG_I2C_SLV3_CTRL: u8 = 0x30;
+const MPU6050_REG_I2C_SLV4_ADDR: u8 = 0x31; //slave4 configuration registers
+>>>>>>> ee65404292b5be92f645e8f1697369298000f645
 const MPU6050_REG_I2C_SLV4_REG: u8 = 0x32;
 const MPU6050_REG_I2C_SLV4_DO: u8 = 0x33;
 const MPU6050_REG_I2C_SLV4_CTRL: u8 = 0x34;
 const MPU6050_REG_I2C_SLV4_DI: u8 = 0x35;
+<<<<<<< HEAD
 const MPU6050_REG_I2C_MST_STATUS: u8 = 0x36;
+=======
+const MPU6050_REG_I2C_MST_STATUS: u8 = 0x36; //indicates master control status
+>>>>>>> ee65404292b5be92f645e8f1697369298000f645
 const MPU6050_REG_INT_PIN_CFG: u8 = 0x37; // INT Pin. Bypass Enable Configuration
 const MPU6050_REG_INT_ENABLE: u8 = 0x38; // INT Enable
 const MPU6050_REG_INT_STATUS: u8 = 0x3A; // INT Status
@@ -77,13 +108,21 @@ const MPU6050_REG_ACCEL_ZOUT_H: u8 = 0x3F;
 const MPU6050_REG_ACCEL_ZOUT_L: u8 = 0x40;
 const MPU6050_REG_TEMP_OUT_H: u8 = 0x41;
 const MPU6050_REG_TEMP_OUT_L: u8 = 0x42;
+<<<<<<< HEAD
 const MPU6050_REG_GYRO_XOUT_H: u8 = 0x43;
+=======
+const MPU6050_REG_GYRO_XOUT_H: u8 = 0x43; //registers for output of X,Y & Z axis.
+>>>>>>> ee65404292b5be92f645e8f1697369298000f645
 const MPU6050_REG_GYRO_XOUT_L: u8 = 0x44;
 const MPU6050_REG_GYRO_YOUT_H: u8 = 0x45;
 const MPU6050_REG_GYRO_YOUT_L: u8 = 0x46;
 const MPU6050_REG_GYRO_ZOUT_H: u8 = 0x47;
 const MPU6050_REG_GYRO_ZOUT_L: u8 = 0x48;
+<<<<<<< HEAD
 const MPU6050_REG_EXT_SENS_DATA_00: u8 = 0x49;
+=======
+const MPU6050_REG_EXT_SENS_DATA_00: u8 = 0x49; //These registers store data read from external sensors by the Slave 0, 1, 2, and 3 on the auxiliary I2C interface.
+>>>>>>> ee65404292b5be92f645e8f1697369298000f645
 const MPU6050_REG_EXT_SENS_DATA_01: u8 = 0x4A;
 const MPU6050_REG_EXT_SENS_DATA_02: u8 = 0x4B;
 const MPU6050_REG_EXT_SENS_DATA_03: u8 = 0x4C;
@@ -191,7 +230,7 @@ impl MPU6050 {
         let mut a = MPU6050 {
             i2c: com::i2c::Twi::new(),
         };
-        return &mut a; 
+        return &mut a;
     }
 
     fn readregister(&mut self, reg: u8) -> u8 {
@@ -268,24 +307,15 @@ impl MPU6050 {
         value = self.readregister(MPU6050_REG_GYRO_CONFIG);
         value &= 0b00011000;
         value >>= 3;
-        if value==3{
+        if value == 3 {
             return MPUdpsT::MPU6050Scale2000DPS;
-        }
-        else if value ==2 {
+        } else if value == 2 {
             return MPUdpsT::MPU6050Scale1000DPS;
-        }
-        else if value ==1 {
+        } else if value == 1 {
             return MPUdpsT::MPU6050Scale500DPS;
-        }
-        else  {
+        } else {
             return MPUdpsT::MPU6050Scale250DPS;
         }
-        // return match value {
-        //     3 => MPUdpsT::MPU6050Scale2000DPS,
-        //     2 => MPUdpsT::MPU6050Scale1000DPS,
-        //     1 => MPUdpsT::MPU6050Scale500DPS,
-        //     0 => MPUdpsT::MPU6050Scale250DPS,
-        // };
     }
 
     pub fn set_range(&mut self, range: MPURangeT) {
@@ -306,24 +336,15 @@ impl MPU6050 {
         value = self.readregister(MPU6050_REG_ACCEL_CONFIG);
         value &= 0b00011000;
         value >>= 3;
-        if value==3{
+        if value == 3 {
             return MPURangeT::MPU6050Range16G;
-        }
-        else if value ==2 {
+        } else if value == 2 {
             return MPURangeT::MPU6050Range8G;
-        }
-        else if value ==1 {
+        } else if value == 1 {
             return MPURangeT::MPU6050Range4G;
-        }
-        else  {
+        } else {
             return MPURangeT::MPU6050Range2G;
         }
-        // return match value {
-        //     0 => MPURangeT::MPU6050Range2G,
-        //     1 => MPURangeT::MPU6050Range4G,
-        //     2 => MPURangeT::MPU6050Range8G,
-        //     3 => MPURangeT::MPU6050Range16G,
-        // };
     }
 
     pub fn set_clock_source(&mut self, source: MPUClockSourceT) {
@@ -346,36 +367,21 @@ impl MPU6050 {
         let mut value: u8;
         value = self.readregister(MPU6050_REG_PWR_MGMT_1);
         value &= 0b00000111;
-        if value==0{
+        if value == 0 {
             return MPUClockSourceT::MPU6050ClockInternal8MHZ;
-        }
-        else if value ==1 {
+        } else if value == 1 {
             return MPUClockSourceT::MPU6050ClockPllGyrox;
-        }
-        else if value ==2 {
+        } else if value == 2 {
             return MPUClockSourceT::MPU6050ClockPllGyroy;
-        }
-        else if value ==3 {
+        } else if value == 3 {
             return MPUClockSourceT::MPU6050ClockPllGyroz;
-        }
-        else if value ==4 {
+        } else if value == 4 {
             return MPUClockSourceT::MPU6050ClockExternal32MHZ;
-        }
-        else if value ==5 {
+        } else if value == 5 {
             return MPUClockSourceT::MPU6050ClockExternal19MHZ;
-        }
-        else  {
+        } else {
             return MPUClockSourceT::MPU6050ClockKeepReset;
         }
-        // match value {
-        //     0 => MPUClockSourceT::MPU6050ClockInternal8MHZ,
-        //     1 => MPUClockSourceT::MPU6050ClockPllGyrox,
-        //     2 => MPUClockSourceT::MPU6050ClockPllGyroy,
-        //     3 => MPUClockSourceT::MPU6050ClockPllGyroz,
-        //     4 => MPUClockSourceT::MPU6050ClockExternal32MHZ,
-        //     5 => MPUClockSourceT::MPU6050ClockExternal19MHZ,
-        //     7 => MPUClockSourceT::MPU6050ClockKeepReset,
-        // }
     }
 
     pub fn set_int_free_fall_enabled(&mut self, state: bool) {
@@ -404,24 +410,15 @@ impl MPU6050 {
         let mut value: u8;
         value = self.readregister(MPU6050_REG_MOT_DETECT_CTRL);
         value &= 0b00110000;
-        if value==3{
+        if value == 3 {
             return MPUOnDelayT::MPU6050Delay3MS;
-        }
-        else if value ==2 {
+        } else if value == 2 {
             return MPUOnDelayT::MPU6050Delay2MS;
-        }
-        else if value ==1 {
+        } else if value == 1 {
             return MPUOnDelayT::MPU6050Delay1MS;
-        }
-        else  {
+        } else {
             return MPUOnDelayT::MPU6050NoDelay;
         }
-        // match value {
-        //     3 => MPUOnDelayT::MPU6050Delay3MS,
-        //     2 => MPUOnDelayT::MPU6050Delay2MS,
-        //     1 => MPUOnDelayT::MPU6050Delay1MS,
-        //     0 => MPUOnDelayT::MPU6050NoDelay,
-        // }
     }
 
     pub fn set_motion_detection_threshold(&mut self, threshold: u8) {
@@ -521,35 +518,23 @@ impl MPU6050 {
         return self.readregister(MPU6050_REG_INT_STATUS);
     }
 
-    // pub fn Calibrategyro(){
-
-    // }
-
-    // pub fn SetThreshold(){
-
-    // }
-
-    // pub fn GetThreshold() -> u8{
-    //     return actualThreshold;
-    // }
-
-    pub fn read_accel(&mut self, mut data: Vector) -> Vector {
+    pub fn read_accel(&mut self, mut data: Vector) -> Vector {    //function to configures between gyro and master.
         let mut v: FixedSliceVec<u8> = FixedSliceVec::new(&mut []);
         v.push(MPU6050_REG_ACCEL_XOUT_H);
-        self.i2c.read_from_slave(MPU6050_ADDRESS, 6, &mut v);
-        data.x = ((v[1] << 8) | v[2]) as f32;
-        data.y = ((v[3] << 8) | v[4]) as f32;
-        data.z = ((v[5] << 8) | v[6]) as f32;
+        self.i2c.read_from_slave(MPU6050_ADDRESS, 6, &mut v); //input from slave
+        data.x = ((v[1] << 8) | v[2]) as f32;         //input of X axis
+        data.y = ((v[3] << 8) | v[4]) as f32;         //input of Y axis
+        data.z = ((v[5] << 8) | v[6]) as f32;         //input of Z axis
         return data;
     }
 
-    pub fn read_gyro(&mut self, mut data: Vector) -> Vector {
+    pub fn read_gyro(&mut self, mut data: Vector) -> Vector {  //function to configures between gyro and master.
         let mut v: FixedSliceVec<u8> = FixedSliceVec::new(&mut []);
         v.push(MPU6050_REG_GYRO_XOUT_H);
-        self.i2c.read_from_slave(MPU6050_ADDRESS, 6, &mut v);
-        data.x = ((v[1] << 8) | v[2]) as f32;
-        data.y = ((v[3] << 8) | v[4]) as f32;
-        data.z = ((v[5] << 8) | v[6]) as f32;
+        self.i2c.read_from_slave(MPU6050_ADDRESS, 6, &mut v);  //input from slave
+        data.x = ((v[1] << 8) | v[2]) as f32;                   //input of X axis
+        data.y = ((v[3] << 8) | v[4]) as f32;                   //input of Y axis
+        data.z = ((v[5] << 8) | v[6]) as f32;                   //input of Z axis
         return data;
     }
 
