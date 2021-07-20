@@ -59,21 +59,10 @@ pub mod atmega328p {
 
         pub mod gating;
     }
-
-    // #[cfg(feature = "com")]
-    // pub mod com {
-    //     pub mod i2c;
-    // }
 }
 
 #[cfg(feature = "atmega328p")]
 pub use atmega328p::*;
-
-
-// #[cfg(feature = "sensors")]
-// pub mod sensors {
-//     pub mod aht10;
-// }
 
 pub mod avr;
 pub mod config;
