@@ -9,7 +9,7 @@
 #[cfg(feature = "atmega2560p")]
 pub mod atmega2560p {
     /// Hardware Abstraction Library (HAL).
-     #[cfg(feature = "atmega2560p-hal")]
+    #[cfg(feature = "atmega2560p-hal")]
     pub mod hal {
         pub mod power;
 
@@ -36,8 +36,6 @@ pub use atmega2560p::*;
 pub mod sensors {
     pub mod mpu6050;
 }
-
-
 
 /// Library for ATmega328P chip.
 #[cfg(feature = "atmega328p")]

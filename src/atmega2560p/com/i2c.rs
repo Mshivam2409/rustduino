@@ -284,7 +284,12 @@ impl Twi {
         return x + 1;
     }
 
-    pub fn read_from_slave(&mut self, address: u8, length: usize,data: &mut FixedSliceVec<u8>,) -> bool {
+    pub fn read_from_slave(
+        &mut self,
+        address: u8,
+        length: usize,
+        data: &mut FixedSliceVec<u8>,
+    ) -> bool {
         delay_ms(1);
         read_sda();
 
