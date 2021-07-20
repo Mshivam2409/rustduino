@@ -1,4 +1,3 @@
-
 #![no_std]
 #![deny(warnings)]
 #![feature(asm)]
@@ -24,18 +23,16 @@ pub mod atmega328p {
     }
 
     // #[cfg(feature = "com")]
-    pub mod com { 
+    pub mod com {
         pub mod serial;
 
-         pub mod usart;
+        pub mod usart;
 
-         pub mod usart_initialize;
+        pub mod usart_initialize;
 
-         pub mod usart_receive;
+        pub mod usart_receive;
 
-         pub mod usart_transmit;
-
-         
+        pub mod usart_transmit;
     }
 }
 

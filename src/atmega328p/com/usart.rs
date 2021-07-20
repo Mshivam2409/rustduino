@@ -22,14 +22,14 @@
 //! https://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-7810-Automotive-Microcontrollers-ATmega328P_Datasheet.pdf
 
 /// Crates which would be used in the implementation.
-/// 
+///
 use crate::atmega328p::com::serial::Serial;
 use crate::atmega328p::com::usart_initialize::Usart;
 use crate::atmega328p::com::usart_initialize::{
-    UsartDataSize, UsartModes, UsartNum, UsartParity, UsartStop,UsartPolarity,
+    UsartDataSize, UsartModes, UsartNum, UsartParity, UsartPolarity, UsartStop,
 };
 //Standard datatypes to be used
-use core::{f64,u32};
+use core::{f64, u32};
 
 /// Default setting parameters for various modes of USART in case user want's to skip them.
 /// Baud Rate.
@@ -87,7 +87,7 @@ pub fn println_string(data: &'static str) {
     u.transmit_enable();
     u.initialize(MODE, BAUD, STOP, SIZE, PARITY);
     u.write_string(data);
-    u.transmit_disable(); 
+    u.transmit_disable();
 }
 
 /// Main println() function for using USART according to default used values.
@@ -111,7 +111,7 @@ pub fn println_integer(data: u32) {
 pub fn println_float(data: f64, precision: u32) {
     let u: &mut Usart = unsafe { Usart::new(NUM) };
     u.transmit_enable();
-    u.initialize(MODE,BAUD,STOP,SIZE,PARITY);
+    u.initialize(MODE, BAUD, STOP, SIZE, PARITY);
     u.write_float(data, precision);
     u.transmit_disable();
 }
@@ -123,7 +123,7 @@ pub fn println_float(data: f64, precision: u32) {
 pub fn println_set_baud(data: &'static str, baud1: i64) {
     let u: &mut Usart = unsafe { Usart::new(NUM) };
     u.transmit_enable();
-    u.initialize(MODE,baud1,STOP,SIZE,PARITY);
+    u.initialize(MODE, baud1, STOP, SIZE, PARITY);
     u.write_string(data);
     u.transmit_disable();
 }
@@ -158,9 +158,9 @@ pub fn println_detail(
     parity1: UsartParity,
     stop1: UsartStop,
 ) {
-    let u: &mut Usart =unsafe{ Usart::new(num1) };
+    let u: &mut Usart = unsafe { Usart::new(num1) };
     u.transmit_enable();
     u.initialize(mode1, baud1, stop1, size1, parity1);
     u.write_string(data);
-    u.transmit_disable(); 
+    u.transmit_disable();
 }

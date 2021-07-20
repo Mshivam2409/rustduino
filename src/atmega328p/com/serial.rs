@@ -17,7 +17,6 @@
 //! This files contain the code for combining  serial ports into a structure for easier implementation.
 //!  https://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-7810-Automotive-Microcontrollers-ATmega328P_Datasheet.pdf
 
-
 /// Crates which would be used in the implementation.
 /// We will be using standard volatile and bit_field crates now for a better read and write.
 use crate::atmega328p::com::usart_initialize::{Usart, UsartNum};
@@ -26,7 +25,7 @@ use crate::atmega328p::com::usart_initialize::{Usart, UsartNum};
 /// First a new Serial is needed to be created to access all USARTs.
 
 pub struct Serial {
-   pub usart: [&'static mut Usart; 1],
+    pub usart: [&'static mut Usart; 1],
 }
 
 impl Serial {
@@ -35,10 +34,7 @@ impl Serial {
     pub fn new() -> Serial {
         unsafe {
             Serial {
-                usart: [
-                    Usart::new(UsartNum::Usart0),
-                    
-                ],
+                usart: [Usart::new(UsartNum::Usart0)],
             }
         }
     }
