@@ -27,12 +27,11 @@ impl Usart
 {
     /// This function enables the reciever function of microcontroller, whithout enabling it no communication is possible.
     pub fn recieve_enable(&mut self) {
-        unsafe {
             self.ucsrb.update(|ucsrb| {
                 ucsrb.set_bit(4, true);
             });
         }
-    }
+
       /// This function checks if the data is avialable for reading or not.
     /// If no data is available for reading then 0 is returned.
     /// If data is available then 1 is returned.
@@ -51,7 +50,6 @@ impl Usart
     /// In case of 9 bits it retuns u32 of which first 9 bits are data recieved and remaining bits are insignificant.
     /// In case ,if an frame error or parity error occurs, this function returns Nothing.
     pub fn recieve_data(&mut self) -> Option<u32> {
-        unsafe {
             let ucsrc = self.ucsrc.read();
             let ucsrb = self.ucsrb.read();
 
@@ -80,7 +78,7 @@ impl Usart
             //  when there is a case of 5 to 8 bits.
             else {
                 let ucsra = self.ucsra.read();
-                let mut udr: u32 = self.udr.read() as u32;
+                let udr: u32 = self.udr.read() as u32;
                 if ucsra.get_bits(2..5) != 0b000 {
                     None
                 } else {
@@ -88,12 +86,10 @@ impl Usart
                 }
             }
         }
-    }
 
     /// This function can be used to check frame error,Data OverRun and Parity errors.
     /// It returns true if error occurs,else false.
     pub fn error_check(&mut self) -> bool {
-        unsafe {
             let ucsra = self.ucsra.read();
             if ucsra.get_bits(3..5) != 0b00 {
                 true
@@ -101,13 +97,12 @@ impl Usart
                 false
             }
         }
-    }
+    
 
 
     /// This function can be used to check parity error.
     /// It returns true if error occurs else false.
     pub fn parity_check(&mut self) -> bool {
-        unsafe {
             let ucsra = self.ucsra.read();
             if ucsra.get_bit(2) == true {
                 true
@@ -115,24 +110,21 @@ impl Usart
                 false
             }
         }
-    }
 
     /// This function disables the reciever function of microcontroller.
     pub fn recieve_disable(&mut self) {
-        unsafe {
             self.ucsrb.update(|ucsrb| {
                 ucsrb.set_bit(4, false);
             });
         }
-    }
       /// This function clears the unread data in the receive buffer by flushing it
-      pub fn flush_recieve(&self) {
-        let mut udr = self.udr.read();
+      pub fn flush_recieve(&mut self) {
+        let mut _udr = self.udr.read();
         let mut ucsra = self.ucsra.read();
         let mut i: i32 = 100;
         while ucsra.get_bit(7) == true {
             ucsra = self.ucsra.read();
-            udr = self.udr.read();
+            _udr = self.udr.read();
             if i != 0 {
                 delay_ms(1000);
                 i = i - 1;
@@ -141,12 +133,10 @@ impl Usart
             }
         }
 
-        unsafe {
             self.ucsra.update(|ucsra| {
                 ucsra.set_bit(7, false);
             });
         }
-    }
 
     ///  This function is used to recieve data of one frame.
     ///  But it only functions when already data is available for read.which can be checked by available function.
@@ -155,7 +145,6 @@ impl Usart
     ///  In case of 9 bits it retuns u32 of which first 9 bits are data recieved and remaining bits are insignificant.
     ///  In case ,if an frame error or parity error occurs, this function returns -1.
     pub fn read(&mut self) -> Option<u32> {
-        unsafe {
             let ucsrc = self.ucsrc.read();
             let ucsrb = self.ucsrb.read();
 
@@ -191,4 +180,4 @@ impl Usart
             }
         }
     }
-}
+

@@ -38,7 +38,7 @@ impl Usart {
         }
 
     /// Storing data in Transmit Buffer which takes parameter as a u32 and and data bit length.
-    pub fn transmitting_data(&self, data: u32, len: UsartDataSize) {
+    pub fn transmitting_data(&mut self, data: u32, len: UsartDataSize) {
             // Checks if the Transmit buffer is empty to receive data.
             // If not the program waits till the time comes.
             let mut i: i32 = 10;
@@ -128,7 +128,7 @@ impl Usart {
         }
 
       /// This function sends a character byte of 5,6,7 or 8 bits
-      pub fn transmit_data(&self, data: u8) {
+      pub fn transmit_data(&mut self, data: u8) {
             let mut ucsra = self.ucsra.read();
             let mut udre = ucsra.get_bit(5);
 
