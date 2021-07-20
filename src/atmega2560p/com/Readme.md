@@ -58,21 +58,30 @@ is written) if it is used for this purpose.
 Clock Generation is one of the initialization steps for the USART. If the USART is in Asynchronous mode or Master Synchronous mode then a internal clock generator is used while for Slave Synchronous mode we will use a external clock generator. Set the baud rate frequency for USART.Baud rate settings is used to set the clock for USART.
 
 ``` rust
-fn set_clock(&self,baud : i64,mode : UsartModes) {
+fn set_clock(&mut self, baud: i64, mode: UsartModes) {
+        let ubrr: u32;
         match mode {
-            UsartModes::norm_async => { 
-                let mut ubrr : u32 = ((f_osc*multiply)/(16*baud))-1; 
-            },
-            UsartModes::dou_async => {
-                let mut ubrr : u32 = ((f_osc*multiply)/(8*baud))-1;
-            },
-            UsartModes::master_sync => {
-                let mut ubrr : u32 = ((f_osc*multiply)/(2*baud))-1;
-            },
+            UsartModes::Normasync => {
+                ubrr = (((F_OSC * MULTIPLY) / (16.00 * baud as f64)) - 1.00) as u32;
+            }
+            UsartModes::Douasync => {
+                ubrr = (((F_OSC * MULTIPLY) / (8.00 * baud as f64)) - 1.00) as u32;
+            }
+            UsartModes::Mastersync => {
+                ubrr = (((F_OSC * MULTIPLY) / (2.00 * baud as f64)) - 1.00) as u32;
+            }
             _ => unreachable!(),
         }
-        self.ubrrl.set_bits(0..8,ubrr);
-        self.ubrrh.set_bits(0..4,(ubrr>>8));
+        self.ubrrl.update(|ubrrl| {
+            for i in 0..8 {
+                ubrrl.set_bit(i, ubrr.get_bit(i));
+            }
+        });
+        self.ubrrh.update(|ubrrh| {
+            for i in 0..4 {
+                ubrrh.set_bit(i, ubrr.get_bit(i + 8));
+            }
+        });
     }
 ```
 
@@ -91,51 +100,45 @@ frame the Receiver and Transmitter use. UCSZn2 is 1 for 9 bit data else 0 for 5,
   <summary>Click to expand code</summary>
 
 ``` rust
-fn set_size(&self,size : UsartDataSize) {
+fn set_size(&mut self, size: UsartDataSize) {
         match size {
-            UsartDataSize::five
-            | UsartDataSize::six
-            | UsartDataSize::seven
-            | UsartDataSize::eight => { 
-                self.ucsrb.update( |srb| {
-                    srb.set_bit(2,false);
-                });       
-            },
-            UsartDataSize::nine => { 
-                self.ucsrb.update( |srb| {
-                    srb.set_bit(2,true);
+            UsartDataSize::Five
+            | UsartDataSize::Six
+            | UsartDataSize::Seven
+            | UsartDataSize::Eight => {
+                self.ucsrb.update(|srb| {
+                    srb.set_bit(2, false);
                 });
-            },
+            }
+            UsartDataSize::Nine => {
+                self.ucsrb.update(|srb| {
+                    srb.set_bit(2, true);
+                });
+            }
         }
         match size {
-            UsartDataSize::five
-            | UsartDataSize::six => { 
-                self.ucsrc.update( |src| {
-                    src.set_bit(2,false);
-                });       
-            },
-            UsartDataSize::nine
-            | UsartDataSize::seven
-            | UsartDataSize::eight => { 
-                self.ucsrc.update( |src| {
-                    src.set_bit(2,true);
+            UsartDataSize::Five | UsartDataSize::Six => {
+                self.ucsrc.update(|src| {
+                    src.set_bit(2, false);
                 });
-            },
+            }
+            UsartDataSize::Nine | UsartDataSize::Seven | UsartDataSize::Eight => {
+                self.ucsrc.update(|src| {
+                    src.set_bit(2, true);
+                });
+            }
         }
         match size {
-            UsartDataSize::five
-            | UsartDataSize::seven => { 
-                self.ucsrc.update( |src| {
-                    src.set_bit(1,false);
-                });       
-            },
-            UsartDataSize::nine
-            | UsartDataSize::six
-            | UsartDataSize::eight => { 
-                self.ucsrc.update( |src| {
-                    src.set_bit(1,true);
+            UsartDataSize::Five | UsartDataSize::Seven => {
+                self.ucsrc.update(|src| {
+                    src.set_bit(1, false);
                 });
-            },
+            }
+            UsartDataSize::Nine | UsartDataSize::Six | UsartDataSize::Eight => {
+                self.ucsrc.update(|src| {
+                    src.set_bit(1, true);
+                });
+            }
         }
     }
 ```
@@ -144,26 +147,26 @@ fn set_size(&self,size : UsartDataSize) {
 Parity is optional i.e. can be odd, even or no parity bit. Check section 22.10.4 in atmael manual.
 
 ``` rust
- fn set_parity(&self,parity : UsartParity) {
+ fn set_parity(&mut self, parity: UsartParity) {
         match parity {
-            UsartParity::no => { 
-                self.ucsrc.update( |src| {
-                    src.set_bit(4,false);
-                    src.set_bit(5,false);
+            UsartParity::No => {
+                self.ucsrc.update(|src| {
+                    src.set_bit(4, false);
+                    src.set_bit(5, false);
                 });
-            },
-            UsartParity::even => { 
-                self.ucsrc.update( |src| {
-                    src.set_bit(4,false);
-                    src.set_bit(5,true);
+            }
+            UsartParity::Even => {
+                self.ucsrc.update(|src| {
+                    src.set_bit(4, false);
+                    src.set_bit(5, true);
                 });
-            },
-            UsartParity::odd => { 
-                self.ucsrc.update( |src| {
-                    src.set_bit(4,true);
-                    src.set_bit(5,true);
+            }
+            UsartParity::Odd => {
+                self.ucsrc.update(|src| {
+                    src.set_bit(4, true);
+                    src.set_bit(5, true);
                 });
-            },
+            }
         }
     }
 ```
@@ -171,18 +174,18 @@ Stop bit can be one bit or two bit.
 
  ``` rust
   /// Function to set the number of stop bits in the USART.
-    fn set_stop(&self,stop : UsartStop) {
+    fn set_stop(&mut self, stop: UsartStop) {
         match stop {
-            UsartStop::one => { 
-                self.ucsrc.update( |src| {
-                    src.set_bit(3,false);
+            UsartStop::One => {
+                self.ucsrc.update(|src| {
+                    src.set_bit(3, false);
                 });
-            },
-            UsartStop::two => { 
-                self.ucsrc.update( |src| {
-                    src.set_bit(3,true);
+            }
+            UsartStop::Two => {
+                self.ucsrc.update(|src| {
+                    src.set_bit(3, true);
                 });
-            },
+            }
         }
     }
 ```
@@ -193,7 +196,7 @@ Stop bit can be one bit or two bit.
    -  1 or 2 stop bits
  
  ``` rust 
-    fn set_frame(&self,stop : UsartStop,size : UsartDataSize,parity : UsartParity) {
+    fn set_frame(&mut self, stop: UsartStop, size: UsartDataSize, parity: UsartParity) {
         self.set_size(size);
         self.set_parity(parity);
         self.set_stop(stop);
@@ -202,35 +205,45 @@ Stop bit can be one bit or two bit.
 Following is the cumulative function for initializing a particular USART and it will take all the necessary details about the mode in which the USART pin is to be used.
 
 ```rust
-    pub fn initialize(&mut self,mode : UsartModes,baud : i64,stop : UsartStop,size : UsartDataSize,parity : UsartParity) {
+    pub fn initialize(
+        &mut self,
+        mode: UsartModes,
+        baud: i64,
+        stop: UsartStop,
+        size: UsartDataSize,
+        parity: UsartParity,
+    ) {
         // Check that recieve and transmit buffers are completely cleared
         // and no transmission or recieve of data is already in process.
-        let mut i : i32 = 10;
-        while self.check_ongoing()==false { 
-            if i!=0 {
+        let mut i: i32 = 10;
+        while self.check_ongoing() == false {
+            if i != 0 {
                 delay_ms(1000);
-                i=i-1;
-            }
-            else {
+                i = i - 1;
+            } else {
                 unreachable!()
             }
-        };
+        }
 
-        self.disable();                                            //  Disable Global interrupts.
-        let num : UsartNum = self.get_num();
-        
-        self.set_power(num);                                       //  Set Power reduction register.
-        
-        self.mode_select(mode);                                    //  Set the USART at the given mode.
-        
+        self.disable(); //  Disable Global interrupts.
+        let num: UsartNum = self.get_num();
+
+        self.set_power(num); //  Set Power reduction register.
+
+        self.mode_select(mode); //  Set the USART at the given mode.
+
         //  Set the clock for USART according to user input.
-        if( mode == UsartModes::slave_sync )  { }
-        else { self.set_clock(baud,mode) }                         
-        
-        //  Set the frame format according to input.
-        self.set_frame(stop,size,parity);                                     
+        match mode {
+            UsartModes::Slavesync => {}
+            _ => {
+                self.set_clock(baud, mode);
+            }
+        }
 
-        self.enable();                                             //  Enable Global interrupts.
+        //  Set the frame format according to input.
+        self.set_frame(stop, size, parity);
+
+        self.enable(); //  Enable Global interrupts.
     }
 ```
 
@@ -359,15 +372,12 @@ detection. To enable Data Receiver, write 1 to Receive Enable (RXENn) bit i.e BI
 UCSRnB Register. Then the RxDn pin functions as Receiver's serial input.
 
 ``` rust
-impl Usart{
-   ///This function enables the reciever function of microcontroller, whithout enabling it no communication is possible.
-   pub fn recieve_enable(&mut self){
-    unsafe {
+/// This function enables the reciever function of microcontroller, whithout enabling it no communication is possible.
+    pub fn recieve_enable(&mut self) {
         self.ucsrb.update(|ucsrb| {
             ucsrb.set_bit(4, true);
         });
     }
-   }
 ```
 
 **Note**  Initialization should be done before any reception can take place.
@@ -380,52 +390,43 @@ is send to Recieve Buffer which Can be Read from UDRn. For Frames **9 Data bits*
 the 9th bit is Read from the RXB8n bit in UCSRnB before reading the low bits from the
 UDRn.
 ``` rust
-   pub fn recieve_data(&mut self) -> Option<Volatile<u8>,Volatile<u32>> {
-        unsafe {
-            let  ucsrc=read_volatile(&self.ucsrc);
-            let  ucsrb=read_volatile(&self.ucsrb);
+   pub fn recieve_data(&mut self) -> Option<u32> {
+        let ucsrc = self.ucsrc.read();
+        let ucsrb = self.ucsrb.read();
 
-            let mut i : i32 = 10;
-            while self.available()==false  { 
-                if i!=0 {
-                    delay_ms(1000);
-                    i = i-1;
-                }
-                else {
-                    unreachable!()
-                }
-            };
-            
-            //  Case when there is 9 bits mode.
-            if ucsrc.gets_bits(1..3)==0b11 && ucsrb.get_bit(2)==true {
-
-                let ucsra=read_volatile(&self.ucsra);
-                let ucsrb=read_volatile(&self.ucsrb);
-                let mut udr : Volatile<u32> = read_volatile(&mut self.udr);
-                if ucsra.get_bits(2..5) != 0b000 {
-                    None
-                }
-                else {
-                    let rxb8 = ucsrb.get_bits(1..2);
-                    udr = udr.set_bits(8..9,rxb8);
-                    Some(udr)
-                }
-            }
-
-            //  Case when there is a case of 5 to 8 bits.
-            else {
-                let ucsra=read_volatile(&self.ucsra);
-                let mut udr : Volatile<u8> =read_volatile(&mut self.udr);
-                if ucsra.get_bits(2..5) != 0b000 {
-                    None
-                }
-                else {
-                    Some(udr)
-                }
-                
+        let mut i: i32 = 10;
+        while self.available() == false {
+            if i != 0 {
+                delay_ms(1000);
+                i = i - 1;
+            } else {
+                unreachable!()
             }
         }
-    }    
+
+        //  Case when there is 9 bits mode.
+        if ucsrc.get_bits(1..3) == 0b11 && ucsrb.get_bit(2) == true {
+            let ucsra = self.ucsra.read();
+            let mut udr: u32 = self.udr.read() as u32;
+            if ucsra.get_bits(2..5) != 0b000 {
+                None
+            } else {
+                let rxb8: u32 = ucsrb.get_bits(1..2) as u32;
+                udr.set_bits(8..9, rxb8);
+                Some(udr)
+            }
+        }
+        //  Case when there is a case of 5 to 8 bits.
+        else {
+            let ucsra = self.ucsra.read();
+            let udr: u32 = self.udr.read() as u32;
+            if ucsra.get_bits(2..5) != 0b000 {
+                None
+            } else {
+                Some(udr)
+            }
+        }
+    }
  ```
 The Receiver has one flag to indicate its state, which is Receive complete(RXCn), it
 is one if unread data exist in Receive buffer and zero if no unread data in Receive
@@ -447,60 +448,52 @@ buffer (UDRn) is read.
   <summary>Click to expand code</summary>
 
 ``` rust  
- pub fn error_check(&mut self)->bool{
-      unsafe{
-      let ucsra=read_volatile(&self.ucsra);
-      if ucsra.get_bits(2..4)!=0b00{
-          true
-      }
-      else{
-          false
-      }
+ pub fn error_check(&mut self) -> bool {
+        let ucsra = self.ucsra.read();
+        if ucsra.get_bits(3..5) != 0b00 {
+            true
+        } else {
+            false
+        }
     }
-  }
-  ///This function can be used to check parity error.
-  ///It returns true if error occurs,else false.
-  pub fn parity_check(&mut self)->bool{
-      unsafe{
-    let ucsra=read_volatile(&self.ucsra);
-    if ucsra.get_bit(4)==0b1{
-        true
-    } 
-    else{
-        false
+
+    /// This function can be used to check parity error.
+    /// It returns true if error occurs else false.
+    pub fn parity_check(&mut self) -> bool {
+        let ucsra = self.ucsra.read();
+        if ucsra.get_bit(2) == true {
+            true
+        } else {
+            false
+        }
     }
-   }
-  }
- ///This function disables the reciever function of microcontroller.
-  pub fn recieve_disable(&mut self){
-    unsafe {
+
+    /// This function disables the reciever function of microcontroller.
+    pub fn recieve_disable(&mut self) {
         self.ucsrb.update(|ucsrb| {
             ucsrb.set_bit(4, false);
         });
     }
-   }
-   /// This function clears the unread data in the receive buffer by flushing it 
-    pub fn flush (&self) {
-        let mut udr = unsafe { read_volatile(&self.udr) };
-        let mut ucsra = unsafe { read_volatile(&self.ucsra) }; 
-        let mut i : i32 =100;
-        while ucsra.get_bit(7)==true {
-            ucsra = unsafe { read_volatile(&self.ucsra) };
-            udr = unsafe { read_volatile(&self.udr) };    
-            if i!=0 {
+
+    /// This function clears the unread data in the receive buffer by flushing it
+    pub fn flush_recieve(&mut self) {
+        let mut _udr = self.udr.read();
+        let mut ucsra = self.ucsra.read();
+        let mut i: i32 = 100;
+        while ucsra.get_bit(7) == true {
+            ucsra = self.ucsra.read();
+            _udr = self.udr.read();
+            if i != 0 {
                 delay_ms(1000);
-                i=i-1;
-            }
-            else {
+                i = i - 1;
+            } else {
                 unreachable!()
             }
-        };
-
-        unsafe {
-            self.ucsra.update( |ucsra| {
-                ucsra.set_bit(7, false);
-            });
         }
+
+        self.ucsra.update(|ucsra| {
+            ucsra.set_bit(7, false);
+        });
     }
 ```
 </details>
@@ -513,46 +506,38 @@ In case ,if an frame error or parity error occurs, this function returns -1.
   <summary>Click to expand code</summary>
 
 ``` rust
-   pub fn read(&mut self) -> Option<Volatile<u8>,Volatile<u32>> {
-        unsafe {
-            let  ucsrc=read_volatile(&self.ucsrc);
-            let  ucsrb=read_volatile(&self.ucsrb);
+   pub fn read(&mut self) -> Option<u32> {
+        let ucsrc = self.ucsrc.read();
+        let ucsrb = self.ucsrb.read();
 
-            let mut i : i32 = 10;
-            while self.available()==false  { 
-                if i!=0 {
-                    delay_ms(1000);
-                    i = i-1;
-                }
-                else {
-                    unreachable!()
-                }
-            };
-
-            if ucsrc.gets_bits(1..3)==0b11 && ucsrb.get_bit(2)==true {
-
-                let ucsra=read_volatile(&self.ucsra);
-                let ucsrb=read_volatile(&self.ucsrb);
-                let mut udr : Volatile<u32> =read_volatile(&mut self.udr);
-                if ucsra.get_bits(2..5)!=0b000 {
-                    None
-                }
-                else {
-                    let rxb8=ucsrb.get_bits(1..2);
-                    udr=udr.set_bits(8..9,rxb8);
-                    Some(udr)
-                }
+        let mut i: i32 = 10;
+        while self.available() == false {
+            if i != 0 {
+                delay_ms(1000);
+                i = i - 1;
+            } else {
+                unreachable!()
             }
+        }
 
-            else {
-                let ucsra=read_volatile(&self.ucsra);
-                let udr : Volatile<u8> =read_volatile(&mut self.udr);
-                if ucsra.get_bits(2..5)!=0b000 {
-                    None
-                }
-                else {
-                    Some(udr)
-                }  
+        if ucsrc.get_bits(1..3) == 0b11 && ucsrb.get_bit(2) == true {
+            let ucsra = self.ucsra.read();
+            let ucsrb = self.ucsrb.read();
+            let mut udr: u32 = self.udr.read() as u32;
+            if ucsra.get_bits(2..5) != 0b000 {
+                None
+            } else {
+                let rxb8: u32 = ucsrb.get_bits(1..2) as u32;
+                udr.set_bits(8..9, rxb8);
+                Some(udr)
+            }
+        } else {
+            let ucsra = self.ucsra.read();
+            let udr: u32 = self.udr.read() as u32;
+            if ucsra.get_bits(2..5) != 0b000 {
+                None
+            } else {
+                Some(udr)
             }
         }
     }
