@@ -156,7 +156,7 @@ impl Usart
                 UsartNum::Usart0 => (port::Port::new(port::PortName::D),usart0_xck),
             }
         }
-    }
+    
 
     /// Function to return the index of xck bit in the port.
     fn get_xck(&self) -> u8 {
@@ -379,7 +379,7 @@ impl Usart
 }
 
     /// Function to set the parity bit in the frame of USART.
-    fn set_parity(&self, parity : UsartParity) {
+    fn set_parity(&mut self, parity : UsartParity) {
         match parity {
             UsartParity::No => { 
                 self.ucsrc.update(|src| {
