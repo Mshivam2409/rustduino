@@ -2,6 +2,7 @@
 #![deny(warnings)]
 #![feature(asm)]
 #![feature(llvm_asm)]
+#![allow(dead_code)]
 
 /// Library for ATmega2560P chip.
 #[cfg(feature = "atmega2560p")]
@@ -59,10 +60,16 @@ pub mod atmega328p {
 
         pub mod gating;
     }
+
+    #[cfg(feature = "com")]
+    pub mod com { }
 }
 
 #[cfg(feature = "atmega328p")]
 pub use atmega328p::*;
+
+#[cfg(feature = "sensors")]
+pub mod sensors { }
 
 pub mod avr;
 pub mod config;
