@@ -22,6 +22,8 @@ pub mod atmega2560p {
         pub mod interrupts;
 
         pub mod pin;
+
+        pub mod analog;
     }
 
     /// Communication Protocols
@@ -59,17 +61,19 @@ pub mod atmega328p {
         pub mod power;
 
         pub mod gating;
+
+        pub mod analog;
     }
 
     #[cfg(feature = "com")]
-    pub mod com { }
+    pub mod com {}
 }
 
 #[cfg(feature = "atmega328p")]
 pub use atmega328p::*;
 
 #[cfg(feature = "sensors")]
-pub mod sensors { }
+pub mod sensors {}
 
 pub mod avr;
 pub mod config;
