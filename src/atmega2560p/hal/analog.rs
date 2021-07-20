@@ -23,6 +23,7 @@
 
 /// Crates to be used for the implementation.
 use volatile::Volatile;
+use bit_field::BitField;
 
 /// Structure to control the implementation of Integrated Analog Circuit.
 #[repr(C, packed)]
@@ -47,6 +48,12 @@ pub struct Analog {
     adcsrb: Volatile<u8>,
     admux: Volatile<u8>,
 }
+pub enum RefType{
+    DEFAULT,
+    INTERNAL1V1,
+    INTERNAL2V56,
+    EXTERNAL,
+}
 
 impl AnalogComparator {
     /// New pointer object created for Analog Comparator Structure.
@@ -69,7 +76,25 @@ impl Analog {
     }
 
     /// Function to create a reference for Analog signals.
-    pub fn analog_reference() {}
+    pub fn analog_reference(&mut self,reftype:RefType) {
+        match reftype{
+            RefType::DEFAULT=>{
+                self.admux.update(|admux| {
+                    admux.set_bits(6..8, 0b00);
+                });
+            }
+            RefType::INTERNAL1V1=>{self.admux.update(|admux| {
+                admux.set_bits(6..8, 0b10);
+            });}
+            RefType::INTERNAL2V56=>{self.admux.update(|admux| {
+                admux.set_bits(6..8, 0b11);
+            });}
+            RefType::EXTERNAL=>{self.admux.update(|admux| {
+                admux.set_bits(6..8, 0b01);
+            });}
+
+        }
+    }
 
     /// Function to read data which is got as input to Analog Pins.
     pub fn analog_read() {}
