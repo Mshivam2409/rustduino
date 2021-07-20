@@ -2,15 +2,15 @@
 #![no_main]
 #![deny(warnings)]
 
-use rustduino::aht10::AHT10;
+use rustduino::sensors::*;
 
 #[no_mangle]
-pub fn main(){
+pub fn main() {
     let sensor = unsafe { AHT10::new() };
-    
+
     loop {
-        print!(sensor.relative_humidity());
-        print!(sensor.temperature()); 
+        sensor.relative_humidity();
+        sensor.temperature();
         rustduino::delay::delay_ms(2000);
     }
 }
