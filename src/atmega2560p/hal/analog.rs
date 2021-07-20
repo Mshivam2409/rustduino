@@ -1,5 +1,5 @@
 //     RustDuino : A generic HAL implementation for Arduino Boards in Rust
-//     Copyright (C) 2021  , Indian Institute of Technology Kanpur
+//     Copyright (C) 2021 Aniket Sharma, Indian Institute of Technology Kanpur
 //
 //     This program is free software: you can redistribute it and/or modify
 //     it under the terms of the GNU Affero General Public License as published
@@ -72,7 +72,7 @@ impl Digital {
 impl Analog {
     /// New pointer object created for Analog Structure.
     pub unsafe fn new() -> &'static mut Analog {
-        &mut *(0x78 as *mut Analog)
+        &mut *(0x78 as *mut Analog)       // check correct address
     }
 
     /// Function to create a reference for Analog signals.
