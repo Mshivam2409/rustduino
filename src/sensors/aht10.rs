@@ -87,11 +87,7 @@ impl<'a> AHT10<'a> {
         self.vec.push(AHT10_SOFT_RESET_CMD);
 
         if !self.i2c.write_to_slave(self.address, &self.vec) {
-<<<<<<< HEAD
-            unreachable!("Error!");
-=======
             unreachable!();
->>>>>>> 0ab5b4ee0de4ec5b903be34d9842e442581ec584
         }
         delay_ms(20);
     }
@@ -101,11 +97,7 @@ impl<'a> AHT10<'a> {
             .i2c
             .read_from_slave(self.address, self.vec.len(), &mut self.vec)
         {
-<<<<<<< HEAD
-            unreachable!("Error!");
-=======
             unreachable!();
->>>>>>> 0ab5b4ee0de4ec5b903be34d9842e442581ec584
         }
     }
 
