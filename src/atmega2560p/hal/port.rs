@@ -51,9 +51,9 @@ pub enum PortName {
 ///     This can be read to see the value at a particualar pin.
 ///     It is also used as a toggle controller.     
 pub struct Port {
-    pin: u8,
-    ddr: u8,
-    port: u8,
+    pub pin: u8,
+    pub ddr: u8,
+    pub port: u8,
 }
 
 /// The structure Pin contains the address of the port to which the pin belongs and the pin's number.

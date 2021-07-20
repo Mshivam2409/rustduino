@@ -7,13 +7,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ff91a64014e1bc53bf643920f2c9ab5f0980d92a0948295f3ee550e9266849ad"
 
 [[package]]
-name = "blink"
-version = "0.1.0"
-dependencies = [
- "rustduino",
-]
-
-[[package]]
 name = "const_env--value"
 version = "0.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -59,7 +52,7 @@ dependencies = [
 
 [[package]]
 name = "rustduino"
-version = "0.1.1"
+version = "0.1.0"
 dependencies = [
  "bit_field",
  "const_env--value",
@@ -89,3 +82,10 @@ name = "volatile"
 version = "0.2.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f6b06ad3ed06fef1713569d547cdbdb439eafed76341820fb0e0344f29a41945"
+
+[[package]]
+name = "writing_string"
+version = "0.1.0"
+dependencies = [
+ "rustduino",
+]

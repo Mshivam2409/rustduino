@@ -58,8 +58,8 @@ pub enum Options {
 /// in the enum `Options` above.
 #[repr(C, packed)]
 pub struct Power {
-    prr0: u8,
-    prr1: u8,
+    pub prr0: u8,
+    pub prr1: u8,
 }
 
 impl Power {

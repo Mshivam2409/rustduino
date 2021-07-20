@@ -22,6 +22,20 @@ pub mod atmega2560p {
 
         pub mod pin;
     }
+
+    /// Communication Protocols
+    #[cfg(feature = "com")]
+    pub mod com {
+        pub mod serial;
+
+        pub mod usart;
+
+        pub mod usart_transmit;
+
+        pub mod usart_initialize;
+
+        pub mod usart_recieve;
+    }
 }
 
 #[cfg(feature = "atmega2560p")]
@@ -45,10 +59,21 @@ pub mod atmega328p {
 
         pub mod gating;
     }
+
+    // #[cfg(feature = "com")]
+    // pub mod com {
+    //     pub mod i2c;
+    // }
 }
 
 #[cfg(feature = "atmega328p")]
 pub use atmega328p::*;
+
+
+// #[cfg(feature = "sensors")]
+// pub mod sensors {
+//     pub mod aht10;
+// }
 
 pub mod avr;
 pub mod config;

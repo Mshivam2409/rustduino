@@ -29,6 +29,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "fixed-slice-vec"
+version = "0.8.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "fafbcddfce402d6170ee6e5037f032dd96233ce73c66f7d83a4150fb76814b44"
+
+[[package]]
 name = "proc-macro2"
 version = "1.0.27"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -52,6 +58,7 @@ version = "0.1.1"
 dependencies = [
  "bit_field",
  "const_env--value",
+ "fixed-slice-vec",
  "volatile",
 ]
 
