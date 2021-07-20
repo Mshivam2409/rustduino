@@ -4,19 +4,11 @@
 #![feature(llvm_asm)]
 
 /// Library for ATmega2560P chip.
-<<<<<<< HEAD
-// #[cfg(feature = "atmega2560p")]
-pub mod atmega2560p {
-
-    /// Hardware Abstraction Library (HAL).
-    // #[cfg(feature = "atmega2560p-hal")]
-=======
 #[cfg(feature = "atmega2560p")]
 pub mod atmega2560p {
 
     /// Hardware Abstraction Library (HAL).
     #[cfg(feature = "atmega2560p-hal")]
->>>>>>> origin
     pub mod hal {
         pub mod power;
 
@@ -46,16 +38,6 @@ pub mod atmega2560p {
     }
 }
 
-<<<<<<< HEAD
-// #[cfg(feature = "atmega2560p")]
-pub use atmega2560p::*;
-
-/// Library for ATmega328P chip.
-// #[cfg(feature = "atmega328p")]
-pub mod atmega328p {
-    /// Hardware Abstraction Library (HAL).
-    // #[cfg(feature = "atmega328p-hal")]
-=======
 #[cfg(feature = "atmega2560p")]
 pub use atmega2560p::*;
 
@@ -64,7 +46,6 @@ pub use atmega2560p::*;
 pub mod atmega328p {
     /// Hardware Abstraction Library (HAL).
     #[cfg(feature = "atmega328p-hal")]
->>>>>>> origin
     pub mod hal {
         pub mod port;
 
@@ -80,11 +61,7 @@ pub mod atmega328p {
     }
 }
 
-<<<<<<< HEAD
-// #[cfg(feature = "atmega328p")]
-=======
 #[cfg(feature = "atmega328p")]
->>>>>>> origin
 pub use atmega328p::*;
 
 pub mod avr;
