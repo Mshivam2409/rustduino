@@ -22,11 +22,7 @@ pub mod atmega328p {
         pub mod gating;
     }
 
-<<<<<<< HEAD
-    // #[cfg(feature = "com")]
-=======
     #[cfg(feature = "com")]
->>>>>>> c5b108bff57d6be0a694fa619a55520a2c9baf0c
     pub mod com {
         pub mod serial;
 
