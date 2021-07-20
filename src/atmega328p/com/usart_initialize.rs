@@ -250,8 +250,8 @@ impl Usart
                     });
             },
             UsartModes::Mastersync => {                             // Puts the USART into master synchronous mode
-                    let port : port::Port = self.get_port();
-                    let xck : u8 = self.get_xck();
+                     // Puts the USART into master synchronous mode
+                let (port, xck) = self.get_port_xck();
                     unsafe {
                         write_volatile(&mut port.ddr, port.ddr | 1 << xck);
                     }
