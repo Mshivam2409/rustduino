@@ -9,6 +9,10 @@ Then we Created GPIO pins for input/output control and then combined everything 
 
 ## Analog 
 
+### Features
+
+### Operation
+
 ### Starting a Conversion
 
 A single Conversion is Started by writing a logical one to the ADC Start Conversion
@@ -84,8 +88,28 @@ The MUXn and REFS bits in the ADMUX Register are single buffered through a tempo
 register to which the CPU has random access to ensure the channels and reference
 selection only takes place at a safe point during the conversion. The channel and
 reference selection is continously updated until conversion Starts, then it stops or
-locks to ensure sufficient sampling time for the ADC. Continous updating resumes in
-the last ADC clock cycle before the conversion completes(ADIF in ADCSRA is set).
+locks to ensure sufficient sampling time for the ADC.
+
+Continous updating resumes in the last ADC clock cycle before the conversion complete
+(ADIF in ADCSRA is set). So do not write new channel or reference until one ADC clock
+cycle after ADSC is written. 
+
+If Auto Triggering is used, the exact time of the triggering event can be
+interdeterministic. So take special care of when to update ADMUX as to control which
+conversion is going to be affected by the new settings.
+
+If both ADATE and ADEN are written, it cannot be predicted next conversion is based
+on which settings, old or new. So **to safely update ADMUX** be sure that ADATE and
+ADEN are both cleared, If During conversion then after minimum one ADC clock cycle
+and if after a conversion the before the Interrupt flag (used as trigger source) is 
+cleared.
+
+If differential channel is used stage may take as much as 125 microseconds to 
+stabilize to the new value so either no conversions should be started or conversions
+should be discarded during this period. Same settling time should be observed for the differential conversion after changing ADC reference.
+
+#### ADC Input Channels
+
 
 
 
