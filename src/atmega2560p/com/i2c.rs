@@ -138,19 +138,19 @@ impl Twi {
     pub fn new() -> &'static mut Self {
         unsafe { &mut *(0xB8 as *mut Self) }
     }
-    ///
+
     pub fn wait_to_complete(&mut self, start: u8) -> bool {
         let mut i: u32 = 0;
         //Waiting for TWINT flag set.
         //This indicates that start condition has been transmitted.
-        while !self.twcr.read().get_bit(TWINT)|| i<=I2C_TIMEOUT{
+        while !self.twcr.read().get_bit(TWINT) || i <= I2C_TIMEOUT {
             unsafe {
                 llvm_asm!("nop");
             }
             i += 1;
         }
         // if TWSR_STATUS_MASK is different from start, error.
-        if self.twsr.read() & TWSR_STATUS_MASK != start || i>=I2C_TIMEOUT {
+        if self.twsr.read() & TWSR_STATUS_MASK != start || i >= I2C_TIMEOUT {
             return false;
         } else {
             return true;
@@ -158,15 +158,13 @@ impl Twi {
     }
     // Initiates the TWI Bus.
     pub fn init(&mut self) {
-        unsafe {
-            self.twsr.update(|sr| {
-                sr.set_bit(TWPS0, prescaler().1);
-                sr.set_bit(TWPS1, prescaler().2);
-            });
-            self.twcr.update(|cr| {
-                cr.set_bit(TWEN, true);
-            })
-        }
+        self.twsr.update(|sr| {
+            sr.set_bit(TWPS0, prescaler().1);
+            sr.set_bit(TWPS1, prescaler().2);
+        });
+        self.twcr.update(|cr| {
+            cr.set_bit(TWEN, true);
+        })
     }
     // Sends a Start Signal.
     pub fn start(&mut self) -> bool {
