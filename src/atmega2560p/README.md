@@ -45,9 +45,9 @@ DCSRA to one. ADSC can also be used to determine if a conversion is in progress.
 
 ### Prescaling and Conversion Timing
 
-By default, the approximation circuitry requires an analog input clock frequency 
-between 50 to 200 khz,which may reach as high as 1000khz in case of resolution less 
-than 10 bits.
+By default, to approximate the analog signal to digital signal, circuitry requires an
+analog input clock frequency between 50 to 200 khz,which may reach as high as 1000khz
+in case of resolution less than 10 bits.
 
 The ADC contains a prescaler which generates an acceptable ADC clock Frequency from 
 any CPU frequency above 100khz, it is set by ADPS bits in ADCSRA.It continously 
@@ -110,8 +110,34 @@ should be discarded during this period. Same settling time should be observed fo
 
 #### ADC Input Channels
 
+When changing channels in different modes ensure the following:
 
+In **Single Conversion** mode, always select the channel before starting the
+conversion. The channel selection may be changed one clock after writing one to ADSC.
+However, the simplest method is to wait for the current conversion to complete to
+change Channel. Same to be ensured for **Free Running mode**, and here as next
+conversion has started already automatically the next result will reflect the
+previous channel selection and subsequent conversion will reflect New channel
+selection.
 
+When switching to a **Differential gain channel**, the first conversion result may
+have a poor accuracy due to the settling time for theautomatic offset cancellation
+circuitry, so prefferably first conversion result should be disregarded.
+
+#### ADC Voltage Reference
+
+Reference Voltage refers to the conversion range for the ADC. It can be selected as a
+AVCC, internal 1.1 V reference, internal 2.56V reference or external AREF pin.
+
+AVCC is connected to the ADC through a passive switch. The internal 1.1V reference is
+generated from the internal bandgap reference (VBG) through an internal amplifier. In
+either case, the external AREF pin is directly connected to the ADC, and the
+reference voltage can be made more immune to noise by connecting a capacitor
+between the AREF pin and ground. VREF can also be measured at the AREF pin with a
+high impedant voltmeter.
+
+The first ADC conversion result after switching reference voltage source may be
+inaccurate, and the user is advised to discard this result.
 
 
 ### ADC Noise Canceler
