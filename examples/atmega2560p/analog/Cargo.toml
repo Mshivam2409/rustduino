@@ -1,12 +1,13 @@
 [package]
-name = "writing_string"
+name = "analog"
 version = "0.1.0"
+authors = ["Devansh <devansh.kujha2003@gmail.com>"]
 edition = "2018"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-rustduino = { path = "../../../" , features = ["atmega2560p-com"]}
+rustduino = { path = "../../../" , features = ["atmega2560p-core"]}
 
 [profile.dev]
 panic = "abort"
