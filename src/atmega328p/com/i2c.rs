@@ -20,46 +20,46 @@ use fixed_slice_vec::FixedSliceVec;
 use volatile::Volatile;
 
 ///  Contains registers fow TWI.
-/// 
-/// * `TWBR`: *TWI Bit Rate Register*. TWBR selects the division factor for the 
-/// bit rate generator. The bit rate generator is a frequency divider which generates the 
+///
+/// * `TWBR`: *TWI Bit Rate Register*. TWBR selects the division factor for the
+/// bit rate generator. The bit rate generator is a frequency divider which generates the
 /// SCL clock frequency in the master modes. See [Section 21.5.2 “Bit Rate Generator Unit”]
-/// (https://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-7810-Automotive-Microcontrollers-ATmega328P_Datasheet.pdf) 
+/// (https://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-7810-Automotive-Microcontrollers-ATmega328P_Datasheet.pdf)
 /// on page 180 for calculating bit rates.
-/// 
-///  * `TWSR`: *TWI Status Register*. The first 5 bits of TWSR reflect the status 
-/// of the TWI logic and te 2-wire Serial bus. The last 2 bits decide the bit 
+///
+///  * `TWSR`: *TWI Status Register*. The first 5 bits of TWSR reflect the status
+/// of the TWI logic and te 2-wire Serial bus. The last 2 bits decide the bit
 /// rate prescaler.
-/// 
-///  * `TWAR`: *TWI (Slave) Address Register*. The TWAR should be loaded with 
-/// the 7-bit slave address (in the seven most significant bits of TWAR) to 
-/// which the TWI will respond when programmed as a slave transmitter or 
+///
+///  * `TWAR`: *TWI (Slave) Address Register*. The TWAR should be loaded with
+/// the 7-bit slave address (in the seven most significant bits of TWAR) to
+/// which the TWI will respond when programmed as a slave transmitter or
 /// receiver, and not needed in the master modes.
-/// 
-///  * `TWDR`: *TWI Data Register*. n transmit mode, TWDR contains the next 
-/// byte to be transmitted. In receive mode, the TWDR contains the last byte 
-/// received. It is writable while the TWI is not in the process of shifting 
-/// a byte. This occurs when the TWI interrupt flag (TWINT) is set by hardware. 
-/// Note that the data register cannot be initialized by the user before the 
-/// first interrupt occurs. The data in TWDR remains stable as long as TWINT 
-/// is set. While data is shifted out, data on the bus is simultaneously shifted 
-/// in. TWDR always contains the last byte present on the bus, except after a 
-/// wake up from a sleep mode by the TWI interrupt. In this case, the contents 
-/// of TWDR is undefined. 
-/// 
-/// * `TWSR`: *TWI Status Register*. The TWCR is used to control the operation 
-/// of the TWI. It is used to enable the TWI, to initiate a master access by 
-/// applying a START condition to the bus, to generate a receiver acknowledge, 
-/// to generate a stop condition, and to control halting of the bus while the 
-/// data to be written to the bus are written to the TWDR. It also indicates 
+///
+///  * `TWDR`: *TWI Data Register*. n transmit mode, TWDR contains the next
+/// byte to be transmitted. In receive mode, the TWDR contains the last byte
+/// received. It is writable while the TWI is not in the process of shifting
+/// a byte. This occurs when the TWI interrupt flag (TWINT) is set by hardware.
+/// Note that the data register cannot be initialized by the user before the
+/// first interrupt occurs. The data in TWDR remains stable as long as TWINT
+/// is set. While data is shifted out, data on the bus is simultaneously shifted
+/// in. TWDR always contains the last byte present on the bus, except after a
+/// wake up from a sleep mode by the TWI interrupt. In this case, the contents
+/// of TWDR is undefined.
+///
+/// * `TWSR`: *TWI Status Register*. The TWCR is used to control the operation
+/// of the TWI. It is used to enable the TWI, to initiate a master access by
+/// applying a START condition to the bus, to generate a receiver acknowledge,
+/// to generate a stop condition, and to control halting of the bus while the
+/// data to be written to the bus are written to the TWDR. It also indicates
 /// a write collision if data is attempted written to TWDR while the register is inaccessible
-/// 
-/// * `TWAMR`: *TWI Address Mask*. The TWAMR can be loaded with a 7-bit slave 
-/// address mask. Each of the bits in TWAMR can mask (disable) the corresponding 
-/// address bits in the TWI address register (TWAR). If the mask bit is set to 
-/// one then the address match logic ignores the compare between the incoming 
+///
+/// * `TWAMR`: *TWI Address Mask*. The TWAMR can be loaded with a 7-bit slave
+/// address mask. Each of the bits in TWAMR can mask (disable) the corresponding
+/// address bits in the TWI address register (TWAR). If the mask bit is set to
+/// one then the address match logic ignores the compare between the incoming
 /// address bit and the corresponding bit in TWAR.
-/// 
+///
 ///  Section 21.9 of ATmega328P datasheet.
 pub struct Twi {
     _twbr: Volatile<u8>,
@@ -170,20 +170,20 @@ impl Twi {
     /// Iniates the TWI bus.
     /// Usage: rustduino::atmega328p::com::i2c::init()
     pub fn init(&mut self) {
-            self.twsr.update(|sr| {
-                sr.set_bit(TWPS0, prescaler().1);
-                sr.set_bit(TWPS1, prescaler().2);
-            });
-            self.twcr.update(|cr| {
-                cr.set_bit(TWEN, true);
-            })
+        self.twsr.update(|sr| {
+            sr.set_bit(TWPS0, prescaler().1);
+            sr.set_bit(TWPS1, prescaler().2);
+        });
+        self.twcr.update(|cr| {
+            cr.set_bit(TWEN, true);
+        })
     }
 
     /// Sends a Start Signal
     /// Usage: rustduino::atmega328p::com::i2c::start()
     pub fn start(&mut self) -> bool {
         write_sda();
-            self.twcr.write(0xA4); // TWINT TWSTA and TWA set to 1
+        self.twcr.write(0xA4); // TWINT TWSTA and TWA set to 1
 
         return self.wait_to_complete(START);
     }
@@ -191,7 +191,7 @@ impl Twi {
     /// Sends a Repeat Start Signal
     /// Usage: rustduino::atmega328p::com::i2c::rep_start()
     pub fn rep_start(&mut self) -> bool {
-            self.twcr.write(0xA4); // TWINT TWSTA and TWA set to 1
+        self.twcr.write(0xA4); // TWINT TWSTA and TWA set to 1
 
         return self.wait_to_complete(REP_START);
     }
@@ -199,7 +199,7 @@ impl Twi {
     /// Stops the TWI bus.
     /// Usage: rustduino::atmega328p::com::i2c::stop()
     pub fn stop(&mut self) {
-            self.twcr.write(0xB0);
+        self.twcr.write(0xB0);
     }
 
     /// Sets address of Slave.
@@ -207,11 +207,11 @@ impl Twi {
     /// Returns true if process is successful
     /// Usage: rustduino::atmega328p::com::i2c::set_addr(address:u8)
     pub fn set_address(&mut self, addr: u8) -> bool {
-            self.twdr.write(addr << 1 & !0x01); // loading SLA_W to TWDR
-            self.twcr.update(|cr| {
-                cr.set_bit(TWINT, true);
-                cr.set_bit(TWEN, true);
-            });
+        self.twdr.write(addr << 1 & !0x01); // loading SLA_W to TWDR
+        self.twcr.update(|cr| {
+            cr.set_bit(TWINT, true);
+            cr.set_bit(TWEN, true);
+        });
 
         return self.wait_to_complete(MT_SLA_ACK);
     }
@@ -220,13 +220,13 @@ impl Twi {
     /// Returns true if process is successful
     /// Usage: rustduino::atmega328p::com::i2c::address_read(address:u8)
     pub fn address_read(&mut self, address: u8) -> bool {
-            self.twdr.write(address << 1 | 0x01);
-            self.twcr.update(|cr| {
-                cr.set_bit(TWINT, true);
-                cr.set_bit(TWEN, true);
-            });
+        self.twdr.write(address << 1 | 0x01);
+        self.twcr.update(|cr| {
+            cr.set_bit(TWINT, true);
+            cr.set_bit(TWEN, true);
+        });
 
-            return self.wait_to_complete(MR_SLA_ACK);
+        return self.wait_to_complete(MR_SLA_ACK);
     }
 
     /// Writes one byte of data to the Slave.
@@ -236,8 +236,8 @@ impl Twi {
     pub fn write(&mut self, data: u8) -> bool {
         delay_ms(1);
         // write_sda(); // doubt if neended
-            self.twdr.write(data);
-            self.twcr.write(0x84); // TWCR = (1<<TWINT)|(1<<TWEN);
+        self.twdr.write(data);
+        self.twcr.write(0x84); // TWCR = (1<<TWINT)|(1<<TWEN);
 
         return self.wait_to_complete(MT_DATA_ACK);
     }
@@ -337,7 +337,12 @@ impl Twi {
     /// start, reading address, reading ACK or reading NACK fails.
     /// * Sends a stop signal if either of the steps fail or reading is successful.
     /// * Usage: rustduino::atmega328p::com::i2c::write_to_slave(address:u8, length:u8,  data:&FixedSliceVec<u8>)
-    pub fn read_from_slave( &mut self, address: u8, length: usize, data: &mut FixedSliceVec<u8>,) -> bool {
+    pub fn read_from_slave(
+        &mut self,
+        address: u8,
+        length: usize,
+        data: &mut FixedSliceVec<u8>,
+    ) -> bool {
         delay_ms(1);
         read_sda();
 

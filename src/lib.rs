@@ -3,7 +3,6 @@
 #![feature(asm)]
 #![feature(llvm_asm)]
 
-
 /// Library for ATmega2560P chip.
 // #[cfg(feature = "atmega2560p")]
 pub mod atmega2560p {
