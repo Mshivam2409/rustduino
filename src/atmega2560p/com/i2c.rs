@@ -156,7 +156,6 @@ impl Twi {
     }
 
     pub fn init(&mut self) {
-        unsafe {
             self.twsr.update(|sr| {
                 sr.set_bit(TWPS0, prescaler().1);
                 sr.set_bit(TWPS1, prescaler().2);
@@ -164,7 +163,6 @@ impl Twi {
             self.twcr.update(|cr| {
                 cr.set_bit(TWEN, true);
             })
-        }
     }
 
     pub fn start(&mut self) -> bool {
