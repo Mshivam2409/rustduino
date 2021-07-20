@@ -31,11 +31,7 @@ use volatile::Volatile;
 /// Some useful constants regarding bit manipulation for USART.
 /// Position of clock mode adjuster (xck) bit.
 const USART0_XCK: u8 = 4;
-/// Position of Transmission bit for various USART.
-// const usart0_td: u8 = 1;
-// /// Position of Reciever bit for various USART.
-// const usart0_rd: u8 = 0;
-// /// System Clock Crystal Oscillator Frequency in mHz.
+ /// System Clock Crystal Oscillator Frequency in mHz.
 const F_OSC: f64 = 1.0000;
 const MULTIPLY: f64 = 1000000.00;
 
@@ -289,13 +285,13 @@ impl Usart
 
     /// Sets the interrupt bits in UCSRB so that ongoing
     /// data transfers can be tracked.
-    fn check(&mut self) {
+   /* fn check(&mut self) {
         self.ucsrb.update( |srb| {
               srb.set_bit(6,true);
               srb.set_bit(7,true);
         });
     }
-     
+     */
     /// Return 1 if no ongoing transmission or recieval from the USART.
     /// Return 0 if their is some transfer going on.
     fn check_ongoing(&self) -> bool {

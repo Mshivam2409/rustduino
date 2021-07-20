@@ -44,7 +44,7 @@ const MODE: UsartModes = UsartModes::Normasync;
 /// Default USART number to be used.
 const NUM: UsartNum = UsartNum::Usart0;
 /// Default clock polarity mode.
-const POLARITY: UsartPolarity = UsartPolarity::Outputrise;
+const _POLARITY: UsartPolarity = UsartPolarity::Outputrise;
 
 impl Serial {
     /// Gives a new serial port object which can be used to control all the
