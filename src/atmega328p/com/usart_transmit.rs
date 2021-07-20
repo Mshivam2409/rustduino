@@ -32,16 +32,13 @@ impl Usart {
     /// This function is to enable the Transmitter
     /// Once it is enabled it takes control of the TXDn pin as a transmitting output.   
     pub fn transmit_enable(&mut self) {
-        unsafe {
             self.ucsrb.update(|srb| {
                 srb.set_bit(3, true);
             });
         }
-    }
 
     /// Storing data in Transmit Buffer which takes parameter as a u32 and and data bit length.
     pub fn transmitting_data(&self, data: u32, len: UsartDataSize) {
-        unsafe {
             // Checks if the Transmit buffer is empty to receive data.
             // If not the program waits till the time comes.
             let mut i: i32 = 10;
@@ -78,7 +75,6 @@ impl Usart {
                 }
             }
         }
-    }
     ///This function checks that transmission buffer is ready to be
     pub fn avai_write(&mut self) -> bool {
         let ucsra = self.ucsra.read();
@@ -151,7 +147,6 @@ impl Usart {
 
             self.udr.write(data);
         }
-    }
 
      /// This function send data type of string byte by byte.
      /// This function send data type of string byte by byte.
