@@ -6,7 +6,7 @@ use rustduino::sensors::*;
 
 #[no_mangle]
 pub fn main() {
-    let sensor = unsafe { AHT10::new() };
+    let sensor = AHT10::new(& mut AHT10::get());
 
     loop {
         sensor.relative_humidity();

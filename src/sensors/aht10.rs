@@ -46,6 +46,11 @@ impl<'a> AHT10<'a> {
         unsafe { &mut *(0x38 as *mut Self) }
     }
 
+    ///Return pointer
+    pub fn get() -> &'static mut Self {
+        unsafe { &mut *(0x38 as *mut Self) }
+    }
+
     ///Initiates the transmission by self initiating the sensor.
     ///Returns true if done otherwise false.
     ///Usage: rustduino::sensors::aht10::initialise()
