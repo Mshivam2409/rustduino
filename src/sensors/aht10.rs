@@ -25,7 +25,6 @@ pub struct AHT10<'a> {
 }
 
 ///Constant values for AHT10 temperature and humity sensor.
-const AHT10_I2CADDR_DEFAULT: u8 = 0x38; // Default I2C address
 const AHT10_INIT_CMD: u8 = 0xE1; //initialization command for AHT10/AHT15
 const AHT10_START_MEASURMENT_CMD: u8 = 0xAC; //start measurment command
 const AHT10_SOFT_RESET_CMD: u8 = 0xBA; //soft reset command
