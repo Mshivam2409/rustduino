@@ -30,14 +30,14 @@ use volatile::Volatile;
 
 /// Some useful constants regarding bit manipulation for USART.
 /// Position of clock mode adjuster (xck) bit.
-const usart0_xck: u8 = 4;
+const USART0_XCK: u8 = 4;
 /// Position of Transmission bit for various USART.
 // const usart0_td: u8 = 1;
 // /// Position of Reciever bit for various USART.
 // const usart0_rd: u8 = 0;
 // /// System Clock Crystal Oscillator Frequency in mHz.
-const f_osc: f64 = 1.0000;
-const multiply: f64 = 1000000.00;
+const F_OSC: f64 = 1.0000;
+const MULTIPLY: f64 = 1000000.00;
 
 
 /// Selection of which USART is to be used.
@@ -156,7 +156,7 @@ impl Usart
         let num : UsartNum = self.get_num();
         
             match num {
-                UsartNum::Usart0 => (port::Port::new(port::PortName::D),usart0_xck),
+                UsartNum::Usart0 => (port::Port::new(port::PortName::D),USART0_XCK),
             }
         }
     
@@ -199,7 +199,7 @@ impl Usart
 
     /// Function to set the clock polarity mode which is of use in the
     /// recieve and transmission implementation of USART.
-    pub fn set_polarity(&self,mode: UsartPolarity) {
+    pub fn set_polarity(&mut self,mode: UsartPolarity) {
         if self.get_mode() ==false { 
             self.ucsrc.update( |src| {
                 src.set_bit(0,false);
@@ -272,11 +272,11 @@ impl Usart
     }
 
     /// Function to set the power reduction register so that USART functioning is allowed. 
-    fn set_power(&self,num : UsartNum){
+    fn set_power(&mut self,num : UsartNum){
         let pow: &mut gating::Power;
-    unsafe {
+    
         pow = gating::Power::new();
-    }  
+      
         match num {
             UsartNum::Usart0 => { 
                 unsafe {
@@ -317,13 +317,13 @@ impl Usart
         let ubrr: u32 ;
         match mode {
             UsartModes::Normasync => {
-                ubrr = (((f_osc * multiply) / (16.00 * baud as f64)) - 1.00) as u32;
+                ubrr = (((F_OSC * MULTIPLY) / (16.00 * baud as f64)) - 1.00) as u32;
             }
             UsartModes::Douasync => {
-                ubrr = (((f_osc * multiply) / (8.00 * baud as f64)) - 1.00) as u32;
+                ubrr = (((F_OSC * MULTIPLY) / (8.00 * baud as f64)) - 1.00) as u32;
             }
             UsartModes::Mastersync => {
-                ubrr = (((f_osc * multiply) / (2.00 * baud as f64)) - 1.00) as u32;
+                ubrr = (((F_OSC * MULTIPLY) / (2.00 * baud as f64)) - 1.00) as u32;
             }
             _ => unreachable!(),
         }
@@ -407,7 +407,7 @@ impl Usart
     }
 
     /// Function to set the number of stop bits in the USART.
-    fn set_stop(&self, stop : UsartStop) {
+    fn set_stop(&mut self, stop : UsartStop) {
         match stop {
             UsartStop::One => { 
                 self.ucsrc.update(|src| {
@@ -427,7 +427,7 @@ impl Usart
     /// synchronization bits (start and stop bits), and optionally
     /// a parity bit for error checking.
     /// The USART accepts all 30 combinations of the following as valid frame formats.
-    fn set_frame(&self, stop: UsartStop, size: UsartDataSize, parity: UsartParity) {
+    fn set_frame(&mut self, stop: UsartStop, size: UsartDataSize, parity: UsartParity) {
         self.set_size(size);
         self.set_parity(parity);
         self.set_stop(stop);
