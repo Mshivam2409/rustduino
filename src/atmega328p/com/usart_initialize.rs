@@ -116,7 +116,10 @@ impl Usart
            UsartNum::Usart0 => &mut *(0xC0 as *mut Usart),
         }
     }
+}
 
+impl Usart
+{
     /// Function to disable global interrupts for smooth non-interrupted functioning of USART.
     fn disable(&mut self) 
     {
@@ -138,7 +141,7 @@ impl Usart
     }
 
      /// This function will return the Number of the USART according to the address.
-     fn get_num(&self) -> UsartNum {
+     fn get_num(&mut self) -> UsartNum {
         let address = (self as *const Usart) as u8;             // Gets address of usart structure.
         match address {
             // Return the number of USART used based on the address read.
@@ -184,7 +187,7 @@ impl Usart
 
     /// Function to check the mode of the USART.
     /// Returns 0 for asynchronous and 1 for synchronous.
-    fn get_mode(&self) -> bool {
+    fn get_mode(& mut self) -> bool {
         let mut src = self.ucsrc.read();
         src = src & (1 << 6);
         if src == 0 {
@@ -286,7 +289,7 @@ impl Usart
 
     /// Sets the interrupt bits in UCSRB so that ongoing
     /// data transfers can be tracked.
-    fn check(&self) {
+    fn check(&mut self) {
         self.ucsrb.update( |srb| {
               srb.set_bit(6,true);
               srb.set_bit(7,true);
@@ -310,7 +313,7 @@ impl Usart
     /// clock generator.
     /// Set the baud rate frequency for USART.
     /// Baud rate settings is used to set the clock for USART.
-    fn set_clock(&self, baud: i64, mode: UsartModes) {
+    fn set_clock(&mut self, baud: i64, mode: UsartModes) {
         let ubrr: u32 ;
         match mode {
             UsartModes::Normasync => {
@@ -337,7 +340,7 @@ impl Usart
     }
     
    /// Function to set the limit of data to be handled by USART.
-   fn set_size(&self,size : UsartDataSize) {
+   fn set_size(&mut self,size : UsartDataSize) {
     match size {
         UsartDataSize::Five
         | UsartDataSize::Six
