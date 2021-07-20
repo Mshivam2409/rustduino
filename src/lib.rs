@@ -4,6 +4,30 @@
 #![feature(llvm_asm)]
 
 /// Library for ATmega328P chip.
+#[cfg(feature = "atmega2560p")]
+pub mod atmega2560p {
+    /// Hardware Abstraction Library (HAL).
+    #[cfg(feature = "atmega2560p-hal")]
+    pub mod hal {
+        pub mod port;
+
+        pub mod pin;
+
+        pub mod watchdog;
+
+        pub mod interrupts;
+
+        pub mod power;
+
+        pub mod sleep_mode;
+    }
+}
+
+#[cfg(feature = "atmega2560p")]
+pub use atmega2560p::*;
+
+
+/// Library for ATmega328P chip.
 #[cfg(feature = "atmega328p")]
 pub mod atmega328p {
     /// Hardware Abstraction Library (HAL).

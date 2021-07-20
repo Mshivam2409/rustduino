@@ -2,9 +2,7 @@
 #![no_main]
 #![deny(warnings)]
 
-use rustduino::hal as arduino_uno;
-use rustduino::atmega328p::hal::pin::Pins;
-use rustduino::atmega328p::hal::watchdog::Watchdog;
+use rustduino::atmega328p::hal as arduino_uno;
 
 #[no_mangle]
 pub extern "C" fn main() {
