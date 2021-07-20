@@ -47,6 +47,12 @@ pub struct Analog {
     admux: Volatile<u8>,
 }
 
+pub enum RefType{
+    DEFAULT,
+    INTERNAL1V1,
+    EXTERNAL,
+}
+
 impl AnalogComparator {
     /// New pointer object created for Analog Comparator Structure.
     pub unsafe fn new() -> &'static mut AnalogComparator {
@@ -68,11 +74,34 @@ impl Analog {
     }
 
     /// Function to create a reference for Analog signals.
-    pub fn analog_reference() {}
+    pub fn analog_reference() {
+        match reftype{
+            RefType::DEFAULT=>{
+                self.admux.update(|admux| {
+                    admux.set_bits(6..8, 0b01);
+                });
+            }
+            RefType::INTERNAL1V1=>{self.admux.update(|admux| {
+                    admux.set_bits(6..8, 0b10);
+                });
+            }
+            RefType::EXTERNAL=>{self.admux.update(|admux| {
+                    admux.set_bits(6..8, 0b00);
+                });
+            }
+        }
+    }
+
+
+    }
 
     /// Function to read data which is got as input to Analog Pins.
-    pub fn analog_read() {}
+    pub fn analog_read() {
+
+    }
 
     /// Function to write data as an output through Analog Pins.
-    pub fn analog_write() {}
+    pub fn analog_write() {
+
+    }
 }

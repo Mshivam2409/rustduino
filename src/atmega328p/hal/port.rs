@@ -2,7 +2,7 @@
 
 use core::ptr::{read_volatile, write_volatile};
 
-/// Represents name of Port, can be either B, C, or D.
+/// Represents name of Port, can be either A, B, C, or D.
 pub enum PortName {
     B,
     C,
