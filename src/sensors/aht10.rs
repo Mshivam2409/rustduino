@@ -14,13 +14,9 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>
 
-use crate::atmega328p::com::i2c;
+use crate::com::i2c;
 use crate::delay::delay_ms;
 use fixed_slice_vec::FixedSliceVec;
-
-pub enum Tempsensor {
-    Aht10sensor,
-}
 
 pub struct AHT10<'a> {
     address: u8,
@@ -28,44 +24,36 @@ pub struct AHT10<'a> {
     vec: FixedSliceVec<'a, u8>,
 }
 
-const AHT10_ADDRESS_0X38: u8 = 0x38; //chip I2C address no.1 for AHT10/AHT15/AHT20, address pin connected to GND
-const AHT10_ADDRESS_0X39: u8 = 0x39; //chip I2C address no.2 for AHT10 only, address pin connected to Vcc
-
+///Constant values for AHT10 temperature and humity sensor.
 const AHT10_INIT_CMD: u8 = 0xE1; //initialization command for AHT10/AHT15
 const AHT10_START_MEASURMENT_CMD: u8 = 0xAC; //start measurment command
-const AHT10_NORMAL_CMD: u8 = 0xA8; //normal cycle mode command, no info in datasheet!!!
 const AHT10_SOFT_RESET_CMD: u8 = 0xBA; //soft reset command
-
-const AHT10_INIT_NORMAL_MODE: u8 = 0x00; //enable normal mode
-const AHT10_INIT_CYCLE_MODE: u8 = 0x20; //enable cycle mode
-const AHT10_INIT_CMD_MODE: u8 = 0x40; //enable command mode
 const AHT10_INIT_CAL_ENABLE: u8 = 0x08; //load factory calibration coeff
-const AHT10_INIT_BUSY: u8 = 0x08;
-
-const AHT10_DATA_MEASURMENT_CMD: u8 = 0x33; //no info in datasheet!!! my guess it is DAC resolution, saw someone send 0x00 instead
-const AHT10_DATA_NOP: u8 = 0x00; //no info in datasheet!!!
-
-const AHT10_MEASURMENT_DELAY: u8 = 80; //at least 75 milliseconds
-const AHT10_POWER_ON_DELAY: u8 = 40; //at least 20..40 milliseconds
-const AHT10_CMD_DELAY: u32 = 350; //at least 300 milliseconds, no info in datasheet!!!
-const AHT10_SOFT_RESET_DELAY: u8 = 20; //less than 20 milliseconds
-
-const AHT10_FORCE_READ_DATA: bool = true; //force to read data
-const AHT10_USE_READ_DATA: bool = false; //force to use data from previous read
-const AHT10_ERROR: u8 = 0xFF; //returns 255, if communication error is occurred
+const AHT10_INIT_BUSY: u8 = 0x08; //Status bit for busy
 
 impl<'a> AHT10<'a> {
+    ///20ms delay to wake up.
+    ///I2C address is set.
+    ///Usage: rustduino::sensors::aht10::new()
     pub fn new(&mut self) -> &'static mut Self {
-        delay_ms(20); //20ms delay to wake up
+        delay_ms(20);
 
         self.soft_reset();
 
         if !self.initialise() {
-            unreachable!("Could not intialise!");
+            unreachable!();
         }
         unsafe { &mut *(0x38 as *mut Self) }
     }
 
+    ///Return pointer
+    pub fn get() -> &'static mut Self {
+        unsafe { &mut *(0x38 as *mut Self) }
+    }
+
+    ///Initiates the transmission by self initiating the sensor.
+    ///Returns true if done otherwise false.
+    ///Usage: rustduino::sensors::aht10::initialise()
     pub fn initialise(&mut self) -> bool {
         self.vec.clear();
         self.vec.push(AHT10_INIT_CMD);
@@ -82,6 +70,10 @@ impl<'a> AHT10<'a> {
         return true;
     }
 
+    ///Restart sensor, without power off.
+    /// It takes ~20ms.
+    /// All registers restores to default.
+    ///Usage: rustduino::sensors::aht10::soft_reset()
     pub fn soft_reset(&mut self) {
         self.vec.clear();
         self.vec.push(AHT10_SOFT_RESET_CMD);
@@ -92,6 +84,8 @@ impl<'a> AHT10<'a> {
         delay_ms(20);
     }
 
+    ///Reads data from slave.
+    ///Usage: rustduino::sensors::aht10::read_to_buffer()
     pub fn read_to_buffer(&mut self) {
         if !self
             .i2c
@@ -101,6 +95,8 @@ impl<'a> AHT10<'a> {
         }
     }
 
+    ///Triggers the AHT10 to read teamperature/humidity.
+    ///Usage: rustduino::sensors::aht10::trigger_slave()
     pub fn trigger_slave(&mut self) {
         self.vec.clear();
         self.vec.push(AHT10_START_MEASURMENT_CMD);
@@ -112,22 +108,31 @@ impl<'a> AHT10<'a> {
         }
     }
 
+    ///Delay of 5ms when status bit is 0 and sensor is busy.
+    ///Usage: rustduino::sensors::aht10::wait_for_idle()
     pub fn wait_for_idle(&mut self) {
         while (self.status() == 0 && AHT10_INIT_BUSY == 0) == true {
             delay_ms(5);
         }
     }
 
+    ///Performs measurement using the functions mentioned.
+    ///Usage: rustduino::sensors::aht10::perform_measurement()
     pub fn perform_measurement(&mut self) {
         self.trigger_slave();
         self.wait_for_idle();
         self.read_to_buffer();
     }
+
+    ///Reads status bit returned by the slave.
+    ///Usage: rustduino::sensors::aht10::status()
     pub fn status(&mut self) -> u8 {
         self.read_to_buffer();
         return self.vec[0];
     }
 
+    ///Reads 20 bit raw humidity data and returns relative humidity in percentage.
+    ///Usage: rustduino::sensors::aht10::relative_humidity()
     pub fn relative_humidity(&mut self) -> f64 {
         self.perform_measurement();
         let mut humid: f64 = (((self.vec[1] as u32) << 12)
@@ -137,6 +142,8 @@ impl<'a> AHT10<'a> {
         return humid;
     }
 
+    ///Reads 20 bit raw temperature data and returns temperature in degree celcius.
+    ///Usage: rustduino::sensors::aht10::temperature()
     pub fn temperature(&mut self) -> f64 {
         self.perform_measurement();
         let mut temp: f64 = ((((self.vec[3] as u32) & 0xF) << 16)
