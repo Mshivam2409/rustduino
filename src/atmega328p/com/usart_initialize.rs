@@ -155,7 +155,7 @@ impl Usart
             match num {
                 UsartNum::Usart0 => (port::Port::new(port::PortName::D),usart0_xck),
             }
-        
+        }
     }
 
     /// Function to return the index of xck bit in the port.
