@@ -479,23 +479,23 @@ impl MPU6050 {
         return self.readregister(MPU6050_REG_INT_STATUS);
     }
 
-    pub fn read_accel(&mut self, mut data: Vector) -> Vector {
+    pub fn read_accel(&mut self, mut data: Vector) -> Vector {    //function to configures between gyro and master.
         let mut v: FixedSliceVec<u8> = FixedSliceVec::new(&mut []);
         v.push(MPU6050_REG_ACCEL_XOUT_H);
-        self.i2c.read_from_slave(MPU6050_ADDRESS, 6, &mut v);
-        data.x = ((v[1] << 8) | v[2]) as f32;
-        data.y = ((v[3] << 8) | v[4]) as f32;
-        data.z = ((v[5] << 8) | v[6]) as f32;
+        self.i2c.read_from_slave(MPU6050_ADDRESS, 6, &mut v); //input from slave
+        data.x = ((v[1] << 8) | v[2]) as f32;         //input of X axis
+        data.y = ((v[3] << 8) | v[4]) as f32;         //input of Y axis
+        data.z = ((v[5] << 8) | v[6]) as f32;         //input of Z axis
         return data;
     }
 
-    pub fn read_gyro(&mut self, mut data: Vector) -> Vector {
+    pub fn read_gyro(&mut self, mut data: Vector) -> Vector {  //function to configures between gyro and master.
         let mut v: FixedSliceVec<u8> = FixedSliceVec::new(&mut []);
         v.push(MPU6050_REG_GYRO_XOUT_H);
-        self.i2c.read_from_slave(MPU6050_ADDRESS, 6, &mut v);
-        data.x = ((v[1] << 8) | v[2]) as f32;
-        data.y = ((v[3] << 8) | v[4]) as f32;
-        data.z = ((v[5] << 8) | v[6]) as f32;
+        self.i2c.read_from_slave(MPU6050_ADDRESS, 6, &mut v);  //input from slave
+        data.x = ((v[1] << 8) | v[2]) as f32;                   //input of X axis
+        data.y = ((v[3] << 8) | v[4]) as f32;                   //input of Y axis
+        data.z = ((v[5] << 8) | v[6]) as f32;                   //input of Z axis
         return data;
     }
 
