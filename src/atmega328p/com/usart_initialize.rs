@@ -17,7 +17,7 @@
 /// Other source code files to be used
 use crate::atmega328p::hal::interrupt;
 use crate::atmega328p::hal::port;
-use crate::atmega328p::hal::power;
+use crate::atmega328p::hal::gating;
 
 /// Crates which would be used in the implementation.
 /// We will be using standard volatile and bit_field crates now for a better read and write.
@@ -270,14 +270,14 @@ impl Usart
 
     /// Function to set the power reduction register so that USART functioning is allowed. 
     fn set_power(&self,num : UsartNum){
-        let pow: &mut power::Power;
+        let pow: &mut gating::Power;
     unsafe {
-        pow = power::Power::new();
+        pow = gating::Power::new();
     }  
         match num {
             UsartNum::Usart0 => { 
                 unsafe {
-                    write_volatile(&mut pow.smcr,pow.smcr & !(1 << 1));
+                    write_volatile(&mut pow.prr,pow.prr & !(1 << 1));
                 }   
             }    
         }
