@@ -149,13 +149,13 @@ impl Usart
 
     /// Function to get the port containing bits to
     /// manipulate Recieve,Transmit and XCK bit of the particular USART.
-    fn get_port(&self) -> port::Port {
+    fn get_port_xck(&mut self) -> (&mut port::Port,u8) {
         let num : UsartNum = self.get_num();
-        unsafe {
+        
             match num {
-                UsartNum::Usart0 => *port::Port::new(port::PortName::D),
+                UsartNum::Usart0 => (port::Port::new(port::PortName::D),usart0_xck),
             }
-        }
+        
     }
 
     /// Function to return the index of xck bit in the port.
@@ -310,7 +310,7 @@ impl Usart
     /// Set the baud rate frequency for USART.
     /// Baud rate settings is used to set the clock for USART.
     fn set_clock(&self, baud: i64, mode: UsartModes) {
-        let mut ubrr: u32 = 0;
+        let ubrr: u32 ;
         match mode {
             UsartModes::Normasync => {
                 ubrr = (((f_osc * multiply) / (16.00 * baud as f64)) - 1.00) as u32;
