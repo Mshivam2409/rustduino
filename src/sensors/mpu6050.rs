@@ -339,7 +339,7 @@ impl MPU6050 {
 
     pub fn get_int_free_fall_enabled(&mut self) -> bool {
         let mut value = self.readregister(MPU6050_REG_INT_ENABLE);
-        return get_bit(value, 6);
+        return value.get_bit(6);
     }
 
     pub fn set_accel_power_on_delay(&mut self, delay: MPUOnDelayT) {
@@ -421,12 +421,12 @@ impl MPU6050 {
 
     pub fn get_sleep_enabled(&mut self) -> bool {
         let mut value = self.readregister(MPU6050_REG_PWR_MGMT_1);
-        return get_bit(value, 6);
+        return value.get_bit(6);
     }
 
     pub fn get_int_zero_motion_enabled(&mut self) -> bool {
         let mut value = self.readregister(MPU6050_REG_INT_ENABLE);
-        return get_bit(value, 5);
+        return value.get_bit(5);
     }
 
     pub fn set_int_zero_motion_enabled(&mut self, state: bool) {
@@ -435,7 +435,7 @@ impl MPU6050 {
 
     pub fn get_int_motion_enabled(&mut self) -> bool {
         let mut value = self.readregister(MPU6050_REG_INT_ENABLE);
-        return get_bit(value, 6);
+        return value.get_bit(6);
     }
 
     pub fn set_int_motion_enabled(&mut self, state: bool) {
@@ -448,7 +448,7 @@ impl MPU6050 {
 
     pub fn get_i2c_master_mode_enabled(&mut self) -> bool {
         let mut value = self.readregister(MPU6050_REG_USER_CTRL);
-        return get_bit(value, 5);
+        return value.get_bit(5);
     }
 
     pub fn set_i2c_byepass_enabled(&mut self, state: bool) {
@@ -457,7 +457,7 @@ impl MPU6050 {
 
     pub fn get_i2c_byepass_enabled(&mut self) -> bool {
         let mut value = self.readregister(MPU6050_REG_INT_PIN_CFG);
-        return get_bit(value, 1);
+        return value.get_bit(1);
     }
 
     pub fn get_int_status(&mut self) -> u8 {
