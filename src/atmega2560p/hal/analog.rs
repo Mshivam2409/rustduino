@@ -130,11 +130,11 @@ impl AnalogComparator {
 
 impl Pin {
     /// Function to create a reference for Analog signals.
-    pub fn analog_read(&mut self, pin: u32, reftype: RefType) {
+    pub fn analog_read(&mut self, pin: u32, reftype: RefType) -> u32 {
         unsafe {
             let analog = Analog::new();
 
-            analog.power_adc_disable();
+            analog.power_adc_disable();//PRADC disable to enable ADC
 
             analog.adc_enable();
 
@@ -324,7 +324,15 @@ impl Pin {
 
             analog.adc_con_start();
 
+            // wait 25 ADC cycles
+            let mut a:u32 = 0;
+            a.set_bits(0..8,analog.adcl.read().into());
+            
+            a.set_bits(8..10,analog.adch.read().into());
+
             analog.adc_disable();
+
+            a
         }
     }
 
