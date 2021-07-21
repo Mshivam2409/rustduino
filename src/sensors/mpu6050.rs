@@ -485,9 +485,9 @@ impl MPU6050 {
         v.push(MPU6050_REG_ACCEL_XOUT_H);
         let i2c = com::i2c::Twi::new();
         i2c.read_from_slave(MPU6050_ADDRESS, 6, &mut v); //input from slave
-        data.x = ((v[1] << 8) | v[2]) as f32; //input of X axis
-        data.y = ((v[3] << 8) | v[4]) as f32; //input of Y axis
-        data.z = ((v[5] << 8) | v[6]) as f32; //input of Z axis
+        data.x = (((v[1] as u16) << 8) | (v[2] as u16)) as f32; //input of X axis
+        data.y = (((v[3] as u16) << 8) | (v[4] as u16)) as f32; //input of Y axis
+        data.z = (((v[5] as u16) << 8) | (v[6] as u16)) as f32; //input of Z axis
         return data;
     }
 
@@ -497,9 +497,9 @@ impl MPU6050 {
         v.push(MPU6050_REG_GYRO_XOUT_H);
         let i2c = com::i2c::Twi::new();
         i2c.read_from_slave(MPU6050_ADDRESS, 6, &mut v); //input from slave
-        data.x = ((v[1] << 8) | v[2]) as f32; //input of X axis
-        data.y = ((v[3] << 8) | v[4]) as f32; //input of Y axis
-        data.z = ((v[5] << 8) | v[6]) as f32; //input of Z axis
+        data.x = (((v[1] as u16) << 8) | (v[2] as u16)) as f32; //input of X axis
+        data.y = (((v[3] as u16) << 8) | (v[4] as u16)) as f32; //input of Y axis
+        data.z = (((v[5] as u16) << 8) | (v[6] as u16)) as f32; //input of Z axis
         return data;
     }
 
