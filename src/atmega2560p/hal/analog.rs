@@ -24,7 +24,7 @@
 use bit_field::BitField;
 /// Crates to be used for the implementation.
 use volatile::Volatile;
-use crate::atmega2560p::hal::port::{Port,Pin};
+use crate::atmega2560p::hal::port::*;
 /// Structure to control the implementation of Integrated Analog Circuit.
 #[repr(C, packed)]
 pub struct AnalogComparator {
@@ -49,6 +49,57 @@ pub enum RefType {
     INTERNAL2V56,
     EXTERNAL,
 }
+pub enum TimerNo8{
+    Timer0,
+    Timer2,
+}
+pub enum TimerNo16{
+    Timer1,
+    Timer3,
+    Timer4,
+    Timer5,
+}
+pub struct Timer8{
+    tccra:Volatile<u8>,
+    tccrb:Volatile<u8>,
+    tcnt:Volatile<u8>,
+    ocra:Volatile<u8>,
+    ocrb:Volatile<u8>,
+}
+pub struct Timer16{
+    tccra:Volatile<u8>,
+    tccrb:Volatile<u8>,
+    tccrc:Volatile<u8>,
+    pad0:Volatile<u8>,
+    tcntl:Volatile<u8>,
+    tcnth:Volatile<u8>,
+    icrl:Volatile<u8>,
+    icrh:Volatile<u8>,
+    ocral:Volatile<u8>,
+    ocrah:Volatile<u8>,
+    ocrbl:Volatile<u8>,
+    ocrbh:Volatile<u8>,
+    ocrcl:Volatile<u8>,
+    ocrch:Volatile<u8>,
+}
+impl Timer8{
+    pub fn new(timer:TimerNo8) -> &'static mut Timer8{
+        match timer{
+            TimerNo8::Timer0=>unsafe{&mut *(0x44 as *mut Timer8)},
+            TimerNo8::Timer2=>unsafe{&mut *(0xB0 as *mut Timer8)},
+        }
+    }
+}
+impl Timer16{
+    pub fn new(timer:TimerNo16) -> &'static mut Timer16{
+        match timer{
+            TimerNo16::Timer1=>unsafe{&mut *(0x80 as *mut Timer16)},
+            TimerNo16::Timer3=>unsafe{&mut *(0x90 as *mut Timer16)},
+            TimerNo16::Timer4=>unsafe{&mut *(0xA0 as *mut Timer16)},
+            TimerNo16::Timer5=>unsafe{&mut *(0x120 as *mut Timer16)},
+        }
+    }
+}
 
 impl AnalogComparator {
     /// New pointer object created for Analog Comparator Structure.
@@ -63,7 +114,7 @@ impl Pin{
         
        unsafe{ 
            
-        let mut analog =Analog::new();
+        let analog =Analog::new();
         analog.adc_enable();
 
         match pin{
@@ -243,9 +294,18 @@ impl Pin{
                     mux.set_bit(3,true);
                 });
             }
+            _=>(),
         }
     
         }
+    }
+
+
+
+    pub fn analog_write(&mut self,_pi:u32,_val:u32){
+        self.output();
+
+
     }
 }
 impl Analog {
@@ -259,7 +319,7 @@ impl Analog {
         match reftype {
             RefType::DEFAULT => {
                 self.admux.update(|admux| {
-                    admux.set_bits(6..8, 0b00);
+                    admux.set_bits(6..8, 0b01);
                 });
             }
             RefType::INTERNAL1V1 => {
@@ -274,7 +334,7 @@ impl Analog {
             }
             RefType::EXTERNAL => {
                 self.admux.update(|admux| {
-                    admux.set_bits(6..8, 0b01);
+                    admux.set_bits(6..8, 0b00);
                 });
             }
         }
@@ -316,6 +376,5 @@ impl Analog {
     
     }
 
-    /// Function to write data as an output through Analog Pins.
-    pub fn analog_write() {}
+    
 }
