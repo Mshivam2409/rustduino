@@ -24,7 +24,7 @@
 /// Crates to be used for the implementation.
 use volatile::Volatile;
 use bit_field::BitField;
-
+use crate::atmega2560p::hal::pin;
 /// Structure to control the implementation of Integrated Analog Circuit.
 #[repr(C, packed)]
 pub struct AnalogComparator {
@@ -53,6 +53,29 @@ pub enum RefType{
     INTERNAL1V1,
     INTERNAL2V56,
     EXTERNAL,
+}
+pub enum PIN{
+    ADC0,
+    ADC1,
+    ADC2,
+    ADC3,
+    ADC4,
+    ADC5,
+    ADC6,
+    ADC7,
+    ADC8,
+    ADC9,
+    ADC10,
+    ADC11,
+    ADC12,
+    ADC13,
+    ADC14,
+    ADC15,
+}
+
+pub enum Aldar{
+    L,
+    R,
 }
 
 impl AnalogComparator {
@@ -95,9 +118,189 @@ impl Analog {
 
         }
     }
+    
+    ///Function is Used to enable the ADC
+    pub fn adc_enable (&mut self){
+
+        self.adcsra.update(|aden| {
+            aden.set_bit(7,1);
+        });
+    
+    }
 
     /// Function to read data which is got as input to Analog Pins.
-    pub fn analog_read() {}
+    pub fn analog_read(&mut self,pin: PIN,aldar: Aldar) {
+
+    // Write 1 to analog pins' DIDR bit of corresponding analog pin
+
+    match aldar{
+        Aldar::L=>{self.admux.update(|admux| {
+        admux.set_bit(5,1);
+        });
+        }
+        Aldar::R=>{self.admux.update(|admux| {
+        admux.set_bit(5,0);
+        });
+        }
+    }
+
+    match pin{
+        PIN::ADC0=>{
+            self.admux.update(|admux| {
+                admux.set_bits(0..3,0b000);
+            });
+            
+            self.adcsrb.update(|mux| {
+                mux.set_bit(3, 0);
+            });
+        }
+        PIN::ADC1=>{
+            self.admux.update(|admux| {
+                admux.set_bits(0..3,0b001);
+            });
+            
+            self.adcsrb.update(|mux| {
+                mux.set_bit(3,0);
+            });
+        }
+        PIN::ADC2=>{
+            self.admux.update(|admux| {
+                admux.set_bits(0..3,0b010);
+            });
+            
+            self.adcsrb.update(|mux| {
+                mux.set_bit(3,0);
+            });
+        }
+        PIN::ADC3=>{
+            self.admux.update(|admux| {
+                admux.set_bits(0..3,0b011);
+            });
+            
+            self.adcsrb.update(|mux| {
+                mux.set_bit(3,0);
+            });
+        }
+        PIN::ADC4=>{
+            self.admux.update(|admux| {
+                admux.set_bits(0..3,0b100);
+            });
+            
+            self.adcsrb.update(|mux| {
+                mux.set_bit(3,0);
+            });
+        }
+        PIN::ADC5=>{
+            self.admux.update(|admux| {
+                admux.set_bits(0..3,0b101);
+            });
+            
+            self.adcsrb.update(|mux| {
+                mux.set_bit(3,0);
+            });
+        }
+        PIN::ADC6=>{
+            self.admux.update(|admux| {
+                admux.set_bits(0..3,0b110);
+            });
+            
+            self.adcsrb.update(|mux| {
+                mux.set_bit(3,0);
+            });
+        }
+        PIN::ADC7=>{
+            self.admux.update(|admux| {
+                admux.set_bits(0..3,0b111);
+            });
+            
+            self.adcsrb.update(|mux| {
+                mux.set_bit(3,0);
+            });
+        }
+        PIN::ADC8=>{
+            self.admux.update(|admux| {
+                admux.set_bits(0..3,0b000);
+            });
+            
+            self.adcsrb.update(|mux| {
+                mux.set_bit(3,1);
+            });
+        }
+        PIN::ADC9=>{
+            self.admux.update(|admux| {
+                admux.set_bits(0..3,0b001);
+            });
+            
+            self.adcsrb.update(|mux| {
+                mux.set_bit(3,1);
+            });
+        }
+        PIN::ADC10=>{
+            self.admux.update(|admux| {
+                admux.set_bits(0..3,0b010);
+            });
+            
+            self.adcsrb.update(|mux| {
+                mux.set_bit(3,1);
+            });
+        }
+        PIN::ADC11=>{
+            self.admux.update(|admux| {
+                admux.set_bits(0..3,0b011);
+            });
+            
+            self.adcsrb.update(|mux| {
+                mux.set_bit(3,1);
+            });
+        }
+        PIN::ADC12=>{
+            self.admux.update(|admux| {
+                admux.set_bits(0..3,0b100);
+            });
+            
+            self.adcsrb.update(|mux| {
+                mux.set_bit(3,1);
+            });
+        }
+        PIN::ADC13=>{
+            self.admux.update(|admux| {
+                admux.set_bits(0..3,0b101);
+            });
+            
+            self.adcsrb.update(|mux| {
+                mux.set_bit(3,1);
+            });
+        }
+        PIN::ADC14=>{
+            self.admux.update(|admux| {
+                admux.set_bits(0..3,0b110);
+            });
+            
+            self.adcsrb.update(|mux| {
+                mux.set_bit(3,1);
+            });
+        }
+        PIN::ADC15=>{
+            self.admux.update(|admux| {
+                admux.set_bits(0..3,0b111);
+            });
+            
+            self.adcsrb.update(|mux| {
+                mux.set_bit(3,1);
+            });
+        }
+    }
+
+    }
+
+    ///Function is Used to disable the ADC
+    pub fn adc_disable (&mut self){
+
+        self.adcsra.update(|aden| {
+            aden.set_bit(7,0);
+        });
+    
+    }
 
     /// Function to write data as an output through Analog Pins.
     pub fn analog_write() {}
