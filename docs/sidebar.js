@@ -52,10 +52,15 @@ module.exports = {
       id: 'contributors'
     },
     {
-      type:'communication',
-      label:'I2C',
-      items:['sensors/aht10','com/i2c']
+      type:'category',
+      label:'Communication',
+      items:['com/i2c']
     },
+    {
+      type:'category',
+      label:'Sensors',
+      items : ['sensors/aht10']
+    }
     
   ]
 }
