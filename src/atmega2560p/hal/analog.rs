@@ -24,7 +24,9 @@
 /// Crates to be used for the implementation.
 use bit_field::BitField;
 use volatile::Volatile;
+use core::ptr::write_volatile;
 use crate::atmega2560p::hal::port::*;
+use crate::atmega2560p::hal::power::Power;
 
 
 /// Selection of reference type for the implementation of Analog Pins.
@@ -139,10 +141,15 @@ impl AnalogComparator {
 
 impl Pin {
     /// Function to create a reference for Analog signals.
-    pub fn analog_read(&mut self, pin: u32, reftype: RefType) {
-        unsafe {
-            let analog = Analog::new();
-            analog.adc_enable();
+    pub fn analog_read(&mut self,pin: u32,reftype:RefType) {
+        
+    unsafe{ 
+           
+        let analog =Analog::new();
+
+        analog.power_adc_disable();
+
+        analog.adc_enable();
 
             analog.adc_auto_trig();
 
@@ -378,6 +385,15 @@ impl Analog {
         });
     }
 
+    pub fn power_adc_disable (&mut self){
+        unsafe{
+
+            let pow= Power::new();
+            write_volatile(&mut pow.prr0, pow.prr0 & (254));
+
+        }
+    }
+
     ///Function is Used to start a conversion in the ADC
     pub fn adc_con_start(&mut self) {
         self.adcsra.update(|aden| {
@@ -398,4 +414,15 @@ impl Analog {
             aden.set_bit(7, false);
         });
     }
+
+    pub fn power_adc_enable (&mut self){
+        unsafe{
+
+            let pow= Power::new();
+            write_volatile(&mut pow.prr0, pow.prr0 | (1));
+
+        }
+    }
+
+    
 }
