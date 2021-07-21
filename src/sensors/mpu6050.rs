@@ -180,24 +180,23 @@ pub enum MPUdlpfT {
 }
 
 pub struct MPU6050 {
-    //address: Volatile<u8>,
-    i2c: &'static mut i2c::Twi,
+    address: u8,
+    //i2c: &'static mut i2c::Twi,
     //atmega2560p::com::i2C::Twi::new(),
     //vec: FixedSliceVec<'a ,u8>,
 }
 
 impl MPU6050 {
-    pub fn new() -> &'static mut MPU6050 {
-        let mut a = MPU6050 {
-            i2c: com::i2c::Twi::new(),
-        };
-        return &mut a;
+    ///Returns a mutable refernce to the struct to be used in the implementations
+    pub fn new() -> &'static mut Self {
+        unsafe { &mut *(0x00 as *mut Self) }
     }
 
     fn readregister(&mut self, reg: u8) -> u8 {
         let mut vec1: FixedSliceVec<u8> = FixedSliceVec::new(&mut []);
         vec1.push(reg);
-        self.i2c.read_from_slave(MPU6050_ADDRESS, 1, &mut vec1);
+        let i2c = com::i2c::Twi::new();
+        i2c.read_from_slave(MPU6050_ADDRESS, 1, &mut vec1);
         return vec1[1];
     }
 
@@ -205,7 +204,8 @@ impl MPU6050 {
         let mut vec2: FixedSliceVec<u8> = FixedSliceVec::new(&mut []);
         vec2.push(reg);
         vec2.push(value);
-        self.i2c.write_to_slave(MPU6050_ADDRESS, &vec2);
+        let i2c = com::i2c::Twi::new();
+        i2c.write_to_slave(MPU6050_ADDRESS, &vec2);
     }
 
     fn writeregister_bit(&mut self, reg: u8, pos: u8, state: bool) {
@@ -483,7 +483,8 @@ impl MPU6050 {
     pub fn read_accel(&mut self, mut data: Vector) -> Vector {
         let mut v: FixedSliceVec<u8> = FixedSliceVec::new(&mut []);
         v.push(MPU6050_REG_ACCEL_XOUT_H);
-        self.i2c.read_from_slave(MPU6050_ADDRESS, 6, &mut v); //input from slave
+        let i2c = com::i2c::Twi::new();
+        i2c.read_from_slave(MPU6050_ADDRESS, 6, &mut v); //input from slave
         data.x = ((v[1] << 8) | v[2]) as f32; //input of X axis
         data.y = ((v[3] << 8) | v[4]) as f32; //input of Y axis
         data.z = ((v[5] << 8) | v[6]) as f32; //input of Z axis
@@ -494,14 +495,15 @@ impl MPU6050 {
     pub fn read_gyro(&mut self, mut data: Vector) -> Vector {
         let mut v: FixedSliceVec<u8> = FixedSliceVec::new(&mut []);
         v.push(MPU6050_REG_GYRO_XOUT_H);
-        self.i2c.read_from_slave(MPU6050_ADDRESS, 6, &mut v); //input from slave
+        let i2c = com::i2c::Twi::new();
+        i2c.read_from_slave(MPU6050_ADDRESS, 6, &mut v); //input from slave
         data.x = ((v[1] << 8) | v[2]) as f32; //input of X axis
         data.y = ((v[3] << 8) | v[4]) as f32; //input of Y axis
         data.z = ((v[5] << 8) | v[6]) as f32; //input of Z axis
         return data;
     }
 
-    pub fn begin(&mut self, scale: MPUdpsT, range: MPURangeT) -> bool {
+    pub fn begin(&mut self, t: &'static mut i2c::Twi, scale: MPUdpsT, range: MPURangeT) -> bool {
         delay_ms(5);
 
         //Set clock source.
