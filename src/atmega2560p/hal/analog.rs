@@ -110,12 +110,16 @@ impl AnalogComparator {
 
 impl Pin{
     /// Function to create a reference for Analog signals.
-    pub fn analog_read(&mut self,pin: u32) {
+    pub fn analog_read(&mut self,pin: u32,reftype:RefType) {
         
-       unsafe{ 
+    unsafe{ 
            
         let analog =Analog::new();
         analog.adc_enable();
+
+        analog.adc_auto_trig();
+
+        analog.analog_reference(reftype);
 
         match pin{
             0=>{
@@ -296,8 +300,11 @@ impl Pin{
             }
             _=>(),
         }
-    
-        }
+
+        analog.adc_con_start();
+
+        analog.adc_disable();
+    }
     }
 
 
