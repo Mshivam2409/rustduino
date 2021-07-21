@@ -24,7 +24,7 @@
 /// Crates to be used for the implementation.
 use volatile::Volatile;
 use bit_field::BitField;
-use crate::atmega2560p::hal::pin;
+use crate::atmega2560p::hal::port::Pin;
 /// Structure to control the implementation of Integrated Analog Circuit.
 #[repr(C, packed)]
 pub struct AnalogComparator {
@@ -123,10 +123,28 @@ impl Analog {
     pub fn adc_enable (&mut self){
 
         self.adcsra.update(|aden| {
-            aden.set_bit(7,1);
+            aden.set_bit(7,true);
         });
     
     }
+
+    ///Function is Used to start a conversion in the ADC
+    pub fn adc_con_start (&mut self){
+
+        self.adcsra.update(|aden| {
+            aden.set_bit(6,true);
+        });
+    
+    }    
+
+    ///Function is Used to stop auto triggering in the ADC
+    pub fn adc_auto_trig (&mut self){
+
+        self.adcsra.update(|aden| {
+            aden.set_bit(5,false);
+        });
+    
+    }    
 
     /// Function to read data which is got as input to Analog Pins.
     pub fn analog_read(&mut self,pin: PIN,aldar: Aldar) {
@@ -135,11 +153,11 @@ impl Analog {
 
     match aldar{
         Aldar::L=>{self.admux.update(|admux| {
-        admux.set_bit(5,1);
+        admux.set_bit(5,true);
         });
         }
         Aldar::R=>{self.admux.update(|admux| {
-        admux.set_bit(5,0);
+        admux.set_bit(5,false);
         });
         }
     }
@@ -151,7 +169,7 @@ impl Analog {
             });
             
             self.adcsrb.update(|mux| {
-                mux.set_bit(3, 0);
+                mux.set_bit(3, false);
             });
         }
         PIN::ADC1=>{
@@ -160,7 +178,7 @@ impl Analog {
             });
             
             self.adcsrb.update(|mux| {
-                mux.set_bit(3,0);
+                mux.set_bit(3,false);
             });
         }
         PIN::ADC2=>{
@@ -169,7 +187,7 @@ impl Analog {
             });
             
             self.adcsrb.update(|mux| {
-                mux.set_bit(3,0);
+                mux.set_bit(3,false);
             });
         }
         PIN::ADC3=>{
@@ -178,7 +196,7 @@ impl Analog {
             });
             
             self.adcsrb.update(|mux| {
-                mux.set_bit(3,0);
+                mux.set_bit(3,false);
             });
         }
         PIN::ADC4=>{
@@ -187,7 +205,7 @@ impl Analog {
             });
             
             self.adcsrb.update(|mux| {
-                mux.set_bit(3,0);
+                mux.set_bit(3,false);
             });
         }
         PIN::ADC5=>{
@@ -196,7 +214,7 @@ impl Analog {
             });
             
             self.adcsrb.update(|mux| {
-                mux.set_bit(3,0);
+                mux.set_bit(3,false);
             });
         }
         PIN::ADC6=>{
@@ -205,7 +223,7 @@ impl Analog {
             });
             
             self.adcsrb.update(|mux| {
-                mux.set_bit(3,0);
+                mux.set_bit(3,false);
             });
         }
         PIN::ADC7=>{
@@ -214,7 +232,7 @@ impl Analog {
             });
             
             self.adcsrb.update(|mux| {
-                mux.set_bit(3,0);
+                mux.set_bit(3,false);
             });
         }
         PIN::ADC8=>{
@@ -223,7 +241,7 @@ impl Analog {
             });
             
             self.adcsrb.update(|mux| {
-                mux.set_bit(3,1);
+                mux.set_bit(3,true);
             });
         }
         PIN::ADC9=>{
@@ -232,7 +250,7 @@ impl Analog {
             });
             
             self.adcsrb.update(|mux| {
-                mux.set_bit(3,1);
+                mux.set_bit(3,true);
             });
         }
         PIN::ADC10=>{
@@ -241,7 +259,7 @@ impl Analog {
             });
             
             self.adcsrb.update(|mux| {
-                mux.set_bit(3,1);
+                mux.set_bit(3,true);
             });
         }
         PIN::ADC11=>{
@@ -250,7 +268,7 @@ impl Analog {
             });
             
             self.adcsrb.update(|mux| {
-                mux.set_bit(3,1);
+                mux.set_bit(3,true);
             });
         }
         PIN::ADC12=>{
@@ -259,7 +277,7 @@ impl Analog {
             });
             
             self.adcsrb.update(|mux| {
-                mux.set_bit(3,1);
+                mux.set_bit(3,true);
             });
         }
         PIN::ADC13=>{
@@ -268,7 +286,7 @@ impl Analog {
             });
             
             self.adcsrb.update(|mux| {
-                mux.set_bit(3,1);
+                mux.set_bit(3,true);
             });
         }
         PIN::ADC14=>{
@@ -277,7 +295,7 @@ impl Analog {
             });
             
             self.adcsrb.update(|mux| {
-                mux.set_bit(3,1);
+                mux.set_bit(3,true);
             });
         }
         PIN::ADC15=>{
@@ -286,7 +304,7 @@ impl Analog {
             });
             
             self.adcsrb.update(|mux| {
-                mux.set_bit(3,1);
+                mux.set_bit(3,true);
             });
         }
     }
@@ -297,7 +315,7 @@ impl Analog {
     pub fn adc_disable (&mut self){
 
         self.adcsra.update(|aden| {
-            aden.set_bit(7,0);
+            aden.set_bit(7,false);
         });
     
     }
