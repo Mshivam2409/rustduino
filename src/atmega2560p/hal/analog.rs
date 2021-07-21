@@ -118,8 +118,8 @@ impl Pin{
            
         let analog =Analog::new();
 
-        analog.power_adc_enable();
-        
+        analog.power_adc_disable();
+
         analog.adc_enable();
 
         analog.adc_auto_trig();
@@ -361,7 +361,7 @@ impl Analog {
     
     }
 
-    pub fn power_adc_enable (&mut self){
+    pub fn power_adc_disable (&mut self){
         unsafe{
 
             let pow= power::Power::new();
@@ -395,6 +395,15 @@ impl Analog {
             aden.set_bit(7,false);
         });
     
+    }
+
+    pub fn power_adc_enable (&mut self){
+        unsafe{
+
+            let pow= power::Power::new();
+            write_volatile(&mut pow.prr0, pow.prr0 | (1));
+
+        }
     }
 
     
