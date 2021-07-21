@@ -24,7 +24,9 @@
 use bit_field::BitField;
 /// Crates to be used for the implementation.
 use volatile::Volatile;
+use core::ptr::write_volatile;
 use crate::atmega2560p::hal::port::*;
+use crate::atmega2560p::hal::power;
 /// Structure to control the implementation of Integrated Analog Circuit.
 #[repr(C, packed)]
 pub struct AnalogComparator {
@@ -115,6 +117,9 @@ impl Pin{
     unsafe{ 
            
         let analog =Analog::new();
+
+        analog.power_adc_enable();
+        
         analog.adc_enable();
 
         analog.adc_auto_trig();
@@ -354,6 +359,15 @@ impl Analog {
             aden.set_bit(7,true);
         });
     
+    }
+
+    pub fn power_adc_enable (&mut self){
+        unsafe{
+
+            let pow= power::Power::new();
+            write_volatile(&mut pow.prr0, pow.prr0 & (254));
+
+        }
     }
 
     ///Function is Used to start a conversion in the ADC
