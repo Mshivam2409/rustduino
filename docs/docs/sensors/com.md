@@ -1,9 +1,9 @@
 ---
 
 
-id:i2c
-slug:/i2c
-title:I2C
+id: i2c
+slug: /i2c
+title: I2C
 ---
 
 # Struct definition
