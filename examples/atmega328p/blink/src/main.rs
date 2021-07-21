@@ -4,7 +4,6 @@
 
 use rustduino::atmega328p::hal as arduino_uno;
 
-
 #[no_mangle]
 pub extern "C" fn main() {
     // Disable watchdog
