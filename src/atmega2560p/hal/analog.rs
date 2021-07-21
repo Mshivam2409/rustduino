@@ -21,15 +21,46 @@
 //! Refer to section 25 and 26 of ATMEGA2560P datasheet.
 //! https://ww1.microchip.com/downloads/en/devicedoc/atmel-2549-8-bit-avr-microcontroller-atmega640-1280-1281-2560-2561_datasheet.pdf
 
-use bit_field::BitField;
 /// Crates to be used for the implementation.
+use bit_field::BitField;
 use volatile::Volatile;
 use crate::atmega2560p::hal::port::*;
+
+
+/// Selection of reference type for the implementation of Analog Pins.
+#[derive(Clone, Copy)]
+pub enum RefType {
+    DEFAULT,
+    INTERNAL1V1,
+    INTERNAL2V56,
+    EXTERNAL,
+}
+
+
+/// Selection of timer mode for Timer 8 type.
+#[derive(Clone, Copy)]
+pub enum TimerNo8 {
+    Timer0,
+    Timer2,
+}
+
+
+/// Selection of timer mode for Timer 16 type. 
+#[derive(Clone, Copy)]
+pub enum TimerNo16 {
+    Timer1,
+    Timer3,
+    Timer4,
+    Timer5,
+}
+
+
 /// Structure to control the implementation of Integrated Analog Circuit.
 #[repr(C, packed)]
 pub struct AnalogComparator {
     acsr: Volatile<u8>,
 }
+
 
 /// Structure to control data transfer from Analog to Digital signal conversions.
 #[repr(C, packed)]
@@ -43,63 +74,60 @@ pub struct Analog {
     didr0: Volatile<u8>,
     didr1: Volatile<u8>,
 }
-pub enum RefType {
-    DEFAULT,
-    INTERNAL1V1,
-    INTERNAL2V56,
-    EXTERNAL,
+
+
+/// Structure to control the timer of type 8 for Analog Write. 
+pub struct Timer8 {
+    tccra: Volatile<u8>,
+    tccrb: Volatile<u8>,
+    tcnt: Volatile<u8>,
+    ocra: Volatile<u8>,
+    ocrb: Volatile<u8>,
 }
-pub enum TimerNo8{
-    Timer0,
-    Timer2,
+
+
+/// Structure to control the timer of type 16 for Analog Write. 
+pub struct Timer16 {
+    tccra: Volatile<u8>,
+    tccrb: Volatile<u8>,
+    tccrc: Volatile<u8>,
+    pad0: Volatile<u8>,
+    tcntl: Volatile<u8>,
+    tcnth: Volatile<u8>,
+    icrl: Volatile<u8>,
+    icrh: Volatile<u8>,
+    ocral: Volatile<u8>,
+    ocrah: Volatile<u8>,
+    ocrbl: Volatile<u8>,
+    ocrbh: Volatile<u8>,
+    ocrcl: Volatile<u8>,
+    ocrch: Volatile<u8>,
 }
-pub enum TimerNo16{
-    Timer1,
-    Timer3,
-    Timer4,
-    Timer5,
-}
-pub struct Timer8{
-    tccra:Volatile<u8>,
-    tccrb:Volatile<u8>,
-    tcnt:Volatile<u8>,
-    ocra:Volatile<u8>,
-    ocrb:Volatile<u8>,
-}
-pub struct Timer16{
-    tccra:Volatile<u8>,
-    tccrb:Volatile<u8>,
-    tccrc:Volatile<u8>,
-    pad0:Volatile<u8>,
-    tcntl:Volatile<u8>,
-    tcnth:Volatile<u8>,
-    icrl:Volatile<u8>,
-    icrh:Volatile<u8>,
-    ocral:Volatile<u8>,
-    ocrah:Volatile<u8>,
-    ocrbl:Volatile<u8>,
-    ocrbh:Volatile<u8>,
-    ocrcl:Volatile<u8>,
-    ocrch:Volatile<u8>,
-}
-impl Timer8{
-    pub fn new(timer:TimerNo8) -> &'static mut Timer8{
-        match timer{
-            TimerNo8::Timer0=>unsafe{&mut *(0x44 as *mut Timer8)},
-            TimerNo8::Timer2=>unsafe{&mut *(0xB0 as *mut Timer8)},
+
+
+impl Timer8 {
+    /// 
+    pub fn new(timer: TimerNo8) -> &'static mut Timer8 {
+        match timer {
+            TimerNo8::Timer0 => unsafe { &mut *(0x44 as *mut Timer8) },
+            TimerNo8::Timer2 => unsafe { &mut *(0xB0 as *mut Timer8) },
         }
     }
 }
-impl Timer16{
-    pub fn new(timer:TimerNo16) -> &'static mut Timer16{
-        match timer{
-            TimerNo16::Timer1=>unsafe{&mut *(0x80 as *mut Timer16)},
-            TimerNo16::Timer3=>unsafe{&mut *(0x90 as *mut Timer16)},
-            TimerNo16::Timer4=>unsafe{&mut *(0xA0 as *mut Timer16)},
-            TimerNo16::Timer5=>unsafe{&mut *(0x120 as *mut Timer16)},
+
+
+impl Timer16 {
+    /// 
+    pub fn new(timer: TimerNo16) -> &'static mut Timer16 {
+        match timer {
+            TimerNo16::Timer1 => unsafe { &mut *(0x80 as *mut Timer16) },
+            TimerNo16::Timer3 => unsafe { &mut *(0x90 as *mut Timer16) },
+            TimerNo16::Timer4 => unsafe { &mut *(0xA0 as *mut Timer16) },
+            TimerNo16::Timer5 => unsafe { &mut *(0x120 as *mut Timer16) },
         }
     }
 }
+
 
 impl AnalogComparator {
     /// New pointer object created for Analog Comparator Structure.
@@ -108,217 +136,213 @@ impl AnalogComparator {
     }
 }
 
-impl Pin{
+
+impl Pin {
     /// Function to create a reference for Analog signals.
-    pub fn analog_read(&mut self,pin: u32,reftype:RefType) {
-        
-    unsafe{ 
-           
-        let analog =Analog::new();
-        analog.adc_enable();
+    pub fn analog_read(&mut self, pin: u32, reftype: RefType) {
+        unsafe {
+            let analog = Analog::new();
+            analog.adc_enable();
 
-        analog.adc_auto_trig();
+            analog.adc_auto_trig();
 
-        analog.analog_reference(reftype);
+            analog.analog_reference(reftype);
 
-        match pin{
-            0=>{
-                analog.admux.update(|admux| {
-                    admux.set_bits(0..3,0b000);
-                });
-                analog.didr0.update(|didr0| {
-                    didr0.set_bit(0,true);
-                });
-                analog.adcsrb.update(|mux| {
-                    mux.set_bit(3, false);
-                });
+            match pin {
+                0 => {
+                    analog.admux.update(|admux| {
+                        admux.set_bits(0..3, 0b000);
+                    });
+                    analog.didr0.update(|didr0| {
+                        didr0.set_bit(0, true);
+                    });
+                    analog.adcsrb.update(|mux| {
+                        mux.set_bit(3, false);
+                    });
+                }
+                1 => {
+                    analog.admux.update(|admux| {
+                        admux.set_bits(0..3, 0b001);
+                    });
+                    analog.didr0.update(|didr0| {
+                        didr0.set_bit(1, true);
+                    });
+                    analog.adcsrb.update(|mux| {
+                        mux.set_bit(3, false);
+                    });
+                }
+                2 => {
+                    analog.admux.update(|admux| {
+                        admux.set_bits(0..3, 0b010);
+                    });
+                    analog.didr0.update(|didr0| {
+                        didr0.set_bit(2, true);
+                    });
+                    analog.adcsrb.update(|mux| {
+                        mux.set_bit(3, false);
+                    });
+                }
+                3 => {
+                    analog.admux.update(|admux| {
+                        admux.set_bits(0..3, 0b011);
+                    });
+                    analog.didr0.update(|didr0| {
+                        didr0.set_bit(3, true);
+                    });
+                    analog.adcsrb.update(|mux| {
+                        mux.set_bit(3, false);
+                    });
+                }
+                4 => {
+                    analog.admux.update(|admux| {
+                        admux.set_bits(0..3, 0b100);
+                    });
+                    analog.didr0.update(|didr0| {
+                        didr0.set_bit(4, true);
+                    });
+                    analog.adcsrb.update(|mux| {
+                        mux.set_bit(3, false);
+                    });
+                }
+                5 => {
+                    analog.admux.update(|admux| {
+                        admux.set_bits(0..3, 0b101);
+                    });
+                    analog.didr0.update(|didr0| {
+                        didr0.set_bit(5, true);
+                    });
+                    analog.adcsrb.update(|mux| {
+                        mux.set_bit(3, false);
+                    });
+                }
+                6 => {
+                    analog.admux.update(|admux| {
+                        admux.set_bits(0..3, 0b110);
+                    });
+                    analog.didr0.update(|didr0| {
+                        didr0.set_bit(6, true);
+                    });
+                    analog.adcsrb.update(|mux| {
+                        mux.set_bit(3, false);
+                    });
+                }
+                7 => {
+                    analog.admux.update(|admux| {
+                        admux.set_bits(0..3, 0b111);
+                    });
+                    analog.didr0.update(|didr0| {
+                        didr0.set_bit(7, true);
+                    });
+                    analog.adcsrb.update(|mux| {
+                        mux.set_bit(3, false);
+                    });
+                }
+                8 => {
+                    analog.admux.update(|admux| {
+                        admux.set_bits(0..3, 0b000);
+                    });
+                    analog.didr2.update(|didr2| {
+                        didr2.set_bit(0, true);
+                    });
+                    analog.adcsrb.update(|mux| {
+                        mux.set_bit(3, true);
+                    });
+                }
+                9 => {
+                    analog.admux.update(|admux| {
+                        admux.set_bits(0..3, 0b001);
+                    });
+                    analog.didr2.update(|didr2| {
+                        didr2.set_bit(1, true);
+                    });
+                    analog.adcsrb.update(|mux| {
+                        mux.set_bit(3, true);
+                    });
+                }
+                10 => {
+                    analog.admux.update(|admux| {
+                        admux.set_bits(0..3, 0b010);
+                    });
+                    analog.didr2.update(|didr2| {
+                        didr2.set_bit(2, true);
+                    });
+                    analog.adcsrb.update(|mux| {
+                        mux.set_bit(3, true);
+                    });
+                }
+                11 => {
+                    analog.admux.update(|admux| {
+                        admux.set_bits(0..3, 0b011);
+                    });
+                    analog.didr2.update(|didr2| {
+                        didr2.set_bit(4, true);
+                    });
+                    analog.adcsrb.update(|mux| {
+                        mux.set_bit(3, true);
+                    });
+                }
+                12 => {
+                    analog.admux.update(|admux| {
+                        admux.set_bits(0..3, 0b100);
+                    });
+                    analog.didr2.update(|didr2| {
+                        didr2.set_bit(4, true);
+                    });
+                    analog.adcsrb.update(|mux| {
+                        mux.set_bit(3, true);
+                    });
+                }
+                13 => {
+                    analog.admux.update(|admux| {
+                        admux.set_bits(0..3, 0b101);
+                    });
+                    analog.didr2.update(|didr2| {
+                        didr2.set_bit(5, true);
+                    });
+                    analog.adcsrb.update(|mux| {
+                        mux.set_bit(3, true);
+                    });
+                }
+                14 => {
+                    analog.admux.update(|admux| {
+                        admux.set_bits(0..3, 0b110);
+                    });
+                    analog.didr2.update(|didr2| {
+                        didr2.set_bit(6, true);
+                    });
+                    analog.adcsrb.update(|mux| {
+                        mux.set_bit(3, true);
+                    });
+                }
+                15 => {
+                    analog.admux.update(|admux| {
+                        admux.set_bits(0..3, 0b111);
+                    });
+                    analog.didr2.update(|didr2| {
+                        didr2.set_bit(7, true);
+                    });
+                    analog.adcsrb.update(|mux| {
+                        mux.set_bit(3, true);
+                    });
+                }
+                _ => unreachable!(),
             }
-            1=>{
-                analog.admux.update(|admux| {
-                    admux.set_bits(0..3,0b001);
-                });
-                analog.didr0.update(|didr0| {
-                    didr0.set_bit(1,true);
-                });
-                analog.adcsrb.update(|mux| {
-                    mux.set_bit(3,false);
-                });
-            }
-            2=>{
-                analog.admux.update(|admux| {
-                    admux.set_bits(0..3,0b010);
-                });
-                analog.didr0.update(|didr0| {
-                    didr0.set_bit(2,true);
-                });
-                analog.adcsrb.update(|mux| {
-                    mux.set_bit(3,false);
-                });
-            }
-            3=>{
-                analog.admux.update(|admux| {
-                    admux.set_bits(0..3,0b011);
-                });
-                analog.didr0.update(|didr0| {
-                    didr0.set_bit(3,true);
-                });
-                analog.adcsrb.update(|mux| {
-                    mux.set_bit(3,false);
-                });
-            }
-            4=>{
-                analog.admux.update(|admux| {
-                    admux.set_bits(0..3,0b100);
-                });
-                analog.didr0.update(|didr0| {
-                    didr0.set_bit(4,true);
-                });
-                analog.adcsrb.update(|mux| {
-                    mux.set_bit(3,false);
-                });
-            }
-            5=>{
-                analog.admux.update(|admux| {
-                    admux.set_bits(0..3,0b101);
-                });
-                analog.didr0.update(|didr0| {
-                    didr0.set_bit(5,true);
-                });
-                analog.adcsrb.update(|mux| {
-                    mux.set_bit(3,false);
-                });
-            }
-            6=>{
-                analog.admux.update(|admux| {
-                    admux.set_bits(0..3,0b110);
-                });
-                analog.didr0.update(|didr0| {
-                    didr0.set_bit(6,true);
-                });
-                analog.adcsrb.update(|mux| {
-                    mux.set_bit(3,false);
-                });
-            }
-            7=>{
-                analog.admux.update(|admux| {
-                    admux.set_bits(0..3,0b111);
-                });
-                analog.didr0.update(|didr0| {
-                    didr0.set_bit(7,true);
-                });
-                analog.adcsrb.update(|mux| {
-                    mux.set_bit(3,false);
-                });
-            }
-            8=>{
-                analog.admux.update(|admux| {
-                    admux.set_bits(0..3,0b000);
-                });
-                analog.didr2.update(|didr2| {
-                    didr2.set_bit(0,true);
-                });
-                analog.adcsrb.update(|mux| {
-                    mux.set_bit(3,true);
-                });
-            }
-            9=>{
-                analog.admux.update(|admux| {
-                    admux.set_bits(0..3,0b001);
-                });
-                analog.didr2.update(|didr2| {
-                    didr2.set_bit(1,true);
-                });
-                analog.adcsrb.update(|mux| {
-                    mux.set_bit(3,true);
-                });
-            }
-            10=>{
-                analog.admux.update(|admux| {
-                    admux.set_bits(0..3,0b010);
-                });
-                analog.didr2.update(|didr2| {
-                    didr2.set_bit(2,true);
-                });
-                analog.adcsrb.update(|mux| {
-                    mux.set_bit(3,true);
-                });
-            }
-            11=>{
-                analog.admux.update(|admux| {
-                    admux.set_bits(0..3,0b011);
-                });
-                analog.didr2.update(|didr2| {
-                    didr2.set_bit(4,true);
-                });
-                analog.adcsrb.update(|mux| {
-                    mux.set_bit(3,true);
-                });
-            }
-            12=>{
-                analog.admux.update(|admux| {
-                    admux.set_bits(0..3,0b100);
-                });
-                analog.didr2.update(|didr2| {
-                    didr2.set_bit(4,true);
-                });
-                analog.adcsrb.update(|mux| {
-                    mux.set_bit(3,true);
-                });
-            }
-            13=>{
-                analog.admux.update(|admux| {
-                    admux.set_bits(0..3,0b101);
-                });
-                analog.didr2.update(|didr2| {
-                    didr2.set_bit(5,true);
-                });
-                analog.adcsrb.update(|mux| {
-                    mux.set_bit(3,true);
-                });
-            }
-            14=>{
-                analog.admux.update(|admux| {
-                    admux.set_bits(0..3,0b110);
-                });
-                analog.didr2.update(|didr2| {
-                    didr2.set_bit(6,true);
-                });
-                analog.adcsrb.update(|mux| {
-                    mux.set_bit(3,true);
-                });
-            }
-            15=>{
-                analog.admux.update(|admux| {
-                    admux.set_bits(0..3,0b111);
-                });
-                analog.didr2.update(|didr2| {
-                    didr2.set_bit(7,true);
-                });
-                analog.adcsrb.update(|mux| {
-                    mux.set_bit(3,true);
-                });
-            }
-            _ => unreachable!(),
+
+            analog.adc_con_start();
+
+            analog.adc_disable();
         }
-
-        analog.adc_con_start();
-
-        analog.adc_disable();
-    }
     }
 
-
-
-    pub fn analog_write(&mut self,_pi:u32,_val:u32){
+    pub fn analog_write(&mut self, _pi: u32, _val: u32) {
         self.output();
-
-
     }
 }
+
 impl Analog {
     /// New pointer object created for Analog Structure.
     pub unsafe fn new() -> &'static mut Analog {
-        &mut *(0x78 as *mut Analog) 
+        &mut *(0x78 as *mut Analog)
     }
 
     /// Function to create a reference for Analog signals.
@@ -346,42 +370,32 @@ impl Analog {
             }
         }
     }
-    
-    ///Function is Used to enable the ADC
-    pub fn adc_enable (&mut self){
 
+    ///Function is Used to enable the ADC
+    pub fn adc_enable(&mut self) {
         self.adcsra.update(|aden| {
-            aden.set_bit(7,true);
+            aden.set_bit(7, true);
         });
-    
     }
 
     ///Function is Used to start a conversion in the ADC
-    pub fn adc_con_start (&mut self){
-
+    pub fn adc_con_start(&mut self) {
         self.adcsra.update(|aden| {
-            aden.set_bit(6,true);
+            aden.set_bit(6, true);
         });
-    
-    }    
-
-    ///Function is Used to stop auto triggering in the ADC
-    pub fn adc_auto_trig (&mut self){
-
-        self.adcsra.update(|aden| {
-            aden.set_bit(5,false);
-        });
-    
-    }    
-
-    ///Function is Used to disable the ADC
-    pub fn adc_disable (&mut self){
-
-        self.adcsra.update(|aden| {
-            aden.set_bit(7,false);
-        });
-    
     }
 
-    
+    ///Function is Used to stop auto triggering in the ADC
+    pub fn adc_auto_trig(&mut self) {
+        self.adcsra.update(|aden| {
+            aden.set_bit(5, false);
+        });
+    }
+
+    ///Function is Used to disable the ADC
+    pub fn adc_disable(&mut self) {
+        self.adcsra.update(|aden| {
+            aden.set_bit(7, false);
+        });
+    }
 }

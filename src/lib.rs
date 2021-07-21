@@ -2,6 +2,8 @@
 #![deny(warnings)]
 #![feature(asm)]
 #![feature(llvm_asm)]
+#![allow(dead_code)]
+
 
 /// Library for ATmega2560P chip.
 #[cfg(feature = "atmega2560p")]
