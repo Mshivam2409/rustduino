@@ -50,6 +50,16 @@ module.exports = {
       type: 'doc',
       label: 'Contributors',
       id: 'contributors'
-    }
+    },
+    {
+      type:'communication',
+      label:'I2C',
+      items:'i2c'
+    },
+    {
+      type:'sensors',
+      label:'AHT10',
+      items:'aht10'
+    },
   ]
 }
