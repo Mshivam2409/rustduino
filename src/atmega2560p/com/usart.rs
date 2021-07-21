@@ -48,7 +48,7 @@ const _POLARITY: UsartPolarity = UsartPolarity::Outputrise;
 impl Serial {
     /// Gives a new serial port object which can be used to control all the
     /// USART at one place.
-    pub fn serial_new() -> Serial {
+    pub unsafe fn serial_new() -> Serial {
         Serial::new()
     }
 }

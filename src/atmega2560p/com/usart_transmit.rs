@@ -19,7 +19,7 @@
 //! https://ww1.microchip.com/downloads/en/devicedoc/atmel-2549-8-bit-avr-microcontroller-atmega640-1280-1281-2560-2561_datasheet.pdf
 
 /// Other source code files to be used.
-use crate::atmega2560p::com::usart_initialize::{Usart, UsartDataSize};
+use crate::atmega2560p::com::usart_initialize::{UsartObject, UsartDataSize};
 use crate::delay::delay_ms;
 
 use bit_field::BitField;
@@ -29,7 +29,7 @@ use core::{f64, u8, usize};
 use fixed_slice_vec::FixedSliceVec;
 
 //This is a implementation for Usart
-impl Usart {
+impl UsartObject {
     /// Initialization setting begin function
     /// This function is to enable the Transmitter
     /// Once it is enabled it takes control of the TXDn pin as a transmitting output.   

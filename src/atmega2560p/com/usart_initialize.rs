@@ -109,7 +109,16 @@ pub struct Usart {
     pub udr: Volatile<u8>,
 }
 
-/// USART pointers declaration.
+/// Structure which contains the Usart as a Raw Pointer.
+/// Uniformity with the implementation in the HAL program.
+#[repr(C, packed)]
+pub struct UsartObject {
+    pub object: *mut Usart,
+}
+
+// new() functions to make the memory mapped IOs for both the structures.
+
+/// USART mutable reference declaration.
 impl Usart {
     /// This creates a new memory mapped structure of the type USART for it's control.
     pub unsafe fn new(num: UsartNum) -> &'static mut Usart {
@@ -120,10 +129,38 @@ impl Usart {
             UsartNum::Usart3 => &mut *(0x130 as *mut Usart),
         }
     }
+
+    /// Returns the number (index) of the USART being used.
+    /// Panics if the address is invalid.
+    pub fn name(&self) -> UsartNum {
+        let address = (self as *const Usart) as usize; // Gets address of port.
+        match address {
+            //  Return Usart Number based on the address read.
+            0xC0  => UsartNum::Usart0,
+            0xC8  => UsartNum::Usart1,
+            0xD0  => UsartNum::Usart2,
+            0x130 => UsartNum::Usart3,
+            _     => unreachable!(),
+        }
+    }
+
+    /// Function to create a instance of UsartObject from the Usart instance available.
+    pub fn create_object(&mut self) -> UsartObject {
+        UsartObject { object : self }
+    }
+}
+
+/// USART raw pointers declaration.
+impl UsartObject {
+    /// This creates a raw pointer for formation of the serial structure ahead
+    /// to control all the USARTs of ATMEGA2560P at one place.
+    pub unsafe fn new(num: UsartNum) -> UsartObject {
+        Usart::new(num).create_object()
+    }    
 }
 
 /// Various implementation functions for the USART protocol.
-impl Usart {
+impl UsartObject {
     /// Function to disable global interrupts for smooth non-interrupted functioning of USART.
     fn disable(&mut self) {
         unsafe {
@@ -140,6 +177,7 @@ impl Usart {
         }
     }
 
+    /*
     /// This function will return the Number of the USART according to the address.
     fn get_num(&mut self) -> UsartNum {
         let address = (self as *const Usart) as usize; // Gets address of usart structure.
@@ -152,6 +190,7 @@ impl Usart {
             _ => unreachable!(),
         }
     }
+    */
 
     /// Function to get the port containing bits to
     /// manipulate Recieve,Transmit and XCK bit of the particular USART.

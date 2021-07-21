@@ -20,7 +20,7 @@
 //! https://ww1.microchip.com/downloads/en/devicedoc/atmel-2549-8-bit-avr-microcontroller-atmega640-1280-1281-2560-2561_datasheet.pdf
 
 /// Other source code files to be used.
-use crate::atmega2560p::com::usart_initialize::Usart;
+use crate::atmega2560p::com::usart_initialize::UsartObject;
 
 /// Crates which would be used in the implementation.
 /// We will be using standard volatile and bit_field crates now for a better read and write.
@@ -28,7 +28,7 @@ use crate::delay::delay_ms;
 use bit_field::BitField;
 use core::u32;
 
-impl Usart {
+impl UsartObject {
     /// This function enables the reciever function of microcontroller, whithout enabling it no communication is possible.
     pub fn recieve_enable(&mut self) {
         self.ucsrb.update(|ucsrb| {

@@ -4,11 +4,16 @@
 
 /// Crates included to show the Transmission of String example.
 use rustduino::atmega2560p::com::serial::Serial;
+use rustduino::atmega2560p::hal::watchdog::WatchDog;
 
 #[no_mangle]
 pub fn main() {
+    // Disable watchdog
+    let watchdog = unsafe { WatchDog::new() };
+    watchdog.disable();
+    
     // Create a new Serial struct to access all USART's
-    let serial = Serial::serial_new();
+    let serial = unsafe { Serial::new() };
 
     // This initializes USART0 and makes it ready to transmit and recieve.
     serial.usart[0].begin_set_baud(9600);
