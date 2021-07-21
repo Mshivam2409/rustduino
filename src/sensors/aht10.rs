@@ -95,7 +95,7 @@ impl<'a> AHT10<'a> {
         }
     }
 
-    ///Triggers the AHT10 to read teamperature/humidity.
+    ///Triggers the AHT10 to read temperature/humidity.
     ///Usage: rustduino::sensors::aht10::trigger_slave()
     pub fn trigger_slave(&mut self) {
         self.vec.clear();
@@ -142,7 +142,7 @@ impl<'a> AHT10<'a> {
         return humid;
     }
 
-    ///Reads 20 bit raw temperature data and returns temperature in degree celcius.
+    ///Reads 20 bit raw temperature data and returns temperature in degree celsius.
     ///Usage: rustduino::sensors::aht10::temperature()
     pub fn temperature(&mut self) -> f64 {
         self.perform_measurement();
