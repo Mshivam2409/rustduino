@@ -21,6 +21,7 @@
 //! Refer to section 22 and 23 of ATMEGA328P datasheet.
 //! https://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-7810-Automotive-Microcontrollers-ATmega328P_Datasheet.pdf
 
+use bit_field::BitField;
 /// Crates to be used for the implementation.
 use volatile::Volatile;
 
@@ -47,7 +48,7 @@ pub struct Analog {
     admux: Volatile<u8>,
 }
 
-pub enum RefType{
+pub enum RefType {
     DEFAULT,
     INTERNAL1V1,
     EXTERNAL,
@@ -74,34 +75,29 @@ impl Analog {
     }
 
     /// Function to create a reference for Analog signals.
-    pub fn analog_reference() {
-        match reftype{
-            RefType::DEFAULT=>{
+    pub fn analog_reference(&mut self, reftype: RefType) {
+        match reftype {
+            RefType::DEFAULT => {
                 self.admux.update(|admux| {
                     admux.set_bits(6..8, 0b01);
                 });
             }
-            RefType::INTERNAL1V1=>{self.admux.update(|admux| {
+            RefType::INTERNAL1V1 => {
+                self.admux.update(|admux| {
                     admux.set_bits(6..8, 0b10);
                 });
             }
-            RefType::EXTERNAL=>{self.admux.update(|admux| {
+            RefType::EXTERNAL => {
+                self.admux.update(|admux| {
                     admux.set_bits(6..8, 0b00);
                 });
             }
         }
     }
 
-
-    }
-
     /// Function to read data which is got as input to Analog Pins.
-    pub fn analog_read() {
-
-    }
+    pub fn analog_read() {}
 
     /// Function to write data as an output through Analog Pins.
-    pub fn analog_write() {
-
-    }
+    pub fn analog_write() {}
 }

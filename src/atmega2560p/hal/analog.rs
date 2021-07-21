@@ -21,9 +21,9 @@
 //! Refer to section 25 and 26 of ATMEGA2560P datasheet.
 //! https://ww1.microchip.com/downloads/en/devicedoc/atmel-2549-8-bit-avr-microcontroller-atmega640-1280-1281-2560-2561_datasheet.pdf
 
+use bit_field::BitField;
 /// Crates to be used for the implementation.
 use volatile::Volatile;
-use bit_field::BitField;
 
 /// Structure to control the implementation of Integrated Analog Circuit.
 #[repr(C, packed)]
@@ -48,7 +48,7 @@ pub struct Analog {
     adcsrb: Volatile<u8>,
     admux: Volatile<u8>,
 }
-pub enum RefType{
+pub enum RefType {
     DEFAULT,
     INTERNAL1V1,
     INTERNAL2V56,
@@ -72,27 +72,32 @@ impl Digital {
 impl Analog {
     /// New pointer object created for Analog Structure.
     pub unsafe fn new() -> &'static mut Analog {
-        &mut *(0x78 as *mut Analog)       // check correct address
+        &mut *(0x78 as *mut Analog) // check correct address
     }
 
     /// Function to create a reference for Analog signals.
-    pub fn analog_reference(&mut self,reftype:RefType) {
-        match reftype{
-            RefType::DEFAULT=>{
+    pub fn analog_reference(&mut self, reftype: RefType) {
+        match reftype {
+            RefType::DEFAULT => {
                 self.admux.update(|admux| {
                     admux.set_bits(6..8, 0b00);
                 });
             }
-            RefType::INTERNAL1V1=>{self.admux.update(|admux| {
-                admux.set_bits(6..8, 0b10);
-            });}
-            RefType::INTERNAL2V56=>{self.admux.update(|admux| {
-                admux.set_bits(6..8, 0b11);
-            });}
-            RefType::EXTERNAL=>{self.admux.update(|admux| {
-                admux.set_bits(6..8, 0b01);
-            });}
-
+            RefType::INTERNAL1V1 => {
+                self.admux.update(|admux| {
+                    admux.set_bits(6..8, 0b10);
+                });
+            }
+            RefType::INTERNAL2V56 => {
+                self.admux.update(|admux| {
+                    admux.set_bits(6..8, 0b11);
+                });
+            }
+            RefType::EXTERNAL => {
+                self.admux.update(|admux| {
+                    admux.set_bits(6..8, 0b01);
+                });
+            }
         }
     }
 
