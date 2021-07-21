@@ -54,12 +54,12 @@ module.exports = {
     {
       type:'communication',
       label:'I2C',
-      items:'i2c'
+      items:['i2c']
     },
     {
       type:'sensors',
       label:'AHT10',
-      items:'aht10'
+      items:['aht10']
     },
   ]
 }
