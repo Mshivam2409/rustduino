@@ -147,7 +147,7 @@ impl Twi {
 
     /// Waits for the process to be complete.
     /// Times out if TWINT is not set in 100 seconds.
-    /// Retruns if process was successful.
+    /// Returns if process was successful.
     /// Usage: rustduino::atmega328p::com::i2c::wait_to_complete(operation:u8)
     pub fn wait_to_complete(&mut self, operation: u8) -> bool {
         let mut i: u32 = 0;
