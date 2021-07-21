@@ -248,6 +248,7 @@ impl Pin{
                     mux.set_bit(3,true);
                 });
             }
+            _ => unreachable!(),
         }
 
         analog.adc_con_start();
