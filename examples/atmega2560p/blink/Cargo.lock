@@ -59,7 +59,8 @@ dependencies = [
 
 [[package]]
 name = "rustduino"
-version = "0.1.0"
+version = "0.1.1"
+description="A generic HAL implementation for Arduino Boards in Rust"
 dependencies = [
  "bit_field",
  "const_env--value",

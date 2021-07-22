@@ -89,7 +89,7 @@ pub struct Usart {
     pub ucsra: Volatile<u8>,
     pub ucsrb: Volatile<u8>,
     pub ucsrc: Volatile<u8>,
-    _pad: Volatile<u8>, // Padding to look for empty memory space.
+    _pad: u8, // Padding to look for empty memory space.
     pub ubrrl: Volatile<u8>,
     pub ubrrh: Volatile<u8>,
     pub udr: Volatile<u8>,
