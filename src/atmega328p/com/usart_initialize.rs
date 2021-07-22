@@ -1,5 +1,5 @@
 //     RustDuino : A generic HAL implementation for Arduino Boards in Rust
-//     Copyright (C) 2021  Richa Prakash Sachan and Kshitij Kaithal, Indian Institute of Technology Kanpur
+//     Copyright (C) 2021 Kshitij Kaithal, Indian Institute of Technology Kanpur
 //
 //     This program is free software: you can redistribute it and/or modify
 //     it under the terms of the GNU Affero General Public License as published
@@ -14,8 +14,8 @@
 //     You should have received a copy of the GNU Affero General Public License
 //     along with this program.  If not, see <https://www.gnu.org/licenses/>
 
+
 use crate::atmega328p::hal::gating;
-/// Other source code files to be used
 use crate::atmega328p::hal::interrupt;
 use crate::atmega328p::hal::port;
 
@@ -106,7 +106,7 @@ impl Usart {
 }
 
 impl Usart {
-    /// Function to disable global interrupts for smooth non-interrupted functioning of USART.
+    /// disables global interrupts for smooth non-interrupted functioning of USART.
     fn disable(&mut self) {
         unsafe {
             // Disable global interrupts.
@@ -114,7 +114,7 @@ impl Usart {
         }
     }
 
-    /// Function to re-enable global interrupts.
+    ///  re-enables global interrupts.
     fn enable(&mut self) {
         unsafe {
             // Enable global interrupts.
@@ -122,7 +122,7 @@ impl Usart {
         }
     }
 
-    /// This function will return the Number of the USART according to the address.
+    ///  Returns the Number of the USART according to the address.
     fn get_num(&mut self) -> UsartNum {
         let address = (self as *const Usart) as u8; // Gets address of usart structure.
         match address {
@@ -142,31 +142,8 @@ impl Usart {
         }
     }
 
-    // /// Function to return the index of xck bit in the port.
-    // fn get_xck(&self) -> u8 {
-    //     let num : UsartNum = self.get_num();
-    //     match num {
-    //         UsartNum::Usart0 => usart0_xck,
-    //     }
-    // }
 
-    // /// Function to return the index of transmit bit in the port.
-    // fn get_td(&self) -> u8 {
-    //     let num : UsartNum = self.get_num();
-    //     match num {
-    //         UsartNum::Usart0 => usart0_td,
-    //     }
-    // }
-
-    // /// Function to return the index of recieve bit in the port.
-    // fn get_rd(&self) -> u8 {
-    //     let num : UsartNum = self.get_num();
-    //     match num {
-    //         UsartNum::Usart0 => usart0_rd,
-    //     }
-    // }
-
-    /// Function to check the mode of the USART.
+    ///  checks the mode of the USART.
     /// Returns 0 for asynchronous and 1 for synchronous.
     fn get_mode(&mut self) -> bool {
         let mut src = self.ucsrc.read();
@@ -178,8 +155,8 @@ impl Usart {
         }
     }
 
-    /// Function to set the clock polarity mode which is of use in the
-    /// recieve and transmission implementation of USART.
+    /// setting the clock polarity mode which is of use in the recieve and transmission implementation of USART.
+    
     pub fn set_polarity(&mut self, mode: UsartPolarity) {
         if self.get_mode() == false {
             self.ucsrc.update(|src| {
@@ -200,7 +177,7 @@ impl Usart {
             }
         }
     }
-    /// Function to set various modes of the USART which is activated.
+    /// Set various modes of the USART which is activated.
     pub fn mode_select(&mut self, mode: UsartModes) {
         match mode {
             UsartModes::Normasync                                  // Puts the USART into asynchronous mode.
@@ -236,7 +213,6 @@ impl Usart {
             }
             UsartModes::Mastersync => {
                 // Puts the USART into master synchronous mode
-                // Puts the USART into master synchronous mode
                 let (port, xck) = self.get_port_xck();
                 unsafe {
                     write_volatile(&mut port.ddr, port.ddr | 1 << xck);
@@ -253,7 +229,7 @@ impl Usart {
         }
     }
 
-    /// Function to set the power reduction register so that USART functioning is allowed.
+    ///  Set the power reduction register so that USART functioning is allowed.
     fn set_power(&mut self, num: UsartNum) {
         let pow: &mut gating::Power;
 
@@ -266,15 +242,6 @@ impl Usart {
         }
     }
 
-    /// Sets the interrupt bits in UCSRB so that ongoing
-    /// data transfers can be tracked.
-    /* fn check(&mut self) {
-        self.ucsrb.update( |srb| {
-              srb.set_bit(6,true);
-              srb.set_bit(7,true);
-        });
-    }
-     */
     /// Return 1 if no ongoing transmission or recieval from the USART.
     /// Return 0 if their is some transfer going on.
     fn check_ongoing(&self) -> bool {
@@ -292,6 +259,7 @@ impl Usart {
     /// clock generator.
     /// Set the baud rate frequency for USART.
     /// Baud rate settings is used to set the clock for USART.
+
     fn set_clock(&mut self, baud: i64, mode: UsartModes) {
         let ubrr: u32;
         match mode {
@@ -318,7 +286,7 @@ impl Usart {
         });
     }
 
-    /// Function to set the limit of data to be handled by USART.
+    ///  Sets the limit of data to be handled by USART.
     fn set_size(&mut self, size: UsartDataSize) {
         match size {
             UsartDataSize::Five
@@ -361,7 +329,7 @@ impl Usart {
         }
     }
 
-    /// Function to set the parity bit in the frame of USART.
+    /// Set the parity bit in the frame of USART.
     fn set_parity(&mut self, parity: UsartParity) {
         match parity {
             UsartParity::No => {
@@ -385,7 +353,7 @@ impl Usart {
         }
     }
 
-    /// Function to set the number of stop bits in the USART.
+    /// Setting the number of stop bits in the USART.
     fn set_stop(&mut self, stop: UsartStop) {
         match stop {
             UsartStop::One => {
