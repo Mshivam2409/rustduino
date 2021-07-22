@@ -14,8 +14,8 @@
 //     You should have received a copy of the GNU Affero General Public License
 //     along with this program.  If not, see <https://www.gnu.org/licenses/>
 
-use crate::delay::delay_ms;
 /// Crates which would be used in the implementation.
+use crate::delay::delay_ms;
 use bit_field::BitField;
 use core::ptr::read_volatile;
 use fixed_slice_vec::FixedSliceVec;
@@ -69,6 +69,7 @@ const TWPS0: u8 = 7;
 
 // TWSR status codes
 // Master
+// (taken from avr-libc twi.h)
 const START: u8 = 0x08;
 const REP_START: u8 = 0x10;
 
@@ -117,6 +118,7 @@ const I2C_OK: u8 = 0x00;
 const I2C_ERROR_NODEV: u8 = 0x01;
 const I2C_TIMEOUT: u32 = 100;
 
+/// Sets DDRC to write direction.
 pub fn write_sda() {
     unsafe {
         let port_d = &mut *(0x2A as *mut u8);
@@ -125,6 +127,7 @@ pub fn write_sda() {
     }
 }
 
+/// Sets DDRC to read direction.
 pub fn read_sda() {
     unsafe {
         let port_d = &mut *(0x2A as *mut u8);
@@ -138,7 +141,8 @@ impl Twi {
     pub fn new() -> &'static mut Self {
         unsafe { &mut *(0xB8 as *mut Self) }
     }
-
+    ///* Waits for the TWI to be ready.
+    ///* Returns true if the TWI is ready, false otherwise.
     pub fn wait_to_complete(&mut self, start: u8) -> bool {
         let mut i: u32 = 0;
         //Waiting for TWINT flag set.
@@ -166,7 +170,7 @@ impl Twi {
             cr.set_bit(TWEN, true);
         })
     }
-    // Sends a Start Signal.
+    // Sends a Start Signal.Returns true if process is successful, false otherwise.
     pub fn start(&mut self) -> bool {
         write_sda();
         self.twcr.update(|x| {
@@ -186,7 +190,7 @@ impl Twi {
             x.set_bit(TWEN, true);
         });
     }
-    //Sends the Repeated Start Signal.
+    ///Sends the Repeated Start Signal.Returns true if process is successful, false otherwise.
     pub fn rep_start(&mut self) -> bool {
         self.twcr.update(|x| {
             // TWCR: Enable TWI module
@@ -219,9 +223,7 @@ impl Twi {
         });
         return self.wait_to_complete(MR_SLA_ACK);
     }
-    /// Appends the value in TWCR to the given vector.
-    /// Need to set address first.
-    /// Returns true if process is completed.
+    /// Appends the value in TWCR to the given vector. Need to set address first. Returns true if process is completed.
     pub fn read_ack(&mut self, data: &mut FixedSliceVec<u8>) -> bool {
         self.twcr.update(|x| {
             x.set_bit(TWINT, true);
@@ -231,9 +233,7 @@ impl Twi {
         data.push(self.twdr.read());
         return self.wait_to_complete(MR_DATA_ACK);
     }
-    /// Appends the value in TWCR to the given vector.
-    /// Need to set address first.
-    /// Returns true if process is completed.
+    /// Appends the value in TWCR to the given vector. Need to set address first. Returns true if process is completed.
     pub fn read_ack_burst(&mut self, data: &mut FixedSliceVec<u8>, length: usize) -> usize {
         let mut x: usize = 0;
         while x < length {
@@ -244,9 +244,7 @@ impl Twi {
         }
         return x + 1;
     }
-    /// Writes one byte of data to the Slave.
-    /// Need to set address first.
-    /// Returns true if process is successful
+    /// Writes one byte of data to the Slave. Need to set address first. Returns true if process is successful
     pub fn write(&mut self, data: u8) -> bool {
         delay_ms(1);
         self.twdr.write(data);
@@ -257,9 +255,7 @@ impl Twi {
         });
         return self.wait_to_complete(MT_DATA_ACK);
     }
-    /// Writes consecutive bytes of data to the Slave.
-    /// Need to set address first.
-    /// Returns number of bytes written
+    /// Writes consecutive bytes of data to the Slave. Need to set address first. Returns number of bytes written
     pub fn write_burst(&mut self, data: &FixedSliceVec<u8>) -> usize {
         let mut x: usize = 0;
         while x < data.len() {

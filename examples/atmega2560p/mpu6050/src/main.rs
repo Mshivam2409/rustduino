@@ -2,17 +2,16 @@
 #![no_main]
 #![deny(warnings)]
 
-//use crate::com::i2c;
 use rustduino::sensors::mpu6050::*;
 use rustduino::atmega2560p::hal::watchdog::*;
-//use rustduino::com::i2c::*;
+use rustduino::delay::delay_ms;
 
 #[no_mangle]
 pub fn main() {
-     // Disable watchdog
-     let watchdog = unsafe { WatchDog::new() };
-     watchdog.disable();
- 
+    // Disable watchdog
+    let watchdog = unsafe { WatchDog::new() };
+    watchdog.disable();
+    // Initialize MPU6050 struct.
     let sensor = MPU6050::new();
     
     loop {
@@ -20,14 +19,14 @@ pub fn main() {
         
         sensor.read_gyro();
         //Print these values on screen using USART;
-        //The vec gyro_output stores the raw values of the gyroscope where gyro_output[0] is the x-axis, gyro_output[1] is the y-axis and gyro_output[2] is the z-axis output respectively.
+        //The vec gyro_output stores the raw values of the gyroscope where gyro_output[0] is the x-axis, gyro_output[1] is the y-axis and gyro_output[2] is the z-axis output respectively.These raw values are then converted to degrees per second according to the scale given as input in `begin()` function.
         
         sensor.read_accel();
         //Print these values on screen using USART;
-        //The vec accel_output stores the raw values of the accelerometer where accel_output[0] is the x-axis, accel_output[1] is the y-axis and accel_output[2] is the z-axis output respectively.
+        //The vec accel_output stores the raw values of the accelerometer where accel_output[0] is the x-axis, accel_output[1] is the y-axis and accel_output[2] is the z-axis output respectively.These raw values are then converted to g's per second according to the scale given as input in `begin()` function.
 
         // Waiting for 2 seconds.
-        rustduino::delay::delay_ms(2000);
+        delay_ms(2000);
     }
 } 
 
