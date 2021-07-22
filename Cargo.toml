@@ -42,7 +42,7 @@ atmega2560p=[]
 atmega2560p-hal=[]
 atmega2560p-core = ["atmega2560p","atmega2560p-hal"]
 atmega2560p-com=["atmega2560p-core","com"]
-default=["sensors","atmega2560p-com"]
+default=["sensors","atmega2560p-com","atmega328p-core"]
 
 [dependencies]
 const_env--value = "0.1"

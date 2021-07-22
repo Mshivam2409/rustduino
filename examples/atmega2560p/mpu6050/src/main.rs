@@ -4,7 +4,7 @@
 
 //use crate::com::i2c;
 use rustduino::sensors::mpu6050::*;
-use rustduino::hal::watchdog::*;
+use rustduino::atmega2560p::hal::watchdog::*;
 //use rustduino::com::i2c::*;
 
 #[no_mangle]
