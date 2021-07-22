@@ -19,7 +19,7 @@ use bit_field::BitField;
 use fixed_slice_vec::FixedSliceVec;
 use volatile::Volatile;
 
-///  Contains registers fow TWI.
+/// * Contains registers fow TWI.
 ///
 /// * `TWBR`: *TWI Bit Rate Register*. TWBR selects the division factor for the
 /// bit rate generator. The bit rate generator is a frequency divider which generates the
@@ -61,6 +61,8 @@ use volatile::Volatile;
 /// address bit and the corresponding bit in TWAR.
 ///
 ///  Section 21.9 of ATmega328P datasheet.
+#[cfg(feature = "com")]
+#[repr(C, packed)]
 pub struct Twi {
     _twbr: Volatile<u8>,
     twsr: Volatile<u8>,
@@ -99,7 +101,6 @@ pub fn prescaler() -> (u8, bool, bool) {
         return (64, true, true);
     } else {
         unreachable!();
-        // return (-1, -1, -1);
     }
 }
 
@@ -139,16 +140,18 @@ pub fn read_sda() {
 }
 
 impl Twi {
-    /// Returns a pointer to TWBR.
-    /// Usage: rustduino::atmega328p::com::i2c::new()
+    /// * Returns a pointer to TWBR.
+    /// * Usage: rustduino::atmega328p::com::i2c::new()
     pub fn new() -> &'static mut Self {
         unsafe { &mut *(0xB8 as *mut Self) }
     }
 
-    /// Waits for the process to be complete.
-    /// Times out if TWINT is not set in 100 seconds.
-    /// Retruns if process was successful.
-    /// Usage: rustduino::atmega328p::com::i2c::wait_to_complete(operation:u8)
+    /// * Waits for the process to be complete.
+    /// * Times out if TWINT is not set in 100 seconds.
+    /// * Retruns if process was successful.
+    /// * Usage:
+    /// * let twi = rustduino::com::Twi::new()
+    /// * twi.wait_to_complete(operation:u8)
     pub fn wait_to_complete(&mut self, operation: u8) -> bool {
         let mut i: u32 = 0;
         while !self.twcr.read().get_bit(TWINT) || i <= I2C_TIMEOUT {
@@ -167,8 +170,10 @@ impl Twi {
         }
     }
 
-    /// Iniates the TWI bus.
-    /// Usage: rustduino::atmega328p::com::i2c::init()
+    /// * Iniates the TWI bus.
+    /// * Usage:
+    /// * let twi = rustduino::com::Twi::new()
+    /// * twi.init()
     pub fn init(&mut self) {
         self.twsr.update(|sr| {
             sr.set_bit(TWPS0, prescaler().1);
@@ -179,8 +184,10 @@ impl Twi {
         })
     }
 
-    /// Sends a Start Signal
-    /// Usage: rustduino::atmega328p::com::i2c::start()
+    /// * Sends a Start Signal
+    /// * Usage:
+    /// * let twi = rustduino::com::Twi::new()
+    /// * twi.start()
     pub fn start(&mut self) -> bool {
         write_sda();
         self.twcr.write(0xA4); // TWINT TWSTA and TWA set to 1
@@ -188,24 +195,30 @@ impl Twi {
         return self.wait_to_complete(START);
     }
 
-    /// Sends a Repeat Start Signal
-    /// Usage: rustduino::atmega328p::com::i2c::rep_start()
+    /// * Sends a Repeat Start Signal
+    /// * Usage:
+    /// * let twi = rustduino::com::Twi::new()
+    /// * twi.rep_start()
     pub fn rep_start(&mut self) -> bool {
         self.twcr.write(0xA4); // TWINT TWSTA and TWA set to 1
 
         return self.wait_to_complete(REP_START);
     }
 
-    /// Stops the TWI bus.
-    /// Usage: rustduino::atmega328p::com::i2c::stop()
+    /// * Stops the TWI bus.
+    /// * Usage:
+    /// * let twi = rustduino::com::Twi::new()
+    /// * twi.stop()
     pub fn stop(&mut self) {
         self.twcr.write(0xB0);
     }
 
-    /// Sets address of Slave.
-    /// Used in Master Slave Mode.
-    /// Returns true if process is successful
-    /// Usage: rustduino::atmega328p::com::i2c::set_addr(address:u8)
+    /// * Sets address of Slave.
+    /// * Used in Master Slave Mode.
+    /// * Returns true if process is successful
+    /// * Usage:
+    /// * let twi = rustduino::com::Twi::new()
+    /// * twi.set_addr(address:u8)
     pub fn set_address(&mut self, addr: u8) -> bool {
         self.twdr.write(addr << 1 & !0x01); // loading SLA_W to TWDR
         self.twcr.update(|cr| {
@@ -216,9 +229,11 @@ impl Twi {
         return self.wait_to_complete(MT_SLA_ACK);
     }
 
-    /// Checks if slave is acknowledged.
-    /// Returns true if process is successful
-    /// Usage: rustduino::atmega328p::com::i2c::address_read(address:u8)
+    /// * Checks if slave is acknowledged.
+    /// * Returns true if process is successful
+    /// * Usage:
+    /// * let twi = rustduino::com::Twi::new()
+    /// * twi.address_read(address:u8)
     pub fn address_read(&mut self, address: u8) -> bool {
         self.twdr.write(address << 1 | 0x01);
         self.twcr.update(|cr| {
@@ -229,10 +244,12 @@ impl Twi {
         return self.wait_to_complete(MR_SLA_ACK);
     }
 
-    /// Writes one byte of data to the Slave.
-    /// Need to set address first.
-    /// Returns true if process is successful
-    /// Usage: rustduino::atmega328p::com::i2c::write(data:u8)
+    /// * Writes one byte of data to the Slave.
+    /// * Need to set address first.
+    /// * Returns true if process is successful
+    /// * Usage:
+    /// * let twi = rustduino::com::Twi::new()
+    /// * twi.write(data:u8)
     pub fn write(&mut self, data: u8) -> bool {
         delay_ms(1);
         // write_sda(); // doubt if neended
@@ -242,10 +259,12 @@ impl Twi {
         return self.wait_to_complete(MT_DATA_ACK);
     }
 
-    /// Writes consecutive bytes of data to the Slave.
-    /// Need to set address first.
-    /// Returns number of bytes written
-    /// Usage: rustduino::atmega328p::com::i2c::write_burst(data:&FixedSliceVec<u8>)
+    /// * Writes consecutive bytes of data to the Slave.
+    /// * Need to set address first.
+    /// * Returns number of bytes written
+    /// * Usage:
+    /// * let twi = rustduino::com::Twi::new()
+    /// * twi.write_burst(data:&FixedSliceVec<u8>)
     pub fn write_burst(&mut self, data: &FixedSliceVec<u8>) -> usize {
         let mut x: usize = 0;
         while x < data.len() {
@@ -258,10 +277,13 @@ impl Twi {
         return x + 1;
     }
 
-    /// Appends the value in TWCR to the given vector.
-    /// Need to set address first.
-    /// Returns true if process is completed.
-    /// Usage: rustduino::atmega328p::com::i2c::read_ack(data:&FixedSliceVec<u8>)
+    /// * Appends the value in TWCR to the given vector.
+    /// * Need to set address first.
+    /// * Returns true if process is completed.
+    /// * Usage:
+    /// * let twi = rustduino::com::Twi::new()
+    /// * twi.read_ack(data:&FixedSliceVec<u8>)
+    /// * Usage: rustduino::atmega328p::com::i2c::read_ack(data:&FixedSliceVec<u8>)
     pub fn read_ack(&mut self, data: &mut FixedSliceVec<u8>) -> bool {
         self.twcr.write(0xC4); //TWCR = (1 << TWINT) | (1 << TWEA) | (1 << TWEN)
         data.push(self.twdr.read());
@@ -269,13 +291,14 @@ impl Twi {
         return self.wait_to_complete(MR_DATA_ACK);
     }
 
-    /// Appends the value in TWCR to the given vector.
-    /// Need to set address first.
-    /// Returns true if process is completed.
-    /// Usage: rustduino::atmega328p::com::i2c::read_ack_burst(data:&FixedSliceVec<u8>)
+    /// * Appends the value in TWCR to the given vector.
+    /// * Need to set address first.
+    /// * Returns true if process is completed.
+    /// * Usage:
+    /// * let twi = rustduino::com::Twi::new()
+    /// * twi.read_ack_burst(data:&FixedSliceVec<u8>)
     pub fn read_ack_burst(&mut self, data: &mut FixedSliceVec<u8>, length: usize) -> usize {
         let mut x: usize = 0;
-        // let mut vec:FixedSliceVec<u8> = FixedSliceVec::new(&mut []);
         while x < length {
             if !self.read_ack(data) {
                 break;
@@ -294,7 +317,6 @@ impl Twi {
 
     pub fn read_nack_burst(&mut self, data: &mut FixedSliceVec<u8>, length: usize) -> usize {
         let mut x: usize = 0;
-        // let mut vec:FixedSliceVec<u8> = FixedSliceVec::new(&mut []);
 
         while x < length {
             if !self.read_nack(data) {
@@ -305,11 +327,13 @@ impl Twi {
         return x + 1;
     }
 
-    /// * Writes consecutive Data bytes to slave
-    /// * Returns true if process is completed and aborts if any of the steps, i.e
-    /// start, setting address or writing fails.
-    /// * Sends a stop signal if either of the steps fail or writing is successful.
-    /// * Usage: rustduino::atmega328p::com::i2c::write_to_slave(address:u8, data:&FixedSliceVec<u8>)
+    /// * * Writes consecutive Data bytes to slave
+    /// * * Returns true if process is completed and aborts if any of the steps, i.e
+    /// * start, setting address or writing fails.
+    /// * * Sends a stop signal if either of the steps fail or writing is successful.
+    /// * Usage:
+    /// * let twi = rustduino::com::Twi::new()
+    /// * twi.write_to_slave(address:u8, data:&FixedSliceVec<u8>)
     pub fn write_to_slave(&mut self, address: u8, data: &FixedSliceVec<u8>) -> bool {
         delay_ms(1);
         write_sda();
@@ -334,9 +358,11 @@ impl Twi {
     /// * Reads consecutive Data bytes from slave
     /// * Requires number of bytes ro be read
     /// * Returns true if process is completed and aborts if any of the steps, i.e
-    /// start, reading address, reading ACK or reading NACK fails.
+    /// * start, reading address, reading ACK or reading NACK fails.
     /// * Sends a stop signal if either of the steps fail or reading is successful.
-    /// * Usage: rustduino::atmega328p::com::i2c::write_to_slave(address:u8, length:u8,  data:&FixedSliceVec<u8>)
+    /// * Usage:
+    /// * let twi = rustduino::com::Twi::new()
+    /// * twi.read_from_slave(address:u8, length:u8, data:&FixedSliceVec<u8>)
     pub fn read_from_slave(
         &mut self,
         address: u8,
@@ -346,7 +372,6 @@ impl Twi {
         delay_ms(1);
         read_sda();
 
-        // let mut vec:FixedSliceVec<u8> = FixedSliceVec::new(&mut []);
         if !self.start() {
             return false;
         }
