@@ -14,10 +14,7 @@
 //     You should have received a copy of the GNU Affero General Public License
 //     along with this program.  If not, see <https://www.gnu.org/licenses/>
 
-use crate::{
-    com::{self, i2c},
-    delay::delay_ms,
-};
+use crate::{com, delay::delay_ms};
 use bit_field::BitField;
 use fixed_slice_vec::FixedSliceVec;
 //use volatile::Volatile;
@@ -123,12 +120,6 @@ const MPU6050_REG_FIFO_COUNTL: u8 = 0x73;
 const MPU6050_REG_FIFO_R_W: u8 = 0x74;
 const MPU6050_REG_WHO_AM_I: u8 = 0x75; // Who Am I
 
-pub struct Vector {
-    pub x: f32,
-    pub y: f32,
-    pub z: f32,
-}
-
 pub enum MPUClockSourceT {
     MPU6050ClockInternal8MHZ,
     MPU6050ClockPllGyrox,
@@ -179,14 +170,13 @@ pub enum MPUdlpfT {
     MPU6050dlpf0,
 }
 
-pub struct MPU6050 {
+pub struct MPU6050<'a> {
     address: u8,
-    //i2c: &'static mut i2c::Twi,
-    //atmega2560p::com::i2C::Twi::new(),
-    //vec: FixedSliceVec<'a ,u8>,
+    accel_output: FixedSliceVec<'a, f32>,
+    gyro_output: FixedSliceVec<'a, f32>,
 }
 
-impl MPU6050 {
+impl<'a> MPU6050<'a> {
     ///Returns a mutable refernce to the struct to be used in the implementations
     pub fn new() -> &'static mut Self {
         unsafe { &mut *(0x00 as *mut Self) }
@@ -480,30 +470,34 @@ impl MPU6050 {
     }
 
     ///Function to configures between gyro and master.
-    pub fn read_accel(&mut self, mut data: Vector) -> Vector {
+    pub fn read_accel(&mut self) {
         let mut v: FixedSliceVec<u8> = FixedSliceVec::new(&mut []);
         v.push(MPU6050_REG_ACCEL_XOUT_H);
         let i2c = com::i2c::Twi::new();
         i2c.read_from_slave(MPU6050_ADDRESS, 6, &mut v); //input from slave
-        data.x = (((v[1] as u16) << 8) | (v[2] as u16)) as f32; //input of X axis
-        data.y = (((v[3] as u16) << 8) | (v[4] as u16)) as f32; //input of Y axis
-        data.z = (((v[5] as u16) << 8) | (v[6] as u16)) as f32; //input of Z axis
-        return data;
+        self.accel_output
+            .push((((v[1] as u16) << 8) | (v[2] as u16)) as f32); //input of X axis
+        self.accel_output
+            .push((((v[3] as u16) << 8) | (v[4] as u16)) as f32); //input of Y axis
+        self.accel_output
+            .push((((v[5] as u16) << 8) | (v[6] as u16)) as f32); //input of Z axis
     }
 
     ///Function to configure between gyro and master.
-    pub fn read_gyro(&mut self, mut data: Vector) -> Vector {
+    pub fn read_gyro(&mut self) {
         let mut v: FixedSliceVec<u8> = FixedSliceVec::new(&mut []);
         v.push(MPU6050_REG_GYRO_XOUT_H);
         let i2c = com::i2c::Twi::new();
         i2c.read_from_slave(MPU6050_ADDRESS, 6, &mut v); //input from slave
-        data.x = (((v[1] as u16) << 8) | (v[2] as u16)) as f32; //input of X axis
-        data.y = (((v[3] as u16) << 8) | (v[4] as u16)) as f32; //input of Y axis
-        data.z = (((v[5] as u16) << 8) | (v[6] as u16)) as f32; //input of Z axis
-        return data;
+        self.gyro_output
+            .push((((v[1] as u16) << 8) | (v[2] as u16)) as f32); //input of X axis
+        self.gyro_output
+            .push((((v[3] as u16) << 8) | (v[4] as u16)) as f32); //input of Y axis
+        self.gyro_output
+            .push((((v[5] as u16) << 8) | (v[6] as u16)) as f32); //input of Z axis
     }
 
-    pub fn begin(&mut self, t: &'static mut i2c::Twi, scale: MPUdpsT, range: MPURangeT) -> bool {
+    pub fn begin(&mut self, scale: MPUdpsT, range: MPURangeT) -> bool {
         delay_ms(5);
 
         //Set clock source.
