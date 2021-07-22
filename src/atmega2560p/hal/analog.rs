@@ -71,15 +71,14 @@ pub struct Analog {
     didr0: Volatile<u8>,
     didr1: Volatile<u8>,
 }
-
-/// Structure to control the timer of type 8 for Analog Write.
-pub struct Timer8 {
-    tccra: Volatile<u8>,
-    tccrb: Volatile<u8>,
-    tcnt: Volatile<u8>,
-    ocra: Volatile<u8>,
-    ocrb: Volatile<u8>,
+pub struct Timer8{
+    tccra:Volatile<u8>,
+    tccrb:Volatile<u8>,
+    tcnt:Volatile<u8>,
+    ocra:Volatile<u8>,
+    ocrb:Volatile<u8>,
 }
+
 
 /// Structure to control the timer of type 16 for Analog Write.
 pub struct Timer16 {
@@ -98,7 +97,7 @@ pub struct Timer16 {
     ocrcl: Volatile<u8>,
     ocrch: Volatile<u8>,
 }
-
+/// Structure to control the timer of type 8 for Analog Write.
 impl Timer8 {
     ///
     pub fn new(timer: TimerNo8) -> &'static mut Timer8 {
@@ -108,9 +107,7 @@ impl Timer8 {
         }
     }
 }
-
 impl Timer16 {
-    ///
     pub fn new(timer: TimerNo16) -> &'static mut Timer16 {
         match timer {
             TimerNo16::Timer1 => unsafe { &mut *(0x80 as *mut Timer16) },
@@ -338,8 +335,151 @@ impl Pin {
         }
     }
 
-    pub fn analog_write(&mut self, _pi: u32, _val: u32) {
+    pub fn analog_write(&mut self, pin1: u32, value1: u8) {
         self.output();
+        match pin1 {
+            4 | 13 => {
+                let timer = Timer8::new(TimerNo8::Timer0);
+                timer.tccra.update(|ctrl| {
+                    ctrl.set_bits(0..2, 0b11);
+                });
+                timer.tccrb.update(|ctrl| {
+                    ctrl.set_bits(0..4, 0b0011);
+                });
+
+                if pin1 == 4 {
+                    timer.tccra.update(|ctrl| {
+                        ctrl.set_bits(4..8, 0b0010);
+                    });
+                    timer.ocrb.write(value1);
+                } else {
+                    timer.tccra.update(|ctrl| {
+                        ctrl.set_bits(4..8, 0b1000);
+                    });
+                    timer.ocra.write(value1);
+                }
+            }
+            9 | 10 => {
+                let timer = Timer8::new(TimerNo8::Timer2);
+                timer.tccra.update(|ctrl| {
+                    ctrl.set_bits(0..2, 0b11);
+                });
+                timer.tccrb.update(|ctrl| {
+                    ctrl.set_bits(0..4, 0b0101);
+                });
+                if pin1 == 9 {
+                    timer.tccra.update(|ctrl| {
+                        ctrl.set_bits(4..8, 0b0010);
+                    });
+                    timer.ocrb.write(value1);
+                } else {
+                    timer.tccra.update(|ctrl| {
+                        ctrl.set_bits(4..8, 0b1000);
+                    });
+                    timer.ocra.write(value1);
+                }
+            }
+            11 | 12 => {
+                let timer = Timer16::new(TimerNo16::Timer1);
+                timer.tccra.update(|ctrl| {
+                    ctrl.set_bits(0..2, 0b01);
+                });
+                timer.tccrb.update(|ctrl| {
+                    ctrl.set_bits(0..5, 0b00011);
+                });
+
+                if pin1 == 12 {
+                    timer.tccra.update(|ctrl| {
+                        ctrl.set_bits(2..8, 0b001000);
+                    });
+                    timer.ocrbl.write(value1);
+                } else {
+                    timer.tccra.update(|ctrl| {
+                        ctrl.set_bits(2..8, 0b100000);
+                    });
+                    timer.ocral.write(value1);
+                }
+            }
+            2 | 3 | 5 => {
+                let timer = Timer16::new(TimerNo16::Timer3);
+                timer.tccra.update(|ctrl| {
+                    ctrl.set_bits(0..2, 0b01);
+                });
+                timer.tccrb.update(|ctrl| {
+                    ctrl.set_bits(0..5, 0b00011);
+                });
+
+                if pin1 == 2 {
+                    timer.tccra.update(|ctrl| {
+                        ctrl.set_bits(2..8, 0b001000);
+                    });
+                    timer.ocrbl.write(value1);
+                } else if pin1 == 5 {
+                    timer.tccra.update(|ctrl| {
+                        ctrl.set_bits(2..8, 0b100000);
+                    });
+                    timer.ocral.write(value1);
+                } else {
+                    timer.tccra.update(|ctrl| {
+                        ctrl.set_bits(2..8, 0b000010);
+                    });
+                    timer.ocrcl.write(value1);
+                }
+            }
+            6 | 7 | 8 => {
+                let timer = Timer16::new(TimerNo16::Timer4);
+                timer.tccra.update(|ctrl| {
+                    ctrl.set_bits(0..2, 0b01);
+                });
+                timer.tccrb.update(|ctrl| {
+                    ctrl.set_bits(0..5, 0b00011);
+                });
+
+                if pin1 == 7 {
+                    timer.tccra.update(|ctrl| {
+                        ctrl.set_bits(2..8, 0b001000);
+                    });
+                    timer.ocrbl.write(value1);
+                } else if pin1 == 6 {
+                    timer.tccra.update(|ctrl| {
+                        ctrl.set_bits(2..8, 0b100000);
+                    });
+                    timer.ocral.write(value1);
+                } else {
+                    timer.tccra.update(|ctrl| {
+                        ctrl.set_bits(2..8, 0b000010);
+                    });
+                    timer.ocrcl.write(value1);
+                }
+            }
+            44 | 45 | 46 => {
+                let timer = Timer16::new(TimerNo16::Timer3);
+                timer.tccra.update(|ctrl| {
+                    ctrl.set_bits(0..2, 0b01);
+                });
+                timer.tccrb.update(|ctrl| {
+                    ctrl.set_bits(0..5, 0b00011);
+                });
+
+                if pin1 == 45 {
+                    timer.tccra.update(|ctrl| {
+                        ctrl.set_bits(2..8, 0b001000);
+                    });
+                    timer.ocrbl.write(value1);
+                } else if pin1 == 46 {
+                    timer.tccra.update(|ctrl| {
+                        ctrl.set_bits(2..8, 0b100000);
+                    });
+                    timer.ocral.write(value1);
+                } else {
+                    timer.tccra.update(|ctrl| {
+                        ctrl.set_bits(2..8, 0b000010);
+                    });
+                    timer.ocrcl.write(value1);
+                }
+            }
+            _ => unreachable!(),
+        }
     }
 }
 
