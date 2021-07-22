@@ -116,6 +116,69 @@ impl Port {
             None
         }
     }
+
+    /// Change pin mode to input or output by changing the DDr register.
+    pub fn set_pin_mode(&mut self, mode: IOMode, pin_no: usize) {
+        //  Read the value of DDxn register.
+        let mut ddr_val = unsafe { read_volatile(&mut self.ddr) };
+
+        //  Calculate the value to be written to DDxn register.
+        //  This will set the register according to the mode in which the pin is to be set.
+        ddr_val &= !(0x1 << pin_no);
+        ddr_val |= match mode {
+            IOMode::Input => 0x0,
+            IOMode::Output => 0x1 << pin_no,
+        };
+
+        // Write the value to DDxn register.
+        unsafe { write_volatile(&mut self.ddr, ddr_val) }
+    }
+
+    /// Toggles the appropriate bit in PINxn register so that the mode of the pin
+    /// is changed from high to low or vice versa.
+    pub fn toggle(&mut self, pin_no: usize) {
+        unsafe { write_volatile(&mut self.pin, 0x1 << pin_no) }
+    }
+
+    /// Set the pin to high output value.
+    pub fn high(&mut self, pin_no: usize) {
+        // Checks if pin number is valid.
+        if pin_no >= 8 {
+            return;
+        }
+        let mut p = unsafe { read_volatile(&mut self.port) }; // Reading the value of PORTxn.
+        p = p & (1 << pin_no);
+        let ddr_value = unsafe { read_volatile(&mut self.ddr) }; // Read the DDRxn register.
+        if p == 0 && ddr_value == (0x1 << pin_no) {
+            // Toggling the value of PORTxn, if it isn't set to high.
+            self.toggle(pin_no);
+        }
+    }
+
+    /// Sets the pin to low output value.
+    pub fn low(&mut self, pin_no: usize) {
+        // Check if pin number is valid.
+        if pin_no >= 8 {
+            return;
+        }
+        let mut p = unsafe { read_volatile(&mut self.port) }; //Reading the value of PORTxn.
+        p = p & (1 << pin_no);
+        let ddr_value = unsafe { read_volatile(&mut self.ddr) }; // Read the DDRxn register.
+        if p != 0 && ddr_value == (0x1 << pin_no) {
+            //Toggling the value of PORTxn, if it isn't set to low.
+            self.toggle(pin_no);
+        }
+    }
+
+    /// Change pin mode to Output by changing the value of DDxn register.
+    pub fn output(&mut self, pinno: usize) {
+        self.set_pin_mode(IOMode::Output, pinno);
+    }
+
+    /// Change pin mode to Input by changing the value of DDxn register.
+    pub fn input(&mut self, pinno: usize) {
+        self.set_pin_mode(IOMode::Input, pinno);
+    }
 }
 
 impl Pin {

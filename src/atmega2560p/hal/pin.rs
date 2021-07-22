@@ -54,24 +54,24 @@ impl Pins {
                 Pin::new(PortName::K, 7).unwrap(),
             ],
             digital: [
-                Pin::new(PortName::E, 0).unwrap(),
-                Pin::new(PortName::E, 1).unwrap(),
-                Pin::new(PortName::E, 4).unwrap(),
-                Pin::new(PortName::E, 5).unwrap(),
-                Pin::new(PortName::G, 5).unwrap(),
-                Pin::new(PortName::E, 3).unwrap(),
-                Pin::new(PortName::H, 3).unwrap(),
-                Pin::new(PortName::H, 4).unwrap(),
-                Pin::new(PortName::H, 5).unwrap(),
-                Pin::new(PortName::H, 6).unwrap(),
-                Pin::new(PortName::B, 4).unwrap(),
-                Pin::new(PortName::B, 5).unwrap(),
-                Pin::new(PortName::B, 6).unwrap(),
-                Pin::new(PortName::B, 7).unwrap(),
-                Pin::new(PortName::J, 0).unwrap(),
-                Pin::new(PortName::J, 1).unwrap(),
-                Pin::new(PortName::H, 1).unwrap(),
-                Pin::new(PortName::H, 0).unwrap(),
+                Pin::new(PortName::E, 0).unwrap(), // 0
+                Pin::new(PortName::E, 1).unwrap(), // 1
+                Pin::new(PortName::E, 4).unwrap(), // 2
+                Pin::new(PortName::E, 5).unwrap(), // 3
+                Pin::new(PortName::G, 5).unwrap(), // 4
+                Pin::new(PortName::E, 3).unwrap(), // 5
+                Pin::new(PortName::H, 3).unwrap(), // 6
+                Pin::new(PortName::H, 4).unwrap(), // 7
+                Pin::new(PortName::H, 5).unwrap(), // 8
+                Pin::new(PortName::H, 6).unwrap(), // 9
+                Pin::new(PortName::B, 4).unwrap(), // 10
+                Pin::new(PortName::B, 5).unwrap(), // 11
+                Pin::new(PortName::B, 6).unwrap(), // 12
+                Pin::new(PortName::B, 7).unwrap(), // 13
+                Pin::new(PortName::J, 0).unwrap(), // 14
+                Pin::new(PortName::J, 1).unwrap(), // 15
+                Pin::new(PortName::H, 1).unwrap(), // 16
+                Pin::new(PortName::H, 0).unwrap(), // 17
                 Pin::new(PortName::D, 3).unwrap(),
                 Pin::new(PortName::D, 2).unwrap(),
                 Pin::new(PortName::D, 1).unwrap(),
