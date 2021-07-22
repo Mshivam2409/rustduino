@@ -73,106 +73,104 @@ impl Digital {
     }
 }
 
-impl Pin{
+impl Pin {
     /// Function to create a reference for Analog signals.
-    pub fn analog_read(&mut self,pin: u32,reftype:RefType) -> u32 {
-        
-        unsafe{ 
-           
-            let analog =Analog::new();
+    pub fn analog_read(&mut self, pin: u32, reftype: RefType) -> u32 {
+        unsafe {
+            let analog = Analog::new();
             analog.adc_enable();
 
             analog.adc_auto_trig();
 
             analog.analog_reference(reftype);
 
-            match pin{
-                0=>{
+            match pin {
+                0 => {
                     analog.admux.update(|admux| {
-                        admux.set_bits(0..3,0b000);
+                        admux.set_bits(0..3, 0b000);
                     });
                     analog.didr0.update(|didr0| {
-                        didr0.set_bit(0,true);
+                        didr0.set_bit(0, true);
                     });
                     analog.adcsrb.update(|mux| {
                         mux.set_bit(3, false);
                     });
                 }
-                1=>{
+                1 => {
                     analog.admux.update(|admux| {
-                        admux.set_bits(0..3,0b001);
+                        admux.set_bits(0..3, 0b001);
                     });
                     analog.didr0.update(|didr0| {
-                        didr0.set_bit(1,true);
+                        didr0.set_bit(1, true);
                     });
                     analog.adcsrb.update(|mux| {
-                        mux.set_bit(3,false);
+                        mux.set_bit(3, false);
                     });
                 }
-                2=>{
+                2 => {
                     analog.admux.update(|admux| {
-                        admux.set_bits(0..3,0b010);
+                        admux.set_bits(0..3, 0b010);
                     });
                     analog.didr0.update(|didr0| {
-                        didr0.set_bit(2,true);
+                        didr0.set_bit(2, true);
                     });
                     analog.adcsrb.update(|mux| {
-                        mux.set_bit(3,false);
+                        mux.set_bit(3, false);
                     });
                 }
-                3=>{
+                3 => {
                     analog.admux.update(|admux| {
-                        admux.set_bits(0..3,0b011);
+                        admux.set_bits(0..3, 0b011);
                     });
                     analog.didr0.update(|didr0| {
-                        didr0.set_bit(3,true);
+                        didr0.set_bit(3, true);
                     });
                     analog.adcsrb.update(|mux| {
-                        mux.set_bit(3,false);
+                        mux.set_bit(3, false);
                     });
                 }
-                4=>{
+                4 => {
                     analog.admux.update(|admux| {
-                        admux.set_bits(0..3,0b100);
+                        admux.set_bits(0..3, 0b100);
                     });
                     analog.didr0.update(|didr0| {
-                        didr0.set_bit(4,true);
+                        didr0.set_bit(4, true);
                     });
                     analog.adcsrb.update(|mux| {
-                        mux.set_bit(3,false);
+                        mux.set_bit(3, false);
                     });
                 }
-                5=>{
+                5 => {
                     analog.admux.update(|admux| {
-                        admux.set_bits(0..3,0b101);
+                        admux.set_bits(0..3, 0b101);
                     });
                     analog.didr0.update(|didr0| {
-                        didr0.set_bit(5,true);
+                        didr0.set_bit(5, true);
                     });
                     analog.adcsrb.update(|mux| {
-                        mux.set_bit(3,false);
+                        mux.set_bit(3, false);
                     });
                 }
-                6=>{
+                6 => {
                     analog.admux.update(|admux| {
-                        admux.set_bits(0..3,0b110);
+                        admux.set_bits(0..3, 0b110);
                     });
                     analog.didr0.update(|didr0| {
-                        didr0.set_bit(6,true);
+                        didr0.set_bit(6, true);
                     });
                     analog.adcsrb.update(|mux| {
-                        mux.set_bit(3,false);
+                        mux.set_bit(3, false);
                     });
                 }
-                7=>{
+                7 => {
                     analog.admux.update(|admux| {
-                        admux.set_bits(0..3,0b111);
+                        admux.set_bits(0..3, 0b111);
                     });
                     analog.didr0.update(|didr0| {
-                        didr0.set_bit(7,true);
+                        didr0.set_bit(7, true);
                     });
                     analog.adcsrb.update(|mux| {
-                        mux.set_bit(3,false);
+                        mux.set_bit(3, false);
                     });
                 }
                 _ => unreachable!(),
@@ -181,13 +179,12 @@ impl Pin{
             analog.adc_con_start();
 
             // wait 25 ADC cycles
-            let mut a:u32 = 0;
-            let adcl =analog.adcl.read() as u32;
-            a.set_bits(0..8,adcl.get_bits(0..8) );
+            let mut a: u32 = 0;
+            let adcl = analog.adcl.read() as u32;
+            a.set_bits(0..8, adcl.get_bits(0..8));
 
-            let adch =analog.adch.read() as u32;
-            a.set_bits(8..10,adch.get_bits(0..2) );
-
+            let adch = analog.adch.read() as u32;
+            a.set_bits(8..10, adch.get_bits(0..2));
 
             analog.adc_disable();
 
@@ -195,11 +192,8 @@ impl Pin{
         }
     }
 
-
-    pub fn analog_write(&mut self,_pi:u32,_val:u32){
+    pub fn analog_write(&mut self, _pi: u32, _val: u32) {
         self.set_output();
-
-
     }
 }
 
@@ -247,30 +241,30 @@ impl Analog {
     }
 
     ///Function is Used to enable the ADC
-    pub fn adc_enable (&mut self){
+    pub fn adc_enable(&mut self) {
         self.adcsra.update(|aden| {
-            aden.set_bit(7,true);
+            aden.set_bit(7, true);
         });
     }
 
     ///Function is Used to start a conversion in the ADC
-    pub fn adc_con_start (&mut self){
+    pub fn adc_con_start(&mut self) {
         self.adcsra.update(|aden| {
-            aden.set_bit(6,true);
+            aden.set_bit(6, true);
         });
-    }    
+    }
 
     ///Function is Used to stop auto triggering in the ADC
-    pub fn adc_auto_trig (&mut self){
+    pub fn adc_auto_trig(&mut self) {
         self.adcsra.update(|aden| {
-            aden.set_bit(5,false);
+            aden.set_bit(5, false);
         });
-    }    
+    }
 
     ///Function is Used to disable the ADC
-    pub fn adc_disable (&mut self){
+    pub fn adc_disable(&mut self) {
         self.adcsra.update(|aden| {
-            aden.set_bit(7,false);
+            aden.set_bit(7, false);
         });
     }
 }
