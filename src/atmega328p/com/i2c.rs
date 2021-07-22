@@ -61,7 +61,7 @@ use volatile::Volatile;
 /// address bit and the corresponding bit in TWAR.
 ///
 ///  Section 21.9 of ATmega328P datasheet.
-#[cfg(feature = "com")]
+// #[cfg(feature = "com")]
 #[repr(C, packed)]
 pub struct Twi {
     _twbr: Volatile<u8>,
