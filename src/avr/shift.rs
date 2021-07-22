@@ -17,9 +17,10 @@
 // use bit_field::BitField;
 // use volatile::Volatile;
 // use crate::atmega328p::hal::pins:: *;
-use crate::atmega328p::hal::port::*;
+use crate::hal::port::*;
 
-pub fn make_pin(pin: u8) -> Pin {
+// makes pin struct given pin number
+fn make_pin(pin: u8) -> Pin {
     match pin {
         0 => return Pin::new(PortName::D, 0).unwrap(),
         1 => return Pin::new(PortName::D, 1).unwrap(),
