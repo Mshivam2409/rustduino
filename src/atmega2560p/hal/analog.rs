@@ -323,9 +323,11 @@ impl Pin {
 
             // wait 25 ADC cycles
             let mut a:u32 = 0;
-            a.set_bits(0..8,analog.adcl.read() as u32);
+            let adcl =analog.adcl.read() as u32;
+            a.set_bits(0..8,adcl.get_bits(0..8) );
 
-            a.set_bits(8..10,analog.adch.read() as u32);// check logic syntax correctness
+            let adch =analog.adch.read() as u32;
+            a.set_bits(8..10,adch.get_bits(0..2) );
 
             analog.adc_disable();
 
