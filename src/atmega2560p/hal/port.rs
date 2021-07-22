@@ -58,8 +58,8 @@ pub struct Port {
 
 /// The structure Pin contains the address of the port to which the pin belongs and the pin's number.
 pub struct Pin {
-    port: *mut Port,
-    pin: usize,
+    pub port: *mut Port,
+    pub pin: usize,
 }
 
 /// Type `IOMode`

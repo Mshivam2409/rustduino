@@ -23,6 +23,7 @@
 
 use crate::atmega2560p::hal::port::*;
 use crate::atmega2560p::hal::power::Power;
+use crate::atmega2560p::hal::{analogpins, digitalpins};
 /// Crates to be used for the implementation.
 use bit_field::BitField;
 use core::ptr::write_volatile;
@@ -71,14 +72,13 @@ pub struct Analog {
     didr0: Volatile<u8>,
     didr1: Volatile<u8>,
 }
-pub struct Timer8{
-    tccra:Volatile<u8>,
-    tccrb:Volatile<u8>,
-    tcnt:Volatile<u8>,
-    ocra:Volatile<u8>,
-    ocrb:Volatile<u8>,
+pub struct Timer8 {
+    tccra: Volatile<u8>,
+    tccrb: Volatile<u8>,
+    tcnt: Volatile<u8>,
+    ocra: Volatile<u8>,
+    ocrb: Volatile<u8>,
 }
-
 
 /// Structure to control the timer of type 16 for Analog Write.
 pub struct Timer16 {
@@ -125,21 +125,21 @@ impl AnalogComparator {
     }
 }
 
-impl Pin {
-    
-    pub fn analog_read(&mut self, pin: u32, reftype: RefType) -> u32 {
+impl analogpins::AnalogPin {
+    pub fn analog_read(&mut self, reftype: RefType) -> u32 {
+        let pin = self.pinno;
         unsafe {
             let analog = Analog::new();
             
             // check if to enable the pin as input
 
-            analog.power_adc_disable();//PRADC disable to enable ADC
+            analog.power_adc_disable(); //PRADC disable to enable ADC
 
             analog.adc_enable();
 
             analog.adc_auto_trig();
 
-            analog.analog_reference(reftype);
+            analog_reference(reftype);
 
             match pin {
                 0 => {
@@ -324,21 +324,26 @@ impl Pin {
             analog.adc_con_start();
 
             // wait 25 ADC cycles
-            let mut a:u32 = 0;
-            let adcl =analog.adcl.read() as u32;
-            a.set_bits(0..8,adcl.get_bits(0..8) );
+            let mut a: u32 = 0;
+            a.set_bits(0..8, analog.adcl.read() as u32);
 
-            let adch =analog.adch.read() as u32;
-            a.set_bits(8..10,adch.get_bits(0..2) );
+            a.set_bits(8..10, analog.adch.read() as u32); // check logic syntax correctness
 
             analog.adc_disable();
 
             a
         }
     }
+}
 
-    pub fn analog_write(&mut self, pin1: u32, value1: u8) {
-        self.output();
+impl digitalpins::DigitalPin {
+    ///This function is used to write a PWM wave to a digital pin.
+    ///Only 2-13 and 44-46 digital pins can be used in this function, other pins will lead to crash.
+    ///All pin except 4 and 13 are set to give output at 490 hertz.
+    ///pin 4 and 13 will give output at 980 hertz.
+    pub fn analog_write(&mut self, value1: u8) {
+        self.digipin.output();
+        let pin1 = self.pinno;
         match pin1 {
             4 | 13 => {
                 let timer = Timer8::new(TimerNo8::Timer0);
@@ -389,7 +394,6 @@ impl Pin {
                 timer.tccrb.update(|ctrl| {
                     ctrl.set_bits(0..5, 0b00011);
                 });
-
                 if pin1 == 12 {
                     timer.tccra.update(|ctrl| {
                         ctrl.set_bits(2..8, 0b001000);
@@ -491,32 +495,6 @@ impl Analog {
         &mut *(0x78 as *mut Analog)
     }
 
-    /// Function to create a reference for Analog signals.
-    pub fn analog_reference(&mut self, reftype: RefType) {
-        match reftype {
-            RefType::DEFAULT => {
-                self.admux.update(|admux| {
-                    admux.set_bits(6..8, 0b01);
-                });
-            }
-            RefType::INTERNAL1V1 => {
-                self.admux.update(|admux| {
-                    admux.set_bits(6..8, 0b10);
-                });
-            }
-            RefType::INTERNAL2V56 => {
-                self.admux.update(|admux| {
-                    admux.set_bits(6..8, 0b11);
-                });
-            }
-            RefType::EXTERNAL => {
-                self.admux.update(|admux| {
-                    admux.set_bits(6..8, 0b00);
-                });
-            }
-        }
-    }
-
     ///Function is Used to enable the ADC
     pub fn adc_enable(&mut self) {
         self.adcsra.update(|aden| {
@@ -558,4 +536,35 @@ impl Analog {
             write_volatile(&mut pow.prr0, pow.prr0 | (1));
         }
     }
+}
+
+/// Function to create a reference for Analog signals.
+pub fn analog_reference(reftype: RefType) {
+    let analog = unsafe { Analog::new() };
+    match reftype {
+        RefType::DEFAULT => {
+            analog.admux.update(|admux| {
+                admux.set_bits(6..8, 0b01);
+            });
+        }
+        RefType::INTERNAL1V1 => {
+            analog.admux.update(|admux| {
+                admux.set_bits(6..8, 0b10);
+            });
+        }
+        RefType::INTERNAL2V56 => {
+            analog.admux.update(|admux| {
+                admux.set_bits(6..8, 0b11);
+            });
+        }
+        RefType::EXTERNAL => {
+            analog.admux.update(|admux| {
+                admux.set_bits(6..8, 0b00);
+            });
+        }
+    }
+}
+///This function converts output generated from analog_read() in form to be used as input in analog_write().
+pub fn map_from1023_to255(val: u32) -> u32 {
+    255 * (val / 1023)
 }

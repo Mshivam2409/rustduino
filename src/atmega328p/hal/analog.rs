@@ -21,8 +21,11 @@
 //! Refer to section 22 and 23 of ATMEGA328P datasheet.
 //! https://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-7810-Automotive-Microcontrollers-ATmega328P_Datasheet.pdf
 
-use bit_field::BitField;
+use crate::atmega328p::hal::port::*;
+use crate::atmega328p::hal::power::Sleep;
 /// Crates to be used for the implementation.
+use bit_field::BitField;
+use core::ptr::write_volatile;
 use volatile::Volatile;
 
 /// Structure to control the implementation of Integrated Analog Circuit.
@@ -46,6 +49,8 @@ pub struct Analog {
     adcsra: Volatile<u8>,
     adcsrb: Volatile<u8>,
     admux: Volatile<u8>,
+    didr0: Volatile<u8>,
+    didr1: Volatile<u8>,
 }
 
 pub enum RefType {
@@ -65,6 +70,130 @@ impl Digital {
     /// New pointer object created for Digital Structure.
     pub unsafe fn new() -> &'static mut Digital {
         &mut *(0x7E as *mut Digital)
+    }
+}
+
+impl Pin {
+    /// Function to create a reference for Analog signals.
+    pub fn analog_read(&mut self, pin: u32, reftype: RefType) -> u32 {
+        unsafe {
+            let analog = Analog::new();
+            analog.adc_enable();
+
+            analog.adc_auto_trig();
+
+            analog.analog_reference(reftype);
+
+            match pin {
+                0 => {
+                    analog.admux.update(|admux| {
+                        admux.set_bits(0..3, 0b000);
+                    });
+                    analog.didr0.update(|didr0| {
+                        didr0.set_bit(0, true);
+                    });
+                    analog.adcsrb.update(|mux| {
+                        mux.set_bit(3, false);
+                    });
+                }
+                1 => {
+                    analog.admux.update(|admux| {
+                        admux.set_bits(0..3, 0b001);
+                    });
+                    analog.didr0.update(|didr0| {
+                        didr0.set_bit(1, true);
+                    });
+                    analog.adcsrb.update(|mux| {
+                        mux.set_bit(3, false);
+                    });
+                }
+                2 => {
+                    analog.admux.update(|admux| {
+                        admux.set_bits(0..3, 0b010);
+                    });
+                    analog.didr0.update(|didr0| {
+                        didr0.set_bit(2, true);
+                    });
+                    analog.adcsrb.update(|mux| {
+                        mux.set_bit(3, false);
+                    });
+                }
+                3 => {
+                    analog.admux.update(|admux| {
+                        admux.set_bits(0..3, 0b011);
+                    });
+                    analog.didr0.update(|didr0| {
+                        didr0.set_bit(3, true);
+                    });
+                    analog.adcsrb.update(|mux| {
+                        mux.set_bit(3, false);
+                    });
+                }
+                4 => {
+                    analog.admux.update(|admux| {
+                        admux.set_bits(0..3, 0b100);
+                    });
+                    analog.didr0.update(|didr0| {
+                        didr0.set_bit(4, true);
+                    });
+                    analog.adcsrb.update(|mux| {
+                        mux.set_bit(3, false);
+                    });
+                }
+                5 => {
+                    analog.admux.update(|admux| {
+                        admux.set_bits(0..3, 0b101);
+                    });
+                    analog.didr0.update(|didr0| {
+                        didr0.set_bit(5, true);
+                    });
+                    analog.adcsrb.update(|mux| {
+                        mux.set_bit(3, false);
+                    });
+                }
+                6 => {
+                    analog.admux.update(|admux| {
+                        admux.set_bits(0..3, 0b110);
+                    });
+                    analog.didr0.update(|didr0| {
+                        didr0.set_bit(6, true);
+                    });
+                    analog.adcsrb.update(|mux| {
+                        mux.set_bit(3, false);
+                    });
+                }
+                7 => {
+                    analog.admux.update(|admux| {
+                        admux.set_bits(0..3, 0b111);
+                    });
+                    analog.didr0.update(|didr0| {
+                        didr0.set_bit(7, true);
+                    });
+                    analog.adcsrb.update(|mux| {
+                        mux.set_bit(3, false);
+                    });
+                }
+                _ => unreachable!(),
+            }
+
+            analog.adc_con_start();
+
+            // wait 25 ADC cycles
+            let mut a: u32 = 0;
+            let adcl = analog.adcl.read() as u32;
+            a.set_bits(0..8, adcl.get_bits(0..8));
+
+            let adch = analog.adch.read() as u32;
+            a.set_bits(8..10, adch.get_bits(0..2));
+
+            analog.adc_disable();
+
+            a
+        }
+    }
+
+    pub fn analog_write(&mut self, _pi: u32, _val: u32) {
+        self.set_output();
     }
 }
 
@@ -95,9 +224,47 @@ impl Analog {
         }
     }
 
-    /// Function to read data which is got as input to Analog Pins.
-    pub fn analog_read() {}
+    ///Function to disable PRADC
+    pub fn power_adc_disable(&mut self) {
+        unsafe {
+            let pow = Sleep::new();
+            write_volatile(&mut pow.smcr, pow.smcr & (254));
+        }
+    }
 
-    /// Function to write data as an output through Analog Pins.
-    pub fn analog_write() {}
+    ///Function to enable PRADC
+    pub fn power_adc_enable(&mut self) {
+        unsafe {
+            let pow = Sleep::new();
+            write_volatile(&mut pow.smcr, pow.smcr | (1));
+        }
+    }
+
+    ///Function is Used to enable the ADC
+    pub fn adc_enable(&mut self) {
+        self.adcsra.update(|aden| {
+            aden.set_bit(7, true);
+        });
+    }
+
+    ///Function is Used to start a conversion in the ADC
+    pub fn adc_con_start(&mut self) {
+        self.adcsra.update(|aden| {
+            aden.set_bit(6, true);
+        });
+    }
+
+    ///Function is Used to stop auto triggering in the ADC
+    pub fn adc_auto_trig(&mut self) {
+        self.adcsra.update(|aden| {
+            aden.set_bit(5, false);
+        });
+    }
+
+    ///Function is Used to disable the ADC
+    pub fn adc_disable(&mut self) {
+        self.adcsra.update(|aden| {
+            aden.set_bit(7, false);
+        });
+    }
 }
