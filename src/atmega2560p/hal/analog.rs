@@ -130,6 +130,8 @@ impl Pin {
     pub fn analog_read(&mut self, pin: u32, reftype: RefType) -> u32 {
         unsafe {
             let analog = Analog::new();
+            
+            // check if to enable the pin as input
 
             analog.power_adc_disable();//PRADC disable to enable ADC
 
