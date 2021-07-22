@@ -24,7 +24,7 @@ pub struct AHT10<'a> {
     vec: FixedSliceVec<'a, u8>,
 }
 
-///Constant values for AHT10 temperature and humity sensor.
+/// Constant values for AHT10 temperature and humity sensor.
 const AHT10_INIT_CMD: u8 = 0xE1; //initialization command for AHT10/AHT15
 const AHT10_START_MEASURMENT_CMD: u8 = 0xAC; //start measurment command
 const AHT10_SOFT_RESET_CMD: u8 = 0xBA; //soft reset command
@@ -32,9 +32,9 @@ const AHT10_INIT_CAL_ENABLE: u8 = 0x08; //load factory calibration coeff
 const AHT10_INIT_BUSY: u8 = 0x08; //Status bit for busy
 
 impl<'a> AHT10<'a> {
-    ///20ms delay to wake up.
-    ///I2C address is set.
-    ///Usage: rustduino::sensors::aht10::new()
+    /// * 20ms delay to wake up.
+    /// * I2C address is set.
+    /// * Usage: rustduino::sensors::aht10::new()
     pub fn new(&mut self) -> &'static mut Self {
         delay_ms(20);
 
@@ -51,9 +51,10 @@ impl<'a> AHT10<'a> {
         unsafe { &mut *(0x38 as *mut Self) }
     }
 
-    ///Initiates the transmission by self initiating the sensor.
-    ///Returns true if done otherwise false.
-    ///Usage: rustduino::sensors::aht10::initialise()
+    /// * Initiates the transmission by self initiating the sensor.
+    /// * Returns true if done otherwise false.
+    /// * Usage:let aht10=rustduino::sensors::AHT10::new()
+    /// * aht10.initialise()
     pub fn initialise(&mut self) -> bool {
         self.vec.clear();
         self.vec.push(AHT10_INIT_CMD);
@@ -70,10 +71,11 @@ impl<'a> AHT10<'a> {
         return true;
     }
 
-    ///Restart sensor, without power off.
-    /// It takes ~20ms.
-    /// All registers restores to default.
-    ///Usage: rustduino::sensors::aht10::soft_reset()
+    /// * Restart sensor, without power off.
+    /// *  It takes ~20ms.
+    /// *  All registers restores to default.
+    /// * Usage:let aht10=rustduino::sensors::AHT10::new()
+    /// * aht10.soft_reset()
     pub fn soft_reset(&mut self) {
         self.vec.clear();
         self.vec.push(AHT10_SOFT_RESET_CMD);
@@ -84,8 +86,9 @@ impl<'a> AHT10<'a> {
         delay_ms(20);
     }
 
-    ///Reads data from slave.
-    ///Usage: rustduino::sensors::aht10::read_to_buffer()
+    /// * Reads data from slave.
+    /// * Usage:let aht10=rustduino::sensors::AHT10::new()
+    /// * aht10.read_to_buffer()
     pub fn read_to_buffer(&mut self) {
         if !self
             .i2c
@@ -95,8 +98,9 @@ impl<'a> AHT10<'a> {
         }
     }
 
-    ///Triggers the AHT10 to read temperature/humidity.
-    ///Usage: rustduino::sensors::aht10::trigger_slave()
+    /// * Triggers the AHT10 to read temperature/humidity.
+    /// * Usage:let aht10=rustduino::sensors::AHT10::new()
+    /// * aht10.trigger_slave()
     pub fn trigger_slave(&mut self) {
         self.vec.clear();
         self.vec.push(AHT10_START_MEASURMENT_CMD);
@@ -108,31 +112,35 @@ impl<'a> AHT10<'a> {
         }
     }
 
-    ///Delay of 5ms when status bit is 0 and sensor is busy.
-    ///Usage: rustduino::sensors::aht10::wait_for_idle()
+    /// * Delay of 5ms when status bit is 0 and sensor is busy.
+    /// * Usage:let aht10=rustduino::sensors::AHT10::new()
+    /// * aht10.wait_for_idle()
     pub fn wait_for_idle(&mut self) {
         while (self.status() == 0 && AHT10_INIT_BUSY == 0) == true {
             delay_ms(5);
         }
     }
 
-    ///Performs measurement using the functions mentioned.
-    ///Usage: rustduino::sensors::aht10::perform_measurement()
+    /// * Performs measurement using the functions mentioned.
+    /// * Usage:let aht10=rustduino::sensors::AHT10::new()
+    /// * aht10.perform_measurement()
     pub fn perform_measurement(&mut self) {
         self.trigger_slave();
         self.wait_for_idle();
         self.read_to_buffer();
     }
 
-    ///Reads status bit returned by the slave.
-    ///Usage: rustduino::sensors::aht10::status()
+    /// * Reads status bit returned by the slave.
+    /// * Usage:let aht10=rustduino::sensors::AHT10::new()
+    /// * aht10.status()
     pub fn status(&mut self) -> u8 {
         self.read_to_buffer();
         return self.vec[0];
     }
 
-    ///Reads 20 bit raw humidity data and returns relative humidity in percentage.
-    ///Usage: rustduino::sensors::aht10::relative_humidity()
+    /// * Reads 20 bit raw humidity data and returns relative humidity .
+    /// * Usage:let aht10=rustduino::sensors::AHT10::new()
+    /// * aht10.relative_humidity()
     pub fn relative_humidity(&mut self) -> f64 {
         self.perform_measurement();
         let mut humid: f64 = (((self.vec[1] as u32) << 12)
@@ -142,8 +150,9 @@ impl<'a> AHT10<'a> {
         return humid;
     }
 
-    ///Reads 20 bit raw temperature data and returns temperature in degree celsius.
-    ///Usage: rustduino::sensors::aht10::temperature()
+    /// * Reads 20 bit raw temperature data and returns temperature .
+    /// * Usage:let aht10=rustduino::sensors::AHT10::new()
+    /// * aht10.temperature()
     pub fn temperature(&mut self) -> f64 {
         self.perform_measurement();
         let mut temp: f64 = ((((self.vec[3] as u32) & 0xF) << 16)
