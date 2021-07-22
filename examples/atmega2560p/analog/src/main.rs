@@ -1,14 +1,27 @@
 #![no_std]
 #![no_main]
 #![deny(warnings)]
-#![allow(unused_variables)]
 
+use rustduino::atmega2560p::hal::analog::RefType;
 /// Crates to be used.
-use rustduino::atmega2560p::hal::analog::Analog;
+use rustduino::atmega2560p::hal::pin::Pins;
 
 #[no_mangle]
 pub fn main() {
-    let a = unsafe { Analog::new() };
+    // Creates a array object consisting of all the pins.
+    let mut pins = Pins::new();
+
+    loop {
+        // Take input into the first analog pin.
+        pins.analog[0].analog_read(0, RefType::DEFAULT);
+
+        rustduino::delay::delay_ms(1000);
+
+        // Give output from the first analog pin.
+        // pins.analog[0].analog_write();
+
+        rustduino::delay::delay_ms(1000);
+    }
 }
 
 /// This function is called on panic.
