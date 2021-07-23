@@ -28,7 +28,7 @@ pub struct DigitalPin {
     pub digipin: Pin,
     pub pinno: usize,
 }
- 
+
 /// Structure to contain all the digital pins in one place in form of a array.
 pub struct DigitalPins {
     pub digital: [DigitalPin; 14],

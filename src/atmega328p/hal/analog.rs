@@ -26,10 +26,31 @@ use bit_field::BitField;
 use core::ptr::write_volatile;
 use volatile::Volatile;
 
-/// Source codes to be used here.
-use crate::atmega328p::hal::power::Sleep;
 use crate::atmega328p::hal::analogpins;
 use crate::atmega328p::hal::digitalpins;
+/// Source codes to be used here.
+use crate::atmega328p::hal::power::Sleep;
+
+/// Selection of reference type for the implementation of Analog Pins.
+#[derive(Clone, Copy)]
+pub enum RefType {
+    DEFAULT,
+    INTERNAL1V1,
+    EXTERNAL,
+}
+
+/// Selection of timer mode for Timer 8 type.
+#[derive(Clone, Copy)]
+pub enum TimerNo8 {
+    Timer0,
+    Timer2,
+}
+
+/// Selection of timer mode for Timer 16 type.
+#[derive(Clone, Copy)]
+pub enum TimerNo16 {
+    Timer1,
+}
 
 /// Structure to control the implementation of Integrated Analog Circuit.
 #[repr(C, packed)]
@@ -56,6 +77,7 @@ pub struct Analog {
     didr1: Volatile<u8>,
 }
 
+/// Structure to control the timer of type 8 for Analog Write.
 pub struct Timer8 {
     tccra: Volatile<u8>,
     tccrb: Volatile<u8>,
@@ -66,34 +88,13 @@ pub struct Timer8 {
 
 /// Structure to control the timer of type 8 for Analog Write.
 impl Timer8 {
-    ///
+    /// Returns pointer to structure for control on Timer of 8 type.
     pub fn new(timer: TimerNo8) -> &'static mut Timer8 {
         match timer {
             TimerNo8::Timer0 => unsafe { &mut *(0x44 as *mut Timer8) },
             TimerNo8::Timer2 => unsafe { &mut *(0xB0 as *mut Timer8) },
         }
     }
-}
-
-/// Selection of reference type for the implementation of Analog Pins.
-#[derive(Clone, Copy)]
-pub enum RefType {
-    DEFAULT,
-    INTERNAL1V1,
-    EXTERNAL,
-}
-
-/// Selection of timer mode for Timer 8 type.
-#[derive(Clone, Copy)]
-pub enum TimerNo8 {
-    Timer0,
-    Timer2,
-}
-
-/// Selection of timer mode for Timer 16 type.
-#[derive(Clone, Copy)]
-pub enum TimerNo16 {
-    Timer1,
 }
 
 impl AnalogComparator {
@@ -112,7 +113,7 @@ impl Digital {
 
 impl analogpins::AnalogPin {
     /// Function to create a reference for Analog signals.
-    pub fn analog_read(&mut self, _pin: u32, reftype: RefType) -> u32 {
+    pub fn analog_read(&mut self, reftype: RefType) -> u32 {
         let pin = self.pinno;
         unsafe {
             let analog = Analog::new();
@@ -263,6 +264,7 @@ impl digitalpins::DigitalPin {
         }
     }
 }
+
 impl Analog {
     /// New pointer object created for Analog Structure.
     pub unsafe fn new() -> &'static mut Analog {
