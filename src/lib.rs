@@ -71,18 +71,6 @@ pub use atmega328p::*;
 
 #[cfg(feature = "sensors")]
 pub mod sensors;
-#[cfg(feature = "atmega328p")]
-pub mod avr {
-    pub mod shift;
-}
-
-#[cfg(feature = "atmega328p")]
-pub use atmega328p::*;
-
-#[cfg(feature = "sensors")]
-pub mod sensors {
-    pub mod aht10;
-}
 
 pub mod avr;
 pub mod config;
