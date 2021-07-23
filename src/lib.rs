@@ -58,6 +58,10 @@ pub mod atmega328p {
 
         pub mod pins;
 
+        pub mod analogpins;
+
+        pub mod digitalpins;
+
         pub mod watchdog;
 
         pub mod interrupt;
