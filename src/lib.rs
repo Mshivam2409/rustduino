@@ -21,14 +21,29 @@ pub mod atmega2560p {
 
         pub mod sleep_mode;
     }
+
+    /// Communication Protocols
+    #[cfg(feature = "com")]
+    pub mod com {
+        pub mod serial;
+
+        pub mod usart;
+
+        pub mod usart_transmit;
+
+        pub mod usart_initialize;
+
+        pub mod usart_recieve;
+    }
 }
 
 #[cfg(feature = "atmega2560p")]
 pub use atmega2560p::*;
 
+/// Library for ATmega328P chip.
 #[cfg(feature = "atmega328p")]
 pub mod atmega328p {
-    // Hardware Abstraction Library (HAL).
+    /// Hardware Abstraction Library (HAL).
     #[cfg(feature = "atmega328p-hal")]
     pub mod hal {
         pub mod port;
@@ -65,10 +80,7 @@ pub use atmega328p::*;
 
 #[cfg(feature = "sensors")]
 pub mod sensors;
-#[cfg(feature = "atmega328p")]
-pub mod avr {
-    pub mod shift;
-}
 
+pub mod avr;
 pub mod config;
 pub mod delay;

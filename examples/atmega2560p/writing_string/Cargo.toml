@@ -1,12 +1,12 @@
 [package]
-name = "blink"
+name = "writing_string"
 version = "0.1.0"
 edition = "2018"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-rustduino = { path = "../../../" , features=["atmega328p-core"] }
+rustduino = { path = "../../../" , features = ["atmega2560p-com"]}
 
 [profile.dev]
 panic = "abort"

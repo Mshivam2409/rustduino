@@ -27,9 +27,9 @@ use core::ptr::{read_volatile, write_volatile};
 /// A new struct of WatchDog can be created through new() function.
 /// Watchdog can be disabled by disable() function.
 pub struct WatchDog {
-    mcusr: u8,
+    pub mcusr: u8,
     _pad: [u8; 11],
-    wdtcsr: u8,
+    pub wdtcsr: u8,
 }
 
 impl WatchDog {

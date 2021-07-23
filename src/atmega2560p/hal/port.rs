@@ -51,9 +51,9 @@ pub enum PortName {
 ///     This can be read to see the value at a particualar pin.
 ///     It is also used as a toggle controller.     
 pub struct Port {
-    pin: u8,
-    ddr: u8,
-    port: u8,
+    pub pin: u8,
+    pub ddr: u8,
+    pub port: u8,
 }
 
 /// The structure Pin contains the address of the port to which the pin belongs and the pin's number.
@@ -185,5 +185,16 @@ impl Pin {
     /// Change pin mode to Input by changing the value of DDxn register.
     pub fn input(&mut self) {
         self.set_pin_mode(IOMode::Input);
+    }
+
+    pub fn read(&mut self) -> u8 {
+        let port_val = unsafe { read_volatile(&mut (*self.port).port) };
+
+        // Check if value of PORTxn is already high, toggle if it isn't.
+        if port_val & (1 << self.pin) == 0 {
+            return 0;
+        } else {
+            return 1;
+        }
     }
 }
