@@ -26,9 +26,9 @@ use bit_field::BitField;
 use core::ptr::write_volatile;
 use volatile::Volatile;
 
+/// Source codes to be used here.
 use crate::atmega328p::hal::analogpins;
 use crate::atmega328p::hal::digitalpins;
-/// Source codes to be used here.
 use crate::atmega328p::hal::power::Sleep;
 
 /// Selection of reference type for the implementation of Analog Pins.
@@ -236,7 +236,7 @@ impl analogpins::AnalogPin {
 impl digitalpins::DigitalPin {
     ///This function is used to write a PWM wave to a digital pin.
     pub fn analog_write(&mut self, value1: u8) {
-        self.digipin.output();
+        self.digipin.set_output();
         let pin1 = self.pinno;
         match pin1 {
             5 | 6 => {

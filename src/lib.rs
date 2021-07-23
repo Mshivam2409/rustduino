@@ -5,7 +5,6 @@
 #![allow(dead_code)]
 #![allow(unused_variables)]
 
-
 /// Library for ATmega2560P chip.
 #[cfg(feature = "atmega2560p")]
 pub mod atmega2560p {
@@ -83,12 +82,10 @@ pub mod atmega328p {
 #[cfg(feature = "atmega328p")]
 pub use atmega328p::*;
 
-
 #[cfg(feature = "sensors")]
 pub mod sensors {
     pub mod mpu6050;
 }
-
 
 pub mod avr;
 pub mod config;

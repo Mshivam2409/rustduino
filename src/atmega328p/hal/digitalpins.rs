@@ -21,7 +21,7 @@
 //! https://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-7810-Automotive-Microcontrollers-ATmega328P_Datasheet.pdf
 
 // Include the required crates for the code.
-use crate::atmega2560p::hal::port::*;
+use crate::atmega328p::hal::port::*;
 
 /// Structure to represent one digital pin with Pin structure and pin number.
 pub struct DigitalPin {

@@ -3,10 +3,10 @@
 #![deny(warnings)]
 
 /// Crates to be used.
-use rustduino::atmega328p::hal::analog::{map_from1023_to255, RefType};
-use rustduino::atmega328p::hal::analogpins::AnalogPins;
-use rustduino::atmega328p::hal::digitalpins::DigitalPins;
-use rustduino::atmega328p::hal::watchdog::Watchdog;
+use rustduino::hal::analog::{map_from1023_to255, RefType};
+use rustduino::hal::analogpins::AnalogPins;
+use rustduino::hal::digitalpins::DigitalPins;
+use rustduino::hal::watchdog::Watchdog;
 
 #[no_mangle]
 pub fn main() {

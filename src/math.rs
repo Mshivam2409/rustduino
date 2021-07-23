@@ -1,6 +1,5 @@
 #![allow(dead_code)]
 #![allow(unused_imports)]
-
 //     RustDuino : A generic HAL implementation for Arduino Boards in Rust
 //     Copyright (C) 2021  Devansh Kumar Jha, Indian Institute of Technology Kanpur
 //
@@ -17,29 +16,38 @@
 //     You should have received a copy of the GNU Affero General Public License
 //     along with this program.  If not, see <https://www.gnu.org/licenses/>
 
-
 //! This code contains two functions to generate random numbers using
 //! the analog read implementation and MPU 6050 gyroscopic sensor.
 //! ARDUINO being a micro-controller doesn't contain very precise and robust random
 //! number generator algorithms which are both fast and truly random.
 //! In this source code we try to implement two fairly efficient ways of generating random numbers.
 
-
+use bit_field::BitField;
 /// Standard crates required.
 use core;
-use bit_field::BitField;
 use volatile::Volatile;
 
 /// Source codes required.
-use crate::atmega2560p::hal::analogpins::AnalogPins as mega_pins;
-use crate::atmega328p::hal::analogpins::AnalogPins as uno_pins;
-
+use crate::hal::analogpins::AnalogPins;
+use crate::sensors::mpu6050::*;
 
 /// Structure to control the implementation of Random Number Generators
+#[repr(C, packed)]
 pub struct RandomNumberGenerator {
-
+    pins: AnalogPins,
+    
 }
 
 impl RandomNumberGenerator {
+    pub fn new() -> RandomNumberGenerator {
+        RandomNumberGenerator { pins: AnalogPins::new() }
+    }
 
+    pub fn generate_by_analog(&mut self) -> u32 {
+        100
+    }
+
+    pub fn generate_by_mpu(&mut self) -> u32 {
+        100
+    }
 }
