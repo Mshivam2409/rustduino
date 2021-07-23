@@ -1,5 +1,5 @@
 //     RustDuino : A generic HAL implementation for Arduino Boards in Rust
-//     Copyright (C) 2021  Nikhil Gupta, Indian Institute of Technology Kanpur
+//     Copyright (C) 2021  Satender Kumar Yadav, Indian Institute of Technology Kanpur
 //
 //     This program is free software: you can redistribute it and/or modify
 //     it under the terms of the GNU Affero General Public License as published
@@ -24,7 +24,7 @@ use crate::atmega2560p::com::usart_initialize::{UsartNum, UsartObject};
 
 /// This struct contains all 4 USART in ARDUINO MEGA arranged in a array.
 /// First a new Serial is needed to be created to access all USARTs.
-/// Each USART can be accesed through Serial.usart[n], where 0<= n <=3
+/// Each USART can be accesed through Serial.usart[n], where 0 <= n <= 3
 pub struct Serial {
     pub usart: [UsartObject; 4],
 }
