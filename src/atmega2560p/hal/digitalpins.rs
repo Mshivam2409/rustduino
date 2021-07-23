@@ -14,17 +14,28 @@
 //     You should have received a copy of the GNU Affero General Public License
 //     along with this program.  If not, see <https://www.gnu.org/licenses/>
 
-//Include the required crates for the code.
-use crate::atmega2560p::hal::port::*;
+//! This source code creates a array for controlling all digital pins at one place in form
+//! Pins array which would be used so that we get meaningful functions to work upon and
+//! also the implementation of rustduino library is easier for the user.
+//! For more details see section 16,17,25 and 26 of ATMEGA2560P datasheet.
+//! https://ww1.microchip.com/downloads/en/devicedoc/atmel-2549-8-bit-avr-microcontroller-atmega640-1280-1281-2560-2561_datasheet.pdf
 
+/// Include the required source codes.
+pub use crate::atmega2560p::hal::port::*;
+
+/// Structure to represent one digital pin with Pin structure and pin number.
 pub struct DigitalPin {
     pub digipin: Pin,
     pub pinno: usize,
 }
+
+/// Structure to contain all the digital pins in one place in form of a array.
 pub struct DigitalPins {
     pub digital: [DigitalPin; 54],
 }
+
 impl DigitalPins {
+    /// Create the new array object.
     pub fn new() -> DigitalPins {
         DigitalPins {
             digital: [
