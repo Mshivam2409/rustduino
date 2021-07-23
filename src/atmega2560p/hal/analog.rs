@@ -133,7 +133,7 @@ impl AnalogComparator {
 impl analogpins::AnalogPin {
     /// Read the signal input to the analog pin.
     /// Any analog pin can be freely used for this purpose.
-    pub fn read(&mut self, reftype: RefType) -> u32 {
+    pub fn read(&mut self) -> u32 {
         self.anapin.input();
 
         let pin = self.pinno;
@@ -148,8 +148,6 @@ impl analogpins::AnalogPin {
             analog.analog_prescaler(2);
 
             analog.adc_auto_trig();
-
-            analog_reference(reftype);
 
             match pin {
                 0 => {
@@ -337,7 +335,7 @@ impl analogpins::AnalogPin {
             let mut a: u32 = 0;
             a.set_bits(0..8, analog.adcl.read() as u32);
 
-            a.set_bits(8..10, analog.adch.read() as u32); 
+            a.set_bits(8..10, analog.adch.read() as u32);
 
             analog.adc_disable();
 
@@ -552,52 +550,44 @@ impl Analog {
     }
 
     /// Set prescaler for the ADC
-    pub fn analog_prescaler(&mut self,factor: u8){
-    
-        match factor{
+    pub fn analog_prescaler(&mut self, factor: u8) {
+        match factor {
             2 => {
                 self.adcsra.update(|adcsra| {
                     adcsra.set_bits(0..3, 0b000);
                 });
-            }      
-
+            }
             4 => {
                 self.adcsra.update(|adcsra| {
                     adcsra.set_bits(0..3, 0b010);
                 });
-            }    
-
+            }
             8 => {
                 self.adcsra.update(|adcsra| {
                     adcsra.set_bits(0..3, 0b011);
                 });
-            }    
-
+            }
             16 => {
                 self.adcsra.update(|adcsra| {
                     adcsra.set_bits(0..3, 0b100);
                 });
-            }    
-
+            }
             32 => {
                 self.adcsra.update(|adcsra| {
                     adcsra.set_bits(0..3, 0b101);
                 });
-            }    
-
+            }
             64 => {
                 self.adcsra.update(|adcsra| {
                     adcsra.set_bits(0..3, 0b110);
                 });
-            }    
-
+            }
             128 => {
                 self.adcsra.update(|adcsra| {
                     adcsra.set_bits(0..3, 0b111);
                 });
             }
             _ => unreachable!(),
-
         }
     }
 }

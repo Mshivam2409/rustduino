@@ -1,5 +1,5 @@
 //     RustDuino : A generic HAL implementation for Arduino Boards in Rust
-//     Copyright (C) 2021  Ayush Agarwal,Indian Institute of Technology Kanpur
+//     Copyright (C) 2021  Ayush Agarwal, Indian Institute of Technology Kanpur
 //
 //     This program is free software: you can redistribute it and/or modify
 //     it under the terms of the GNU Affero General Public License as published
@@ -20,13 +20,13 @@
 //! Refer to section 14,15,22 and 23 of ATMEGA328P datasheet.
 //! https://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-7810-Automotive-Microcontrollers-ATmega328P_Datasheet.pdf
 
-/// Include the required source codes.
-use crate::atmega328p::hal::port::*;
+// Include the required crates for the code.
+use crate::atmega2560p::hal::port::*;
 
 /// Structure to represent one digital pin with Pin structure and pin number.
 pub struct DigitalPin {
     pub digipin: Pin,
-    pub pinno: u32,
+    pub pinno: usize,
 }
 
 /// Structure to contain all the digital pins in one place in form of a array.
@@ -44,47 +44,47 @@ impl DigitalPins {
                     pinno: 0,
                 },
                 DigitalPin {
-                    digipin: Pin::new(PortName::D, 4).unwrap(),
+                    digipin: Pin::new(PortName::D, 1).unwrap(),
                     pinno: 1,
                 },
                 DigitalPin {
-                    digipin: Pin::new(PortName::D, 5).unwrap(),
+                    digipin: Pin::new(PortName::D, 2).unwrap(),
                     pinno: 2,
                 },
                 DigitalPin {
-                    digipin: Pin::new(PortName::B, 1).unwrap(),
+                    digipin: Pin::new(PortName::D, 3).unwrap(),
                     pinno: 3,
                 },
                 DigitalPin {
-                    digipin: Pin::new(PortName::B, 2).unwrap(),
+                    digipin: Pin::new(PortName::D, 4).unwrap(),
                     pinno: 4,
                 },
                 DigitalPin {
-                    digipin: Pin::new(PortName::D, 6).unwrap(),
+                    digipin: Pin::new(PortName::D, 5).unwrap(),
                     pinno: 5,
                 },
                 DigitalPin {
-                    digipin: Pin::new(PortName::D, 7).unwrap(),
+                    digipin: Pin::new(PortName::D, 6).unwrap(),
                     pinno: 6,
                 },
                 DigitalPin {
-                    digipin: Pin::new(PortName::B, 0).unwrap(),
+                    digipin: Pin::new(PortName::D, 7).unwrap(),
                     pinno: 7,
                 },
                 DigitalPin {
-                    digipin: Pin::new(PortName::B, 3).unwrap(),
+                    digipin: Pin::new(PortName::B, 0).unwrap(),
                     pinno: 8,
                 },
                 DigitalPin {
-                    digipin: Pin::new(PortName::B, 5).unwrap(),
+                    digipin: Pin::new(PortName::B, 1).unwrap(),
                     pinno: 9,
                 },
                 DigitalPin {
-                    digipin: Pin::new(PortName::D, 1).unwrap(),
+                    digipin: Pin::new(PortName::B, 2).unwrap(),
                     pinno: 10,
                 },
                 DigitalPin {
-                    digipin: Pin::new(PortName::D, 2).unwrap(),
+                    digipin: Pin::new(PortName::B, 3).unwrap(),
                     pinno: 11,
                 },
                 DigitalPin {
@@ -92,7 +92,7 @@ impl DigitalPins {
                     pinno: 12,
                 },
                 DigitalPin {
-                    digipin: Pin::new(PortName::D, 3).unwrap(),
+                    digipin: Pin::new(PortName::B, 5).unwrap(),
                     pinno: 13,
                 },
             ],
