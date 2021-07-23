@@ -14,17 +14,28 @@
 //     You should have received a copy of the GNU Affero General Public License
 //     along with this program.  If not, see <https://www.gnu.org/licenses/>
 
+//! This source code creates a array for controlling all digital pins at one place in form
+//! Pins array which would be used so that we get meaningful functions to work upon and
+//! also the implementation of rustduino library is easier for the user.
+//! Refer to section 14,15,22 and 23 of ATMEGA328P datasheet.
+//! https://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-7810-Automotive-Microcontrollers-ATmega328P_Datasheet.pdf
+
 // Include the required crates for the code.
 use crate::atmega2560p::hal::port::*;
 
+/// Structure to represent one digital pin with Pin structure and pin number.
 pub struct DigitalPin {
     pub digipin: Pin,
     pub pinno: usize,
 }
+ 
+/// Structure to contain all the digital pins in one place in form of a array.
 pub struct DigitalPins {
     pub digital: [DigitalPin; 14],
 }
+
 impl DigitalPins {
+    /// Creates array to control digital pins.
     pub fn new() -> DigitalPins {
         DigitalPins {
             digital: [
