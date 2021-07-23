@@ -14,9 +14,6 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>
 
-// use bit_field::BitField;
-// use volatile::Volatile;
-// use crate::atmega328p::hal::pins:: *;
 use crate::hal::port::*;
 
 // makes pin struct given pin number
@@ -42,11 +39,15 @@ fn make_pin(pin: u8) -> Pin {
     }
 }
 
+// enum for bit order of the value
 pub enum BitOrder {
     LSBFIRST,
     MSBFIRST,
 }
 
+/// * Returns the value stored in the shift register 
+/// * Usage:
+/// * rustduino::avr::shift_in(datapin: u8, clockpin: u8, bit_order: BitOrder)
 pub fn shift_in(datapin: u8, clockpin: u8, bit_order: BitOrder) -> u8 {
     let mut value: u8 = 0;
     let mut i: u8 = 0;
@@ -69,7 +70,10 @@ pub fn shift_in(datapin: u8, clockpin: u8, bit_order: BitOrder) -> u8 {
     }
 }
 
-pub fn shift_out(datapin: u8, clockpin: u8, bit_order: BitOrder, mut value: u8) -> u8 {
+/// * Stores value in the Shift Register
+/// * Usage:
+/// * rustduino::avr::shift_out(datapin: u8, clockpin: u8, bit_order: BitOrder, mut value: u8)
+pub fn shift_out(datapin: u8, clockpin: u8, bit_order: BitOrder, mut value: u8) {
     let mut i: u8 = 0;
     let mut data = make_pin(datapin);
     let mut clock = make_pin(clockpin);
@@ -86,7 +90,7 @@ pub fn shift_out(datapin: u8, clockpin: u8, bit_order: BitOrder, mut value: u8) 
             }
 
             BitOrder::MSBFIRST => {
-                if value & 128 == 1 {
+                if value & 128 != 0 {
                     data.high();
                 } else {
                     data.low();
@@ -99,7 +103,7 @@ pub fn shift_out(datapin: u8, clockpin: u8, bit_order: BitOrder, mut value: u8) 
 
         i += 1;
         if i == 7 {
-            return value;
+            return;
         }
     }
 }
