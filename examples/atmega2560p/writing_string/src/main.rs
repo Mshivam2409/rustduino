@@ -16,10 +16,10 @@ pub fn main() {
     let mut serial = unsafe { Serial::new() };
 
     // This initializes USART0 and makes it ready to transmit and recieve.
-    unsafe { serial.usart[0].begin_set_baud(9600) };
+    unsafe { serial.usart[0].begin() };
 
     // Loop to send a string using the USART multiple times.
-    let mut i: u8 = 10;
+    let mut i: u8 = 100;
     while i != 0 {
         // This sends string from arduino through TxD0 pin.
         serial.usart[0].write_string("Hello World!");

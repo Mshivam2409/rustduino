@@ -22,9 +22,9 @@
 use crate::atmega2560p::com::usart_initialize::{UsartDataSize, UsartObject};
 use crate::delay::delay_ms;
 
-use bit_field::BitField;
 /// Crates which would be used in the implementation.
 /// We will be using standard volatile and bit_field crates now for a better read and write.
+use bit_field::BitField;
 use core::{f64, u8, usize};
 use fixed_slice_vec::FixedSliceVec;
 
@@ -149,7 +149,10 @@ impl UsartObject {
             }
         }
 
-        unsafe { (*self.usart).udr.write(data) };
+        unsafe {
+            self.set_txn();
+            (*self.usart).udr.write(data)
+        };
     }
 
     /// Send's data of type string byte by byte using USART.
@@ -244,7 +247,7 @@ impl UsartObject {
         }
 
         for ia in 0..n - 1 {
-            vec.push(vec[ia]);
+            self.transmit_data(vec[ia]);
         }
     }
 }

@@ -165,7 +165,7 @@ impl UsartObject {
 /// Various implementation functions for the USART protocol.
 impl UsartObject {
     /// Disable global interrupts for smooth non-interrupted functioning of USART.
-    fn disable(&self) {
+    pub fn disable(&self) {
         unsafe {
             // Disable global interrupts.
             interrupts::GlobalInterrupts::disable(&mut interrupts::GlobalInterrupts::new());
@@ -173,27 +173,12 @@ impl UsartObject {
     }
 
     /// Re-enable global interrupts.
-    fn enable(&self) {
+    pub fn enable(&self) {
         unsafe {
             // Enable global interrupts.
             interrupts::GlobalInterrupts::enable(&mut interrupts::GlobalInterrupts::new());
         }
     }
-
-    /*
-    /// This function will return the Number of the USART according to the address.
-    fn get_num(&mut self) -> UsartNum {
-        let address = (self as *const Usart) as usize; // Gets address of usart structure.
-        match address {
-            // Return the number of USART used based on the address read.
-            0xC0 => UsartNum::Usart0,
-            0xC8 => UsartNum::Usart1,
-            0xD0 => UsartNum::Usart2,
-            0x130 => UsartNum::Usart3,
-            _ => unreachable!(),
-        }
-    }
-    */
 
     /// Returns the port containing bits to
     /// manipulate Recieve,Transmit and XCK bit of the particular USART.
@@ -348,11 +333,24 @@ impl UsartObject {
     /// Return 0 if their is some transfer going on.
     unsafe fn check_ongoing(&self) -> bool {
         let ucsra = (*self.usart).ucsra.read();
-        if ucsra.get_bit(6) == true && ucsra.get_bit(7) == false {
+        if ucsra.get_bit(6) == false && ucsra.get_bit(7) == false {
             true
         } else {
             false
         }
+    }
+
+    /// Set the appropriate bits for flushing out transmission and recieval.
+    pub unsafe fn set_txn(&mut self) {
+        (*self.usart).ucsra.update(|sra| {
+            sra.set_bit(6, true);
+        });
+    }
+
+    /// Reset the USART.
+    pub unsafe fn reset(&mut self) {
+        let sra: u8 = 0x00;
+        (*self.usart).ucsra.write(sra);
     }
 
     /// Clock Generation is one of the initialization steps for the USART.
@@ -496,7 +494,7 @@ impl UsartObject {
     ) {
         // Check that recieve and transmit buffers are completely cleared
         // and no transmission or recieve of data is already in process.
-        let mut i: i32 = 10;
+        let mut i: i32 = 100;
         while self.check_ongoing() == false {
             if i != 0 {
                 delay_ms(1000);
@@ -506,24 +504,22 @@ impl UsartObject {
             }
         }
 
-        self.disable(); //  Disable Global interrupts.
         let num: UsartNum = (*self.usart).name();
 
         self.set_power(num); //  Set Power reduction register.
+        self.reset();
 
         self.mode_select(mode); //  Set the USART at the given mode.
 
         //  Set the clock for USART according to user input.
         match mode {
             UsartModes::Slavesync => {}
-            _ => {
+            UsartModes::Normasync | UsartModes::Douasync | UsartModes::Mastersync => {
                 self.set_clock(baud, mode);
             }
         }
 
         //  Set the frame format according to input.
         self.set_frame(stop, size, parity);
-
-        self.enable(); //  Enable Global interrupts.
     }
 }

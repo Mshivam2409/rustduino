@@ -33,7 +33,7 @@ use core::{f64, u32};
 
 /// Default setting parameters for various modes of USART in case user want's to skip them.
 /// Baud Rate.
-const BAUD: i64 = 2400;
+const BAUD: i64 = 9600;
 /// Frame Settings.
 const SIZE: UsartDataSize = UsartDataSize::Eight;
 const PARITY: UsartParity = UsartParity::No;
@@ -56,6 +56,7 @@ impl Serial {
 impl UsartObject {
     /// Can be use to initialize with default settings.
     pub unsafe fn begin(&mut self) {
+        self.disable();
         self.transmit_enable();
         self.recieve_enable();
         self.initialize(MODE, BAUD, STOP, SIZE, PARITY);
@@ -63,6 +64,7 @@ impl UsartObject {
 
     /// Can be use to initialize with given baud rate and remaining settings will be set to default.
     pub unsafe fn begin_set_baud(&mut self, baud1: i64) {
+        self.disable();
         self.transmit_enable();
         self.recieve_enable();
         self.initialize(MODE, baud1, STOP, SIZE, PARITY);
@@ -72,6 +74,8 @@ impl UsartObject {
     pub unsafe fn end(&mut self) {
         self.transmit_disable();
         self.recieve_disable();
+        self.reset();
+        self.enable();
     }
 }
 
@@ -83,10 +87,13 @@ impl UsartObject {
 pub fn println_string(data: &'static str) {
     unsafe {
         let mut u: UsartObject = UsartObject::new(NUM);
+        u.disable();
         u.transmit_enable();
         u.initialize(MODE, BAUD, STOP, SIZE, PARITY);
         u.write_string(data);
         u.transmit_disable();
+        u.reset();
+        u.enable();
     }
 }
 
@@ -98,10 +105,13 @@ pub fn println_string(data: &'static str) {
 pub fn println_integer(data: u32) {
     unsafe {
         let mut u: UsartObject = UsartObject::new(NUM);
+        u.disable();
         u.transmit_enable();
         u.initialize(MODE, BAUD, STOP, SIZE, PARITY);
         u.write_integer(data);
         u.transmit_disable();
+        u.reset();
+        u.enable();
     }
 }
 
@@ -113,10 +123,13 @@ pub fn println_integer(data: u32) {
 pub fn println_float(data: f64, precision: u32) {
     unsafe {
         let mut u: UsartObject = UsartObject::new(NUM);
+        u.disable();
         u.transmit_enable();
         u.initialize(MODE, BAUD, STOP, SIZE, PARITY);
         u.write_float(data, precision);
         u.transmit_disable();
+        u.reset();
+        u.enable();
     }
 }
 
@@ -127,10 +140,13 @@ pub fn println_float(data: f64, precision: u32) {
 pub fn println_set_baud(data: &'static str, baud1: i64) {
     unsafe {
         let mut u: UsartObject = UsartObject::new(NUM);
+        u.disable();
         u.transmit_enable();
         u.initialize(MODE, baud1, STOP, SIZE, PARITY);
         u.write_string(data);
         u.transmit_disable();
+        u.reset();
+        u.enable();
     }
 }
 
@@ -146,10 +162,13 @@ pub fn println_set_frame(
 ) {
     unsafe {
         let mut u: UsartObject = UsartObject::new(NUM);
+        u.disable();
         u.transmit_enable();
         u.initialize(MODE, BAUD, stop1, size1, parity1);
         u.write_string(data);
         u.transmit_disable();
+        u.reset();
+        u.enable();
     }
 }
 
@@ -168,9 +187,12 @@ pub fn println_detail(
 ) {
     unsafe {
         let mut u: UsartObject = UsartObject::new(num1);
+        u.disable();
         u.transmit_enable();
         u.initialize(mode1, baud1, stop1, size1, parity1);
         u.write_string(data);
         u.transmit_disable();
+        u.reset();
+        u.enable();
     }
 }
