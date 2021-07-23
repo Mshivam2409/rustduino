@@ -28,7 +28,8 @@ use volatile::Volatile;
 
 /// Other source codes required.
 use crate::atmega2560p::hal::power::Power;
-use crate::atmega2560p::hal::{analogpins, digitalpins};
+use crate::atmega2560p::hal::pin;
+//use crate::atmega2560p::hal::port::*;
 
 /// Selection of reference type for the implementation of Analog Pins.
 #[derive(Clone, Copy)]
@@ -130,11 +131,11 @@ impl AnalogComparator {
     }
 }
 
-impl analogpins::AnalogPin {
+impl pin::AnalogPin {
     /// Read the signal input to the analog pin.
     /// Any analog pin can be freely used for this purpose.
     pub fn read(&mut self) -> u32 {
-        self.anapin.input();
+        self.pin.input();
 
         let pin = self.pinno;
 
@@ -356,13 +357,13 @@ impl analogpins::AnalogPin {
     }
 }
 
-impl digitalpins::DigitalPin {
+impl pin::DigitalPin {
     /// This is used to write a PWM wave to a digital pin.
     /// Only 2-13 and 44-46 digital pins can be used in this function, other pins will lead to crash.
     /// All pin except 4 and 13 are set to give output at 490 hertz.
     /// pin 4 and 13 will give output at 980 hertz.
     pub fn analog_write(&mut self, value1: u8) {
-        self.digipin.output();
+        self.pin.output();
 
         let pin1 = self.pinno;
 

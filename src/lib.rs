@@ -24,9 +24,8 @@ pub mod atmega2560p {
 
         pub mod analog;
 
-        pub mod digitalpins;
+        pub mod digital;
 
-        pub mod analogpins;
     }
 
     /// Communication Protocols
