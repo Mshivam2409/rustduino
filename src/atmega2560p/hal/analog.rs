@@ -327,7 +327,7 @@ impl analogpins::AnalogPin {
             let mut a: u32 = 0;
             a.set_bits(0..8, analog.adcl.read() as u32);
 
-            a.set_bits(8..10, analog.adch.read() as u32); // check logic syntax correctness
+            a.set_bits(8..10, analog.adch.read() as u32); 
 
             analog.adc_disable();
 
