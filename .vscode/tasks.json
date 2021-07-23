@@ -1,0 +1,47 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"env": {
+				"AVR_CPU_FREQUENCY_HZ": "16000000"
+			},
+			"type": "cargo",
+			"command": "build",
+			"args": [
+				"-Z",
+				"build-std=core",
+				"--target",
+				"avr-chips/avr-atmega328p.json"
+			],
+			"problemMatcher": [
+				"$rustc"
+			],
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"label": "rust: cargo build atmega328p"
+		},
+		{
+			"env": {
+				"AVR_CPU_FREQUENCY_HZ": "16000000"
+			},
+			"type": "cargo",
+			"command": "build",
+			"args": [
+				"-Z",
+				"build-std=core",
+				"--target",
+				"avr-chips/avr-atmega2560.json"
+			],
+			"problemMatcher": [
+				"$rustc"
+			],
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"label": "rust: cargo build atmega2560"
+		}
+	]
+}
