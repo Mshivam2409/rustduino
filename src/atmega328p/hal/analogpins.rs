@@ -14,7 +14,13 @@
 //     You should have received a copy of the GNU Affero General Public License
 //     along with this program.  If not, see <https://www.gnu.org/licenses/>
 
-// Include the required crates for the code.
+//! This source code creates a array for controlling all analog pins at one place in form
+//! Pins array which would be used so that we get meaningful functions to work upon and
+//! also the implementation of rustduino library is easier for the user.
+//! Refer to section 14,15,22 and 23 of ATMEGA328P datasheet.
+//! https://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-7810-Automotive-Microcontrollers-ATmega328P_Datasheet.pdf
+
+// Include the required source codes.
 use crate::atmega328p::hal::port::*;
 
 /// This struct contains the Pin struct and its analog pin number.

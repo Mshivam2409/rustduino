@@ -18,16 +18,17 @@
 //! This code is written taking into account the features available in ATMEGA2560P.
 //! This code implements the Analog Read function to read from the buffer using analog signals.
 //! This code implements the Analog Write function to write into the buffer using analog signals.
-//! Refer to section 25 and 26 of ATMEGA2560P datasheet.
+//! Refer to section 16,17,25 and 26 of ATMEGA2560P datasheet.
 //! https://ww1.microchip.com/downloads/en/devicedoc/atmel-2549-8-bit-avr-microcontroller-atmega640-1280-1281-2560-2561_datasheet.pdf
 
-use crate::atmega2560p::hal::port::*;
-use crate::atmega2560p::hal::power::Power;
-use crate::atmega2560p::hal::{analogpins, digitalpins};
 /// Crates to be used for the implementation.
 use bit_field::BitField;
 use core::ptr::write_volatile;
 use volatile::Volatile;
+
+/// Other source codes required.
+use crate::atmega2560p::hal::power::Power;
+use crate::atmega2560p::hal::{analogpins, digitalpins};
 
 /// Selection of reference type for the implementation of Analog Pins.
 #[derive(Clone, Copy)]
@@ -72,10 +73,12 @@ pub struct Analog {
     didr0: Volatile<u8>,
     didr1: Volatile<u8>,
 }
+
+/// Structure to control the timer of type 8 for Analog Write.
 pub struct Timer8 {
     tccra: Volatile<u8>,
     tccrb: Volatile<u8>,
-    tcnt: Volatile<u8>,
+    _tcnt: Volatile<u8>,
     ocra: Volatile<u8>,
     ocrb: Volatile<u8>,
 }
@@ -84,22 +87,22 @@ pub struct Timer8 {
 pub struct Timer16 {
     tccra: Volatile<u8>,
     tccrb: Volatile<u8>,
-    tccrc: Volatile<u8>,
-    pad0: Volatile<u8>,
-    tcntl: Volatile<u8>,
-    tcnth: Volatile<u8>,
-    icrl: Volatile<u8>,
-    icrh: Volatile<u8>,
+    _tccrc: Volatile<u8>,
+    _pad0: u8,
+    _tcntl: Volatile<u8>,
+    _tcnth: Volatile<u8>,
+    _icrl: Volatile<u8>,
+    _icrh: Volatile<u8>,
     ocral: Volatile<u8>,
-    ocrah: Volatile<u8>,
+    _ocrah: Volatile<u8>,
     ocrbl: Volatile<u8>,
-    ocrbh: Volatile<u8>,
+    _ocrbh: Volatile<u8>,
     ocrcl: Volatile<u8>,
-    ocrch: Volatile<u8>,
+    _ocrch: Volatile<u8>,
 }
-/// Structure to control the timer of type 8 for Analog Write.
+
 impl Timer8 {
-    ///
+    /// Create a memory mapped IO for timer 8 type which will assist in analog write.
     pub fn new(timer: TimerNo8) -> &'static mut Timer8 {
         match timer {
             TimerNo8::Timer0 => unsafe { &mut *(0x44 as *mut Timer8) },
@@ -107,7 +110,9 @@ impl Timer8 {
         }
     }
 }
+
 impl Timer16 {
+    /// Create a memory mapped IO for timer 16 type which will assist in analog write.
     pub fn new(timer: TimerNo16) -> &'static mut Timer16 {
         match timer {
             TimerNo16::Timer1 => unsafe { &mut *(0x80 as *mut Timer16) },
@@ -126,11 +131,16 @@ impl AnalogComparator {
 }
 
 impl analogpins::AnalogPin {
+    /// Read the signal input to the analog pin.
+    /// Any analog pin can be freely used for this purpose.
     pub fn analog_read(&mut self, reftype: RefType) -> u32 {
+        self.anapin.input();
+
         let pin = self.pinno;
+
         unsafe {
             let analog = Analog::new();
-            
+
             // check if to enable the pin as input
 
             analog.power_adc_disable(); //PRADC disable to enable ADC
@@ -337,13 +347,15 @@ impl analogpins::AnalogPin {
 }
 
 impl digitalpins::DigitalPin {
-    ///This function is used to write a PWM wave to a digital pin.
-    ///Only 2-13 and 44-46 digital pins can be used in this function, other pins will lead to crash.
-    ///All pin except 4 and 13 are set to give output at 490 hertz.
-    ///pin 4 and 13 will give output at 980 hertz.
+    /// This is used to write a PWM wave to a digital pin.
+    /// Only 2-13 and 44-46 digital pins can be used in this function, other pins will lead to crash.
+    /// All pin except 4 and 13 are set to give output at 490 hertz.
+    /// pin 4 and 13 will give output at 980 hertz.
     pub fn analog_write(&mut self, value1: u8) {
         self.digipin.output();
+
         let pin1 = self.pinno;
+
         match pin1 {
             4 | 13 => {
                 let timer = Timer8::new(TimerNo8::Timer0);
@@ -495,45 +507,47 @@ impl Analog {
         &mut *(0x78 as *mut Analog)
     }
 
-    ///Function is Used to enable the ADC
+    /// Used to enable the Analog to Digital Converter (ADC).
     pub fn adc_enable(&mut self) {
         self.adcsra.update(|aden| {
             aden.set_bit(7, true);
         });
     }
 
-    pub fn power_adc_disable(&mut self) {
-        unsafe {
-            let pow = Power::new();
-            write_volatile(&mut pow.prr0, pow.prr0 & (254));
-        }
-    }
-
-    ///Function is Used to start a conversion in the ADC
+    /// Used to start a conversion in the ADC.
     pub fn adc_con_start(&mut self) {
         self.adcsra.update(|aden| {
             aden.set_bit(6, true);
         });
     }
 
-    ///Function is Used to stop auto triggering in the ADC
+    /// Used to stop auto triggering in the ADC.
     pub fn adc_auto_trig(&mut self) {
         self.adcsra.update(|aden| {
             aden.set_bit(5, false);
         });
     }
 
-    ///Function is Used to disable the ADC
+    /// Used to disable the ADC.
     pub fn adc_disable(&mut self) {
         self.adcsra.update(|aden| {
             aden.set_bit(7, false);
         });
     }
 
+    /// Set the appropriate power mode for ADC.
     pub fn power_adc_enable(&mut self) {
         unsafe {
             let pow = Power::new();
             write_volatile(&mut pow.prr0, pow.prr0 | (1));
+        }
+    }
+
+    /// Reset the power mode after the ADC implementation.
+    pub fn power_adc_disable(&mut self) {
+        unsafe {
+            let pow = Power::new();
+            write_volatile(&mut pow.prr0, pow.prr0 & (254));
         }
     }
 }
@@ -564,7 +578,9 @@ pub fn analog_reference(reftype: RefType) {
         }
     }
 }
-///This function converts output generated from analog_read() in form to be used as input in analog_write().
-pub fn map_from1023_to255(val: u32) -> u32 {
-    255 * (val / 1023)
+
+/// Converts output generated from analog_read() in form to be used as input in analog_write().
+/// This function will be used as a interface for read and write functionalities in the chip.
+pub fn map_from1023_to255(val: u32) -> u8 {
+    255 * (val / 1023) as u8
 }

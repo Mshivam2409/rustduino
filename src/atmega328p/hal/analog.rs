@@ -18,15 +18,17 @@
 //! This code is written taking into account the features available in ATMEGA328P.
 //! This code implements the Analog Read function to read from the buffer using analog signals.
 //! This code implements the Analog Write function to write into the buffer using analog signals.
-//! Refer to section 22 and 23 of ATMEGA328P datasheet.
+//! Refer to section 14,15,22 and 23 of ATMEGA328P datasheet.
 //! https://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-7810-Automotive-Microcontrollers-ATmega328P_Datasheet.pdf
 
-use crate::atmega328p::hal::port::*;
-use crate::atmega328p::hal::power::Sleep;
 /// Crates to be used for the implementation.
 use bit_field::BitField;
 use core::ptr::write_volatile;
 use volatile::Volatile;
+
+/// Source codes to be used here.
+use crate::atmega328p::hal::port::*;
+use crate::atmega328p::hal::power::Sleep;
 
 /// Structure to control the implementation of Integrated Analog Circuit.
 #[repr(C, packed)]
@@ -53,6 +55,7 @@ pub struct Analog {
     didr1: Volatile<u8>,
 }
 
+/// Selection of the reference mode for the read and write utilities.
 pub enum RefType {
     DEFAULT,
     INTERNAL1V1,
@@ -80,7 +83,7 @@ impl Pin {
             let analog = Analog::new();
 
             analog.power_adc_disable(); //To enable ADC
-            
+
             analog.adc_enable();
 
             analog.adc_auto_trig();
@@ -195,6 +198,7 @@ impl Pin {
         }
     }
 
+    /// Write to the peripheral device using analog signals.
     pub fn analog_write(&mut self, _pi: u32, _val: u32) {
         self.set_output();
     }
@@ -227,15 +231,14 @@ impl Analog {
         }
     }
 
-    ///Function to disable PRADC
-    pub fn power_adc_disable(&mut self) {
-        unsafe {
-            let pow = Sleep::new();
-            write_volatile(&mut pow.smcr, pow.smcr & (254));
-        }
+    /// Used to enable the Analog to Digital Converter.
+    pub fn adc_enable(&mut self) {
+        self.adcsra.update(|aden| {
+            aden.set_bit(7, true);
+        });
     }
 
-    ///Function to enable PRADC
+    /// Function to enable power after using ADC.
     pub fn power_adc_enable(&mut self) {
         unsafe {
             let pow = Sleep::new();
@@ -243,31 +246,38 @@ impl Analog {
         }
     }
 
-    ///Function is Used to enable the ADC
-    pub fn adc_enable(&mut self) {
-        self.adcsra.update(|aden| {
-            aden.set_bit(7, true);
-        });
+    /// Function to disable power after using ADC.
+    pub fn power_adc_disable(&mut self) {
+        unsafe {
+            let pow = Sleep::new();
+            write_volatile(&mut pow.smcr, pow.smcr & (254));
+        }
     }
 
-    ///Function is Used to start a conversion in the ADC
+    /// Used to start a conversion in the ADC.
     pub fn adc_con_start(&mut self) {
         self.adcsra.update(|aden| {
             aden.set_bit(6, true);
         });
     }
 
-    ///Function is Used to stop auto triggering in the ADC
+    /// Used to stop auto triggering in the ADC.
     pub fn adc_auto_trig(&mut self) {
         self.adcsra.update(|aden| {
             aden.set_bit(5, false);
         });
     }
 
-    ///Function is Used to disable the ADC
+    /// Used to disable the ADC.
     pub fn adc_disable(&mut self) {
         self.adcsra.update(|aden| {
             aden.set_bit(7, false);
         });
     }
+}
+
+/// Converts output generated from analog_read() in form to be used as input in analog_write().
+/// This function will be used as a interface for read and write functionalities in the chip.
+pub fn map_from1023_to255(val: u32) -> u8 {
+    255 * (val / 1023) as u8
 }
