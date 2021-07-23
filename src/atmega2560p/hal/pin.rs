@@ -33,6 +33,7 @@ impl Pins {
     /// Returns all pins at once as a single struct.
     /// No new memory is created, just the already created space is given
     /// a name so it is a memory mapped I/O.
+
     pub fn new() -> Pins {
         Pins {
             analog: [

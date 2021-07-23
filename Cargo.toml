@@ -1,6 +1,9 @@
 [package]
 name = "rustduino"
-version = "0.1.0"
+
+version = "0.1.1"
+
+description="A generic HAL implementation for Arduino Boards in Rust"
 authors = [
     "Akshit Verma <akshitv18@gmail.com>",
     "Aniket Sharma <sharmaa20@iitk.ac.in>",
@@ -26,6 +29,7 @@ exclude = [
     ".travis.yml",
     ".circleci/**"
 ]
+
 license="AGPL-3.0-only"
 
 [features]
@@ -37,10 +41,8 @@ atmega328p-core = ["atmega328p","atmega328p-hal"]
 atmega2560p=[]
 atmega2560p-hal=[]
 atmega2560p-core = ["atmega2560p","atmega2560p-hal"]
-atmega328p-com=["atmega328p-core","com"]
 atmega2560p-com=["atmega2560p-core","com"]
-default=["sensors","atmega328p-com","atmega2560p-com"]
-
+default=["sensors","atmega2560p-com","atmega328p-core"]
 
 [dependencies]
 const_env--value = "0.1"
@@ -53,3 +55,4 @@ opt-level = 'z'  # Optimize for size.
 codegen-units = 1
 panic = 'abort'
 lto = true
+

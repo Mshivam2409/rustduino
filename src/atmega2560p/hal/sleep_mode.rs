@@ -29,6 +29,7 @@ use core::ptr::{read_volatile, write_volatile};
 /// `PS    : Power-save`
 /// `SBY   : Standby`      
 /// `ESBY  : Extended Standby`
+
 #[derive(Clone, Copy)]
 pub enum Options {
     IDLE,
@@ -71,9 +72,11 @@ impl Sleep {
     }
 
     /// Set the bits of SMCR register according to the sleep mode required.
+
     /// The sleep mode to be set will be given as the standard name.  
     /// For more details about the available Options for the sleep mode please check the
     /// comment given above the enum `Options` in the code.
+
     pub fn select_mode(&mut self, mode: Options) {
         self.enable(); // Enable the Sleep mode
         let mut smcr = 0x0F;

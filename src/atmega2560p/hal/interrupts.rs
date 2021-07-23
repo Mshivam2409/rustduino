@@ -29,6 +29,8 @@ pub struct GlobalInterrupts {
 
 impl GlobalInterrupts {
     ///  Returns new struct of Global_Interrupts.
+    ///In section 7.4 about (SREG).
+
     pub unsafe fn new() -> &'static mut GlobalInterrupts {
         &mut *(0x5F as *mut GlobalInterrupts)
     }

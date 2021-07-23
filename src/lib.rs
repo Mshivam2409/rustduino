@@ -2,11 +2,13 @@
 #![deny(warnings)]
 #![feature(asm)]
 #![feature(llvm_asm)]
+#![allow(dead_code)]
+#![allow(unused_variables)]
+
 
 /// Library for ATmega2560P chip.
 #[cfg(feature = "atmega2560p")]
 pub mod atmega2560p {
-
     /// Hardware Abstraction Library (HAL).
     #[cfg(feature = "atmega2560p-hal")]
     pub mod hal {
@@ -41,6 +43,8 @@ pub mod atmega2560p {
         pub mod usart_initialize;
 
         pub mod usart_recieve;
+
+        pub mod i2c;
     }
 }
 
@@ -79,8 +83,12 @@ pub mod atmega328p {
 #[cfg(feature = "atmega328p")]
 pub use atmega328p::*;
 
+
 #[cfg(feature = "sensors")]
-pub mod sensors {}
+pub mod sensors {
+    pub mod mpu6050;
+}
+
 
 pub mod avr;
 pub mod config;

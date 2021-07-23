@@ -36,6 +36,7 @@ use core::ptr::{read_volatile, write_volatile};
 ///  `USART3 :  Power Reduction USART3`
 ///  `USART2 :  Power Reduction USART2`
 ///  `USART1 :  Power Reduction USART1`
+
 #[derive(Clone, Copy)]
 pub enum Options {
     TWI,
@@ -56,6 +57,7 @@ pub enum Options {
 /// Contains registers to control the functioning of clocks in the chip.
 /// It would be used to control the power modes of the ATMEGA2560P chip as mentioned
 /// in the enum `Options` above.
+
 #[repr(C, packed)]
 pub struct Power {
     pub prr0: u8,
@@ -73,9 +75,11 @@ impl Power {
     /// which would be used to control various clock gating features of the
     /// chip ATMEGA2560P.
     /// All the clock features are implemented in this function using match cases.
+
     /// Please specify the type of power reduction mode to be used as the mode,
     /// use the standard keywords.
     /// For more details please refer to the comment lines before the enum `Options`.
+
     pub fn disable_clocks(&mut self, mode: Options) {
         let mut prr;
         match mode {
@@ -166,9 +170,11 @@ impl Power {
     /// and it would be used to control various clock gating features of the
     /// chip ATMEGA2560P.
     /// All the clock features are implemented in this function using match cases.
+
     /// Please specify the type of power reduction mode to be used as the mode,
     /// use the standard keywords.
     /// For more details please refer to the comment lines before the enum `Options`.
+
     pub fn enable_clocks(&mut self, mode: Options) {
         let mut prr;
         match mode {
