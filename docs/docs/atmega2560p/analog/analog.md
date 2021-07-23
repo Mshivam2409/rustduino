@@ -1,3 +1,9 @@
+---
+id: analog
+slug: /analog
+title: Analog Integrated Circuit
+---
+
 # Introduction 
 
 The ATmega 2560p features a 10-bit Analog to digital converter.The ADC being 

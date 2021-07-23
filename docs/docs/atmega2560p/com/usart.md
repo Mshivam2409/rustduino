@@ -1,3 +1,9 @@
+---
+id: usart
+slug: /usart
+title: USART
+---
+
 # Introduction 
 
 The Universal Synchronous and Asynchronous serial Receiver and Transmitter (USART) is a highly flexible serial
