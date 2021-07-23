@@ -147,6 +147,8 @@ impl analogpins::AnalogPin {
 
             analog.adc_enable();
 
+            analog.analog_prescaler(2);
+
             analog.adc_auto_trig();
 
             analog_reference(reftype);
@@ -548,6 +550,56 @@ impl Analog {
         unsafe {
             let pow = Power::new();
             write_volatile(&mut pow.prr0, pow.prr0 & (254));
+        }
+    }
+
+    /// Set prescaler for the ADC
+    pub fn analog_prescaler(&mut self,factor: u8){
+    
+        match factor{
+            2 => {
+                self.adcsra.update(|adcsra| {
+                    adcsra.set_bits(0..3, 0b000);
+                });
+            }      
+
+            4 => {
+                self.adcsra.update(|adcsra| {
+                    adcsra.set_bits(0..3, 0b010);
+                });
+            }    
+
+            8 => {
+                self.adcsra.update(|adcsra| {
+                    adcsra.set_bits(0..3, 0b011);
+                });
+            }    
+
+            16 => {
+                self.adcsra.update(|adcsra| {
+                    adcsra.set_bits(0..3, 0b100);
+                });
+            }    
+
+            32 => {
+                self.adcsra.update(|adcsra| {
+                    adcsra.set_bits(0..3, 0b101);
+                });
+            }    
+
+            64 => {
+                self.adcsra.update(|adcsra| {
+                    adcsra.set_bits(0..3, 0b110);
+                });
+            }    
+
+            128 => {
+                self.adcsra.update(|adcsra| {
+                    adcsra.set_bits(0..3, 0b111);
+                });
+            }
+            _ => unreachable!(),
+
         }
     }
 }
