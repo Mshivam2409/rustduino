@@ -78,6 +78,9 @@ impl Pin {
     pub fn analog_read(&mut self, pin: u32, reftype: RefType) -> u32 {
         unsafe {
             let analog = Analog::new();
+
+            analog.power_adc_disable(); //To enable ADC
+            
             analog.adc_enable();
 
             analog.adc_auto_trig();
