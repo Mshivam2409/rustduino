@@ -41,7 +41,6 @@ pub mod atmega2560p {
 #[cfg(feature = "atmega2560p")]
 pub use atmega2560p::*;
 
-
 /// Library for ATmega328P chip.
 #[cfg(feature = "atmega328p")]
 pub mod atmega328p {
