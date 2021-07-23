@@ -39,27 +39,27 @@ module.exports = {
     {
       type: 'category',
       label: 'Core Concepts',
-      items: ['core/watchdog', 'core/power', 'core/ports', 'core/gpio']
+      items: ['core/watchdog', 'core/power', 'core/ports', 'core/gpio', 'core/sleep_mode']
     },
     {
-      type:'category',
-      label:'Hardware Abstraction Layer',
-      items: ['atmega2560p/hal/hal']
+      type: 'category',
+      label: 'Hardware Abstraction Layer',
+      items: ['hal/hal']
     },
     {
-      type:'category',
-      label:'Communications',
-      items:['atmega2560p/com/usart','atmega2560p/com/i2c']
+      type: 'category',
+      label: 'Communications',
+      items: ['com/usart','com/i2c']
     },
     {
-      type:'category',
-      label:'Analog',
-      items:['atmega2560p/analog/analog']
+      type: 'category',
+      label: 'Analog',
+      items: ['analog/analog']
     },
     {
-      type:'category',
-      label:'Sensors',
-      items:['sensors/mpu6050']
+      type: 'category',
+      label: 'Sensors',
+      items: ['sensors/mpu6050']
     },
     {
       type: 'category',
@@ -67,7 +67,7 @@ module.exports = {
       items: ['guides/blink']
     },
     {
-      type: 'category',
+      type: 'doc',
       label: 'Contributors',
       id: 'contributors'
     }
