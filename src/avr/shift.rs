@@ -45,7 +45,7 @@ pub enum BitOrder {
     MSBFIRST,
 }
 
-/// * Returns the value stored in the shift register 
+/// * Returns the value stored in the shift register
 /// * Usage:
 /// * rustduino::avr::shift_in(datapin: u8, clockpin: u8, bit_order: BitOrder)
 pub fn shift_in(datapin: u8, clockpin: u8, bit_order: BitOrder) -> u8 {
