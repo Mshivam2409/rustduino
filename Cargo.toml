@@ -1,7 +1,6 @@
 [package]
 name = "rustduino"
-version = "0.1.1"
-description="A generic HAL implementation for Arduino Boards in Rust"
+version = "0.1.0"
 authors = [
     "Akshit Verma <akshitv18@gmail.com>",
     "Aniket Sharma <sharmaa20@iitk.ac.in>",
@@ -33,6 +32,7 @@ license="AGPL-3.0-only"
 [features]
 com = []
 sensors=[]
+analog=[]
 atmega328p=[]
 atmega328p-hal=[]
 atmega328p-core = ["atmega328p","atmega328p-hal"]
