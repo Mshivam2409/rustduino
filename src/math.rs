@@ -29,18 +29,18 @@ use volatile::Volatile;
 
 /// Source codes required.
 use crate::hal::analogpins::AnalogPins;
-use crate::sensors::mpu6050::*;
+use crate::sensors::mpu6050::MPU6050;
 
 /// Structure to control the implementation of Random Number Generators
 #[repr(C, packed)]
 pub struct RandomNumberGenerator {
     pins: AnalogPins,
-    
+    mpu: &'static mut MPU6050<'static>,
 }
 
 impl RandomNumberGenerator {
     pub fn new() -> RandomNumberGenerator {
-        RandomNumberGenerator { pins: AnalogPins::new() }
+        RandomNumberGenerator { pins: AnalogPins::new(), mpu: MPU6050::new() }
     }
 
     pub fn generate_by_analog(&mut self) -> u32 {
@@ -50,4 +50,15 @@ impl RandomNumberGenerator {
     pub fn generate_by_mpu(&mut self) -> u32 {
         100
     }
+}
+
+/// Rotate the unsigned integer of 8 bits by n towards left
+/// and surrounding back with the overflowing bits.
+pub fn rotate(b:u8,n:u8) -> u8 {
+    (b>>n) | (b<<(8-n))
+}
+
+/// Get the bitwise XOR (exclusive OR) of 2 8 bits unsigned integers.
+pub fn xor(a:u8,b:u8) -> u8 {
+    (a | b) - (a & b)
 }
