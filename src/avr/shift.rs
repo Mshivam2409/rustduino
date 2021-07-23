@@ -28,12 +28,12 @@ fn make_pin(pin: u8) -> Pin {
         6 => return Pin::new(PortName::D, 6).unwrap(),
         7 => return Pin::new(PortName::D, 7).unwrap(),
 
-        8 => return Pin::new(PortName::B, 8).unwrap(),
-        9 => return Pin::new(PortName::B, 9).unwrap(),
-        10 => return Pin::new(PortName::B, 10).unwrap(),
-        11 => return Pin::new(PortName::B, 11).unwrap(),
-        12 => return Pin::new(PortName::B, 12).unwrap(),
-        13 => return Pin::new(PortName::B, 13).unwrap(),
+        8 => return Pin::new(PortName::B, 0).unwrap(),
+        9 => return Pin::new(PortName::B, 1).unwrap(),
+        10 => return Pin::new(PortName::B, 2).unwrap(),
+        11 => return Pin::new(PortName::B, 3).unwrap(),
+        12 => return Pin::new(PortName::B, 4).unwrap(),
+        13 => return Pin::new(PortName::B, 5).unwrap(),
 
         _ => unreachable!(),
     }
