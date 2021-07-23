@@ -2,7 +2,6 @@
 #![deny(warnings)]
 #![feature(asm)]
 #![feature(llvm_asm)]
-#![allow(dead_code)]
 
 /// Library for ATmega2560P chip.
 #[cfg(feature = "atmega2560p")]
@@ -67,6 +66,10 @@ pub mod atmega328p {
         pub mod gating;
 
         pub mod analog;
+
+        pub mod analogpins;
+
+        pub mod digitalpins;
     }
 
     #[cfg(feature = "com")]

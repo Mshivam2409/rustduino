@@ -14,21 +14,29 @@
 //     You should have received a copy of the GNU Affero General Public License
 //     along with this program.  If not, see <https://www.gnu.org/licenses/>
 
-//Include the required crates for the code.
+//! This source code creates a array for controlling all analog pins at one place in form
+//! Pins array which would be used so that we get meaningful functions to work upon and
+//! also the implementation of rustduino library is easier for the user.
+//! For more details see section 16,17,25 and 26 of ATMEGA2560P datasheet.
+//! https://ww1.microchip.com/downloads/en/devicedoc/atmel-2549-8-bit-avr-microcontroller-atmega640-1280-1281-2560-2561_datasheet.pdf
+
+/// Include the required source codes.
 use crate::atmega2560p::hal::port::*;
 
-///This struct contains the Pin struct and its analog pin number.
+/// This struct contains the Pin struct and its analog pin number.
 pub struct AnalogPin {
     pub anapin: Pin,
     pub pinno: u32,
 }
-///This structs contains all the 16 analog pins of Arduino Mega in form of an array.
+
+/// This structs contains all the 16 analog pins of Arduino Mega in form of an array at one place.
 pub struct AnalogPins {
     pub analog: [AnalogPin; 16],
 }
+
 impl AnalogPins {
-    ///This function creates returns all analog pins.
-    ///This pins can be accesed like an array.
+    /// This function creates returns all analog pins.
+    /// This pins can be accesed like an array.
     pub fn new() -> AnalogPins {
         AnalogPins {
             analog: [
