@@ -133,15 +133,13 @@ impl AnalogComparator {
 impl analogpins::AnalogPin {
     /// Read the signal input to the analog pin.
     /// Any analog pin can be freely used for this purpose.
-    pub fn analog_read(&mut self, reftype: RefType) -> u32 {
+    pub fn read(&mut self, reftype: RefType) -> u32 {
         self.anapin.input();
 
         let pin = self.pinno;
 
         unsafe {
             let analog = Analog::new();
-
-            // check if to enable the pin as input
 
             analog.power_adc_disable(); //PRADC disable to enable ADC
 
