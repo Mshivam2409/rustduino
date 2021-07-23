@@ -14,7 +14,7 @@
 //     You should have received a copy of the GNU Affero General Public License
 //     along with this program.  If not, see <https://www.gnu.org/licenses/>
 
-//Include the required crates for the code.
+// Include the required crates for the code.
 use crate::atmega2560p::hal::port::*;
 
 pub struct DigitalPin {
