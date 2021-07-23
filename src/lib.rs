@@ -85,3 +85,4 @@ pub mod sensors {}
 pub mod avr;
 pub mod config;
 pub mod delay;
+pub mod math;
