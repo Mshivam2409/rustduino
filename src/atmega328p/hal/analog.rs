@@ -86,6 +86,22 @@ pub struct Timer8 {
     ocrb: Volatile<u8>,
 }
 
+/// Structure to control the timer of type 16 for Analog Write.
+pub struct Timer16 {
+    tccra: Volatile<u8>,
+    tccrb: Volatile<u8>,
+    _tccrc: Volatile<u8>,
+    _pad0: u8,
+    _tcntl: Volatile<u8>,
+    _tcnth: Volatile<u8>,
+    _icrl: Volatile<u8>,
+    _icrh: Volatile<u8>,
+    ocral: Volatile<u8>,
+    _ocrah: Volatile<u8>,
+    ocrbl: Volatile<u8>,
+    _ocrbh: Volatile<u8>,
+}
+
 /// Structure to control the timer of type 8 for Analog Write.
 impl Timer8 {
     /// Returns pointer to structure for control on Timer of 8 type.
@@ -93,6 +109,16 @@ impl Timer8 {
         match timer {
             TimerNo8::Timer0 => unsafe { &mut *(0x44 as *mut Timer8) },
             TimerNo8::Timer2 => unsafe { &mut *(0xB0 as *mut Timer8) },
+        }
+    }
+}
+
+/// Structure to control the timer of type 16 for Analog Write.
+impl Timer16 {
+    /// Create a memory mapped IO for timer 16 type which will assist in analog write.
+    pub fn new(timer: TimerNo16) -> &'static mut Timer16 {
+        match timer {
+            TimerNo16::Timer1 => unsafe { &mut *(0x80 as *mut Timer16) },
         }
     }
 }
@@ -258,6 +284,48 @@ impl digitalpins::DigitalPin {
                         ctrl.set_bits(4..8, 0b1000);
                     });
                     timer.ocra.write(value1);
+                }
+            }
+            11 | 3 => {
+                let timer = Timer8::new(TimerNo8::Timer2);
+                timer.tccra.update(|ctrl| {
+                    ctrl.set_bits(0..2, 0b01);
+                });
+                timer.tccrb.update(|ctrl| {
+                    ctrl.set_bits(0..4, 0b0100);
+                });
+
+                if pin1 == 11 {
+                    timer.tccra.update(|ctrl| {
+                        ctrl.set_bits(4..8, 0b0010);
+                    });
+                    timer.ocrb.write(value1);
+                } else {
+                    timer.tccra.update(|ctrl| {
+                        ctrl.set_bits(4..8, 0b1000);
+                    });
+                    timer.ocra.write(value1);
+                }
+            }
+            9 | 10 => {
+                let timer = Timer16::new(TimerNo16::Timer1);
+                timer.tccra.update(|ctrl| {
+                    ctrl.set_bits(0..2, 0b01);
+                });
+                timer.tccrb.update(|ctrl| {
+                    ctrl.set_bits(0..5, 0b00011);
+                });
+
+                if pin1 == 9 {
+                    timer.tccra.update(|ctrl| {
+                        ctrl.set_bits(4..8, 0b0010);
+                    });
+                    timer.ocrbl.write(value1);
+                } else if pin1 == 10 {
+                    timer.tccra.update(|ctrl| {
+                        ctrl.set_bits(4..8, 0b1000);
+                    });
+                    timer.ocral.write(value1);
                 }
             }
             _ => unreachable!(),
