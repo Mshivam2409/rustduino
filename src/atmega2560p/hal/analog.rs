@@ -26,9 +26,9 @@ use bit_field::BitField;
 use core::ptr::write_volatile;
 use volatile::Volatile;
 
+use crate::atmega2560p::hal::pin;
 /// Other source codes required.
 use crate::atmega2560p::hal::power::Power;
-use crate::atmega2560p::hal::pin;
 //use crate::atmega2560p::hal::port::*;
 
 /// Selection of reference type for the implementation of Analog Pins.
@@ -334,14 +334,13 @@ impl pin::AnalogPin {
 
             // wait 25 ADC cycles
             let mut i: i32 = 50;
-            let adcsra =analog.adcsra.read();
+            let adcsra = analog.adcsra.read();
 
-            while  adcsra.get_bit(4)==true {
-
-                if i!=0{
-                    i=i-1;
-                    //add delay of system clock 
-                }else{
+            while adcsra.get_bit(4) == true {
+                if i != 0 {
+                    i = i - 1;
+                    //add delay of system clock
+                } else {
                     unreachable!()
                 }
             }

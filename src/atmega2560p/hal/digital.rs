@@ -22,12 +22,10 @@
 
 /// Include the required source codes.
 use crate::atmega2560p::hal::pin::*;
-use core::{
-    ptr::{read_volatile, write_volatile},
-};
+use core::ptr::{read_volatile, write_volatile};
 
-impl DigitalPin{
-     /// Toggles the appropriate bit in PINxn register so that the mode of the pin
+impl DigitalPin {
+    /// Toggles the appropriate bit in PINxn register so that the mode of the pin
     /// is changed from high to low or vice versa.
     pub fn toggle(&mut self) {
         unsafe { write_volatile(&mut (*self.pin.port).pin, 0x1 << self.pin.pin) }
