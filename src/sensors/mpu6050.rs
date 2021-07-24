@@ -14,6 +14,10 @@
 //     You should have received a copy of the GNU Affero General Public License
 //     along with this program.  If not, see <https://www.gnu.org/licenses/>
 
+//! Source code for implementation of MPU6050 Gyroscopic Sensor
+//! which might be attached or in-built to the current
+//! AVR Micro-controller.
+
 use crate::{com, delay::delay_ms};
 use bit_field::BitField;
 use fixed_slice_vec::FixedSliceVec;

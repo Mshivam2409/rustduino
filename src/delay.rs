@@ -1,23 +1,27 @@
 // RustDuino : A generic HAL implementation for Arduino Boards in Rust
 // Copyright (C) 2021 Shivam Malhotra, Indian Institute of Technology Kanpur
-
+//
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published
 // by the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
-
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU Affero General Public License for more details.
-
+//
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>
 
-#[inline(always)]
+//! This crate contains the delay functions which would be used in
+//! various places in the library for pausing the program for the
+//! given amount of time.
+
 /// Internal function to implement a variable busy-wait loop.
 /// # Arguments
-/// * 'count' - an i32, the number of times to cycle the loop.
+/// * `count` - an i32, the number of times to cycle the loop.
+#[inline(always)]
 pub fn delay(count: u32) {
     // Our asm busy-wait takes a 16 bit word as an argument,
     // so the max number of loops is 2^16
@@ -46,7 +50,7 @@ pub fn delay(count: u32) {
 
 ///delay for N seconds
 /// # Arguments
-/// * 's' - an u32, number of seconds to busy-wait
+/// * `s` - an u32, number of seconds to busy-wait
 #[inline(always)]
 pub fn delay_s(s: u32) {
     // microseconds
@@ -56,7 +60,7 @@ pub fn delay_s(s: u32) {
 
 ///delay for N miliseconds
 /// # Arguments
-/// * 'ms' - an u32, number of milliseconds to busy-wait
+/// * `ms` - an u32, number of milliseconds to busy-wait
 #[inline(always)]
 pub fn delay_ms(ms: u32) {
     // microseconds
@@ -66,7 +70,7 @@ pub fn delay_ms(ms: u32) {
 
 ///delay for N microseconds
 /// # Arguments
-/// * 'ms' - an u32, number of microseconds to busy-wait
+/// * `us` - an u32, number of microseconds to busy-wait
 #[inline(always)]
 pub fn delay_us(us: u32) {
     // nanoseconds

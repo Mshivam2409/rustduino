@@ -2,14 +2,12 @@
 #![deny(warnings)]
 #![feature(asm)]
 #![feature(llvm_asm)]
-#![allow(dead_code)]
-#![allow(unused_variables)]
-#![allow(unused_unsafe)]
 
-/// Library for ATmega2560P chip.
+/// Library for AVR ATMEGA2560P Micro-controller
 #[cfg(feature = "atmega2560p")]
 pub mod atmega2560p {
-    /// Hardware Abstraction Library (HAL).
+
+    /// Hardware Abstraction Library (HAL)
     #[cfg(feature = "atmega2560p-hal")]
     pub mod hal {
         pub mod power;
@@ -24,14 +22,12 @@ pub mod atmega2560p {
 
         pub mod pin;
 
-        #[cfg(feature = "analog")]
         pub mod analog;
 
-        #[cfg(feature = "analog")]
         pub mod digital;
     }
 
-    /// Communication Protocols
+    /// Communication Control Library
     #[cfg(feature = "com")]
     pub mod com {
         pub mod serial;
@@ -48,52 +44,65 @@ pub mod atmega2560p {
     }
 }
 
+/// Library for AVR ATMEGA2560P Micro-controller
 #[cfg(feature = "atmega2560p")]
 pub use atmega2560p::*;
 
-
-/// Library for ATmega328P chip.
+/// Library for AVR ATMEGA328P Micro-controller
 #[cfg(feature = "atmega328p")]
 pub mod atmega328p {
-    /// Hardware Abstraction Library (HAL).
+
+    /// Hardware Abstraction Library (HAL)
     #[cfg(feature = "atmega328p-hal")]
     pub mod hal {
-        pub mod port;
-
-        pub mod pin;
+        pub mod power;
 
         pub mod watchdog;
 
-        pub mod interrupts;
-
         pub mod sleep_mode;
 
-        pub mod power;
+        pub mod port;
 
-        #[cfg(feature = "analog")]
+        pub mod interrupts;
+
+        pub mod pin;
+
         pub mod analog;
 
-        #[cfg(feature = "analog")]
         pub mod digital;
     }
 
-    /// Communication Protocols
+    /// Communication Control Library
     #[cfg(feature = "com")]
     pub mod com {
+        pub mod serial;
+
+        pub mod usart;
+
+        pub mod usart_transmit;
+
+        pub mod usart_initialize;
+
+        pub mod usart_recieve;
+
         pub mod i2c;
     }
 }
 
+/// Library for AVR ATMEGA328P Micro-controller
 #[cfg(feature = "atmega328p")]
 pub use atmega328p::*;
 
+/// Sensor control for AVR Chips
 #[cfg(feature = "sensors")]
 pub mod sensors;
 
+/// Low level control for AVR Chips
 #[cfg(feature = "avr")]
 pub mod avr;
 
-#[cfg(feature = "extras")]
+/// Random Number Generation Features
+#[cfg(feature = "random")]
 pub mod math;
 
 pub mod config;
