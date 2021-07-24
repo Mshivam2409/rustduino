@@ -69,7 +69,7 @@ module.exports = {
     {
       type: 'category',
       label: 'Guides',
-      items: ['guides/blink','guides/print','guides/writing_string','guides/analog']
+      items: ['guides/blink','guides/print','guides/writing_string','guides/analog_io']
     },
     {
       type: 'doc',
