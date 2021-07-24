@@ -27,7 +27,7 @@ use crate::delay::delay_ms;
 /// Source codes required.
 // use crate::hal::pin::Pins;
 use crate::hal::pin::Pins;
-use crate::sensors::mpu6050::MPU6050;
+use crate::mpu6050::{MPU6050,MPUdpsT,MPURangeT};
 
 /// Structure to control the implementation of Random Number Generators
 #[repr(C, packed)]
@@ -94,10 +94,24 @@ impl RandomNumberGenerator {
         xor(bits1, xor(lbuf, rbuf))
     }
 
-    pub fn generate_by_mpu(&mut self) -> u32 {
-        100
+    /// Generation of random number through random noise in environment
+    /// detected through the MPU6050 sensor in the orthonormal set of axes.
+    pub fn generate_by_mpu(&mut self) -> u8 {
+        let (a,b,c,d,e,f) = generate_mpu();
+        
+        let a1 = (a & 0x3) << 6;
+        let a2 = (d & 0x3) << 6;
+        let mut bits1 = xor(a1,xor(c<<4,xor(b<<2,xor(a,c>>2))));
+        let bits2 = xor(a2,xor(f<<4,xor(e<<2,xor(d,f>>2))));
+
+        bits1 = xor_shift(bits1);
+        
+        bits1 = xor(bits1,bits2);
+
+        bits1
     }
 }
+
 
 /// Rotate the unsigned integer of 8 bits by n towards left
 /// and surrounding back with the overflowing bits.
@@ -145,4 +159,27 @@ pub fn push_left(val: u8, change: u8) -> u8 {
 /// Push the required bit with right bias.
 pub fn push_right(val: u8, change: u8) -> u8 {
     xor(val >> 1, xor(change << 7, val))
+}
+
+/// Function to generate tuple containing u8 numbers
+/// accordingly through MPU6050 Gyroscopic Sensor.
+pub fn generate_mpu() -> (u8,u8,u8,u8,u8,u8) {
+    let mut obj = RandomNumberGenerator::new();
+
+    obj.mpu.begin(MPUdpsT::MPU6050Scale250DPS,MPURangeT::MPU6050Range2G);
+
+    obj.mpu.read_gyro();
+    delay_ms(1000);
+
+    obj.mpu.read_accel();
+    delay_ms(1000);
+
+    let d: u8 = obj.mpu.gyro_output[0] as u8;
+    let e: u8 = obj.mpu.gyro_output[1] as u8;
+    let f: u8 = obj.mpu.gyro_output[2] as u8;
+    let a: u8 = obj.mpu.accel_output[0] as u8;
+    let b: u8 = obj.mpu.accel_output[1] as u8;
+    let c: u8 = obj.mpu.accel_output[2] as u8;
+
+    (a,b,c,d,e,f)
 }

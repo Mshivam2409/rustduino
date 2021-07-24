@@ -3,7 +3,7 @@
 #![deny(warnings)]
 
 /// Crates included which are to be used for the Blinking LED example.
-use rustduino::hal::pin::Pins;
+use rustduino::hal::pin::{Pins,DigitalPin};
 use rustduino::hal::watchdog::WatchDog;
 
 #[no_mangle]

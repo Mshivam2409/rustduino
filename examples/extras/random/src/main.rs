@@ -1,16 +1,28 @@
 #![no_std]
 #![no_main]
 #![deny(warnings)]
-#![allow(dead_code)]
-#![allow(unused_variables)]
-#![allow(unused_imports)]
 
 /// Source codes required.
 use rustduino::math;
+use rustduino::hal::watchdog::Watchdog;
 
 #[no_mangle]
-fn main() {
+pub fn main() {
+    // Disable the watchdog.
+    wdog = unsafe { WatchDog::new() };
+    wdog.disable();
+
+    let rand = RandomNumberGenerator::new();
     
+    loop {
+        // Generate Random numbers using Analog pin inputs.
+        // This number could be sent to peripheral device using USART.
+        let x:u8 = rand.generate_by_analog();
+
+        // Generate Random numbers by MPU6050 gyroscopic sensor.
+        // This number could be sent to peripheral device using USART.
+        let y:u8 = rand.generate_by_mpu();
+    }
 }
 
 

@@ -93,6 +93,8 @@ pub mod sensors;
 #[cfg(feature = "avr")]
 pub mod avr;
 
+#[cfg(feature = "extras")]
+pub mod math;
+
 pub mod config;
 pub mod delay;
-pub mod math;
