@@ -26,9 +26,9 @@ use bit_field::BitField;
 use core::ptr::write_volatile;
 use volatile::Volatile;
 
+use crate::atmega328p::hal::pins::{AnalogPin, DigitalPin};
 /// Source codes to be used here.
 use crate::atmega328p::hal::power::Sleep;
-use crate::atmega328p::hal::pins;
 
 /// Selection of reference type for the implementation of Analog Pins.
 #[derive(Clone, Copy)]
@@ -136,7 +136,7 @@ impl Digital {
     }
 }
 
-impl pins::AnalogPin {
+impl AnalogPin {
     /// Function to create a reference for Analog signals.
     pub fn analog_read(&mut self, reftype: RefType) -> u32 {
         let pin = self.pinno;
@@ -258,7 +258,7 @@ impl pins::AnalogPin {
     }
 }
 
-impl pins::DigitalPin {
+impl DigitalPin {
     ///This function is used to write a PWM wave to a digital pin.
     pub fn analog_write(&mut self, value1: u8) {
         self.pin.set_output();
