@@ -18,7 +18,9 @@
 //! Section 13.2 to 13.4 of ATMEGA2560P datasheet.
 //! https://ww1.microchip.com/downloads/en/devicedoc/atmel-2549-8-bit-avr-microcontroller-atmega640-1280-1281-2560-2561_datasheet.pdf
 
-use crate::atmega2560p::hal::pin;
+/// Source codes required.
+use crate::atmega2560p::hal::pin::{AnalogPin, DigitalPin};
+
 /// Core Crate functions required in the code for reading and writing to registers.
 use core::{
     ptr::{read_volatile, write_volatile},
@@ -153,7 +155,7 @@ impl Pin {
     }
 }
 
-impl pin::AnalogPin {
+impl AnalogPin {
     /// Change pin mode to Output by changing the value of DDxn register.
     pub fn output(&mut self) {
         self.pin.set_pin_mode(IOMode::Output);
@@ -164,7 +166,8 @@ impl pin::AnalogPin {
         self.pin.set_pin_mode(IOMode::Input);
     }
 }
-impl pin::DigitalPin {
+
+impl DigitalPin {
     /// Change pin mode to Output by changing the value of DDxn register.
     pub fn output(&mut self) {
         self.pin.set_pin_mode(IOMode::Output);

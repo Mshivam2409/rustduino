@@ -1,5 +1,6 @@
 //! General Digital I/O Implementation.
 
+use crate::atmega328p::hal::pins::{AnalogPin, DigitalPin};
 use core::ptr::{read_volatile, write_volatile};
 
 /// Represents name of Port, can be either A, B, C, or D.
@@ -30,9 +31,9 @@ pub enum PortName {
 ///
 /// Section 13.2.1 and 13.2.2 of ATmega328P datasheet.
 pub struct Port {
-    pin: u8,
-    ddr: u8,
-    port: u8,
+    pub pin: u8,
+    pub ddr: u8,
+    pub port: u8,
 }
 
 impl Port {
@@ -74,8 +75,8 @@ impl Port {
 ///
 /// Section 13.4 of ATmega328P datasheet.
 pub struct Pin {
-    port: *mut Port,
-    pin: u8,
+    pub port: *mut Port,
+    pub pin: u8,
 }
 
 /// The `IOMode` type. Represents the I/O mode for a pin.
@@ -182,5 +183,19 @@ impl Pin {
     /// Section 13.2 of ATmega328P datasheet.
     pub fn set_output(&mut self) {
         self.set_mode(IOMode::Output);
+    }
+}
+
+impl AnalogPin {
+    /// Change pin mode to Output by changing the value of DDxn register.
+    pub fn set_output(&mut self) {
+        self.pin.set_mode(IOMode::Output);
+    }
+}
+
+impl DigitalPin {
+    /// Change pin mode to Output by changing the value of DDxn register.
+    pub fn set_output(&mut self) {
+        self.pin.set_mode(IOMode::Output);
     }
 }

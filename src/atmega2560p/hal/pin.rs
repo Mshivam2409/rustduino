@@ -28,12 +28,14 @@ pub struct Pins {
     /// All 54 digital I/O pins.
     pub digital: [DigitalPin; 54],
 }
-///This struct contain digital pin and its corresponding digital pin no.
+
+/// This struct contain digital pin and its corresponding digital pin no.
 pub struct DigitalPin {
     pub pin: Pin,
     pub pinno: u32,
 }
-///This struct contain analog pin and its corresponding analog pin no.
+
+/// This struct contain analog pin and its corresponding analog pin no.
 pub struct AnalogPin {
     pub pin: Pin,
     pub pinno: u32,
