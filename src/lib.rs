@@ -66,9 +66,7 @@ pub mod atmega328p {
 
         pub mod analog;
 
-        pub mod analogpins;
-
-        pub mod digitalpins;
+        pub mod digital;
     }
 
     #[cfg(feature = "com")]

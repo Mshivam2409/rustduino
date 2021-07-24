@@ -30,9 +30,9 @@ pub enum PortName {
 ///
 /// Section 13.2.1 and 13.2.2 of ATmega328P datasheet.
 pub struct Port {
-    pin: u8,
-    ddr: u8,
-    port: u8,
+    pub pin: u8,
+    pub ddr: u8,
+    pub port: u8,
 }
 
 impl Port {
@@ -74,8 +74,8 @@ impl Port {
 ///
 /// Section 13.4 of ATmega328P datasheet.
 pub struct Pin {
-    port: *mut Port,
-    pin: u8,
+    pub port: *mut Port,
+    pub pin: u8,
 }
 
 /// The `IOMode` type. Represents the I/O mode for a pin.
