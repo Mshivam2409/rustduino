@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>
 
-use core::ptr::{read_volatile,write_volatile};
+use core::ptr::{read_volatile, write_volatile};
 /// SREG (Status control Register)
 /// The status register contains information about the result of the most recently executed arithmetic instruction. This
 /// information can be used for altering program flow in order to perform conditional operations. Note that the status register is

@@ -15,7 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>
 
 use crate::atmega328p::hal::interrupt;
-use core::ptr::{read_volatile,write_volatile};
+use core::ptr::{read_volatile, write_volatile};
 
 /// Watchdog timer 10.9 of the manual.
 

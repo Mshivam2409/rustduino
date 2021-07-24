@@ -18,17 +18,15 @@
 //! See the section 22 of ATMEGA2560P datasheet.
 //! https://ww1.microchip.com/downloads/en/devicedoc/atmel-2549-8-bit-avr-microcontroller-atmega640-1280-1281-2560-2561_datasheet.pdf
 
-
+use bit_field::BitField;
 /// Crates which would be used in the implementation.
 /// We will be using standard volatile and bit_field crates now for a better read and write.
 use core::{f64, u8, usize};
 use fixed_slice_vec::FixedSliceVec;
-use bit_field::BitField;
 
 /// Other source code files to be used.
 use crate::atmega2560p::com::usart_initialize::{Usart, UsartDataSize};
 use crate::delay::delay_ms;
-
 
 //This is a implementation for Usart
 impl Usart {
