@@ -19,7 +19,7 @@ pub fn main() {
     // Infinite loop for read and write continuously through the I/O pins.
     loop {
         // Take input into the zeroth analog pin.
-        let a: u32 = pins.analog[0].analog_read(RefType::DEFAULT);
+        let a: u32 = pins.analog[0].read(RefType::DEFAULT);
 
         // Make the input value ready to be sent through a digital pin.
         let b: u8 = map_from1023_to255(a);
@@ -27,7 +27,7 @@ pub fn main() {
         rustduino::delay::delay_ms(1000);
 
         // Give output from the 13th digital pin.
-        pins.digital[13].analog_write(b);
+        pins.digital[13].write(b);
 
         rustduino::delay::delay_ms(1000);
     }

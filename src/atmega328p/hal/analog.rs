@@ -138,7 +138,7 @@ impl Digital {
 
 impl AnalogPin {
     /// Function to create a reference for Analog signals.
-    pub fn analog_read(&mut self, reftype: RefType) -> u32 {
+    pub fn read(&mut self, reftype: RefType) -> u32 {
         let pin = self.pinno;
         unsafe {
             let analog = Analog::new();
@@ -260,7 +260,7 @@ impl AnalogPin {
 
 impl DigitalPin {
     ///This function is used to write a PWM wave to a digital pin.
-    pub fn analog_write(&mut self, value1: u8) {
+    pub fn write(&mut self, value1: u8) {
         self.pin.set_output();
         let pin1 = self.pinno;
         match pin1 {

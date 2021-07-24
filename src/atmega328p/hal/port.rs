@@ -1,7 +1,7 @@
 //! General Digital I/O Implementation.
 
+use crate::atmega328p::hal::pins::{AnalogPin, DigitalPin};
 use core::ptr::{read_volatile, write_volatile};
-use crate::atmega328p::hal::pins::{AnalogPin,DigitalPin};
 
 /// Represents name of Port, can be either A, B, C, or D.
 pub enum PortName {
