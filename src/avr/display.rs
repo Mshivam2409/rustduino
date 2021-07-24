@@ -21,9 +21,9 @@ const decpt:bool=true;
 const common:char='a';
 
 pub struct Pinsegment{
-    datapin:u8,
-    latchpin:u8,
-    clockpin:u8,
+    datapin_no:u8,
+    latchpin_no:u8,
+    clockpin_no:u8,
 }
 
 impl Pinsegment{
@@ -85,7 +85,7 @@ impl Pinsegment{
         }else if somenumber==9{
             return B11110110;
         }else if somenumber==10{
-            return B11101110;  ///10=='A'
+            return B11101110;  // 10=='A'
         }else if somenumber==11{
             return B00111110; // Hexidecimal B
         }else if somenumber==12{

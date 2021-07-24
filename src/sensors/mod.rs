@@ -14,10 +14,10 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>
 
-mod aht10;
+pub mod aht10;
 
 pub use aht10::AHT10;
 
-mod mpu6050;
+pub mod mpu6050;
 
 pub use mpu6050::MPU6050;

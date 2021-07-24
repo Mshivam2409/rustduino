@@ -114,3 +114,26 @@ impl Pins {
         }
     }
 }
+
+/// makes digital pin for given pin number
+fn make_pin(pin: u8) -> Pin {
+    match pin {
+        0 => return Pin::new(PortName::D, 0).unwrap(),
+        1 => return Pin::new(PortName::D, 1).unwrap(),
+        2 => return Pin::new(PortName::D, 2).unwrap(),
+        3 => return Pin::new(PortName::D, 3).unwrap(),
+        4 => return Pin::new(PortName::D, 4).unwrap(),
+        5 => return Pin::new(PortName::D, 5).unwrap(),
+        6 => return Pin::new(PortName::D, 6).unwrap(),
+        7 => return Pin::new(PortName::D, 7).unwrap(),
+
+        8 => return Pin::new(PortName::B, 8).unwrap(),
+        9 => return Pin::new(PortName::B, 9).unwrap(),
+        10 => return Pin::new(PortName::B, 10).unwrap(),
+        11 => return Pin::new(PortName::B, 11).unwrap(),
+        12 => return Pin::new(PortName::B, 12).unwrap(),
+        13 => return Pin::new(PortName::B, 13).unwrap(),
+
+        _ => unreachable!(),
+    }
+}

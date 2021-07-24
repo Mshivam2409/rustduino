@@ -182,4 +182,16 @@ impl DigitalPin {
     pub fn input(&mut self) {
         self.pin.set_pin_mode(IOMode::Input);
     }
+
+    /// Returns the I/O state of the Digital Pin.
+    pub fn read(&mut self) -> u8 {
+        let port_val = unsafe { read_volatile(&mut (*self.pin.port).port) };
+
+        // Check if value of PORTxn is already high, toggle if it isn't.
+        if port_val & (1 << self.pin.pin) == 0 {
+            return 0;
+        } else {
+            return 1;
+        }
+    }
 }

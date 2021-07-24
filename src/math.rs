@@ -26,7 +26,7 @@ use bit_field::BitField;
 use crate::delay::delay_ms;
 /// Source codes required.
 // use crate::hal::pin::Pins;
-use crate::atmega328p::hal::pin::Pins;
+use crate::hal::pin::Pins;
 use crate::sensors::mpu6050::MPU6050;
 
 /// Structure to control the implementation of Random Number Generators

@@ -14,30 +14,9 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>
 
-use crate::atmega328p::hal::pin::Pins;
+use core::usize;
 
-// // makes pin struct given pin number
-// fn make_pin(pin: u8) -> Pin {
-//     match pin {
-//         0 => return Pin::new(PortName::D, 0).unwrap(),
-//         1 => return Pin::new(PortName::D, 1).unwrap(),
-//         2 => return Pin::new(PortName::D, 2).unwrap(),
-//         3 => return Pin::new(PortName::D, 3).unwrap(),
-//         4 => return Pin::new(PortName::D, 4).unwrap(),
-//         5 => return Pin::new(PortName::D, 5).unwrap(),
-//         6 => return Pin::new(PortName::D, 6).unwrap(),
-//         7 => return Pin::new(PortName::D, 7).unwrap(),
-
-//         8 => return Pin::new(PortName::B, 8).unwrap(),
-//         9 => return Pin::new(PortName::B, 9).unwrap(),
-//         10 => return Pin::new(PortName::B, 10).unwrap(),
-//         11 => return Pin::new(PortName::B, 11).unwrap(),
-//         12 => return Pin::new(PortName::B, 12).unwrap(),
-//         13 => return Pin::new(PortName::B, 13).unwrap(),
-
-//         _ => unreachable!(),
-//     }
-// }
+use crate::hal::pin::Pins;
 
 // enum for bit order of the value
 pub enum BitOrder {
@@ -48,11 +27,12 @@ pub enum BitOrder {
 /// * Returns the value stored in the shift register
 /// * Usage:
 /// * rustduino::avr::shift_in(datapin: u8, clockpin: u8, bit_order: BitOrder)
-pub fn shift_in(datapin: u8, clockpin: u8, bit_order: BitOrder) -> u8 {
+pub fn shift_in(datapin: usize, clockpin: usize, bit_order: BitOrder) -> u8 {
     let mut value: u8 = 0;
     let mut i: u8 = 0;
-    let mut data = make_pin(datapin);
-    let mut clock = make_pin(clockpin);
+    let pins = Pins::new();
+    let mut data = pins.digital[datapin];
+    let mut clock = pins.digital[clockpin];
     loop {
         clock.high();
 
@@ -73,10 +53,11 @@ pub fn shift_in(datapin: u8, clockpin: u8, bit_order: BitOrder) -> u8 {
 /// * Stores value in the Shift Register
 /// * Usage:
 /// * rustduino::avr::shift_out(datapin: u8, clockpin: u8, bit_order: BitOrder, mut value: u8)
-pub fn shift_out(datapin: u8, clockpin: u8, bit_order: BitOrder, mut value: u8) {
+pub fn shift_out(datapin: usize, clockpin: usize, bit_order: BitOrder, mut value: u8) {
     let mut i: u8 = 0;
-    let mut data = make_pin(datapin);
-    let mut clock = make_pin(clockpin);
+    let pins = Pins::new();
+    let mut data = pins.digital[datapin];
+    let mut clock = pins.digital[clockpin];
 
     loop {
         match bit_order {

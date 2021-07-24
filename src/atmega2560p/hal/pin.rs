@@ -335,6 +335,7 @@ impl Pins {
         }
     }
 }
+
 ///This function returns digital pin corresponding to its number.
 pub fn make_pin(pin: u32) -> Pin {
     match pin {
