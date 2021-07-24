@@ -20,28 +20,26 @@
 
 /// Crates which would be used in the implementation.
 /// We will be using standard volatile and bit_field crates now for a better read and write.
-use crate::atmega2560p::com::usart_initialize::{Usart, UsartNum};
+use crate::atmega2560p::com::usart_initialize::{UsartNum, UsartObject};
 
 /// This struct contains all 4 USART in ARDUINO MEGA arranged in a array.
 /// First a new Serial is needed to be created to access all USARTs.
-/// Each USART can be accesed through Serial.usart[n], where 0<= n <=3
+/// Each USART can be accesed through Serial.usart[n], where 0 <= n <= 3
 pub struct Serial {
-    pub usart: [&'static mut Usart; 4],
+    pub usart: [UsartObject; 4],
 }
 
 impl Serial {
-    /// This function creates a new Serial struct.
+    /// Creates a new Serial struct object.
     /// The struct serial will contain all the USARTs at one place.
-    pub fn new() -> Serial {
-        unsafe {
-            Serial {
-                usart: [
-                    Usart::new(UsartNum::Usart0),
-                    Usart::new(UsartNum::Usart1),
-                    Usart::new(UsartNum::Usart2),
-                    Usart::new(UsartNum::Usart3),
-                ],
-            }
+    pub unsafe fn new() -> Serial {
+        Serial {
+            usart: [
+                UsartObject::new(UsartNum::Usart0),
+                UsartObject::new(UsartNum::Usart1),
+                UsartObject::new(UsartNum::Usart2),
+                UsartObject::new(UsartNum::Usart3),
+            ],
         }
     }
 }

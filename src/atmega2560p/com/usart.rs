@@ -23,7 +23,7 @@
 
 /// Crates which would be used in the implementation.
 use crate::atmega2560p::com::serial::Serial;
-use crate::atmega2560p::com::usart_initialize::Usart;
+use crate::atmega2560p::com::usart_initialize::UsartObject;
 use crate::atmega2560p::com::usart_initialize::{
     UsartDataSize, UsartModes, UsartNum, UsartParity, UsartPolarity, UsartStop,
 };
@@ -33,7 +33,7 @@ use core::{f64, u32};
 
 /// Default setting parameters for various modes of USART in case user want's to skip them.
 /// Baud Rate.
-const BAUD: i64 = 2400;
+const BAUD: i64 = 9600;
 /// Frame Settings.
 const SIZE: UsartDataSize = UsartDataSize::Eight;
 const PARITY: UsartParity = UsartParity::No;
@@ -48,32 +48,34 @@ const _POLARITY: UsartPolarity = UsartPolarity::Outputrise;
 impl Serial {
     /// Gives a new serial port object which can be used to control all the
     /// USART at one place.
-    pub fn serial_new() -> Serial {
+    pub unsafe fn serial_new() -> Serial {
         Serial::new()
     }
 }
 
-impl Usart {
-    /// This function can be use to initialize with default settings.
-    /// Like Mode:Normal asynchronuous,stopbit:one,data bit:8,parity type:no
-    pub fn begin(&mut self) {
+impl UsartObject {
+    /// Can be use to initialize with default settings.
+    pub unsafe fn begin(&mut self) {
+        self.disable();
         self.transmit_enable();
         self.recieve_enable();
         self.initialize(MODE, BAUD, STOP, SIZE, PARITY);
     }
 
-    /// This function can be use to initialize with baud rate and remaining settings will be set to default
-    /// Like Mode:Normal asynchronuous,stopbit:one,data bit:8,parity type:no
-    pub fn begin_set_baud(&mut self, baud1: i64) {
+    /// Can be use to initialize with given baud rate and remaining settings will be set to default.
+    pub unsafe fn begin_set_baud(&mut self, baud1: i64) {
+        self.disable();
         self.transmit_enable();
         self.recieve_enable();
         self.initialize(MODE, baud1, STOP, SIZE, PARITY);
     }
 
-    /// This function can be used to stop the functioning of USART.
-    pub fn end(&mut self) {
+    /// Can be used to stop the functioning of USART.
+    pub unsafe fn end(&mut self) {
         self.transmit_disable();
         self.recieve_disable();
+        self.reset();
+        self.enable();
     }
 }
 
@@ -83,11 +85,16 @@ impl Usart {
 /// Then the string given by the user is transmitted through the USART.
 /// This will be used to transmit string data.
 pub fn println_string(data: &'static str) {
-    let u: &mut Usart = unsafe { Usart::new(NUM) };
-    u.transmit_enable();
-    u.initialize(MODE, BAUD, STOP, SIZE, PARITY);
-    u.write_string(data);
-    u.transmit_disable();
+    unsafe {
+        let mut u: UsartObject = UsartObject::new(NUM);
+        u.disable();
+        u.transmit_enable();
+        u.initialize(MODE, BAUD, STOP, SIZE, PARITY);
+        u.write_string(data);
+        u.transmit_disable();
+        u.reset();
+        u.enable();
+    }
 }
 
 /// Main println() function for using USART according to default used values.
@@ -96,11 +103,16 @@ pub fn println_string(data: &'static str) {
 /// Then the string given by the user is transmitted through the USART.
 /// This will be used to transmit integer data.
 pub fn println_integer(data: u32) {
-    let u: &mut Usart = unsafe { Usart::new(NUM) };
-    u.transmit_enable();
-    u.initialize(MODE, BAUD, STOP, SIZE, PARITY);
-    u.write_integer(data);
-    u.transmit_disable();
+    unsafe {
+        let mut u: UsartObject = UsartObject::new(NUM);
+        u.disable();
+        u.transmit_enable();
+        u.initialize(MODE, BAUD, STOP, SIZE, PARITY);
+        u.write_integer(data);
+        u.transmit_disable();
+        u.reset();
+        u.enable();
+    }
 }
 
 /// Main println() function for using USART according to default used values.
@@ -109,11 +121,16 @@ pub fn println_integer(data: u32) {
 /// Then the string given by the user is transmitted through the USART.
 /// This will be used to transmit float data.
 pub fn println_float(data: f64, precision: u32) {
-    let u: &mut Usart = unsafe { Usart::new(NUM) };
-    u.transmit_enable();
-    u.initialize(MODE, BAUD, STOP, SIZE, PARITY);
-    u.write_float(data, precision);
-    u.transmit_disable();
+    unsafe {
+        let mut u: UsartObject = UsartObject::new(NUM);
+        u.disable();
+        u.transmit_enable();
+        u.initialize(MODE, BAUD, STOP, SIZE, PARITY);
+        u.write_float(data, precision);
+        u.transmit_disable();
+        u.reset();
+        u.enable();
+    }
 }
 
 /// println() function for using USART according to default used values and user defined value of baud rate.
@@ -121,11 +138,16 @@ pub fn println_float(data: f64, precision: u32) {
 /// Then the function takes the usart and initializes it with user defined.
 /// Then the string given by the user is transmitted through the USART.
 pub fn println_set_baud(data: &'static str, baud1: i64) {
-    let u: &mut Usart = unsafe { Usart::new(NUM) };
-    u.transmit_enable();
-    u.initialize(MODE, baud1, STOP, SIZE, PARITY);
-    u.write_string(data);
-    u.transmit_disable();
+    unsafe {
+        let mut u: UsartObject = UsartObject::new(NUM);
+        u.disable();
+        u.transmit_enable();
+        u.initialize(MODE, baud1, STOP, SIZE, PARITY);
+        u.write_string(data);
+        u.transmit_disable();
+        u.reset();
+        u.enable();
+    }
 }
 
 /// Main println() function for using USART according to default used values and user defined value of frame.
@@ -138,11 +160,16 @@ pub fn println_set_frame(
     parity1: UsartParity,
     stop1: UsartStop,
 ) {
-    let u: &mut Usart = unsafe { Usart::new(NUM) };
-    u.transmit_enable();
-    u.initialize(MODE, BAUD, stop1, size1, parity1);
-    u.write_string(data);
-    u.transmit_disable();
+    unsafe {
+        let mut u: UsartObject = UsartObject::new(NUM);
+        u.disable();
+        u.transmit_enable();
+        u.initialize(MODE, BAUD, stop1, size1, parity1);
+        u.write_string(data);
+        u.transmit_disable();
+        u.reset();
+        u.enable();
+    }
 }
 
 /// Main println() function for using USART according to user defined mode parameters.
@@ -158,9 +185,14 @@ pub fn println_detail(
     parity1: UsartParity,
     stop1: UsartStop,
 ) {
-    let u: &mut Usart = unsafe { Usart::new(num1) };
-    u.transmit_enable();
-    u.initialize(mode1, baud1, stop1, size1, parity1);
-    u.write_string(data);
-    u.transmit_disable();
+    unsafe {
+        let mut u: UsartObject = UsartObject::new(num1);
+        u.disable();
+        u.transmit_enable();
+        u.initialize(mode1, baud1, stop1, size1, parity1);
+        u.write_string(data);
+        u.transmit_disable();
+        u.reset();
+        u.enable();
+    }
 }
