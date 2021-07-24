@@ -25,7 +25,7 @@
 use bit_field::BitField;
 use core::ptr::write_volatile;
 use volatile::Volatile;
-
+use crate::avr::__nop;
 /// Other source codes required.
 use crate::atmega2560p::hal::power::Power;
 use crate::atmega2560p::hal::pin;
@@ -333,14 +333,15 @@ impl pin::AnalogPin {
             analog.adc_con_start();
 
             // wait 25 ADC cycles
-            let mut i: i32 = 50;
+            let mut i: i32 = 25;
             let adcsra =analog.adcsra.read();
 
             while  adcsra.get_bit(4)==true {
 
                 if i!=0{
                     i=i-1;
-                    //add delay of system clock 
+                    __nop();
+                    __nop();//add delay of system clock 
                 }else{
                     unreachable!()
                 }
