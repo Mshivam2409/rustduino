@@ -17,3 +17,7 @@
 mod llvm;
 
 pub use llvm::__nop;
+
+pub mod shift;
+
+pub mod display;

@@ -32,11 +32,11 @@ exclude = [
 
 license="AGPL-3.0-only"
 
-
 [features]
 com = []
 sensors=[]
 analog=[]
+avr=[]
 atmega328p=[]
 atmega328p-hal=[]
 atmega328p-core = ["atmega328p","atmega328p-hal"]
@@ -45,7 +45,7 @@ atmega2560p-hal=[]
 atmega2560p-core = ["atmega2560p","atmega2560p-hal"]
 atmega2560p-com=["atmega2560p-core","com"]
 atmega328p-com=["atmega328p-core","com"]
-default=["sensors","analog","atmega328p-com"]
+default=["sensors","avr","analog","atmega328p-com","atmega2560p-com"]
 
 
 [dependencies]
@@ -59,4 +59,3 @@ opt-level = 'z'  # Optimize for size.
 codegen-units = 1
 panic = 'abort'
 lto = true
-

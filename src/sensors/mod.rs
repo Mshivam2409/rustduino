@@ -17,3 +17,7 @@
 mod aht10;
 
 pub use aht10::AHT10;
+
+mod mpu6050;
+
+pub use mpu6050::MPU6050;
