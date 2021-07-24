@@ -1,5 +1,5 @@
 // RustDuino : A generic HAL implementation for Arduino Boards in Rust
-// Copyright (C) 2021  Akshit Verma, Indian Institute of Technology Kanpur
+// Copyright (C) 2021  Sanmati Pande, Indian Institute of Technology Kanpur
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published
@@ -14,132 +14,96 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>
 
-/// Power management for ATmega328p chip using sleep modes.
-
-/// Contains sleep modes.
-///
-/// Section 9.1 of ATmega328p datasheet.
-
-/// ~ Idle: This  mode makes the MCU enter idle mode, stopping the CPU but
-/// allowing the SPI, USART, analog comparator, ADC, 2-wire serial
-/// interface, Timer/Counters, watchdog, and the interrupt system
-/// to continue operating. This sleep mode basically halts clkCPU
-/// and clkFLASH, while allowing the other clocks to run.
-
-/// ~ ADCNR: ADC Noise Reducion mode makes the MCU enter ADC noise reduction
-/// mode, stopping the CPU but allowing the ADC, the external interrupts,
-/// the 2-wire serial interface address watch, Timer/Counter2, and the
-/// watchdog to continue operating (if enabled). This sleep mode
-/// basically halts clkI/O, clkCPU, and clkFLASH, while allowing the
-/// other clocks to run.
-
-/// ~ PowerDown: Power Down mode makes the MCU enter power-down mode. In this mode, the
-/// external oscillator is stopped, while the external interrupts, the
-/// 2-wire serial interface address watch, and the watchdog continue
-/// operating (if enabled). Only an external reset, a watchdog system
-/// reset, a watchdog interrupt, a brown-out reset, a 2-wire serial
-/// interface address match, an external level interrupt on INT0 or INT1,
-/// or a pin change interrupt can wake up the MCU. This sleep mode basically
-/// halts all generated clocks, allowing operation of asynchronous modules only.
-
-/// ~ PowerSave: Power Save mode is identical to Power Down, with one exception:
-///
-/// If Timer/Counter2 is enabled, it will keep running during sleep. The
-/// device can wake up from either timer overflow or output  compare event
-/// from Timer/Counter2 if the corresponding Timer/Counter2 interrupt enable
-/// bits are set in TIMSK2, and the global interrupt enable bit in SREG is set.
-
-/// ~ Standby: It is identical to Power Down, with one exception:
-///
-/// If Timer/Counter2 is enabled, it will keep running during sleep. The device
-// can wake up from either timer overflow or output compare event from
-/// Timer/Counter2 if the corresponding Timer/Counter2 interrupt enable bits
-/// are set in TIMSK2, and the global interrupt enable bit in SREG is set.
-
-/// ~ ExtStandby: Extendend Standby mode is identical to Power Save with the exception that
-/// the oscillator is kept running. From extended standby mode, the device
-/// wakes up in six clock cycles.
-
-/// Disable: Disables the sleep mode.
-pub enum SleepMode {
-    Idle,
-    ADCNR,
-    PowerDown,
-    PowerSave,
-    Standby,
-    ExtStandby,
-    Disable,
+/// Power reduction for ATmega328p chip
+/// Each of the Peripherals below refers to a bit in the PRR
+/// Setting 7th bit shuts down the TWI(2-wire serial interface) by stopping the clock to the module.
+/// Setting 6th bit shuts down the Timer/Counter2 module in synchronous mode.
+/// Setting 5th bit shuts down the Timer/Counter0 module.
+/// Setting 3rd bit shuts down the Timer/Counter1 module.
+/// Setting 2nd bit shuts down the serial peripheral interface by stopping the clock to the module.
+/// Setting 1st bit shuts down the USART by stopping the clock to the module.
+/// Setting 0th bit shuts down the ADC.
+pub enum Peripherals {
+    TWI,
+    Timer2,
+    Timer0,
+    Timer1,
+    SPI, //serial peripheral interface
+    USART0,
+    ADC,
 }
-
-/// Contains registers controlling power management.
-///
+///registers controlling power management
 /// Section 9.11 of ATmega328p Datasheet
-pub struct Sleep {
-    /// The sleep mode control register contains control bits for power management.
-    pub smcr: u8,
+///
+///Power Reduction Register control bits for power management.
+pub struct Power {
+    prr: u8,
 }
 
-impl Sleep {
-    /// Returns mutable reference to `Sleep` struct to control power management.
+impl Power {
     pub fn new() -> &'static mut Self {
-        unsafe { &mut *(0x53 as *mut Self) }
+        unsafe { &mut *(0x64 as *mut Self) }
     }
 
-    /// Enable `MCU` to enter sleep mode.
-    ///
-    /// Writes logic one to `SE` bit to make `MCU` enter sleep mode when a `SLEEP`
-    /// instruction is executed.
-    pub fn idle(&mut self) {
+    pub fn twi(&mut self) {
         unsafe {
-            core::ptr::write_volatile(&mut self.smcr, 0x1);
+            let mut ctrl_twi = core::ptr::read_volatile(&mut self.prr);
+            ctrl_twi |= 0x80;
+            core::ptr::write_volatile(&mut self.prr, ctrl_twi);
         }
     }
-
-    pub fn adcnr(&mut self) {
+    pub fn timer2(&mut self) {
         unsafe {
-            core::ptr::write_volatile(&mut self.smcr, 0x3);
+            let mut ctrl_timer2 = core::ptr::read_volatile(&mut self.prr);
+            ctrl_timer2 |= 0x40;
+            core::ptr::write_volatile(&mut self.prr, ctrl_timer2);
         }
     }
-
-    pub fn power_down(&mut self) {
+    pub fn timer0(&mut self) {
         unsafe {
-            core::ptr::write_volatile(&mut self.smcr, 0x5);
+            let mut ctrl_timer0 = core::ptr::read_volatile(&mut self.prr);
+            ctrl_timer0 |= 0x20;
+            core::ptr::write_volatile(&mut self.prr, ctrl_timer0);
         }
     }
-
-    pub fn power_save(&mut self) {
+    pub fn timer1(&mut self) {
         unsafe {
-            core::ptr::write_volatile(&mut self.smcr, 0x7);
+            let mut ctrl_timer1 = core::ptr::read_volatile(&mut self.prr);
+            ctrl_timer1 |= 0x8;
+            core::ptr::write_volatile(&mut self.prr, ctrl_timer1);
         }
     }
-
-    pub fn standby(&mut self) {
+    pub fn spi(&mut self) {
         unsafe {
-            core::ptr::write_volatile(&mut self.smcr, 0xD);
+            let mut ctrl_spi = core::ptr::read_volatile(&mut self.prr);
+            ctrl_spi |= 0x4;
+            core::ptr::write_volatile(&mut self.prr, ctrl_spi);
         }
     }
-
-    pub fn ext_standby(&mut self) {
+    pub fn usart0(&mut self) {
         unsafe {
-            core::ptr::write_volatile(&mut self.smcr, 0xF);
+            let mut ctrl_usart0 = core::ptr::read_volatile(&mut self.prr);
+            ctrl_usart0 |= 0x2;
+            core::ptr::write_volatile(&mut self.prr, ctrl_usart0);
         }
     }
-
-    pub fn disable(&mut self) {
+    pub fn adc(&mut self) {
         unsafe {
-            core::ptr::write_volatile(&mut self.smcr, 0x0);
+            let mut ctrl_adc = core::ptr::read_volatile(&mut self.prr);
+            ctrl_adc |= 0x1;
+            core::ptr::write_volatile(&mut self.prr, ctrl_adc);
         }
     }
-}
-/// Enables the Chosen ppower mode.
-pub fn enable_mode(mode: SleepMode) {
-    match mode {
-        SleepMode::Idle => Sleep::idle(&mut Sleep::new()),
-        SleepMode::ADCNR => Sleep::adcnr(&mut Sleep::new()),
-        SleepMode::PowerDown => Sleep::power_down(&mut Sleep::new()),
-        SleepMode::PowerSave => Sleep::power_save(&mut Sleep::new()),
-        SleepMode::Standby => Sleep::standby(&mut Sleep::new()),
-        SleepMode::ExtStandby => Sleep::ext_standby(&mut Sleep::new()),
-        SleepMode::Disable => Sleep::disable(&mut Sleep::new()),
+    ///Disables the clock
+    pub fn disable_clock(mode: Peripherals) {
+        match mode {
+            Peripherals::TWI => Power::twi(&mut Power::new()),
+            Peripherals::Timer2 => Power::timer2(&mut Power::new()),
+            Peripherals::Timer0 => Power::timer0(&mut Power::new()),
+            Peripherals::Timer1 => Power::timer1(&mut Power::new()),
+            Peripherals::SPI => Power::spi(&mut Power::new()),
+            Peripherals::USART0 => Power::usart0(&mut Power::new()),
+            Peripherals::ADC => Power::adc(&mut Power::new()),
+        }
     }
 }

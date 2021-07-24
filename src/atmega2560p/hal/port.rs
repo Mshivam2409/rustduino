@@ -18,6 +18,9 @@
 //! Section 13.2 to 13.4 of ATMEGA2560P datasheet.
 //! https://ww1.microchip.com/downloads/en/devicedoc/atmel-2549-8-bit-avr-microcontroller-atmega640-1280-1281-2560-2561_datasheet.pdf
 
+/// Source codes required.
+use crate::atmega2560p::hal::pin::{AnalogPin, DigitalPin};
+
 /// Core Crate functions required in the code for reading and writing to registers.
 use core::{
     ptr::{read_volatile, write_volatile},
@@ -146,49 +149,6 @@ impl Pin {
         unsafe { write_volatile(&mut (*self.port).ddr, ddr_val) }
     }
 
-    /// Toggles the appropriate bit in PINxn register so that the mode of the pin
-    /// is changed from high to low or vice versa.
-
-    pub fn toggle(&mut self) {
-        unsafe { write_volatile(&mut (*self.port).pin, 0x1 << self.pin) }
-    }
-
-    /// Set the pin to high output value.
-
-    pub fn high(&mut self) {
-        // Checks if pin number is valid.
-        if self.pin >= 8 {
-            return;
-        }
-
-        let mut p = unsafe { read_volatile(&mut (*self.port).port) }; // Reading the value of PORTxn.
-        p = p & (1 << self.pin);
-
-        let ddr_value = unsafe { read_volatile(&mut (*self.port).ddr) }; // Read the DDRxn register.
-        if p == 0 && ddr_value == (0x1 << self.pin) {
-            // Toggling the value of PORTxn, if it isn't set to high.
-            self.toggle();
-        }
-    }
-
-    /// Sets the pin to low output value.
-
-    pub fn low(&mut self) {
-        // Check if pin number is valid.
-        if self.pin >= 8 {
-            return;
-        }
-
-        let mut p = unsafe { read_volatile(&mut (*self.port).port) }; //Reading the value of PORTxn.
-        p = p & (1 << self.pin);
-
-        let ddr_value = unsafe { read_volatile(&mut (*self.port).ddr) }; // Read the DDRxn register.
-        if p != 0 && ddr_value == (0x1 << self.pin) {
-            //Toggling the value of PORTxn, if it isn't set to low.
-            self.toggle();
-        }
-    }
-
     /// Change pin mode to Output by changing the value of DDxn register.
     pub fn output(&mut self) {
         self.set_pin_mode(IOMode::Output);
@@ -197,5 +157,29 @@ impl Pin {
     /// Change pin mode to Input by changing the value of DDxn register.
     pub fn input(&mut self) {
         self.set_pin_mode(IOMode::Input);
+    }
+}
+
+impl AnalogPin {
+    /// Change pin mode to Output by changing the value of DDxn register.
+    pub fn output(&mut self) {
+        self.pin.set_pin_mode(IOMode::Output);
+    }
+
+    /// Change pin mode to Input by changing the value of DDxn register.
+    pub fn input(&mut self) {
+        self.pin.set_pin_mode(IOMode::Input);
+    }
+}
+
+impl DigitalPin {
+    /// Change pin mode to Output by changing the value of DDxn register.
+    pub fn output(&mut self) {
+        self.pin.set_pin_mode(IOMode::Output);
+    }
+
+    /// Change pin mode to Input by changing the value of DDxn register.
+    pub fn input(&mut self) {
+        self.pin.set_pin_mode(IOMode::Input);
     }
 }

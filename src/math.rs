@@ -25,13 +25,14 @@ use bit_field::BitField;
 
 use crate::delay::delay_ms;
 /// Source codes required.
-use crate::hal::analogpins::AnalogPins;
+// use crate::hal::pin::Pins;
+use crate::atmega328p::hal::pin::Pins;
 use crate::sensors::mpu6050::MPU6050;
 
 /// Structure to control the implementation of Random Number Generators
 #[repr(C, packed)]
 pub struct RandomNumberGenerator {
-    pins: AnalogPins,
+    pins: Pins,
     mpu: &'static mut MPU6050<'static>,
 }
 
@@ -40,7 +41,7 @@ impl RandomNumberGenerator {
     /// This structure contains elements for both type of number generation.
     pub fn new() -> RandomNumberGenerator {
         RandomNumberGenerator {
-            pins: AnalogPins::new(),
+            pins: Pins::new(),
             mpu: MPU6050::new(),
         }
     }
@@ -130,7 +131,7 @@ pub fn xor_rotate() -> u8 {
     for i in 1..8 {
         let a: u8 = unsafe { obj.pins.analog[0].read() } as u8;
         bits1 = xor(bits1, rotate(a, i));
-        delay_ms(100);
+        delay_ms(20);
     }
 
     bits1

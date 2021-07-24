@@ -21,14 +21,15 @@
 //! Refer to section 16,17,25 and 26 of ATMEGA2560P datasheet.
 //! https://ww1.microchip.com/downloads/en/devicedoc/atmel-2549-8-bit-avr-microcontroller-atmega640-1280-1281-2560-2561_datasheet.pdf
 
+use crate::atmega2560p::hal::pin::{AnalogPin, DigitalPin};
+/// Other source codes required.
+use crate::atmega2560p::hal::power::Power;
+use crate::avr::__nop;
+
 /// Crates to be used for the implementation.
 use bit_field::BitField;
 use core::ptr::write_volatile;
 use volatile::Volatile;
-
-/// Other source codes required.
-use crate::atmega2560p::hal::power::Power;
-use crate::atmega2560p::hal::{analogpins, digitalpins};
 
 /// Selection of reference type for the implementation of Analog Pins.
 #[derive(Clone, Copy)]
@@ -130,11 +131,11 @@ impl AnalogComparator {
     }
 }
 
-impl analogpins::AnalogPin {
+impl AnalogPin {
     /// Read the signal input to the analog pin.
     /// Any analog pin can be freely used for this purpose.
     pub fn read(&mut self) -> u32 {
-        self.anapin.input();
+        self.pin.input();
 
         let pin = self.pinno;
 
@@ -332,6 +333,18 @@ impl analogpins::AnalogPin {
             analog.adc_con_start();
 
             // wait 25 ADC cycles
+            let mut i: i32 = 25;
+            let adcsra = analog.adcsra.read();
+
+            while adcsra.get_bit(4) == true {
+                if i != 0 {
+                    i = i - 1;
+                    __nop();
+                    __nop(); //add delay of system clock
+                } else {
+                    unreachable!()
+                }
+            }
             let mut a: u32 = 0;
             a.set_bits(0..8, analog.adcl.read() as u32);
 
@@ -344,13 +357,13 @@ impl analogpins::AnalogPin {
     }
 }
 
-impl digitalpins::DigitalPin {
+impl DigitalPin {
     /// This is used to write a PWM wave to a digital pin.
     /// Only 2-13 and 44-46 digital pins can be used in this function, other pins will lead to crash.
     /// All pin except 4 and 13 are set to give output at 490 hertz.
     /// pin 4 and 13 will give output at 980 hertz.
-    pub fn analog_write(&mut self, value1: u8) {
-        self.digipin.output();
+    pub fn write(&mut self, value1: u8) {
+        self.pin.output();
 
         let pin1 = self.pinno;
 

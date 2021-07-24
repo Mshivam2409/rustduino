@@ -2,16 +2,17 @@
 #![no_main]
 #![deny(warnings)]
 
-use rustduino::atmega328p::hal as arduino_uno;
+use rustduino::hal::pin::Pins;
+use rustduino::hal::watchdog::WatchDog;
 
 #[no_mangle]
 pub extern "C" fn main() {
     // Disable watchdog
-    let wdog = arduino_uno::watchdog::Watchdog::new();
+    let wdog = unsafe { WatchDog::new() };
     wdog.disable();
 
     // Get all pins at once
-    let mut pins = arduino_uno::pins::Pins::new();
+    let mut pins = Pins::new();
 
     //Set the digital pin 13 as an output pin.
     pins.digital[13].set_output();

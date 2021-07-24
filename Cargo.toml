@@ -35,6 +35,7 @@ license="AGPL-3.0-only"
 [features]
 com = []
 sensors=[]
+analog=[]
 atmega328p=[]
 atmega328p-hal=[]
 atmega328p-core = ["atmega328p","atmega328p-hal"]
@@ -42,7 +43,8 @@ atmega2560p=[]
 atmega2560p-hal=[]
 atmega2560p-core = ["atmega2560p","atmega2560p-hal"]
 atmega2560p-com=["atmega2560p-core","com"]
-default=["sensors","atmega2560p-com"]
+atmega328p-com=["atmega328p-core","com"]
+default=["sensors","analog","atmega328p-com"]
 
 
 [dependencies]

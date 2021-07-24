@@ -24,11 +24,11 @@ pub mod atmega2560p {
 
         pub mod pin;
 
+        #[cfg(feature = "analog")]
         pub mod analog;
 
-        pub mod digitalpins;
-
-        pub mod analogpins;
+        #[cfg(feature = "analog")]
+        pub mod digital;
     }
 
     /// Communication Protocols
@@ -59,21 +59,21 @@ pub mod atmega328p {
     pub mod hal {
         pub mod port;
 
-        pub mod pins;
+        pub mod pin;
 
         pub mod watchdog;
 
-        pub mod interrupt;
+        pub mod interrupts;
+
+        pub mod sleep_mode;
 
         pub mod power;
 
-        pub mod gating;
-
+        #[cfg(feature = "analog")]
         pub mod analog;
 
-        pub mod analogpins;
-
-        pub mod digitalpins;
+        #[cfg(feature = "analog")]
+        pub mod digital;
     }
 
     #[cfg(feature = "com")]

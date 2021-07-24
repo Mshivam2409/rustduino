@@ -3,7 +3,7 @@
 #![deny(warnings)]
 
 use rustduino::sensors::mpu6050::*;
-use rustduino::atmega2560p::hal::watchdog::*;
+use rustduino::hal::watchdog::*;
 use rustduino::delay::delay_ms;
 
 #[no_mangle]
