@@ -18,12 +18,14 @@
 //! Section 13.2 to 13.4 of ATMEGA2560P datasheet.
 //! https://ww1.microchip.com/downloads/en/devicedoc/atmel-2549-8-bit-avr-microcontroller-atmega640-1280-1281-2560-2561_datasheet.pdf
 
+/// Source codes required.
+use crate::atmega2560p::hal::pin::{AnalogPin, DigitalPin};
+
 /// Core Crate functions required in the code for reading and writing to registers.
 use core::{
     ptr::{read_volatile, write_volatile},
     usize,
 };
-use crate::atmega2560p::hal::pin;
 
 /// Represents the name of the ports in ATMEGA2560P , can vary from A-L leaving I.
 #[derive(Clone, Copy)]
@@ -142,7 +144,6 @@ impl Pin {
         unsafe { write_volatile(&mut (*self.port).ddr, ddr_val) }
     }
 
-
     /// Change pin mode to Output by changing the value of DDxn register.
     pub fn output(&mut self) {
         self.set_pin_mode(IOMode::Output);
@@ -154,20 +155,7 @@ impl Pin {
     }
 }
 
-impl pin::AnalogPin{
-
-    /// Change pin mode to Output by changing the value of DDxn register.
-    pub fn output(&mut self) {
-        self.pin.set_pin_mode(IOMode::Output);
-    }
-
-    /// Change pin mode to Input by changing the value of DDxn register.
-    pub fn input(&mut self) {
-        self.pin.set_pin_mode(IOMode::Input);
-    }
-}
-impl pin::DigitalPin{
-
+impl AnalogPin {
     /// Change pin mode to Output by changing the value of DDxn register.
     pub fn output(&mut self) {
         self.pin.set_pin_mode(IOMode::Output);
@@ -179,3 +167,14 @@ impl pin::DigitalPin{
     }
 }
 
+impl DigitalPin {
+    /// Change pin mode to Output by changing the value of DDxn register.
+    pub fn output(&mut self) {
+        self.pin.set_pin_mode(IOMode::Output);
+    }
+
+    /// Change pin mode to Input by changing the value of DDxn register.
+    pub fn input(&mut self) {
+        self.pin.set_pin_mode(IOMode::Input);
+    }
+}
