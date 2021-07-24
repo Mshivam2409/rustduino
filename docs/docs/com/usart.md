@@ -82,8 +82,8 @@ Parity is optional i.e. can be odd, even or no parity bit.
 Stop bit can be one bit or two bit.Function to set the number of stop bits in the USART.
 
  ``` rust
-     fn set_stop(&self,stop : UsartStop) {add -A
-     
+     fn set_stop(&self,stop : UsartStop) {/* fields omitted */ }
+
 ```
 #### Impl `set_frame` for `UsartObject`
  Set the frame format for USART. A serial frame is defined to be one character of data bits with synchronization bits (start and stop bits), and optionally a parity bit for error checking. The USART accepts all 30 combinations of the following as valid frame formats.
