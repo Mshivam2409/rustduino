@@ -5,7 +5,7 @@ title: USART
 ---
 
 
-## Functioning of USART in Atmega2560p
+## USART in Atmega2560p
 ---
 
 ### Serial
@@ -32,7 +32,7 @@ through ATMEGA2560P device. Each USARTn ( n=0,1,2,3 ) is controlled by a total o
 ```rust
    pub unsafe fn new(num: UsartNum) -> &'static mut Usart {/* fields omitted */ }
 ```
-#### Following contains the Usart as a Raw Pointer along with it's name.
+Following contains the Usart as a Raw Pointer along with it's name.
 
 ```rust
    pub struct UsartObject {/* fields omitted */ }
@@ -82,7 +82,8 @@ Parity is optional i.e. can be odd, even or no parity bit.
 Stop bit can be one bit or two bit.Function to set the number of stop bits in the USART.
 
  ``` rust
-     fn set_stop(&self,stop : UsartStop) {/* fields omitted */ }
+     fn set_stop(&self,stop : UsartStop) {add -A
+     
 ```
 #### Impl `set_frame` for `UsartObject`
  Set the frame format for USART. A serial frame is defined to be one character of data bits with synchronization bits (start and stop bits), and optionally a parity bit for error checking. The USART accepts all 30 combinations of the following as valid frame formats.
@@ -100,10 +101,13 @@ Stop bit can be one bit or two bit.Function to set the number of stop bits in th
 ```
 
 #### Impl `initialize` for `UsartObject`
+
 Following is the cumulative function for initializing a particular USART and it will take all the necessary details about the mode in which the USART pin is to be used.
 
 ``` rust
-    pub fn initialize(&mut self,mode : UsartModes,baud : i64,stop : UsartStop,size : UsartDataSize,parity : UsartParity) {/* fields omitted */ }
+    pub fn initialize
+        (&mut self,mode : UsartModes,baud : i64,stop : UsartStop,size : UsartDataSize,parity : UsartParity)
+        {/* fields omitted */ }
 ```
 
 
