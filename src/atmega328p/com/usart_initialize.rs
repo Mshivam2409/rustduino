@@ -14,7 +14,6 @@
 //     You should have received a copy of the GNU Affero General Public License
 //     along with this program.  If not, see <https://www.gnu.org/licenses/>
 
-
 use crate::atmega328p::hal::gating;
 use crate::atmega328p::hal::interrupt;
 use crate::atmega328p::hal::port;
@@ -142,7 +141,6 @@ impl Usart {
         }
     }
 
-
     ///  checks the mode of the USART.
     /// Returns 0 for asynchronous and 1 for synchronous.
     fn get_mode(&mut self) -> bool {
@@ -156,7 +154,7 @@ impl Usart {
     }
 
     /// setting the clock polarity mode which is of use in the recieve and transmission implementation of USART.
-    
+
     pub fn set_polarity(&mut self, mode: UsartPolarity) {
         if self.get_mode() == false {
             self.ucsrc.update(|src| {

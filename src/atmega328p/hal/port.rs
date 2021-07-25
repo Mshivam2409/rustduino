@@ -183,4 +183,15 @@ impl Pin {
     pub fn set_output(&mut self) {
         self.set_mode(IOMode::Output);
     }
+
+    pub fn read(&mut self) -> u8 {
+        let port_val = unsafe { read_volatile(&mut (*self.port).port) };
+
+        // Check if value of PORTxn is already high, toggle if it isn't.
+        if port_val & (1 << self.pin) == 0 {
+            return 0;
+        } else {
+            return 1;
+        }
+    }
 }
