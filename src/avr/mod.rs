@@ -21,4 +21,3 @@ pub use llvm::__nop;
 pub mod shift;
 
 pub mod display;
-pub mod sevenseg;
