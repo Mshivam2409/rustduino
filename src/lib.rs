@@ -2,6 +2,8 @@
 #![deny(warnings)]
 #![feature(asm)]
 #![feature(llvm_asm)]
+#![allow(unused_assignments)]
+#![allow(dead_code)]
 
 /// Library for AVR ATMEGA2560P Micro-controller
 #[cfg(feature = "atmega2560p")]

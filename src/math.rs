@@ -22,7 +22,7 @@
 
 use crate::delay::delay_ms;
 use crate::hal::pin::Pins;
-use crate::mpu6050::{MPURangeT, MPUdpsT, MPU6050};
+use crate::sensors::mpu6050::{MPURangeT, MPUdpsT, MPU6050};
 use bit_field::BitField;
 
 /// Structure to control the implementation of Random Number Generators.
@@ -196,7 +196,7 @@ pub fn push_right(val: u8, change: u8) -> u8 {
 /// # Returns
 /// * `a tuple of 6 u8's` - The x,y,z axes accelerations and gyroscopic detections by MPU6050 sensor respectively.
 pub fn generate_mpu() -> (u8, u8, u8, u8, u8, u8) {
-    let mut obj = RandomNumberGenerator::new();
+    let obj = RandomNumberGenerator::new();
 
     obj.mpu
         .begin(MPUdpsT::MPU6050Scale250DPS, MPURangeT::MPU6050Range2G);

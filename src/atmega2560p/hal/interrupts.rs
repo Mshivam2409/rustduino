@@ -16,7 +16,7 @@
 
 //! Global interrupts configured in the ATMEGA2560P chip is controlled here.
 //! Section 7.4 of the manual
-//! https://ww1.microchip.com/downloads/en/devicedoc/atmel-2549-8-bit-avr-microcontroller-atmega640-1280-1281-2560-2561_datasheet.pdf
+//! `<https://ww1.microchip.com/downloads/en/devicedoc/atmel-2549-8-bit-avr-microcontroller-atmega640-1280-1281-2560-2561_datasheet.pdf>`
 
 /// Crates required in the code for reading and writing to registers.
 use core::ptr::{read_volatile, write_volatile};

@@ -20,7 +20,7 @@
 //! After setting into a particular USART the functions are available to generate the clock with given
 //! frequency and baud rate. After which the frame for data tracking is set using various frame modes.
 //! See the section 22 of ATMEGA2560P datasheet.
-//! https://ww1.microchip.com/downloads/en/devicedoc/atmel-2549-8-bit-avr-microcontroller-atmega640-1280-1281-2560-2561_datasheet.pdf
+//! `<https://ww1.microchip.com/downloads/en/devicedoc/atmel-2549-8-bit-avr-microcontroller-atmega640-1280-1281-2560-2561_datasheet.pdf>`
 
 /// Other source code files to be used.
 use crate::atmega2560p::hal::interrupts;

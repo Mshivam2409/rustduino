@@ -16,7 +16,7 @@
 
 //! Control on Watchdog timer in ATMEGA2560P
 //! Section 12.5 and 28.6 of manual
-//! https://ww1.microchip.com/downloads/en/devicedoc/atmel-2549-8-bit-avr-microcontroller-atmega640-1280-1281-2560-2561_datasheet.pdf
+//! `<https://ww1.microchip.com/downloads/en/devicedoc/atmel-2549-8-bit-avr-microcontroller-atmega640-1280-1281-2560-2561_datasheet.pdf>`
 
 /// Crates required in the code for reading and writing to registers.
 use crate::atmega2560p::hal::interrupts;

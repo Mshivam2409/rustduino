@@ -17,7 +17,7 @@
 //! Generic implementation of power control through clock gating in ATMEGA2560P.
 //! Section 11.10.2 and 11.10.3 of the manual.
 //! Also references from Section 11.8.
-//! https://ww1.microchip.com/downloads/en/devicedoc/atmel-2549-8-bit-avr-microcontroller-atmega640-1280-1281-2560-2561_datasheet.pdf
+//! `<https://ww1.microchip.com/downloads/en/devicedoc/atmel-2549-8-bit-avr-microcontroller-atmega640-1280-1281-2560-2561_datasheet.pdf>`
 
 /// Crates required in the code for reading and writing to registers.
 use core::ptr::{read_volatile, write_volatile};

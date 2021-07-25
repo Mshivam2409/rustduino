@@ -19,7 +19,7 @@
 //! use to transmit data using USART on ATMEGA2560P.
 //! This file combines all the functions in other USART source code to make useful functions.
 //! See the section 22 of ATMEGA2560P datasheet.
-//! https://ww1.microchip.com/downloads/en/devicedoc/atmel-2549-8-bit-avr-microcontroller-atmega640-1280-1281-2560-2561_datasheet.pdf
+//! `<https://ww1.microchip.com/downloads/en/devicedoc/atmel-2549-8-bit-avr-microcontroller-atmega640-1280-1281-2560-2561_datasheet.pdf>`
 
 /// Crates which would be used in the implementation.
 use crate::atmega2560p::com::serial::Serial;

@@ -206,9 +206,9 @@ pub enum MPUdlpfT {
 }
 
 pub struct MPU6050<'a> {
-    address: u8,
-    accel_output: FixedSliceVec<'a, f32>,
-    gyro_output: FixedSliceVec<'a, f32>,
+    pub address: u8,
+    pub accel_output: FixedSliceVec<'a, f32>,
+    pub gyro_output: FixedSliceVec<'a, f32>,
 }
 
 impl<'a> MPU6050<'a> {

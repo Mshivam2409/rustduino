@@ -16,7 +16,7 @@
 //! This file contains functions to enable transmission through the USART and do the transmission.
 //! Flushing data in case of error and writing string are some complex implementations provided.
 //! See the section 22 of ATMEGA2560P datasheet.
-//! https://ww1.microchip.com/downloads/en/devicedoc/atmel-2549-8-bit-avr-microcontroller-atmega640-1280-1281-2560-2561_datasheet.pdf
+//! `<https://ww1.microchip.com/downloads/en/devicedoc/atmel-2549-8-bit-avr-microcontroller-atmega640-1280-1281-2560-2561_datasheet.pdf>`
 
 /// Crates which would be used in the implementation.
 /// We will be using standard volatile and bit_field crates now for a better read and write.

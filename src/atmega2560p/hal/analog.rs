@@ -19,12 +19,12 @@
 //! This code implements the Analog Read function to read from the buffer using analog signals.
 //! This code implements the Analog Write function to write into the buffer using analog signals.
 //! Refer to section 16,17,25 and 26 of ATMEGA2560P datasheet.
-//! https://ww1.microchip.com/downloads/en/devicedoc/atmel-2549-8-bit-avr-microcontroller-atmega640-1280-1281-2560-2561_datasheet.pdf
+//! `<https://ww1.microchip.com/downloads/en/devicedoc/atmel-2549-8-bit-avr-microcontroller-atmega640-1280-1281-2560-2561_datasheet.pdf>`
 
 use crate::atmega2560p::hal::pin::{AnalogPin, DigitalPin};
 /// Other source codes required.
 use crate::atmega2560p::hal::power::Power;
-use crate::avr;
+use crate::avr::__nop;
 
 /// Crates to be used for the implementation.
 use bit_field::BitField;

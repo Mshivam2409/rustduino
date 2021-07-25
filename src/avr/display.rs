@@ -14,92 +14,126 @@
 //     You should have received a copy of the GNU Affero General Public License
 //     along with this program.  If not, see <https://www.gnu.org/licenses/>
 
-use core::i32;
+use core::usize;
 
 use crate::avr::shift::*;
-use crate::delay::delay_ms;
+use crate::hal::pin::Pins;
+use crate::hal::port::*;
+//use crate::hal::pin::*;
+//use crate::{com, delay::delay_ms};
 
-const decpt: bool = true;
-const common: char = 'a';
+// makes pin struct given pin number
+fn make_pin(pin: usize) -> Pin {
+    match pin {
+        0 => return Pin::new(PortName::D, 0).unwrap(),
+        1 => return Pin::new(PortName::D, 1).unwrap(),
+        2 => return Pin::new(PortName::D, 2).unwrap(),
+        3 => return Pin::new(PortName::D, 3).unwrap(),
+        4 => return Pin::new(PortName::D, 4).unwrap(),
+        5 => return Pin::new(PortName::D, 5).unwrap(),
+        6 => return Pin::new(PortName::D, 6).unwrap(),
+        7 => return Pin::new(PortName::D, 7).unwrap(),
 
-pub struct Pinsegment {
-    datapin_no: u8,
-    latchpin_no: u8,
-    clockpin_no: u8,
+        8 => return Pin::new(PortName::B, 8).unwrap(),
+        9 => return Pin::new(PortName::B, 9).unwrap(),
+        10 => return Pin::new(PortName::B, 10).unwrap(),
+        11 => return Pin::new(PortName::B, 11).unwrap(),
+        12 => return Pin::new(PortName::B, 12).unwrap(),
+        13 => return Pin::new(PortName::B, 13).unwrap(),
+
+        _ => unreachable!(),
+    }
 }
 
-impl Pinsegment {
-    pub fn setup(&mut self) {
-        datapin = make_pin(self.datapin_no);
-        latchpin = make_pin(self.latchpin_no);
-        clockpin = make_pin(self.clockpin_no);
+pub fn setup(
+    datapin: usize,
+    clockpin: usize,
+    latchpin: usize,
+    decpt: bool,
+    common_anode: bool,
+    value: u8,
+) {
+    let mut data = make_pin(datapin);
+    let mut clock = make_pin(clockpin);
+    let mut latch = make_pin(latchpin);
 
-        datapin.set_pin_mode(Output);
-        latchpin.set_pin_mode(Output);
-        clockpin.set_pin_mode(Output);
+    data.set_pin_mode(IOMode::Output);
+    latch.set_pin_mode(IOMode::Output);
+    clock.set_pin_mode(IOMode::Output);
+
+    out(datapin, clockpin, latchpin, decpt, common_anode, value);
+}
+
+pub fn myfn_update_display(
+    datapin: usize,
+    clockpin: usize,
+    latchpin: usize,
+    _decpt: bool,
+    common_anode: bool,
+    mut value: u8,
+) {
+    let pins = Pins::new();
+    let mut latch = pins.digital[latchpin];
+
+    if common_anode {
+        //if using a common anode display
+        value = value ^ 0b11111111; // then flip all bits using XOR
     }
+    latch.low(); // prepare shift register for data
+    shift_out(datapin, clockpin, BitOrder::LSBFIRST, value); // send data
+    latch.high(); //update display
+}
 
-    pub fn loop_run(&mut self) {
-        decpt = !decpt;
-        for i in 0..16 {
-            let mut bits: u8 = self.myfnNumToBits(i);
-            if (decpt) {
-                bits = bits | B00000001;
-            }
-            self.myfnUpdateDisplay(bits); // display alphanumeric digit
-            delay_ms(500); // pause for 1/2 second
-        }
+pub fn out(
+    datapin: usize,
+    clockpin: usize,
+    latchpin: usize,
+    decpt: bool,
+    common_anode: bool,
+    value: u8,
+) {
+    let mut bits: u8 = myfn_num_to_bits(value);
+    if decpt {
+        bits = bits | 0b00000001; // add decimal point if needed
     }
+    myfn_update_display(datapin, clockpin, latchpin, decpt, common_anode, value);
+    // display alphanumeric digit
+}
 
-    pub fn myfnUpdateDisplay(eightBits: u8) {
-        datapin = make_pin(self.datapin_no);
-        latchpin = make_pin(self.latchpin_no);
-        clockpin = make_pin(self.clockpin_no);
-
-        if (common = 'a') {
-            //if using a common anode display
-            eightBits = eightBits ^ B11111111; // then flip all bits using XOR
-        }
-        latchpin.low(); // prepare shift register for data
-        shift_out(datapin, clockpin, LSBFIRST, eightBits); // send data
-        latchpin.high(); //update display
-    }
-
-    pub fn myfnNumToBits(somenumber: i32) -> u8 {
-        if somenumber == 0 {
-            return B11111100;
-        } else if somenumber == 1 {
-            return B01100000;
-        } else if somenumber == 2 {
-            return B11011010;
-        } else if somenumber == 3 {
-            return B11110010;
-        } else if somenumber == 4 {
-            return B01100110;
-        } else if somenumber == 5 {
-            return B10110110;
-        } else if somenumber == 6 {
-            return B10111110;
-        } else if somenumber == 7 {
-            return B11100000;
-        } else if somenumber == 8 {
-            return B11111110;
-        } else if somenumber == 9 {
-            return B11110110;
-        } else if somenumber == 10 {
-            return B11101110; // 10=='A'
-        } else if somenumber == 11 {
-            return B00111110; // Hexidecimal B
-        } else if somenumber == 12 {
-            return B10011100; // Hexidecimal C or use for Centigrade
-        } else if somenumber == 13 {
-            return B01111010; // Hexidecimal D
-        } else if somenumber == 14 {
-            return B10011110; // Hexidecimal E
-        } else if somenumber == 15 {
-            return B10001110; // Hexidecimal F or use for Fahrenhei
-        } else {
-            return B10010010; // Error condition, displays three vertical bars
-        }
+pub fn myfn_num_to_bits(somenumber: u8) -> u8 {
+    if somenumber == 0 {
+        return 0b11111100;
+    } else if somenumber == 1 {
+        return 0b01100000;
+    } else if somenumber == 2 {
+        return 0b11011010;
+    } else if somenumber == 3 {
+        return 0b11110010;
+    } else if somenumber == 4 {
+        return 0b01100110;
+    } else if somenumber == 5 {
+        return 0b10110110;
+    } else if somenumber == 6 {
+        return 0b10111110;
+    } else if somenumber == 7 {
+        return 0b11100000;
+    } else if somenumber == 8 {
+        return 0b11111110;
+    } else if somenumber == 9 {
+        return 0b11110110;
+    } else if somenumber == 10 {
+        return 0b11101110; //10=='A'
+    } else if somenumber == 11 {
+        return 0b00111110; // Hexidecimal B
+    } else if somenumber == 12 {
+        return 0b10011100; // Hexidecimal C or use for Centigrade
+    } else if somenumber == 13 {
+        return 0b01111010; // Hexidecimal D
+    } else if somenumber == 14 {
+        return 0b10011110; // Hexidecimal E
+    } else if somenumber == 15 {
+        return 0b10001110; // Hexidecimal F or use for Fahrenhei
+    } else {
+        return 0b10010010; // Error condition, displays three vertical bars
     }
 }

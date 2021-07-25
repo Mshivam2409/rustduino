@@ -22,6 +22,7 @@ use crate::atmega2560p::hal::port::*;
 ///  8 pins except port G which controls 6 pins. All 8 pins of port F and K are Analog pins and total 54 digital pins
 ///  are available and the rest 16 pins are for various other purposes.
 ///  This structure declaration contains the space to control all the 86 pins in one memory mapped I/O.
+#[derive(Clone, Copy)]
 pub struct Pins {
     /// All 16 analog pins.
     pub analog: [AnalogPin; 16],
@@ -30,12 +31,14 @@ pub struct Pins {
 }
 
 /// This struct contain digital pin and its corresponding digital pin no.
+#[derive(Clone, Copy)]
 pub struct DigitalPin {
     pub pin: Pin,
     pub pinno: u32,
 }
 
 /// This struct contain analog pin and its corresponding analog pin no.
+#[derive(Clone, Copy)]
 pub struct AnalogPin {
     pub pin: Pin,
     pub pinno: u32,

@@ -16,7 +16,7 @@
 
 //! Various pins and ports in the ATMEGA2560P chip is controlled here.
 //! Section 13.2 to 13.4 of ATMEGA2560P datasheet.
-//! https://ww1.microchip.com/downloads/en/devicedoc/atmel-2549-8-bit-avr-microcontroller-atmega640-1280-1281-2560-2561_datasheet.pdf
+//! `<https://ww1.microchip.com/downloads/en/devicedoc/atmel-2549-8-bit-avr-microcontroller-atmega640-1280-1281-2560-2561_datasheet.pdf>`
 
 /// Source codes required.
 use crate::atmega2560p::hal::pin::{AnalogPin, DigitalPin};
@@ -61,6 +61,7 @@ pub struct Port {
 }
 
 /// The structure Pin contains the address of the port to which the pin belongs and the pin's number.
+#[derive(Clone, Copy)]
 pub struct Pin {
     pub port: *mut Port,
     pub pin: usize,

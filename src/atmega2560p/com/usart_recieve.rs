@@ -17,7 +17,7 @@
 //! This file contains the code for recieving data through a initialized USART.
 //! This has functions to put USART in reciever mode and then read the data from the appropriate location.
 //! See the section 22 of ATMEGA2560P datasheet.
-//! https://ww1.microchip.com/downloads/en/devicedoc/atmel-2549-8-bit-avr-microcontroller-atmega640-1280-1281-2560-2561_datasheet.pdf
+//! `<https://ww1.microchip.com/downloads/en/devicedoc/atmel-2549-8-bit-avr-microcontroller-atmega640-1280-1281-2560-2561_datasheet.pdf>`
 
 /// Other source code files to be used.
 use crate::atmega2560p::com::usart_initialize::UsartObject;
