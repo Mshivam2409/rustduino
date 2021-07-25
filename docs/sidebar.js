@@ -34,17 +34,23 @@ module.exports = {
     {
       type: 'category',
       label: 'Arduino',
-      items: ['arduino/index', 'arduino/atmega328p', 'arduino/atmega2560p']
+      items: [
+        'arduino/index', 
+        'arduino/atmega328p', 
+        'arduino/atmega2560p'
+      ]
     },
     {
       type: 'category',
       label: 'Core Concepts',
-      items: ['core/watchdog', 'core/power', 'core/ports', 'core/gpio', 'core/sleep_mode']
-    },
-    {
-      type: 'category',
-      label: 'Hardware Abstraction Layer',
-      items: ['hal/hal']
+      items: [
+        'core/interrupts',
+        'core/watchdog', 
+        'core/power', 
+        'core/ports', 
+        'core/gpio', 
+        'core/sleep_mode'
+      ]
     },
     {
       type: 'category',
@@ -69,7 +75,12 @@ module.exports = {
     {
       type: 'category',
       label: 'Guides',
-      items: ['guides/blink','guides/print','guides/writing_string','guides/analog_io']
+      items: [
+        'guides/blink',
+        'guides/print',
+        'guides/writing_string',
+        'guides/analog_io'
+      ]
     },
     {
       type: 'doc',
