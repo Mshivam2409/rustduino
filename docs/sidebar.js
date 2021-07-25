@@ -54,7 +54,7 @@ module.exports = {
     {
       type:'category',
       label:'Communication',
-      items:['com/i2c', 'com/usart', 'com/usart2560p']
+      items:['com/i2c', 'com/usart', 'com/usart2560']
     },
     {
       type:'category',
