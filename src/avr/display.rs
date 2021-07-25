@@ -14,6 +14,8 @@
 //     You should have received a copy of the GNU Affero General Public License
 //     along with this program.  If not, see <https://www.gnu.org/licenses/>
 
+use core::i32;
+
 use crate::avr::shift::*;
 use crate::delay::delay_ms;
 
@@ -63,7 +65,7 @@ impl Pinsegment {
         latchpin.high(); //update display
     }
 
-    pub fn myfnNumToBits(somenumber: int) -> u8 {
+    pub fn myfnNumToBits(somenumber: i32) -> u8 {
         if somenumber == 0 {
             return B11111100;
         } else if somenumber == 1 {

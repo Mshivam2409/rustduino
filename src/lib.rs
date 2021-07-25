@@ -98,11 +98,10 @@ pub use atmega328p::*;
 pub mod sensors;
 
 /// Low level control for AVR Chips
-#[cfg(feature = "avr")]
 pub mod avr;
 
 /// Random Number Generation Features
-#[cfg(feature = "random")]
+#[cfg(feature = "math")]
 pub mod math;
 
 pub mod config;
