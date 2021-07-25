@@ -35,7 +35,7 @@ Any of the ADC input pins, as well as GND and a fixed bandgap voltage reference,
 be selected as single ended inputs to the ADC.The ADC generates a 10-bit result which
 is presented in the ADC Data Registers, ADCH and ADCL.
 
-## Starting a conversion
+## Analog Read
 
 Before enabling ADC, set the PRADC(Power Reduction ADC bit) to zero in prr0 register 
 to disable it.
@@ -47,15 +47,6 @@ to disable it.
             write_volatile(&mut pow.prr0, pow.prr0 & (254));
         }
     }
-```
-
-We also need to select the voltage reference for your Analog to Digital Converter, it 
-could be internal or external.depending on what you want to select you could by 
-manipulating the REFS bits in the ADMUX Register.
-```rust
-            analog.admux.update(|admux| {
-                admux.set_bits(6..8, **);
-            });
 ```
 
 Then to enable the Analog to digital converter, write one to the ADEN bit in the 
@@ -169,3 +160,43 @@ disable the ADC by writing 0 to ADEN bit.
         });
 ```
 
+The Function to analog read is inside AnalogPin impl, it gives u32 as return value with 10 
+of its bits as the result of conversion.
+```rust
+pub fn read(&mut self) -> u32
+```
+## Analog Reference
+
+We also need to select the voltage reference for your Analog to Digital Converter, it 
+could be internal or external.depending on what you want to select you could by 
+manipulating the REFS bits in the ADMUX Register. It takes parameter which Reference
+we want DEFAULT, Internal 1.1V, Internal 2.56V or External. 
+```rust
+pub fn analog_reference(reftype: RefType) {
+    let analog = unsafe { Analog::new() };
+    match reftype {
+        RefType::DEFAULT => {
+            analog.admux.update(|admux| {
+                admux.set_bits(6..8, 0b01);
+            });
+        }
+        RefType::INTERNAL1V1 => {
+            analog.admux.update(|admux| {
+                admux.set_bits(6..8, 0b10);
+            });
+        }
+        RefType::INTERNAL2V56 => {
+            analog.admux.update(|admux| {
+                admux.set_bits(6..8, 0b11);
+            });
+        }
+        RefType::EXTERNAL => {
+            analog.admux.update(|admux| {
+                admux.set_bits(6..8, 0b00);
+            });
+        }
+    }
+}
+```
+
+## Analog write
