@@ -153,8 +153,8 @@ pin.
 To enable Data Receiver, write 1 to Receive Enable (RXENn) bit i.e BIT 4 in the
 UCSRnB Register. This function enables the reciever function of microcontroller, whithout enabling it no communication is possible.
 ``` rust
-    pub unsafe fn recieve_enable(&mut self) {
-        (*self.usart).ucsrb.update(|ucsrb| {
+    pub fn recieve_enable(&mut self) {
+         self.ucsrb.update(|ucsrb| {
             ucsrb.set_bit(4, true);
         });
     }
