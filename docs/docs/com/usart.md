@@ -10,7 +10,7 @@ title: USART
 
 ### Serial
 ---
-This struct contains USART0 in atmega328p. Each USART can be accesed through Serial.usart[n], where 0<= n <=3.
+This struct contains USART0 in atmega328p.
 ```rust
    pub struct Serial { pub usart: [&'static mut Usart; 1],}
 ```
@@ -42,7 +42,7 @@ Following contains the Usart as a Raw Pointer along with it's name.
 
  #### Impl `disable` & `enable`for `UsartObject`
 
-For interrupt driven USART operation, the Global Interrupt Flag should be cleared (and interrupts globally disabled) when doing the
+For interrupt driven USART operation, the Interrupt Flag should be cleared (and interrupts globally disabled) when doing the
 initialization.
 
 ```rust
@@ -50,7 +50,7 @@ initialization.
         unsafe {interrupt::Interrupt::disable(&mut interrupt::Interrupt::new());}
     }
    fn enable(&mut self) {
-        unsafe {interrupt::Interrupt::enable(&mut interrupt::GlobalInterrupt::new());}
+        unsafe {interrupt::Interrupt::enable(&mut interrupt::Interrupt::new());}
     }
 ```
 
@@ -59,7 +59,7 @@ initialization.
 Clock Generation is one of the initialization steps for the USART. If the USART is in Asynchronous mode or Master Synchronous mode then a internal clock generator is used while for Slave Synchronous mode we will use a external clock generator. Set the baud rate frequency for USART.Baud rate settings is used to set the clock for USART.
 
 ``` rust
-   fn set_clock(&mut self,baud : i64,mode : UsartModes) {/* fields omitted */ }
+   fn set_clock(&mut self,baud: i64,mode: UsartModes) {/* fields omitted */ }
 ```
 
 #### Impl `set_size` for `UsartObject`
@@ -68,20 +68,20 @@ The UCSZn2 in UCSRnB bits combined with the UCSZn1 bit in UCSRnC sets the number
 frame the Receiver and Transmitter use. UCSZn2 is 1 for 9 bit data else 0 for 5,6,7,8 bit data.
 Function set the limit of data to be handled by USART.
 ``` rust
-    fn set_size(&mut self,size : UsartDataSize) {/* fields omitted */ }
+    fn set_size(&mut self,size: UsartDataSize) {/* fields omitted */ }
 ```
 #### Impl `set_parity` for `UsartObject`
 
 Parity is optional i.e. can be odd, even or no parity bit.
 
 ``` rust
-    fn set_parity(&mut self,parity : UsartParity) {/* fields omitted */ }
+    fn set_parity(&mut self,parity: UsartParity) {/* fields omitted */ }
 ```
 #### Impl `set_stop` for `UsartObject`
 Stop bit can be one bit or two bit.Function to set the number of stop bits in the USART.
 
  ``` rust
-     fn set_stop(&mut self,stop : UsartStop) {/* fields omitted */ }
+     fn set_stop(&mut self,stop: UsartStop) {/* fields omitted */ }
 
 ```
 #### Impl `set_frame` for `UsartObject`
@@ -92,7 +92,7 @@ Stop bit can be one bit or two bit.Function to set the number of stop bits in th
    -  1 or 2 stop bits
  
  ``` rust 
-     fn set_frame(&mut self,stop : UsartStop,size : UsartDataSize,parity : UsartParity) {
+     fn set_frame(&mut self,stop: UsartStop,size: UsartDataSize,parity: UsartParity) {
         self.set_size(size);
         self.set_parity(parity);
         self.set_stop(stop);
