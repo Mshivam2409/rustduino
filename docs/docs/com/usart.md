@@ -98,3 +98,107 @@ Stop bit can be one bit or two bit.Function to set the number of stop bits in th
         self.set_stop(stop);
      }
 ```
+
+
+#### Impl `initialize` for `UsartObject`
+
+Following is the cumulative function for initializing a particular USART and it will take all the necessary details about the mode in which the USART pin is to be used.
+
+``` rust
+    pub fn initialize
+        (&mut self,mode : UsartModes,baud : i64,stop : UsartStop,size : UsartDataSize,parity : UsartParity)
+        {/* fields omitted */ }
+```
+
+
+### Data Transmission
+----
+
+To Transmit data the you need to enable the USART Transmitter by
+setting TXEN bit to 1 in the UCSRnB Register. When the Transmitter
+is enabled the TxDn functions as the Transmitter's serial output. 
+
+#### Impl `transmit_enable` for `UsartObject`
+``` rust
+    pub fn transmit_enable(&mut self) {
+        self.ucsrb.update(|srb| {
+            srb.set_bit(3, true);
+        });
+    }
+```
+#### Impl `transmit_data` for `UsartObject`
+For sending Frames with 5-8 Data bits Transmission is initiated by loading the
+data to the transmit buffer,
+For sending Frames with 9 Data Bits we have to store the 9th bit in the TXB8 in
+UCSRnB, before the low byte character is written to the UDRn.
+
+the code for transmitting data string, Integer and Floating point byte by byte.
+
+``` rust
+    pub fn transmit_data (&mut self,data: u8) {/* fields omitted */ }
+```
+
+#### Impl `transmit_disable` for `UsartObject`
+To disable the Transmitter, shift register and transmit buffer must not contain any data to be transmitted which is
+checked by the TXCn and UDREn bit in UCSRnA register respectively.Once disabled, it will no longer override TxDn
+pin.
+
+``` rust 
+    pub fn transmit_disable(&mut self) {/* fields omitted */}  
+```
+
+### Data Receiving
+---
+#### Impl `recieve_enable` for `UsartObject`
+To enable Data Receiver, write 1 to Receive Enable (RXENn) bit i.e BIT 4 in the
+UCSRnB Register. This function enables the reciever function of microcontroller, whithout enabling it no communication is possible.
+``` rust
+    pub unsafe fn recieve_enable(&mut self) {
+        (*self.usart).ucsrb.update(|ucsrb| {
+            ucsrb.set_bit(4, true);
+        });
+    }
+```
+
+#### Impl `receive_data` for `UsartObject`
+For Frames with 5-8 Data bits, the Data reception begins when a valid start bit is detected. For Frames 9 Data bits, the 9th bit is Read from the RXB8n bit in UCSRnB before reading the low bits from the
+UDRn.
+``` rust
+    pub fn recieve_data(&mut self) -> Option<u32> {/* fields omitted */    }    
+ ```
+
+#### Impl `error_check` for `UsartObject`
+It can be used to check frame error,Data OverRun and Parity errors & returns true if error occurs,else false.
+``` rust  
+    pub fn error_check(&mut self)->bool{/* fields omitted */  }
+```
+
+#### Impl `parity_check` for `UsartObject`
+This function can be used to check parity error, returns true if error occurs,else false.
+```rust
+   pub fn parity_check(&mut self)->bool{/* fields omitted */}
+```
+
+#### Impl `recieve_disable` for `UsartObject`
+This function disables the reciever function of microcontroller.
+```rust
+   pub fn recieve_disable(&mut self){
+       
+        self.ucsrb.update(|ucsrb| {
+            ucsrb.set_bit(4, false);
+        });
+    
+   }
+```
+
+#### Impl `flush_recieve` for `UsartObject`
+This function clears the unread data in the receive buffer by flushing it 
+```rust
+   pub fn flush_recieve (&self) {/* fields omitted */}
+```
+
+#### Impl `read` for `UsartObject`
+ This function is used to recieve data of one frame. But it only functions when already data is available for read which can be checked by available function. Either 5 to 8 bits and 9 bits of data can be recieved from this function. In case of 5 to 8 bits this function returns u8. In case of 9 bits it retuns u32 of which first 9 bits are data recieved and remaining bits are insignificant. In case ,if an frame error or parity error occurs, this function returns -1.
+```rust
+   pub fn read(&mut self) -> Option<u32> {/* fields omitted */}
+```
