@@ -49,6 +49,15 @@ to disable it.
     }
 ```
 
+We also need to select the voltage reference for your Analog to Digital Converter, it 
+could be internal or external.depending on what you want to select you could by 
+manipulating the REFS bits in the ADMUX Register.
+```rust
+            analog.admux.update(|admux| {
+                admux.set_bits(6..8, **);
+            });
+```
+
 Then to enable the Analog to digital converter, write one to the ADEN bit in the 
 ADCSRA register.
 
@@ -117,13 +126,13 @@ buffer on that pin to be disabled to reduce power consumption. Depending on whic
 pin you want, you can set the MUX bits and DIDR bit. 
 ```rust                   
         analog.admux.update(|admux| {
-            admux.set_bits(0..3, );
+            admux.set_bits(0..3,**);
         });
         analog.didr2.update(|didr2| {
-            didr2.set_bit(, true);
+            didr2.set_bit(**, true);
         });
         analog.adcsrb.update(|mux| {
-            mux.set_bit(3, );
+            mux.set_bit(3,**);
         });
 ```
 Then we can start the conversion by writing one to the aden bit in ADCSRA register.
@@ -159,3 +168,4 @@ disable the ADC by writing 0 to ADEN bit.
             aden.set_bit(7, false);
         });
 ```
+
