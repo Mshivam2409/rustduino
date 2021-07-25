@@ -58,13 +58,18 @@ module.exports = {
     },
     {
       type: 'category',
+      label: 'AVR Tools',
+      items: ['avr/shift','avr/display']
+    },
+    {
+      type: 'category',
       label: 'Sensors',
-      items: ['sensors/mpu6050']
+      items: ['sensors/aht10','sensors/mpu6050']
     },
     {
       type: 'category',
       label: 'Guides',
-      items: ['guides/blink']
+      items: ['guides/blink','guides/print','guides/writing_string','guides/analog_io']
     },
     {
       type: 'doc',
