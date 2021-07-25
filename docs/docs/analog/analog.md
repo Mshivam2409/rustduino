@@ -161,7 +161,8 @@ disable the ADC by writing 0 to ADEN bit.
 ```
 
 The Function to analog read is inside AnalogPin impl, it gives u32 as return value with 10 
-of its bits as the result of conversion.
+of its bits as the result of conversion, all the upper functions are inside this read 
+function and will automatically setup and convert the analog to digital.
 ```rust
 pub fn read(&mut self) -> u32
 ```
@@ -200,3 +201,7 @@ pub fn analog_reference(reftype: RefType) {
 ```
 
 ## Analog write
+
+We have to output or write a PWM wave to a digital pin, which can be 2 to 13 or 44 
+to 46 other pins will not work. Of these pins, 4 and 13 give output at 980 hertz 
+while others at 490 hertz. First 
