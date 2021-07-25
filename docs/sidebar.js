@@ -34,7 +34,7 @@ module.exports = {
     {
       type: 'category',
       label: 'Arduino',
-      items: ['arduino/index', 'arduino/atmega328p', 'arduino/atmega4809p']
+      items: ['arduino/index', 'arduino/atmega328p', 'arduino/atmega2560p']
     },
     {
       type: 'category',
@@ -54,7 +54,7 @@ module.exports = {
     {
       type:'category',
       label:'Communication',
-      items:['com/i2c']
+      items:['com/i2c', 'com/usart', 'com/usart2560p']
     },
     {
       type:'category',
