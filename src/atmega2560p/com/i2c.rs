@@ -23,12 +23,12 @@ use volatile::Volatile;
 
 /// ## TWI registers definitions
 pub struct Twi {
-    twbr: Volatile<u8>,
+    _twbr: Volatile<u8>,
     twcr: Volatile<u8>,
     twsr: Volatile<u8>,
     twdr: Volatile<u8>,
-    twar: Volatile<u8>,
-    twamr: Volatile<u8>,
+    _twar: Volatile<u8>,
+    _twamr: Volatile<u8>,
 }
 
 /// ## TWCR register's bits definitions
@@ -36,9 +36,9 @@ const TWINT: u8 = 0;
 const TWEA: u8 = 1;
 const TWSTA: u8 = 2;
 const TWSTO: u8 = 3;
-const TWWC: u8 = 4;
+const _TWWC: u8 = 4;
 const TWEN: u8 = 5;
-const TWIE: u8 = 7;
+const _TWIE: u8 = 7;
 
 static TWI_FREQUENCY: u32 = 100000;
 
@@ -75,47 +75,47 @@ const REP_START: u8 = 0x10;
 
 // Master Transmitter
 const MT_SLA_ACK: u8 = 0x18;
-const MT_SLA_NACK: u8 = 0x20;
+const _MT_SLA_NACK: u8 = 0x20;
 const MT_DATA_ACK: u8 = 0x28;
-const MT_DATA_NACK: u8 = 0x30;
-const MT_ARB_LOST: u8 = 0x38;
+const _MT_DATA_NACK: u8 = 0x30;
+const _MT_ARB_LOST: u8 = 0x38;
 
 // Master Receiver
-const MR_ARB_LOST: u8 = 0x38;
+const _MR_ARB_LOST: u8 = 0x38;
 const MR_SLA_ACK: u8 = 0x40;
-const MR_SLA_NACK: u8 = 0x48;
+const _MR_SLA_NACK: u8 = 0x48;
 const MR_DATA_ACK: u8 = 0x50;
 const MR_DATA_NACK: u8 = 0x58;
 
 // Slave Transmitter
-const ST_SLA_ACK: u8 = 0xA8;
-const ST_ARB_LOST_SLA_ACK: u8 = 0xB0;
-const ST_DATA_ACK: u8 = 0xB8;
-const ST_DATA_NACK: u8 = 0xC0;
-const ST_LAST_DATA: u8 = 0xC8;
+const _ST_SLA_ACK: u8 = 0xA8;
+const _ST_ARB_LOST_SLA_ACK: u8 = 0xB0;
+const _ST_DATA_ACK: u8 = 0xB8;
+const _ST_DATA_NACK: u8 = 0xC0;
+const _ST_LAST_DATA: u8 = 0xC8;
 
 // Slave Receiver
-const SR_SLA_ACK: u8 = 0x60;
-const SR_ARB_LOST_SLA_ACK: u8 = 0x68;
-const SR_GCALL_ACK: u8 = 0x70;
-const SR_ARB_LOST_GCALL_ACK: u8 = 0x78;
-const SR_DATA_ACK: u8 = 0x80;
-const SR_DATA_NACK: u8 = 0x88;
-const SR_GCALL_DATA_ACK: u8 = 0x90;
-const SR_GCALL_DATA_NACK: u8 = 0x98;
-const SR_STOP: u8 = 0xA0;
+const _SR_SLA_ACK: u8 = 0x60;
+const _SR_ARB_LOST_SLA_ACK: u8 = 0x68;
+const _SR_GCALL_ACK: u8 = 0x70;
+const _SR_ARB_LOST_GCALL_ACK: u8 = 0x78;
+const _SR_DATA_ACK: u8 = 0x80;
+const _SR_DATA_NACK: u8 = 0x88;
+const _SR_GCALL_DATA_ACK: u8 = 0x90;
+const _SR_GCALL_DATA_NACK: u8 = 0x98;
+const _SR_STOP: u8 = 0xA0;
 
 // Miscellaneous
-const NO_INFO: u8 = 0xF8;
-const BUS_ERROR: u8 = 0x00;
+const _NO_INFO: u8 = 0xF8;
+const _BUS_ERROR: u8 = 0x00;
 
 // Defines and constants
-const TWCR_CMD_MASK: u8 = 0x0F;
+const _TWCR_CMD_MASK: u8 = 0x0F;
 const TWSR_STATUS_MASK: u8 = 0xF8;
 
 //return values
-const I2C_OK: u8 = 0x00;
-const I2C_ERROR_NODEV: u8 = 0x01;
+const _I2C_OK: u8 = 0x00;
+const _I2C_ERROR_NODEV: u8 = 0x01;
 const I2C_TIMEOUT: u32 = 100;
 
 /// Sets DDRC to write direction.

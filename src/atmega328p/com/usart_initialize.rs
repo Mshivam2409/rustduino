@@ -14,9 +14,9 @@
 //     You should have received a copy of the GNU Affero General Public License
 //     along with this program.  If not, see <https://www.gnu.org/licenses/>
 
-use crate::atmega328p::hal::gating;
-use crate::atmega328p::hal::interrupt;
-use crate::atmega328p::hal::port;
+use crate::hal::power;
+use crate::hal::interrupts;
+use crate::hal::port;
 
 /// Crates which would be used in the implementation.
 /// We will be using standard volatile and bit_field crates now for a better read and write.
@@ -109,7 +109,7 @@ impl Usart {
     fn disable(&mut self) {
         unsafe {
             // Disable global interrupts.
-            interrupt::Interrupt::disable(&mut interrupt::Interrupt::new());
+            interrupts::Interrupt::disable(&mut interrupts::Interrupt::new());
         }
     }
 
@@ -117,7 +117,7 @@ impl Usart {
     fn enable(&mut self) {
         unsafe {
             // Enable global interrupts.
-            interrupt::Interrupt::enable(&mut interrupt::Interrupt::new());
+            interrupts::Interrupt::enable(&mut interrupts::Interrupt::new());
         }
     }
 
@@ -229,9 +229,9 @@ impl Usart {
 
     ///  Set the power reduction register so that USART functioning is allowed.
     fn set_power(&mut self, num: UsartNum) {
-        let pow: &mut gating::Power;
+        let pow: &mut power::Power;
 
-        pow = gating::Power::new();
+        pow = power::Power::new();
 
         match num {
             UsartNum::Usart0 => unsafe {

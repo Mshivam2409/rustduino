@@ -18,32 +18,6 @@ use core::usize;
 
 use crate::avr::shift::*;
 use crate::hal::pin::Pins;
-use crate::hal::port::*;
-//use crate::hal::pin::*;
-//use crate::{com, delay::delay_ms};
-
-// makes pin struct given pin number
-fn make_pin(pin: usize) -> Pin {
-    match pin {
-        0 => return Pin::new(PortName::D, 0).unwrap(),
-        1 => return Pin::new(PortName::D, 1).unwrap(),
-        2 => return Pin::new(PortName::D, 2).unwrap(),
-        3 => return Pin::new(PortName::D, 3).unwrap(),
-        4 => return Pin::new(PortName::D, 4).unwrap(),
-        5 => return Pin::new(PortName::D, 5).unwrap(),
-        6 => return Pin::new(PortName::D, 6).unwrap(),
-        7 => return Pin::new(PortName::D, 7).unwrap(),
-
-        8 => return Pin::new(PortName::B, 8).unwrap(),
-        9 => return Pin::new(PortName::B, 9).unwrap(),
-        10 => return Pin::new(PortName::B, 10).unwrap(),
-        11 => return Pin::new(PortName::B, 11).unwrap(),
-        12 => return Pin::new(PortName::B, 12).unwrap(),
-        13 => return Pin::new(PortName::B, 13).unwrap(),
-
-        _ => unreachable!(),
-    }
-}
 
 pub fn setup(
     datapin: usize,
@@ -53,13 +27,14 @@ pub fn setup(
     common_anode: bool,
     value: u8,
 ) {
-    let mut data = make_pin(datapin);
-    let mut clock = make_pin(clockpin);
-    let mut latch = make_pin(latchpin);
+    let pins = Pins::new();
+    let mut data = pins.digital[datapin];
+    let mut clock = pins.digital[clockpin];
+    let mut latch = pins.digital[latchpin];
 
-    data.set_pin_mode(IOMode::Output);
-    latch.set_pin_mode(IOMode::Output);
-    clock.set_pin_mode(IOMode::Output);
+    data.set_output();
+    latch.set_output();
+    clock.set_output();
 
     out(datapin, clockpin, latchpin, decpt, common_anode, value);
 }

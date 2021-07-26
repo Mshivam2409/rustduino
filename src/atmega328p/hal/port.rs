@@ -1,10 +1,6 @@
 //! General Digital I/O Implementation.
 
-<<<<<<< HEAD
-use crate::atmega328p::hal::pin::{AnalogPin, DigitalPin};
-=======
 use crate::hal::pin::{AnalogPin, DigitalPin};
->>>>>>> analog_ic
 use core::ptr::{read_volatile, write_volatile};
 
 /// Represents name of Port, can be either A, B, C, or D.
@@ -78,6 +74,7 @@ impl Port {
 /// and the pin number.
 ///
 /// Section 13.4 of ATmega328P datasheet.
+#[derive(Clone, Copy)]
 pub struct Pin {
     pub port: *mut Port,
     pub pin: u8,

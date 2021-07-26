@@ -135,7 +135,7 @@ impl AnalogPin {
     /// Read the signal input to the analog pin.
     /// Any analog pin can be freely used for this purpose.
     pub fn read(&mut self) -> u32 {
-        self.pin.input();
+        self.pin.set_input();
 
         let pin = self.pinno;
 
@@ -363,7 +363,7 @@ impl DigitalPin {
     /// All pin except 4 and 13 are set to give output at 490 hertz.
     /// pin 4 and 13 will give output at 980 hertz.
     pub fn write(&mut self, value1: u8) {
-        self.pin.output();
+        self.pin.set_output();
 
         let pin1 = self.pinno;
 

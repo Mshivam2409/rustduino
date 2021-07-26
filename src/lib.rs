@@ -3,7 +3,7 @@
 #![feature(asm)]
 #![feature(llvm_asm)]
 #![allow(unused_assignments)]
-#![allow(dead_code)]
+#![allow(unused_unsafe)]
 
 /// Library for AVR ATMEGA2560P Micro-controller
 #[cfg(feature = "atmega2560p")]
@@ -102,10 +102,8 @@ pub mod sensors;
 /// Low level control for AVR Chips
 pub mod avr;
 
-/// Random Number Generation Features
-#[cfg(feature = "math")]
-pub mod math;
-
 pub mod config;
 pub mod delay;
+
+/// Math functions for assistance in implementation.
 pub mod math;

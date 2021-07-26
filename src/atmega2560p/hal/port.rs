@@ -151,36 +151,36 @@ impl Pin {
     }
 
     /// Change pin mode to Output by changing the value of DDxn register.
-    pub fn output(&mut self) {
+    pub fn set_output(&mut self) {
         self.set_pin_mode(IOMode::Output);
     }
 
     /// Change pin mode to Input by changing the value of DDxn register.
-    pub fn input(&mut self) {
+    pub fn set_input(&mut self) {
         self.set_pin_mode(IOMode::Input);
     }
 }
 
 impl AnalogPin {
     /// Change pin mode to Output by changing the value of DDxn register.
-    pub fn output(&mut self) {
+    pub fn set_output(&mut self) {
         self.pin.set_pin_mode(IOMode::Output);
     }
 
     /// Change pin mode to Input by changing the value of DDxn register.
-    pub fn input(&mut self) {
+    pub fn set_input(&mut self) {
         self.pin.set_pin_mode(IOMode::Input);
     }
 }
 
 impl DigitalPin {
     /// Change pin mode to Output by changing the value of DDxn register.
-    pub fn output(&mut self) {
+    pub fn set_output(&mut self) {
         self.pin.set_pin_mode(IOMode::Output);
     }
 
     /// Change pin mode to Input by changing the value of DDxn register.
-    pub fn input(&mut self) {
+    pub fn set_input(&mut self) {
         self.pin.set_pin_mode(IOMode::Input);
     }
 

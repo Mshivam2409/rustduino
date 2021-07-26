@@ -23,9 +23,9 @@
 //! `<https://ww1.microchip.com/downloads/en/devicedoc/atmel-2549-8-bit-avr-microcontroller-atmega640-1280-1281-2560-2561_datasheet.pdf>`
 
 /// Other source code files to be used.
-use crate::atmega2560p::hal::interrupts;
-use crate::atmega2560p::hal::port;
-use crate::atmega2560p::hal::power;
+use crate::hal::interrupts;
+use crate::hal::port;
+use crate::hal::power;
 
 /// Crates which would be used in the implementation.
 /// We will be using standard volatile and bit_field crates now for a better read and write.

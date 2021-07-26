@@ -3,6 +3,7 @@
 use crate::hal::port::*;
 
 /// All pins inside a single struct.
+#[derive(Clone, Copy)]
 pub struct Pins {
     /// All six analog pins.
     pub analog: [AnalogPin; 6],
@@ -12,12 +13,14 @@ pub struct Pins {
 }
 
 /// This struct contains the Pin struct and its analog pin number.
+#[derive(Clone, Copy)]
 pub struct AnalogPin {
     pub pin: Pin,
     pub pinno: u32,
 }
 
 /// Structure to represent one digital pin with Pin structure and pin number.
+#[derive(Clone, Copy)]
 pub struct DigitalPin {
     pub pin: Pin,
     pub pinno: usize,
@@ -116,7 +119,7 @@ impl Pins {
 }
 
 /// makes digital pin for given pin number
-fn make_pin(pin: u8) -> Pin {
+fn _make_pin(pin: u8) -> Pin {
     match pin {
         0 => return Pin::new(PortName::D, 0).unwrap(),
         1 => return Pin::new(PortName::D, 1).unwrap(),

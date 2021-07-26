@@ -20,4 +20,4 @@ pub use aht10::AHT10;
 
 pub mod mpu6050;
 
-pub use mpu6050::*;
+pub use mpu6050::{MPURangeT, MPUdpsT, MPU6050};
