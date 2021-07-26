@@ -15,7 +15,8 @@
 //     along with this program.  If not, see <https://www.gnu.org/licenses/>
 
 use crate::avr::shift::*;
-use crate::hal::port::*;
+use crate::atmega2560p::hal::port::*;
+//use crate::hal::port::*;
 //use crate::hal::pin::*;
 //use crate::{com, delay::delay_ms};
 
