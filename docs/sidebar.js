@@ -64,7 +64,7 @@ module.exports = {
     {
       type: 'category',
       label: 'Analog',
-      items: ['analog', 'digital']
+      items: ['analog/analog', 'analog/digital']
     }
     
   ]
