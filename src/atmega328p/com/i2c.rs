@@ -141,14 +141,14 @@ pub fn read_sda() {
 
 impl Twi {
     /// * Returns a pointer to TWBR.
-    /// * Usage: rustduino::atmega328p::com::i2c::new()
+    /// * Usage: rustduino::com::i2c::new()
     pub fn new() -> &'static mut Self {
         unsafe { &mut *(0xB8 as *mut Self) }
     }
 
     /// * Waits for the process to be complete.
     /// * Times out if TWINT is not set in 100 seconds.
-    /// * Retruns if process was successful.
+    /// * Retruns true if process was successful.
     /// * Usage:
     /// * let twi = rustduino::com::Twi::new()
     /// * twi.wait_to_complete(operation:u8)
