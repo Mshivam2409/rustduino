@@ -75,7 +75,7 @@ i2c::read_sda() // to set the data direction to read.
 ## Impl `new` for `Twi`
 
 ```rust
-pub fn new() -> &'static mut Sel
+pub fn new() -> &'static mut Self
 ```
 
 #### Usage:
