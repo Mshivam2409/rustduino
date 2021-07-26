@@ -14,8 +14,8 @@
 //     You should have received a copy of the GNU Affero General Public License
 //     along with this program.  If not, see <https://www.gnu.org/licenses/>
 
-use crate::avr::shift::*;
 use crate::atmega2560p::hal::port::*;
+use crate::avr::shift::*;
 //use crate::hal::port::*;
 //use crate::hal::pin::*;
 //use crate::{com, delay::delay_ms};
@@ -55,13 +55,13 @@ pub fn setup(datapin: u8, clockpin: u8, latchpin: u8, decpt: bool, common_anode:
     out(datapin, clockpin, latchpin, decpt, common_anode, value);
 }
 
-pub fn myfnUpdateDisplay(
+pub fn myfn_update_display(
     datapin: u8,
     clockpin: u8,
     latchpin: u8,
-    decpt: bool,
+    _decpt: bool,
     common_anode: bool,
-    value: u8,
+    mut value: u8,
 ) {
     let mut latch = make_pin(latchpin);
 
@@ -75,14 +75,15 @@ pub fn myfnUpdateDisplay(
 }
 
 pub fn out(datapin: u8, clockpin: u8, latchpin: u8, decpt: bool, common_anode: bool, value: u8) {
-    let mut bits: u8 = myfnNumToBits(value);
+    let mut bits: u8 = myfn_num_to_bits(value);
     if decpt {
         bits = bits | 0b00000001; // add decimal point if needed
     }
-    myfnUpdateDisplay(datapin, clockpin, latchpin, decpt, common_anode, value); // display alphanumeric digit
+    myfn_update_display(datapin, clockpin, latchpin, decpt, common_anode, bits);
+    // display alphanumeric digit
 }
 
-pub fn myfnNumToBits(somenumber: u8) -> u8 {
+pub fn myfn_num_to_bits(somenumber: u8) -> u8 {
     if somenumber == 0 {
         return 0b11111100;
     } else if somenumber == 1 {

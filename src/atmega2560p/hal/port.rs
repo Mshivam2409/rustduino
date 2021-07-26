@@ -189,6 +189,20 @@ impl Pin {
         }
     }
 
+    pub fn read(&mut self) -> u8 {
+        // Check if pin number is valid.
+
+        let mut p = unsafe { read_volatile(&mut (*self.port).port) }; //Reading the value of PORTxn.
+        p = p & (1 << self.pin);
+
+        let ddr_value = unsafe { read_volatile(&mut (*self.port).ddr) }; // Read the DDRxn register.
+        if p != 0 && ddr_value == (0x1 << self.pin) {
+            //Toggling the value of PORTxn, if it isn't set to low.
+            return 1;
+        } else {
+            return 0;
+        }
+    }
     /// Change pin mode to Output by changing the value of DDxn register.
     pub fn output(&mut self) {
         self.set_pin_mode(IOMode::Output);

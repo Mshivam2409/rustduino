@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>
 
-use crate::hal::port::*;
+use crate::atmega2560p::hal::port::*;
 
 // makes pin struct given pin number
 fn make_pin(pin: u8) -> Pin {
