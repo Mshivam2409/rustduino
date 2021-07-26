@@ -99,7 +99,7 @@ Stop bit can be one bit or two bit.Function to set the number of stop bits in th
    -  no, even or odd parity bit
    -  1 or 2 stop bits
  
- ``` rust 
+``` rust 
      fn set_frame(&self,stop : UsartStop,size : UsartDataSize,parity : UsartParity) {
         self.set_size(size);
         self.set_parity(parity);
@@ -113,9 +113,10 @@ Following is the cumulative function for initializing a particular USART and it 
 take all the necessary details about the mode in which the USART pin is to be used
 
 ``` rust
-    pub fn initialize
-        (&mut self,mode : UsartModes,baud : i64,stop : UsartStop,size : UsartDataSize,parity : UsartParity)
+pub fn initialize
+ (&mut self,mode : UsartModes,baud : i64,stop : UsartStop,size : UsartDataSize,parity : UsartParity)
         {/* fields omitted */ }
+
 ```
 
 In case, You want to re-initialize the USART make sure that no transmission is on 
