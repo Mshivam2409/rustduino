@@ -14,8 +14,13 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>
 
+<<<<<<< HEAD
 use crate::atmega328p::hal::interrupts;
 use core::ptr::{read_volatile, write_volatile};
+=======
+use crate::hal::interrupts;
+use core;
+>>>>>>> analog_ic
 
 /// Watchdog timer 10.9 of the manual.
 
@@ -54,11 +59,19 @@ impl WatchDog {
     pub fn disable(&mut self) {
         unsafe {
             interrupts::Interrupt::disable(&mut interrupts::Interrupt::new());
+<<<<<<< HEAD
             WatchDog::reset_watchdog(&mut WatchDog::new());
             let mut ctrl_wdtcsr = read_volatile(&self.wdtcsr);
             ctrl_wdtcsr |= 0x18;
             write_volatile(&mut self.wdtcsr, ctrl_wdtcsr);
             write_volatile(&mut self.wdtcsr, 0x00);
+=======
+            Watchdog::reset_watchdog(&mut Watchdog::new());
+            let mut ctrl_wdtcsr = core::ptr::read_volatile(&self.wdtcsr);
+            ctrl_wdtcsr |= 0x18;
+            core::ptr::write_volatile(&mut self.wdtcsr, ctrl_wdtcsr);
+            core::ptr::write_volatile(&mut self.wdtcsr, 0x00);
+>>>>>>> analog_ic
             interrupts::Interrupt::enable(&mut interrupts::Interrupt::new());
         }
     }

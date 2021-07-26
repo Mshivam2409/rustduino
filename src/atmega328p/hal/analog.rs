@@ -26,9 +26,15 @@ use bit_field::BitField;
 use core::ptr::write_volatile;
 use volatile::Volatile;
 
+<<<<<<< HEAD
 use crate::atmega328p::hal::pin::{AnalogPin, DigitalPin};
 /// Source codes to be used here.
 use crate::atmega328p::hal::sleep_mode::Sleep;
+=======
+use crate::hal::pin::{AnalogPin, DigitalPin};
+/// Source codes to be used here.
+use crate::hal::sleep_mode::Sleep;
+>>>>>>> analog_ic
 
 /// Selection of reference type for the implementation of Analog Pins.
 #[derive(Clone, Copy)]
@@ -402,10 +408,4 @@ impl Analog {
             aden.set_bit(7, false);
         });
     }
-}
-
-/// Converts output generated from analog_read() in form to be used as input in analog_write().
-/// This function will be used as a interface for read and write functionalities in the chip.
-pub fn map_from1023_to255(val: u32) -> u8 {
-    255 * (val / 1023) as u8
 }

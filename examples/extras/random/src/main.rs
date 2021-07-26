@@ -3,7 +3,7 @@
 #![deny(warnings)]
 
 /// Source codes required.
-use rustduino::math;
+use rustduino::math::RandomNumberGenerator;
 use rustduino::hal::watchdog::Watchdog;
 
 #[no_mangle]

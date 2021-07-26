@@ -21,10 +21,10 @@
 //! Refer to section 16,17,25 and 26 of ATMEGA2560P datasheet.
 //! `<https://ww1.microchip.com/downloads/en/devicedoc/atmel-2549-8-bit-avr-microcontroller-atmega640-1280-1281-2560-2561_datasheet.pdf>`
 
-use crate::atmega2560p::hal::pin::{AnalogPin, DigitalPin};
-/// Other source codes required.
-use crate::atmega2560p::hal::power::Power;
 use crate::avr::__nop;
+use crate::hal::pin::{AnalogPin, DigitalPin};
+/// Other source codes required.
+use crate::hal::power::Power;
 
 /// Crates to be used for the implementation.
 use bit_field::BitField;
@@ -630,10 +630,4 @@ pub fn analog_reference(reftype: RefType) {
             });
         }
     }
-}
-
-/// Converts output generated from analog_read() in form to be used as input in analog_write().
-/// This function will be used as a interface for read and write functionalities in the chip.
-pub fn map_from1023_to255(val: u32) -> u8 {
-    255 * (val / 1023) as u8
 }

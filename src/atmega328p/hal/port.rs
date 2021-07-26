@@ -1,6 +1,10 @@
 //! General Digital I/O Implementation.
 
+<<<<<<< HEAD
 use crate::atmega328p::hal::pin::{AnalogPin, DigitalPin};
+=======
+use crate::hal::pin::{AnalogPin, DigitalPin};
+>>>>>>> analog_ic
 use core::ptr::{read_volatile, write_volatile};
 
 /// Represents name of Port, can be either A, B, C, or D.
