@@ -34,7 +34,7 @@ More about there registers and their functions can be found out at [Section 21.9
 #### Usage:
 
 ```rust
-use crate::com::i2c;
+use rustduino::com::i2c;
 let mut i2c = i2c::Twi;
 
 // Here i2c is a mutable variable of Type i2c.
@@ -61,7 +61,7 @@ Sets DDRC to write direction.
 #### Usage:
 
 ```rust
-use crate::com::i2c;
+use rustduino::com::i2c;
 
 i2c::write_sda() // to set the data direction to write.
 
