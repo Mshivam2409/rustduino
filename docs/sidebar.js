@@ -60,7 +60,12 @@ module.exports = {
       type:'category',
       label:'Sensors',
       items : ['sensors/aht10']
-    }
+    },
+    {
+      type: 'category',
+      label: 'Analog',
+      items: ['analog', 'digital']
+    },
     
   ]
 }
