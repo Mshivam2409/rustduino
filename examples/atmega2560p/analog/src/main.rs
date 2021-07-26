@@ -3,9 +3,9 @@
 #![deny(warnings)]
 
 /// Crates to be used.
-use rustduino::atmega2560p::hal::analog::map_from1023_to255;
-use rustduino::atmega2560p::hal::pin::Pins;
-use rustduino::atmega2560p::hal::watchdog::WatchDog;
+use rustduino::hal::pin::Pins;
+use rustduino::hal::watchdog::WatchDog;
+use rustduino::math::map_from1023_to255;
 
 #[no_mangle]
 pub fn main() {
