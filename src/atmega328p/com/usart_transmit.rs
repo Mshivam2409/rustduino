@@ -1,5 +1,6 @@
 //     RustDuino : A generic HAL implementation for Arduino Boards in Rust
-//     Copyright (C) 2021  Aniket Sharma, Indian Institute of Technology Kanpur
+//     Copyright (C) 2021  Richa Prakash Sachan and Kshitij Kaithal, Indian Institute of Technology Kanpur
+//
 //     This program is free software: you can redistribute it and/or modify
 //     it under the terms of the GNU Affero General Public License as published
 //     by the Free Software Foundation, either version 3 of the License, or
@@ -15,31 +16,29 @@
 
 //! This file contains functions to enable transmission through the USART and do the transmission.
 //! Flushing data in case of error and writing string are some complex implementations provided.
-//! See the section 22 of ATMEGA2560P datasheet.
-//! https://ww1.microchip.com/downloads/en/devicedoc/atmel-2549-8-bit-avr-microcontroller-atmega640-1280-1281-2560-2561_datasheet.pdf
+//! See the section 19 of ATMEGA328P datasheet.
+//! https://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-7810-Automotive-Microcontrollers-ATmega328P_Datasheet.pdf
 
-/// Other source code files to be used.
-use crate::atmega2560p::com::usart_initialize::{UsartDataSize, UsartObject};
+use crate::atmega328p::com::usart_initialize::{Usart, UsartDataSize};
 use crate::delay::delay_ms;
-
 /// Crates which would be used in the implementation.
 /// We will be using standard volatile and bit_field crates now for a better read and write.
 use bit_field::BitField;
 use core::{f64, u8, usize};
 use fixed_slice_vec::FixedSliceVec;
-
 //This is a implementation for Usart
-impl UsartObject {
-    /// Enables the Transmitter.
-    /// once it is enabled it takes control of the TXDn pin as a transmitting output.   
-    pub unsafe fn transmit_enable(&mut self) {
-        (*self.usart).ucsrb.update(|srb| {
+impl Usart {
+    /// Initialization setting begin function
+    /// This function is to enable the Transmitter
+    /// Once it is enabled it takes control of the TXDn pin as a transmitting output.   
+    pub fn transmit_enable(&mut self) {
+        self.ucsrb.update(|srb| {
             srb.set_bit(3, true);
         });
     }
 
     /// Storing data in Transmit Buffer which takes parameter as a u32 and and data bit length.
-    pub unsafe fn transmitting_data(&mut self, data: u32, len: UsartDataSize) {
+    pub fn transmitting_data(&mut self, data: u32, len: UsartDataSize) {
         // Checks if the Transmit buffer is empty to receive data.
         // If not the program waits till the time comes.
         let mut i: i32 = 10;
@@ -52,7 +51,7 @@ impl UsartObject {
             }
         }
 
-        let mut udr = (*self.usart).udr.read();
+        let mut udr = self.udr.read();
 
         // If the frame is ready for transmission then the appropriate place is written.
         match len {
@@ -69,18 +68,16 @@ impl UsartObject {
                 udr.set_bits(0..8, data.get_bits(0..8) as u8);
             }
             UsartDataSize::Nine => {
-                (*self.usart).ucsrb.update(|ctrl| {
+                self.ucsrb.update(|ctrl| {
                     ctrl.set_bit(0, data.get_bit(8));
                 });
                 udr.set_bits(0..8, data.get_bits(0..8) as u8);
             }
         }
     }
-
-    /// Checks that transmission buffer if ready for transmission.
-    /// Returns true if ready otherwise false.
-    pub unsafe fn avai_write(&mut self) -> bool {
-        let ucsra = (*self.usart).ucsra.read();
+    ///This function checks that transmission buffer is ready to be
+    pub fn avai_write(&mut self) -> bool {
+        let ucsra = self.ucsra.read();
         if ucsra.get_bit(5) == true {
             true
         } else {
@@ -88,12 +85,13 @@ impl UsartObject {
         }
     }
 
-    /// This waits for the transmission to complete by checking the appropriate register.
-    pub unsafe fn flush_transmit(&mut self) {
-        let mut ucsra = (*self.usart).ucsra.read();
+    /// This functions waits for the transmission to complete by checking TXCn bit in the ucsrna register
+    /// TXCn is set 1 when the transmit is completed and it can start transmitting new data
+    pub fn flush_transmit(&mut self) {
+        let mut ucsra = self.ucsra.read();
         let mut i: i32 = 10;
         while ucsra.get_bit(6) == false {
-            ucsra = (*self.usart).ucsra.read();
+            ucsra = self.ucsra.read();
             if i != 0 {
                 delay_ms(1000);
                 i = i - 1;
@@ -103,10 +101,10 @@ impl UsartObject {
         }
     }
 
-    /// This is used to disable the Transmitter and once disabled the pins used for USART
-    /// return into their default I/O pin mode.
+    /// This function is used to disable the Transmitter and once disabled the TXDn pin is no longer
+    /// used as the transmitter output pin and functions as a normal I/O pin
     pub fn transmit_disable(&mut self) {
-        let ucsra = unsafe { (*self.usart).ucsra.read() };
+        let ucsra = self.ucsra.read();
         let mut uscra6 = ucsra.get_bit(6);
         let mut uscra5 = ucsra.get_bit(5);
         let mut i: i32 = 100;
@@ -124,21 +122,19 @@ impl UsartObject {
             }
         }
 
-        unsafe {
-            (*self.usart).ucsrb.update(|srb| {
-                srb.set_bit(3, false);
-            });
-        }
+        self.ucsrb.update(|srb| {
+            srb.set_bit(3, false);
+        });
     }
 
-    /// Sends a character byte of 5,6,7 or 8 bits.
+    /// This function sends a character byte of 5,6,7 or 8 bits
     pub fn transmit_data(&mut self, data: u8) {
-        let mut ucsra = unsafe { (*self.usart).ucsra.read() };
+        let mut ucsra = self.ucsra.read();
         let mut udre = ucsra.get_bit(5);
 
         let mut i: i32 = 100;
         while udre == false {
-            ucsra = unsafe { (*self.usart).ucsra.read() };
+            ucsra = self.ucsra.read();
             udre = ucsra.get_bit(5);
 
             if i != 0 {
@@ -149,13 +145,11 @@ impl UsartObject {
             }
         }
 
-        unsafe {
-            self.set_txn();
-            (*self.usart).udr.write(data)
-        };
+        self.udr.write(data);
     }
 
-    /// Send's data of type string byte by byte using USART.
+    /// This function send data type of string byte by byte.
+    /// This function send data type of string byte by byte.
     pub fn write_string(&mut self, data: &'static str) {
         let mut vec: FixedSliceVec<u8> = FixedSliceVec::new(&mut []);
 
@@ -168,7 +162,7 @@ impl UsartObject {
         }
     }
 
-    /// Send's data of type integer(u32) byte by byte.
+    /// This function send data type of int(u32) byte by byte.
     pub fn write_integer(&mut self, data: u32) {
         let mut vec: FixedSliceVec<u8> = FixedSliceVec::new(&mut []);
         let mut a = data;
@@ -194,7 +188,7 @@ impl UsartObject {
         }
     }
 
-    /// Send's data of type float(f64) byte by byte till the precision required.
+    /// This function send data type of float(f32) byte by byte.
     pub fn write_float(&mut self, data: f64, precision: u32) {
         let mut vec: FixedSliceVec<u8> = FixedSliceVec::new(&mut []);
         let a: f64 = data;
@@ -247,7 +241,7 @@ impl UsartObject {
         }
 
         for ia in 0..n - 1 {
-            self.transmit_data(vec[ia]);
+            vec.push(vec[ia]);
         }
     }
 }

@@ -256,13 +256,11 @@ is enabled the TxDn functions as the Transmitter's serial output. Initialization
 should be done before transmission.
 
 ``` rust
-    pub fn Transmit_enable(&mut self) {
-        unsafe {
-
-            self.ucsrb.set_bit(3,true);
-
-        }               
-    }  
+    pub unsafe fn transmit_enable(&mut self) {
+        (*self.usart).ucsrb.update(|srb| {
+            srb.set_bit(3, true);
+        });
+    }
 
 ```
 
@@ -276,39 +274,37 @@ UCSRnB, before the low byte character is written to the UDRn.
 
 Following is the code for transmitting data string byte by byte.
 ``` rust
-    pub fn Transmit_data (&self,data: Volatile<u8>) {
-        unsafe{
-            let ucsra = read_volatile(&self.ucsra) ;
-            let udre = ucsra.get_bit(5);
-            let mut i=100;
-            while ( !( udre)) {
-                let ucsra = read_volatile(&self.ucsra) ;
-                let udre = ucsra.get_bit(5);
+    pub fn transmit_data(&mut self, data: u8) {
+        let mut ucsra = unsafe { (*self.usart).ucsra.read() };
+        let mut udre = ucsra.get_bit(5);
 
-                if i!=0 {
-                    delay_ms(1000);
-                    i=i-1;
-                }
-                else{
-                    unreachable!();
-                }
+        let mut i: i32 = 100;
+        while udre == false {
+            ucsra = unsafe { (*self.usart).ucsra.read() };
+            udre = ucsra.get_bit(5);
 
-            };
-              self.udr.write(data);
-                
+            if i != 0 {
+                delay_ms(1000);
+                i = i - 1;
+            } else {
+                unreachable!();
+            }
         }
+
+        unsafe { (*self.usart).udr.write(data) };
     }
 
-    pub fn write(&mut self,data:String){
-        self.Transmit_enable();
-      for b in data.byte(){
-          self.Transmit_data(b);
-      }
-      self.Transmit_disable();
-    } 
-   pub fn write(&mut self,data:u32){
-       let mut v=Vec::new();
-   }
+    pub fn write_string(&mut self, data: &'static str) {
+        let mut vec: FixedSliceVec<u8> = FixedSliceVec::new(&mut []);
+
+        for c in data.chars() {
+            vec.push(c as u8);
+        }
+
+        for i in 0..(vec.len()) {
+            self.transmit_data(vec[i]);
+        }
+    }
 
 ```
 
@@ -323,46 +319,35 @@ automatically br cleared if a interrupt is set up or by writing 1 to its bit.
 Parity generator calculates the parity for a serial data Frame and if parity bit(UPMn1 bit) is
 set 1 transmitter control logic automatically inserts parity in serial frame.
 
-``` rust
-    pub fn parity_enable(&mut self){
-        unsafe{
-            self.ucsrc.set_bit(5,true); 
-        }
-    }
-```
-
 To disable the Transmitter, shift register and transmit buffer must not contain any data to be transmitted which is
 checked by the TXCn and UDREn bit in UCSRnA register respectively.Once disabled, it will no longer override TxDn
 pin.
 
 ``` rust 
 
-    pub fn Transmit_disable(&mut self) {
+    pub fn transmit_disable(&mut self) {
+        let ucsra = unsafe { (*self.usart).ucsra.read() };
+        let mut uscra6 = ucsra.get_bit(6);
+        let mut uscra5 = ucsra.get_bit(5);
+        let mut i: i32 = 100;
 
-         let uscra6=git_bit(&self.uscra,6);
-         let uscra5=get_bit(&self.uscra,5);
-         let mut i=100; 
-        
-        while !(uscra6 & uscra5) {
-
-            let uscra6=git_bit(&self.uscra,6);
-            let uscra5=get_bit(&self.uscra,5);
-
-            if i!=0 {
+        while uscra6 == false || uscra5 == false {
+            uscra6 = ucsra.get_bit(6);
+            uscra5 = ucsra.get_bit(5);
+            if i != 0 {
                 delay_ms(1000);
-                i=i-1;
+                i = i - 1;
+            } else {
+                unreachable!()
             }
-            else{
-                unreachable!();
-            }
-
-        };
-        
-        unsafe{
-
-        self.ucsrb.set_bit(3,false);
         }
-    }  
+
+        unsafe {
+            (*self.usart).ucsrb.update(|srb| {
+                srb.set_bit(3, false);
+            });
+        }
+    }
 ```
 
 ### Data Receiving

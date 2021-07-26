@@ -15,7 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>
 
 use crate::atmega328p::hal::interrupt;
-use core;
+use volatile::Volatile;
 
 /// Watchdog timer 10.9 of the manual.
 
@@ -31,9 +31,9 @@ use core;
 /// Interrupt and system reset mode         Interrupt, then go to system reset mode
 
 pub struct Watchdog {
-    mcusr: u8,
+    mcusr: Volatile<u8>,
     _pad: [u8; 10],
-    wdtcsr: u8,
+    wdtcsr: Volatile<u8>,
 }
 
 impl Watchdog {
@@ -43,9 +43,9 @@ impl Watchdog {
     /// Resets watchdog timer.
     pub fn reset_watchdog(&mut self) {
         unsafe {
-            let mut ctrl_mcusr = core::ptr::read_volatile(&self.mcusr);
+            let mut ctrl_mcusr = self.mcusr.read();
             ctrl_mcusr &= 0x7;
-            core::ptr::write_volatile(&mut self.mcusr, ctrl_mcusr);
+            self.mcusr.write(ctrl_mcusr);
         }
     }
     /// Disables watchdog
@@ -53,10 +53,10 @@ impl Watchdog {
         unsafe {
             interrupt::Interrupt::disable(&mut interrupt::Interrupt::new());
             Watchdog::reset_watchdog(&mut Watchdog::new());
-            let mut ctrl_wdtcsr = core::ptr::read_volatile(&self.wdtcsr);
+            let mut ctrl_wdtcsr = self.wdtcsr.read();
             ctrl_wdtcsr |= 0x18;
-            core::ptr::write_volatile(&mut self.wdtcsr, ctrl_wdtcsr);
-            core::ptr::write_volatile(&mut self.wdtcsr, 0x00);
+            self.wdtcsr.write(ctrl_wdtcsr);
+            self.wdtcsr.write(0x00);
             interrupt::Interrupt::enable(&mut interrupt::Interrupt::new());
         }
     }

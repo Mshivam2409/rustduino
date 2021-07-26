@@ -1,7 +1,7 @@
 ---
 id: analog
 slug: /analog
-title: Analog Integrated Circuit
+title: Analog
 ---
 
 # Introduction 
@@ -22,6 +22,48 @@ supply pin, AVCC.Internal Reference voltages of nominally 1.1V, 2.56V or AVCC ar
 provided On-chip.
 
 **Note** that the Power Reduction ADC bit, PRADC, must be disabled to enable ADC.
+
+
+## Structure definition
+---
+* Structure to control the implementation of Integrated Analog Circuit which contain ACSR (Analog Comparator Control and Status Register)
+```rust
+pub struct AnalogComparator {
+    acsr: Volatile<u8>,
+}
+```
+* Structure to control data transfer from Analog to Digital signal conversions.
+```rust
+pub struct Analog {/*fields omitted */ }
+```
+* Structure to control the timer of type 8 for Analog Write.
+```rust
+pub struct Timer8 {/* fields omitted */ }
+```  
+
+* Structure to control the timer of type 16 for Analog Write.
+```rust
+pub struct Timer16 {/* fields omitted */ }
+```   
+
+### Impl `new` for `Timer8`
+This creates a memory mapped IO for timer 8 type which will assist in analog write.
+```rust
+    pub fn new(timer: TimerNo8) -> &'static mut Timer8 {/* fields omitted */ } 
+```
+
+### Impl `new` for `Timer16`
+This creates a memory mapped IO for timer 16 type which will assist in analog write.
+```rust
+    pub fn new(timer: TimerNo16) -> &'static mut Timer16 {/* fields omitted */}
+```
+### Impl `new` for `AnalogComparator`       
+New pointer object created for Analog Comparator Structure.
+```rust
+    pub unsafe fn new() -> &'static mut AnalogComparator {
+        &mut *(0x50 as *mut AnalogComparator)
+    }
+```
 
 ## Operation
 
@@ -62,55 +104,23 @@ ADCSRA register.
 ```
 Also we need to make sure that auto triggering for the ADC is off, and setup the 
 prescaler by choosing the division factor between the XTAL frequency and ADC
-frequency.
+frequency. This is done by setting bits in ADCSRA register'S ADPS0,ADPS1,ADPS2.
 
 ```rust
-    pub fn analog_prescaler(&mut self, factor: u8) {
-        match factor {
-            2 => {
-                self.adcsra.update(|adcsra| {
-                    adcsra.set_bits(0..3, 0b000);
-                });
-            }
-            4 => {
-                self.adcsra.update(|adcsra| {
-                    adcsra.set_bits(0..3, 0b010);
-                });
-            }
-            8 => {
-                self.adcsra.update(|adcsra| {
-                    adcsra.set_bits(0..3, 0b011);
-                });
-            }
-            16 => {
-                self.adcsra.update(|adcsra| {
-                    adcsra.set_bits(0..3, 0b100);
-                });
-            }
-            32 => {
-                self.adcsra.update(|adcsra| {
-                    adcsra.set_bits(0..3, 0b101);
-                });
-            }
-            64 => {
-                self.adcsra.update(|adcsra| {
-                    adcsra.set_bits(0..3, 0b110);
-                });
-            } 
-            128 => {
-                self.adcsra.update(|adcsra| {
-                    adcsra.set_bits(0..3, 0b111);
-                });
-            }
-            _ => unreachable!(),
-        }
-    }
-
+pub fn analog_prescaler(&mut self, factor: u8) {/*fiels omitted */}
+```
     pub fn adc_auto_trig(&mut self) {
+
+When Bit 5 – ADATE: ADC Auto Trigger Enable is written to one, Auto Triggering of the ADC is enabled.
+The ADC will start a conversion on a positive edge of the selected trigger signal. The trigger source
+is selected by setting the ADC Trigger Select bits, ADTS in ADCSRB.
+
+```rust
+ pub fn adc_auto_trig(&mut self) {
         self.adcsra.update(|aden| {
             aden.set_bit(5, false);
         });
-    }    
+ }    
 ```
 Finally setup the ADC input pins by using the MUX bits and also make digital input 
 buffer on that pin to be disabled to reduce power consumption. Depending on which
@@ -127,6 +137,9 @@ pin you want, you can set the MUX bits and DIDR bit.
         });
 ```
 Then we can start the conversion by writing one to the aden bit in ADCSRA register.
+Writing this bit to one enables the ADC. By writing it to zero, the ADC is turned off. 
+Turning the ADC off while a conversion is in progress, will terminate this conversion.
+
 ```rust
         self.adcsra.update(|aden| {
             aden.set_bit(6, true);
@@ -137,6 +150,8 @@ Since we are doing first conversion it takes 25 ADC cycles as first conversion a
 include setting ADC, then give output as a u32 whose first 10 bits represent the 
 final result which is stored in the ADCH and ADCL register. then finally you can 
 disable the ADC by writing 0 to ADEN bit.
+
+
 ```rust
             let mut i: i32 = 25;
             let adcsra = analog.adcsra.read();
@@ -160,18 +175,21 @@ disable the ADC by writing 0 to ADEN bit.
         });
 ```
 
-The Function to analog read is inside AnalogPin impl, it gives u32 as return value with 10 
+The Function to analog `read` is inside `AnalogPin` impl, it gives u32 as return value with 10 
 of its bits as the result of conversion, all the upper functions are inside this read 
 function and will automatically setup and convert the analog to digital.
 ```rust
-pub fn read(&mut self) -> u32
+pub fn read(&mut self) -> u32{/*fields omitted */}
 ```
 ## Analog Reference
 
 We also need to select the voltage reference for your Analog to Digital Converter, it 
 could be internal or external.depending on what you want to select you could by 
 manipulating the REFS bits in the ADMUX Register. It takes parameter which Reference
-we want DEFAULT, Internal 1.1V, Internal 2.56V or External. 
+we want DEFAULT, Internal 1.1V, Internal 2.56V or External. If these bits are changed during a
+conversion, the change will not go in effect until this conversion is complete (ADIF in ADCSRA is set). The internal
+voltage reference options may not be used if an external reference voltage is being applied to the AREF pin.
+
 ```rust
 pub fn analog_reference(reftype: RefType) {
     let analog = unsafe { Analog::new() };
@@ -204,4 +222,4 @@ pub fn analog_reference(reftype: RefType) {
 
 We have to output or write a PWM wave to a digital pin, which can be 2 to 13 or 44 
 to 46 other pins will not work. Of these pins, 4 and 13 give output at 980 hertz 
-while others at 490 hertz. First 
+while all pin except 4 and 13 are set to give output at 490 hertz.

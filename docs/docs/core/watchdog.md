@@ -26,12 +26,27 @@ title: Watchdog
 
 ## Structure Definitions
 
-WatchDog Represents a struct containing the register definition for watchdog
-timer.
-
 ```rust
 pub struct WatchDog { /* fields omitted */ }
 ```
+
+WatchDog Represents a struct containing the register definition for watchdog
+timer. These include:
+
+* `MCUSR `*(MCU Status Register)*:  The MCU status register provides information on which reset source caused an MCU reset.
+
+* `WDTCSR` *(Watchdog Timer Control Register)* : Used to control the action of timer on timeout.
+
+  |           Mode Action           |               on Time-out               |
+  | :-----------------------------: | :-------------------------------------: |
+  |             Stopped             |                  None                   |
+  |         Interrupt mode          |                Interrupt                |
+  |        System reset mode        |                  Reset                  |
+  | Interrupt and system reset mode | Interrupt, then go to system reset mode |
+
+More about these registers and Watchdog timer can be found at [Section 10.9 of ATmega328P datasheet.](t.ly/dBh5)
+
+
 
 ## Trait Implementations
 
@@ -41,7 +56,18 @@ pub struct WatchDog { /* fields omitted */ }
 pub unsafe fn new() -> &'static mut Watchdog
 ```
 
-Return a struct containing register definition of the watchdog timer.
+#### Usage:
+
+```rust
+use rustduino::hal::watchdog;
+let mut wdt = watchdog::new();
+
+// Here wdt is the pointer to the struct Watchdog.
+```
+
+Return a struct pointer containing register definition of the watchdog timer.
+
+
 
 ### Impl `disable` for `Watchdog`
 
@@ -49,4 +75,20 @@ Return a struct containing register definition of the watchdog timer.
 pub fn disable(&mut self)
 ```
 
-Disables the watchdog timer.
+#### Usage:
+
+```rust
+use rustduino::hal::watchdog;
+
+let mut wdt = watchdog::new(); 	// creating pointer to the struct Watchdog.
+wdt.disable();					// disabling the watchdog timer.
+OR
+watchdog::disable(watchdog::new());
+```
+
+Disables the watchdog timer by performing the following sequence of operations:
+
+* *Disabling interrupts globally.*
+* *Resetting Watchdog timer*
+* *Disabling watchdog timer*
+* *Restoing the previous interrupts state*

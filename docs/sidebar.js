@@ -34,11 +34,15 @@ module.exports = {
     {
       type: 'category',
       label: 'Arduino',
+<<<<<<< HEAD
       items: [
         'arduino/index', 
         'arduino/atmega328p', 
         'arduino/atmega2560p'
       ]
+=======
+      items: ['arduino/index', 'arduino/atmega328p', 'arduino/atmega2560p']
+>>>>>>> 4cc062aeacfafa30ec421d6df3c66a5d99a7e247
     },
     {
       type: 'category',
@@ -86,6 +90,22 @@ module.exports = {
       type: 'doc',
       label: 'Contributors',
       id: 'contributors'
+    },
+    {
+      type:'category',
+      label:'Communication',
+      items:['com/i2c', 'com/usart', 'com/usart2560']
+    },
+    {
+      type:'category',
+      label:'Sensors',
+      items : ['sensors/aht10']
+    },
+    {
+      type: 'category',
+      label: 'Analog',
+      items: ['analog/analog', 'analog/digital']
     }
+    
   ]
 }
