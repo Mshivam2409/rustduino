@@ -26,9 +26,9 @@ use bit_field::BitField;
 use core::ptr::write_volatile;
 use volatile::Volatile;
 
-use crate::hal::pin::{AnalogPin, DigitalPin};
+use crate::atmega328p::hal::pin::{AnalogPin, DigitalPin};
 /// Source codes to be used here.
-use crate::hal::sleep_mode::Sleep;
+use crate::atmega328p::hal::sleep_mode::Sleep;
 
 /// Selection of reference type for the implementation of Analog Pins.
 #[derive(Clone, Copy)]

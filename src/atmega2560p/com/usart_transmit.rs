@@ -25,7 +25,7 @@ use core::{f64, u8, usize};
 use fixed_slice_vec::FixedSliceVec;
 
 /// Other source code files to be used.
-use crate::com::usart_initialize::{UsartDataSize, UsartObject};
+use crate::atmega2560p::com::usart_initialize::{UsartDataSize, UsartObject};
 use crate::delay::delay_ms;
 
 //This is a implementation for Usart

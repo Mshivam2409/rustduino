@@ -20,7 +20,7 @@
 
 /// Crates which would be used in the implementation.
 /// We will be using standard volatile and bit_field crates now for a better read and write.
-use crate::com::usart_initialize::{UsartNum, UsartObject};
+use crate::atmega2560p::com::usart_initialize::{UsartNum, UsartObject};
 
 /// This struct contains all 4 USART in ARDUINO MEGA arranged in a array.
 /// First a new Serial is needed to be created to access all USARTs.

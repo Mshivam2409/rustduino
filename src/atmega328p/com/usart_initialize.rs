@@ -14,9 +14,9 @@
 //     You should have received a copy of the GNU Affero General Public License
 //     along with this program.  If not, see <https://www.gnu.org/licenses/>
 
-use crate::hal::power;
-use crate::hal::interrupts;
-use crate::hal::port;
+use crate::atmega328p::hal::interrupts;
+use crate::atmega328p::hal::port;
+use crate::atmega328p::hal::power;
 
 /// Crates which would be used in the implementation.
 /// We will be using standard volatile and bit_field crates now for a better read and write.

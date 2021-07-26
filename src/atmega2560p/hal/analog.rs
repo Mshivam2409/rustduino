@@ -21,10 +21,10 @@
 //! Refer to section 16,17,25 and 26 of ATMEGA2560P datasheet.
 //! `<https://ww1.microchip.com/downloads/en/devicedoc/atmel-2549-8-bit-avr-microcontroller-atmega640-1280-1281-2560-2561_datasheet.pdf>`
 
+/// Other source codes required.
+use crate::atmega2560p::hal::power::Power;
 use crate::avr::__nop;
 use crate::hal::pin::{AnalogPin, DigitalPin};
-/// Other source codes required.
-use crate::hal::power::Power;
 
 /// Crates to be used for the implementation.
 use bit_field::BitField;

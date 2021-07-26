@@ -13,10 +13,10 @@ pub fn main() {
     watchdog.disable();
 
     // Create a new Serial struct to access all USART's
-    let serial = Serial::new();
+    let mut serial = unsafe { Serial::new() };
 
     // This initializes USART0 and makes it ready to transmit and recieve.
-    serial.usart[0].begin();
+    unsafe { serial.usart[0].begin() };
 
     // Loop to send a string using the USART multiple times.
     let mut i: u8 = 100;
@@ -30,7 +30,7 @@ pub fn main() {
     }
 
     // This disables USART0.
-    serial.usart[0].end();
+    unsafe { serial.usart[0].end() };
 }
 
 /// This function is called on panic.

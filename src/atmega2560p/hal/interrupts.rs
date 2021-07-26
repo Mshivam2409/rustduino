@@ -23,16 +23,16 @@ use core::ptr::{read_volatile, write_volatile};
 
 ///This contains the registers to be manipulated for controlling global interrupts setup.
 ///This represents struct for Globalinterrupts and is used to control sreg register.
-pub struct GlobalInterrupts {
+pub struct Interrupt {
     pub sreg: u8,
 }
 
-impl GlobalInterrupts {
+impl Interrupt {
     ///  Returns new struct of Global_Interrupts.
     ///In section 7.4 about (SREG).
 
-    pub unsafe fn new() -> &'static mut GlobalInterrupts {
-        &mut *(0x5F as *mut GlobalInterrupts)
+    pub unsafe fn new() -> &'static mut Interrupt {
+        &mut *(0x5F as *mut Interrupt)
     }
 
     ///  This fnction Disable global interrupts.

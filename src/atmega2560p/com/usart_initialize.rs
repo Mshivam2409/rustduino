@@ -23,9 +23,9 @@
 //! `<https://ww1.microchip.com/downloads/en/devicedoc/atmel-2549-8-bit-avr-microcontroller-atmega640-1280-1281-2560-2561_datasheet.pdf>`
 
 /// Other source code files to be used.
-use crate::hal::interrupts;
-use crate::hal::port;
-use crate::hal::power;
+use crate::atmega2560p::hal::interrupts;
+use crate::atmega2560p::hal::port;
+use crate::atmega2560p::hal::power;
 
 /// Crates which would be used in the implementation.
 /// We will be using standard volatile and bit_field crates now for a better read and write.
@@ -168,7 +168,7 @@ impl UsartObject {
     pub fn disable(&self) {
         unsafe {
             // Disable global interrupts.
-            interrupts::GlobalInterrupts::disable(&mut interrupts::GlobalInterrupts::new());
+            interrupts::Interrupt::disable(&mut interrupts::Interrupt::new());
         }
     }
 
@@ -176,7 +176,7 @@ impl UsartObject {
     pub fn enable(&self) {
         unsafe {
             // Enable global interrupts.
-            interrupts::GlobalInterrupts::enable(&mut interrupts::GlobalInterrupts::new());
+            interrupts::Interrupt::enable(&mut interrupts::Interrupt::new());
         }
     }
 

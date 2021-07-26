@@ -92,8 +92,8 @@ pub mod atmega328p {
 }
 
 /// Library for AVR ATMEGA328P Micro-controller
-#[cfg(feature = "atmega328p")]
-pub use atmega328p::*;
+// #[cfg(feature = "atmega328p")]
+// pub use atmega328p::*;
 
 /// Sensor control for AVR Chips
 #[cfg(feature = "sensors")]

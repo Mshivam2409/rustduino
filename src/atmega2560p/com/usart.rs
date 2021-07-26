@@ -22,9 +22,9 @@
 //! `<https://ww1.microchip.com/downloads/en/devicedoc/atmel-2549-8-bit-avr-microcontroller-atmega640-1280-1281-2560-2561_datasheet.pdf>`
 
 /// Crates which would be used in the implementation.
-use crate::com::serial::Serial;
-use crate::com::usart_initialize::UsartObject;
-use crate::com::usart_initialize::{
+use crate::atmega2560p::com::serial::Serial;
+use crate::atmega2560p::com::usart_initialize::UsartObject;
+use crate::atmega2560p::com::usart_initialize::{
     UsartDataSize, UsartModes, UsartNum, UsartParity, UsartPolarity, UsartStop,
 };
 
