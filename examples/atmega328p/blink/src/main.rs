@@ -11,7 +11,7 @@ pub extern "C" fn main() {
     wdog.disable();
 
     // Get all pins at once
-    let mut pins = arduino_uno::pins::Pins::new();
+    let mut pins = arduino_uno::pin::Pins::new();
 
     //Set the digital pin 13 as an output pin.
     pins.digital[13].set_output();

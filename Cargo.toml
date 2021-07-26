@@ -39,7 +39,6 @@ atmega2560p-hal=[]
 atmega2560p-core = ["atmega2560p","atmega2560p-hal"]
 atmega328p-com=["atmega328p-core","com"]
 atmega2560p-com=["atmega2560p-core","com"]
-default=["sensors","atmega328p-com","atmega2560p-com"]
 
 
 [dependencies]

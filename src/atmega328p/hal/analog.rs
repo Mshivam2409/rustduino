@@ -26,9 +26,9 @@ use bit_field::BitField;
 use core::ptr::write_volatile;
 use volatile::Volatile;
 
-use crate::atmega328p::hal::pins::{AnalogPin, DigitalPin};
+use crate::hal::pin::{AnalogPin, DigitalPin};
 /// Source codes to be used here.
-use crate::atmega328p::hal::power::Sleep;
+use crate::hal::sleep_mode::Sleep;
 
 /// Selection of reference type for the implementation of Analog Pins.
 #[derive(Clone, Copy)]
@@ -138,7 +138,7 @@ impl Digital {
 
 impl AnalogPin {
     /// Function to create a reference for Analog signals.
-    pub fn read(&mut self, reftype: RefType) -> u32 {
+    pub fn read(&mut self) -> u32 {
         let pin = self.pinno;
         unsafe {
             let analog = Analog::new();
@@ -149,7 +149,7 @@ impl AnalogPin {
 
             analog.adc_auto_trig();
 
-            analog.analog_reference(reftype);
+            analog.analog_reference(RefType::DEFAULT);
 
             match pin {
                 0 => {

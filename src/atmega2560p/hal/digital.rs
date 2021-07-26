@@ -21,7 +21,7 @@
 //! https://ww1.microchip.com/downloads/en/devicedoc/atmel-2549-8-bit-avr-microcontroller-atmega640-1280-1281-2560-2561_datasheet.pdf
 
 /// Include the required source codes.
-use crate::atmega2560p::hal::pin::*;
+use crate::hal::pin::*;
 use core::ptr::{read_volatile, write_volatile};
 
 impl DigitalPin {

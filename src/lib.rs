@@ -53,15 +53,15 @@ pub mod atmega328p {
     pub mod hal {
         pub mod port;
 
-        pub mod pins;
+        pub mod pin;
 
         pub mod watchdog;
 
-        pub mod interrupt;
+        pub mod interrupts;
 
         pub mod power;
 
-        pub mod gating;
+        pub mod sleep_mode;
 
         pub mod analog;
 

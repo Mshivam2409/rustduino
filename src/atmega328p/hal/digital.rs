@@ -21,7 +21,7 @@
 //! https://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-7810-Automotive-Microcontrollers-ATmega328P_Datasheet.pdf
 
 // Include the required crates for the code.
-use crate::atmega328p::hal::pins::*;
+use crate::hal::pin::*;
 use core::ptr::{read_volatile, write_volatile};
 
 impl DigitalPin {
