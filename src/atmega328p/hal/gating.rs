@@ -1,3 +1,5 @@
+use volatile::Volatile;
+
 // RustDuino : A generic HAL implementation for Arduino Boards in Rust
 // Copyright (C) 2021  Sanmati Pande, Indian Institute of Technology Kanpur
 
@@ -37,7 +39,7 @@ pub enum Peripherals {
 ///
 ///Power Reduction Register control bits for power management.
 pub struct Power {
-    pub prr: u8,
+    pub prr: Volatile<u8>,
 }
 
 impl Power {
@@ -46,54 +48,47 @@ impl Power {
     }
 
     pub fn twi(&mut self) {
-        unsafe {
-            let mut ctrl_twi = core::ptr::read_volatile(&mut self.prr);
-            ctrl_twi |= 0x80;
-            core::ptr::write_volatile(&mut self.prr, ctrl_twi);
-        }
+        let mut ctrl_twi = self.prr.read();
+        ctrl_twi |= 0x80;
+        self.prr.write(ctrl_twi);
     }
+
     pub fn timer2(&mut self) {
-        unsafe {
-            let mut ctrl_timer2 = core::ptr::read_volatile(&mut self.prr);
-            ctrl_timer2 |= 0x40;
-            core::ptr::write_volatile(&mut self.prr, ctrl_timer2);
-        }
+        let mut ctrl_timer2 = self.prr.read();
+        ctrl_timer2 |= 0x40;
+        self.prr.write(ctrl_timer2);
     }
+
     pub fn timer0(&mut self) {
-        unsafe {
-            let mut ctrl_timer0 = core::ptr::read_volatile(&mut self.prr);
-            ctrl_timer0 |= 0x20;
-            core::ptr::write_volatile(&mut self.prr, ctrl_timer0);
-        }
+        let mut ctrl_timer0 = self.prr.read();
+        ctrl_timer0 |= 0x20;
+        self.prr.write(ctrl_timer0);
     }
+
     pub fn timer1(&mut self) {
-        unsafe {
-            let mut ctrl_timer1 = core::ptr::read_volatile(&mut self.prr);
-            ctrl_timer1 |= 0x8;
-            core::ptr::write_volatile(&mut self.prr, ctrl_timer1);
-        }
+        let mut ctrl_timer1 = self.prr.read();
+        ctrl_timer1 |= 0x8;
+        self.prr.write(ctrl_timer1);
     }
+
     pub fn spi(&mut self) {
-        unsafe {
-            let mut ctrl_spi = core::ptr::read_volatile(&mut self.prr);
-            ctrl_spi |= 0x4;
-            core::ptr::write_volatile(&mut self.prr, ctrl_spi);
-        }
+        let mut ctrl_spi = self.prr.read();
+        ctrl_spi |= 0x4;
+        self.prr.write(ctrl_spi);
     }
+
     pub fn usart0(&mut self) {
-        unsafe {
-            let mut ctrl_usart0 = core::ptr::read_volatile(&mut self.prr);
-            ctrl_usart0 |= 0x2;
-            core::ptr::write_volatile(&mut self.prr, ctrl_usart0);
-        }
+        let mut ctrl_usart0 = self.prr.read();
+        ctrl_usart0 |= 0x2;
+        self.prr.write(ctrl_usart0);
     }
+
     pub fn adc(&mut self) {
-        unsafe {
-            let mut ctrl_adc = core::ptr::read_volatile(&mut self.prr);
-            ctrl_adc |= 0x1;
-            core::ptr::write_volatile(&mut self.prr, ctrl_adc);
-        }
+        let mut ctrl_adc = self.prr.read();
+        ctrl_adc |= 0x1;
+        self.prr.write(ctrl_adc);
     }
+
     ///Disables the clock
     pub fn disable_clock(mode: Peripherals) {
         match mode {

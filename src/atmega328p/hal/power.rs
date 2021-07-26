@@ -15,6 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>
 
 /// Power management for ATmega328p chip using sleep modes.
+use volatile::Volatile;
 
 /// Contains sleep modes.
 ///
@@ -76,7 +77,7 @@ pub enum SleepMode {
 /// Section 9.11 of ATmega328p Datasheet
 pub struct Sleep {
     /// The sleep mode control register contains control bits for power management.
-    pub smcr: u8,
+    pub smcr: Volatile<u8>,
 }
 
 impl Sleep {
@@ -90,45 +91,31 @@ impl Sleep {
     /// Writes logic one to `SE` bit to make `MCU` enter sleep mode when a `SLEEP`
     /// instruction is executed.
     pub fn idle(&mut self) {
-        unsafe {
-            core::ptr::write_volatile(&mut self.smcr, 0x1);
-        }
+        self.smcr.write(0x1);
     }
 
     pub fn adcnr(&mut self) {
-        unsafe {
-            core::ptr::write_volatile(&mut self.smcr, 0x3);
-        }
+        self.smcr.write(0x3);
     }
 
     pub fn power_down(&mut self) {
-        unsafe {
-            core::ptr::write_volatile(&mut self.smcr, 0x5);
-        }
+        self.smcr.write(0x5);
     }
 
     pub fn power_save(&mut self) {
-        unsafe {
-            core::ptr::write_volatile(&mut self.smcr, 0x7);
-        }
+        self.smcr.write(0x7);
     }
 
     pub fn standby(&mut self) {
-        unsafe {
-            core::ptr::write_volatile(&mut self.smcr, 0xD);
-        }
+        self.smcr.write(0xD);
     }
 
     pub fn ext_standby(&mut self) {
-        unsafe {
-            core::ptr::write_volatile(&mut self.smcr, 0xF);
-        }
+        self.smcr.write(0xF);
     }
 
     pub fn disable(&mut self) {
-        unsafe {
-            core::ptr::write_volatile(&mut self.smcr, 0x0);
-        }
+        self.smcr.write(0x0);
     }
 }
 /// Enables the Chosen ppower mode.

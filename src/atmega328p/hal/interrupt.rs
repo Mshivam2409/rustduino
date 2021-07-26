@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>
 
-use core;
+use volatile::Volatile;
 /// SREG (Status control Register)
 /// The status register contains information about the result of the most recently executed arithmetic instruction. This
 /// information can be used for altering program flow in order to perform conditional operations. Note that the status register is
@@ -27,7 +27,7 @@ use core;
 ///
 /// section 6.3.1 of manual
 pub struct Interrupt {
-    sreg: u8,
+    sreg: Volatile<u8>,
 }
 
 impl Interrupt {
@@ -37,18 +37,18 @@ impl Interrupt {
     /// Disables Interrupts.
     pub fn disable(&mut self) {
         unsafe {
-            let mut ctrl_sreg = core::ptr::read_volatile(&self.sreg);
+            let mut ctrl_sreg = self.sreg.read();
             ctrl_sreg &= 0x7F;
-            core::ptr::write_volatile(&mut self.sreg, ctrl_sreg);
+            self.sreg.write(ctrl_sreg);
         }
     }
 
     /// Enables Interrupts
     pub fn enable(&mut self) {
         unsafe {
-            let mut ctrl_sreg = core::ptr::read_volatile(&self.sreg);
+            let mut ctrl_sreg = self.sreg.read();
             ctrl_sreg &= 0xFF;
-            core::ptr::write_volatile(&mut self.sreg, ctrl_sreg);
+            self.sreg.write(ctrl_sreg);
         }
     }
 }
