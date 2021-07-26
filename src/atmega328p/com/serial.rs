@@ -17,8 +17,7 @@
 //! This files contain the code for combining  serial ports into a structure for easier implementation.
 //!  https://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-7810-Automotive-Microcontrollers-ATmega328P_Datasheet.pdf
 
-/// Crates which would be used in the implementation.
-/// We will be using standard volatile and bit_field crates now for a better read and write.
+// Source code crates required
 use crate::atmega328p::com::usart_initialize::{Usart, UsartNum};
 
 /// This struct contains  USART0 in ARDUINO MEGA arranged in a array.

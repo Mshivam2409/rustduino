@@ -14,17 +14,17 @@
 //     You should have received a copy of the GNU Affero General Public License
 //     along with this program.  If not, see <https://www.gnu.org/licenses/>
 
-use crate::atmega328p::hal::interrupts;
-use crate::atmega328p::hal::port;
-use crate::atmega328p::hal::power;
-
-/// Crates which would be used in the implementation.
-/// We will be using standard volatile and bit_field crates now for a better read and write.
+// Standard crates to be used
 use crate::delay::delay_ms;
 use bit_field::BitField;
 use core::ptr::write_volatile;
 use core::{f64, u32, u8};
 use volatile::Volatile;
+
+// Source code crates required
+use crate::atmega328p::hal::interrupts;
+use crate::atmega328p::hal::port;
+use crate::atmega328p::hal::power;
 
 /// Some useful constants regarding bit manipulation for USART.
 /// Position of clock mode adjuster (xck) bit.

@@ -14,7 +14,7 @@
 //     You should have received a copy of the GNU Affero General Public License
 //     along with this program.  If not, see <https://www.gnu.org/licenses/>
 
-/// Other source code files to be used.
+// Source code crates required
 use crate::atmega328p::com::usart_initialize::Usart;
 
 /// Crates which would be used in the implementation.
