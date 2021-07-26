@@ -53,7 +53,7 @@ use volatile::Volatile;
 /// ~ Standby: It is identical to Power Down, with one exception:
 ///
 /// If Timer/Counter2 is enabled, it will keep running during sleep. The device
-// can wake up from either timer overflow or output compare event from
+/// can wake up from either timer overflow or output compare event from
 /// Timer/Counter2 if the corresponding Timer/Counter2 interrupt enable bits
 /// are set in TIMSK2, and the global interrupt enable bit in SREG is set.
 
@@ -118,7 +118,7 @@ impl Sleep {
         self.smcr.write(0x0);
     }
 }
-/// Enables the Chosen ppower mode.
+/// Enables the Chosen power mode.
 pub fn enable_mode(mode: SleepMode) {
     match mode {
         SleepMode::Idle => Sleep::idle(&mut Sleep::new()),
