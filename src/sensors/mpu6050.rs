@@ -201,16 +201,14 @@ pub enum MPUdlpfT {
     MPU6050dlpf0,
 }
 
-pub struct MPU6050<'a> {
+pub struct MPU6050 {
     address: u8,
-    accel_output: FixedSliceVec<'a, f32>,
-    gyro_output: FixedSliceVec<'a, f32>,
 }
 
-impl<'a> MPU6050<'a> {
+impl MPU6050 {
     ///Returns a mutable refernce to the struct to be used in the implementations
     pub fn new() -> &'static mut Self {
-        unsafe { &mut *(0x00 as *mut Self) }
+        unsafe { &mut *(0x75 as *mut Self) }
     }
 
     fn readregister(&mut self, reg: u8) -> u8 {
@@ -503,33 +501,31 @@ impl<'a> MPU6050<'a> {
     ///* Reads the three, two-byte accelerometer values from the sensor.
     ///* Returns the two-byte raw accelerometer values as a 32-bit float.
     ///* The vec accel_output stores the raw values of the accelerometer where `accel_output[0]` is the x-axis, `accel_output[1]` is the y-axis and `accel_output[2]` is the z-axis output respectively. These raw values are then converted to g's per second according to the scale given as input in `begin()` function.
-    pub fn read_accel(&mut self) {
+    pub fn read_accel(&mut self) -> FixedSliceVec<f32> {
         let mut v: FixedSliceVec<u8> = FixedSliceVec::new(&mut []);
         v.push(MPU6050_REG_ACCEL_XOUT_H);
         let i2c = com::i2c::Twi::new();
         i2c.read_from_slave(MPU6050_ADDRESS, 6, &mut v); //input from slave
-        self.accel_output
-            .push((((v[1] as u16) << 8) | (v[2] as u16)) as f32); //input of X axis
-        self.accel_output
-            .push((((v[3] as u16) << 8) | (v[4] as u16)) as f32); //input of Y axis
-        self.accel_output
-            .push((((v[5] as u16) << 8) | (v[6] as u16)) as f32); //input of Z axis
+        let mut accel_output: FixedSliceVec<f32> = FixedSliceVec::new(&mut []);
+        accel_output.push((((v[1] as u16) << 8) | (v[2] as u16)) as f32); //input of X axis
+        accel_output.push((((v[3] as u16) << 8) | (v[4] as u16)) as f32); //input of Y axis
+        accel_output.push((((v[5] as u16) << 8) | (v[6] as u16)) as f32); //input of Z axis
+        return accel_output;
     }
 
     ///* Reads the three, two-byte gyroscope values from the sensor.
     ///* Returns the two-byte raw gyroscope values as a 32-bit float.
     ///* The vec gyro_output stores the raw values of the gyroscope where `gyro_output[0]` is the x-axis, `gyro_output[1]` is the y-axis and `gyro_output[2]` is the z-axis output respectively. These raw values are then converted to degrees per second according to the scale given as input in `begin()` function.
-    pub fn read_gyro(&mut self) {
+    pub fn read_gyro(&mut self) -> FixedSliceVec<f32> {
         let mut v: FixedSliceVec<u8> = FixedSliceVec::new(&mut []);
         v.push(MPU6050_REG_GYRO_XOUT_H);
         let i2c = com::i2c::Twi::new();
         i2c.read_from_slave(MPU6050_ADDRESS, 6, &mut v); //input from slave
-        self.gyro_output
-            .push((((v[1] as u16) << 8) | (v[2] as u16)) as f32); //input of X axis
-        self.gyro_output
-            .push((((v[3] as u16) << 8) | (v[4] as u16)) as f32); //input of Y axis
-        self.gyro_output
-            .push((((v[5] as u16) << 8) | (v[6] as u16)) as f32); //input of Z axis
+        let mut gyro_output: FixedSliceVec<f32> = FixedSliceVec::new(&mut []);
+        gyro_output.push((((v[1] as u16) << 8) | (v[2] as u16)) as f32); //input of X axis
+        gyro_output.push((((v[3] as u16) << 8) | (v[4] as u16)) as f32); //input of Y axis
+        gyro_output.push((((v[5] as u16) << 8) | (v[6] as u16)) as f32); //input of Z axis
+        return gyro_output;
     }
 
     /// Starts the sensor by setting the device to active mode ,setting the accelerometer range and gyroscope scale.
