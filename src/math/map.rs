@@ -16,6 +16,6 @@
 
 /// Converts output generated from analog_read() in form to be used as input in analog_write().
 /// This function will be used as a interface for read and write functionalities in the chip.
-pub fn map_from1023_to255(val: u32) -> u8 {
-    255 * (val / 1023) as u8
+pub fn map(val: u64, in_min: u64, in_max: u64, out_min: u64, out_max: u64) -> u64 {
+    (val - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
 }

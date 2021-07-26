@@ -16,4 +16,4 @@
 
 mod map;
 
-pub use map::map_from1023_to255;
+pub use map::map;
