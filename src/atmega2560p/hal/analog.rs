@@ -631,5 +631,3 @@ pub fn analog_reference(reftype: RefType) {
         }
     }
 }
-
-
