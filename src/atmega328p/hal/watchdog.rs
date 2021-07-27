@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>
 
-use crate::hal::interrupts;
+use crate::atmega328p::hal::interrupts;
 use core;
 
 /// Watchdog timer 10.9 of the manual.

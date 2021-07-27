@@ -26,9 +26,10 @@ use bit_field::BitField;
 use core::ptr::write_volatile;
 use volatile::Volatile;
 
-use crate::hal::pin::{AnalogPin, DigitalPin};
+use crate::atmega328p::com::usart_initialize::{Usart,UsartNum};
+use crate::atmega328p::hal::pin::{AnalogPin, DigitalPin};
 /// Source codes to be used here.
-use crate::hal::sleep_mode::Sleep;
+use crate::atmega328p::hal::sleep_mode::Sleep;
 
 /// Selection of reference type for the implementation of Analog Pins.
 #[derive(Clone, Copy)]
@@ -263,6 +264,8 @@ impl DigitalPin {
     pub fn write(&mut self, value1: u8) {
         self.pin.set_output();
         let pin1 = self.pinno;
+        let usart = Usart::new(UsartNum::Usart0);
+        usart.set_power(UsartNum::Usart0);
         match pin1 {
             5 | 6 => {
                 let timer = Timer8::new(TimerNo8::Timer0);

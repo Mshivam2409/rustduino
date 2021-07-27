@@ -258,7 +258,7 @@ impl Usart {
     }
 
     /// Function to set the power reduction register so that USART functioning is allowed.
-    fn set_power(&self, num: UsartNum) {
+    pub fn set_power(&self, num: UsartNum) {
         let pow: &mut power::Power;
         unsafe {
             pow = power::Power::new();

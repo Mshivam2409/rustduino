@@ -143,8 +143,20 @@ impl Pin {
         // Write the value to DDxn register.
         unsafe { write_volatile(&mut (*self.port).ddr, ddr_val) }
     }
-      /// Set the pin to high output value.
-      pub fn high(&mut self) {
+
+    /// Toggles value of PORTxn, independent of value of DDRxn.
+    pub fn toggle(&mut self) {
+        // Check if pin number is valid
+        if self.pin >= 8 {
+            return;
+        }
+
+        // Set the bit at offset self.pin in PINxn register
+        unsafe { write_volatile(&mut (*self.port).pin, 0x1 << self.pin) }
+    }
+
+    /// Set the pin to high output value.
+    pub fn high(&mut self) {
         // Checks if pin number is valid.
         if self.pin >= 8 {
             return;
@@ -172,6 +184,7 @@ impl Pin {
             self.toggle();
         }
     }
+
     /// Change pin mode to Output by changing the value of DDxn register.
     pub fn output(&mut self) {
         self.set_pin_mode(IOMode::Output);
