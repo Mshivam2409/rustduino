@@ -14,7 +14,9 @@ title: Random Number Generation
 Due to the deterministic nature of processors, it is almost impossible to generate true random numbers using only processor instructions.As more people are interested in the field of stochastic simulation and cryptography, and seek cheap platforms , the Arduino platform should be able to at least be able to close the gap between affordability and quality while creating Random Numbers.
 
 ![Pictorial Randomness](https://gist.githubusercontent.com/bloc97/b5831977ccfeae3aa71976686c9c8afa/raw/1f216bb8b1c4c457c215bf2d70213213dd667a87/random_comparison.png)
-![you can check here for some more analysis data](https://www.random.org/analysis/)
+
+You can check here for some more analysis data
+<https://www.random.org/analysis/>
 
 
 ## Current Methods
