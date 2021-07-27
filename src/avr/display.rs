@@ -43,6 +43,9 @@ fn make_pin(pin: u8) -> Pin {
     }
 }
 
+///Setup has attributes as -> setup(datapin:datapin number,clockpin:clockpin number, latchpin:latchpin number,decpt:true/false for decimal point,
+///common_anode:true/false for common anode, value:value to be output)
+//just call this function and the 'value' will be displayed to the the seven segment display.
 pub fn setup(datapin: u8, clockpin: u8, latchpin: u8, decpt: bool, common_anode: bool, value: u8) {
     let mut data = make_pin(datapin);
     let mut clock = make_pin(clockpin);
@@ -55,6 +58,7 @@ pub fn setup(datapin: u8, clockpin: u8, latchpin: u8, decpt: bool, common_anode:
     out(datapin, clockpin, latchpin, decpt, common_anode, value);
 }
 
+//updates the value to shift register pin
 pub fn myfn_update_display(
     datapin: u8,
     clockpin: u8,
@@ -74,6 +78,7 @@ pub fn myfn_update_display(
     latch.high(); //update display
 }
 
+//does send the data to be displated through calling functions
 pub fn out(datapin: u8, clockpin: u8, latchpin: u8, decpt: bool, common_anode: bool, value: u8) {
     let mut bits: u8 = myfn_num_to_bits(value);
     if decpt {
@@ -83,6 +88,7 @@ pub fn out(datapin: u8, clockpin: u8, latchpin: u8, decpt: bool, common_anode: b
     // display alphanumeric digit
 }
 
+//converts the number to bits
 pub fn myfn_num_to_bits(somenumber: u8) -> u8 {
     if somenumber == 0 {
         return 0b11111100;
