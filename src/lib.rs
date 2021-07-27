@@ -2,10 +2,10 @@
 #![deny(warnings)]
 #![feature(asm)]
 #![feature(llvm_asm)]
-#![allow(unused_assignments)]
-#![allow(unused_unsafe)]
 
 /// Library for AVR ATMEGA2560P Micro-controller
+/// For more information see the data sheet provided below
+/// `<https://ww1.microchip.com/downloads/en/devicedoc/atmel-2549-8-bit-avr-microcontroller-atmega640-1280-1281-2560-2561_datasheet.pdf>`
 #[cfg(feature = "atmega2560p")]
 pub mod atmega2560p {
 
@@ -51,6 +51,8 @@ pub mod atmega2560p {
 pub use atmega2560p::*;
 
 /// Library for AVR ATMEGA328P Micro-controller
+/// For more information see the data sheet provided below
+/// `<https://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-7810-Automotive-Microcontrollers-ATmega328P_Datasheet.pdf>`
 #[cfg(feature = "atmega328p")]
 pub mod atmega328p {
 
@@ -92,8 +94,8 @@ pub mod atmega328p {
 }
 
 /// Library for AVR ATMEGA328P Micro-controller
-// #[cfg(feature = "atmega328p")]
-// pub use atmega328p::*;
+#[cfg(feature = "atmega328p")]
+pub use atmega328p::*;
 
 /// Sensor control for AVR Chips
 #[cfg(feature = "sensors")]
@@ -102,8 +104,9 @@ pub mod sensors;
 /// Low level control for AVR Chips
 pub mod avr;
 
+/// Math functions for assistance in implementation
+pub mod math;
+
+/// Configuration setup and time control
 pub mod config;
 pub mod delay;
-
-/// Math functions for assistance in implementation.
-pub mod math;

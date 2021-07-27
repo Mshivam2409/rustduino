@@ -67,16 +67,14 @@ impl RandomNumberGenerator {
         let mut bits3: u8 = 0;
 
         for i in 1..4 {
-            let mut left: u8 = 0;
-            let mut right: u8 = 0;
+            let left: u8;
+            let right: u8;
 
-            unsafe {
-                delay_ms(100);
-                left = self.pins.analog[0].read() as u8;
+            delay_ms(100);
+            left = self.pins.analog[0].read() as u8;
 
-                delay_ms(100);
-                right = self.pins.analog[0].read() as u8;
-            }
+            delay_ms(100);
+            right = self.pins.analog[0].read() as u8;
 
             bits3 = xor(bits3, rotate(left, i));
             bits3 = xor(bits3, rotate(right, 7 - i));

@@ -5,7 +5,7 @@
 /// Crates to be used.
 use rustduino::hal::pin::Pins;
 use rustduino::hal::watchdog::WatchDog;
-use rustduino::math::map_from1023_to255;
+use rustduino::math::map;
 
 #[no_mangle]
 pub fn main() {
@@ -22,7 +22,7 @@ pub fn main() {
         let a: u32 = pins.analog[0].read();
 
         // Make the input value ready to be sent through a digital pin.
-        let b: u8 = map_from1023_to255(a);
+        let b: u8 = map(a as u64, 0, 255, 0, 1023) as u8;
 
         rustduino::delay::delay_ms(1000);
 

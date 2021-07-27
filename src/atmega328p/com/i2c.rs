@@ -22,7 +22,6 @@ use volatile::Volatile;
 // Source code crates required
 use crate::delay::delay_ms;
 
-
 ///  Contains registers fow TWI.
 ///
 /// * `TWBR`: *TWI Bit Rate Register*. TWBR selects the division factor for the

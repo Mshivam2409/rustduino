@@ -19,7 +19,6 @@
 //! This code implements the Analog Read function to read from the buffer using analog signals.
 //! This code implements the Analog Write function to write into the buffer using analog signals.
 //! Refer to section 14,15,22 and 23 of ATMEGA328P datasheet.
-//! https://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-7810-Automotive-Microcontrollers-ATmega328P_Datasheet.pdf
 
 /// Crates to be used for the implementation.
 use bit_field::BitField;

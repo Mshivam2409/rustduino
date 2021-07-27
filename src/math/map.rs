@@ -14,8 +14,19 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>
 
-/// Converts output generated from analog_read() in form to be used as input in analog_write().
-/// This function will be used as a interface for read and write functionalities in the chip.
-pub fn map_from1023_to255(val: u32) -> u8 {
-    255 * (val / 1023) as u8
+//! This code implements a mathematical data mapping function for a given value.
+
+/// Function used to map a number from one scale to the other scale accordingly.
+/// # Arguments
+/// * `val` - a u64, the value which is to be mapped to any other data type.
+/// * `in_min` - a u64, the minimum value possible in the data type of `val`.
+/// * `in_max` - a u64, the maximum value possible in the data type of `val`.
+/// * `out_min` - a u64, the minimum value possible in the required data type for `val`.
+/// * `out_max` - a u64, the maximum value possible in the required data type for `val`.
+/// # Returns
+/// * `a u64` - the final value of `val` in the required data type.
+/// # Usage
+/// * rustduino::math::map::map(...)
+pub fn map(val: u64, in_min: u64, in_max: u64, out_min: u64, out_max: u64) -> u64 {
+    (val - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
 }

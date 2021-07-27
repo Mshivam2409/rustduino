@@ -30,11 +30,9 @@ pub struct Serial {
 impl Serial {
     /// This function creates a new Serial struct.
     /// The struct serial will contain all the USARTs at one place.
-    pub fn new() -> Serial {
-        unsafe {
-            Serial {
-                usart: [Usart::new(UsartNum::Usart0)],
-            }
+    pub unsafe fn new() -> Serial {
+        Serial {
+            usart: [Usart::new(UsartNum::Usart0)],
         }
     }
 }

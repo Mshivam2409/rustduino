@@ -71,7 +71,7 @@ pub fn out(
     if decpt {
         bits = bits | 0b00000001; // add decimal point if needed
     }
-    myfn_update_display(datapin, clockpin, latchpin, decpt, common_anode, value);
+    myfn_update_display(datapin, clockpin, latchpin, decpt, common_anode, bits);
     // display alphanumeric digit
 }
 

@@ -1,5 +1,5 @@
 // RustDuino : A generic HAL implementation for Arduino Boards in Rust
-// Copyright (C) 2021 Shivam Malhotra, Indian Institute of Technology Kanpur
+// Copyright (C) 2021 Devansh Kumar Jha, Indian Institute of Technology Kanpur
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published
@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>
 
-pub mod aht10;
+mod aht10;
 
 pub use aht10::AHT10;
 

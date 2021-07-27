@@ -49,7 +49,7 @@ const _POLARITY: UsartPolarity = UsartPolarity::Outputrise;
 impl Serial {
     /// Gives a new serial port object which can be used to control all the
     /// USART at one place.
-    pub fn serial_new() -> Serial {
+    pub unsafe fn serial_new() -> Serial {
         Serial::new()
     }
 }
@@ -57,7 +57,7 @@ impl Serial {
 impl Usart {
     /// This function can be use to initialize with default settings.
     /// Like Mode:Normal asynchronuous,stopbit:one,data bit:8,parity type:no
-    pub fn begin(&mut self) {
+    pub unsafe fn begin(&mut self) {
         self.transmit_enable();
         self.recieve_enable();
         self.initialize(MODE, BAUD, STOP, SIZE, PARITY);
@@ -65,14 +65,14 @@ impl Usart {
 
     /// This function can be use to initialize with baud rate and remaining settings will be set to default
     /// Like Mode:Normal asynchronuous,stopbit:one,data bit:8,parity type:no
-    pub fn begin_set_baud(&mut self, baud1: i64) {
+    pub unsafe fn begin_set_baud(&mut self, baud1: i64) {
         self.transmit_enable();
         self.recieve_enable();
         self.initialize(MODE, baud1, STOP, SIZE, PARITY);
     }
 
     /// This function can be used to stop the functioning of USART.
-    pub fn end(&mut self) {
+    pub unsafe fn end(&mut self) {
         self.transmit_disable();
         self.recieve_disable();
     }
