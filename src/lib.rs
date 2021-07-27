@@ -65,13 +65,6 @@ pub mod atmega328p {
 
         pub mod usart;
 
-        pub mod usart_initialize;
-
-        pub mod usart_receive;
-
-        pub mod usart_transmit;
-
-        pub mod i2c;
     }
 }
 
