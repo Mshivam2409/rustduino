@@ -1,9 +1,7 @@
-#![cfg(feature="rustduino")]
 #![no_std]
 #![deny(warnings)]
 #![feature(asm)]
 #![feature(llvm_asm)]
-
 
 /// Library for AVR ATMEGA2560P Micro-controller
 /// For more information see the data sheet provided below
@@ -104,9 +102,11 @@ pub use atmega328p::*;
 pub mod sensors;
 
 /// Low level control for AVR Chips
+#[cfg(feature = "avr")]
 pub mod avr;
 
 /// Math functions for assistance in implementation
+#[cfg(feature = "math")]
 pub mod math;
 
 /// Configuration setup and time control
