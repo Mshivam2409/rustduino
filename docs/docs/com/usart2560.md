@@ -213,7 +213,7 @@ This function clears the unread data in the receive buffer by flushing it
    pub fn read(&mut self) -> Option<Volatile<u8>,Volatile<u32>> {/* fields omitted */}
 ```
 
-### println() Functions
+### `println()` Functions and `USAGE` of above functions
 ---
 
 This file contains the println() functions in various versions which the
@@ -226,10 +226,10 @@ Can be used to initialize with default settings.
 
 ```rust
     pub unsafe fn begin(&mut self) {
-        self.disable();
-        self.transmit_enable();
-        self.recieve_enable();
-        self.initialize(MODE, BAUD, STOP, SIZE, PARITY);
+        self.disable();              // Disable global interrupts.
+        self.transmit_enable();      // enabling the Transmitter
+        self.recieve_enable();       // enabling receiver
+        self.initialize(MODE, BAUD, STOP, SIZE, PARITY); // cumulative function for initialization
     }
 ```
 Similarly we will define functoins to initialize `begin_set_baud` with given baud rate and remaining settings will be set to default.
