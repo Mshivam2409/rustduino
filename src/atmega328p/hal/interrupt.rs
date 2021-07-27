@@ -36,19 +36,15 @@ impl Interrupt {
     }
     /// Disables Interrupts.
     pub fn disable(&mut self) {
-        unsafe {
-            let mut ctrl_sreg = self.sreg.read();
-            ctrl_sreg &= 0x7F;
-            self.sreg.write(ctrl_sreg);
-        }
+        let mut ctrl_sreg = self.sreg.read();
+        ctrl_sreg &= 0x7F;
+        self.sreg.write(ctrl_sreg);
     }
 
     /// Enables Interrupts
     pub fn enable(&mut self) {
-        unsafe {
-            let mut ctrl_sreg = self.sreg.read();
-            ctrl_sreg &= 0xFF;
-            self.sreg.write(ctrl_sreg);
-        }
+        let mut ctrl_sreg = self.sreg.read();
+        ctrl_sreg &= 0xFF;
+        self.sreg.write(ctrl_sreg);
     }
 }

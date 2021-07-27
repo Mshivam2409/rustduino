@@ -141,24 +141,24 @@ impl<'a> AHT10<'a> {
     /// * Reads 20 bit raw humidity data and returns relative humidity .
     /// * Usage:let aht10=rustduino::sensors::AHT10::new()
     /// * aht10.relative_humidity()
-    pub fn relative_humidity(&mut self) -> f64 {
+    pub fn relative_humidity(&mut self) -> f32 {
         self.perform_measurement();
-        let mut humid: f64 = (((self.vec[1] as u32) << 12)
+        let mut humid: f32 = (((self.vec[1] as u32) << 12)
             | ((self.vec[2] as u32) << 4)
-            | ((self.vec[3] as u32) >> 4)) as f64;
-        humid = (humid * 100.0) / 0x100000 as f64;
+            | ((self.vec[3] as u32) >> 4)) as f32;
+        humid = (humid * 100.0) / 0x100000 as f32;
         return humid;
     }
 
     /// * Reads 20 bit raw temperature data and returns temperature .
     /// * Usage:let aht10=rustduino::sensors::AHT10::new()
     /// * aht10.temperature()
-    pub fn temperature(&mut self) -> f64 {
+    pub fn temperature(&mut self) -> f32 {
         self.perform_measurement();
-        let mut temp: f64 = ((((self.vec[3] as u32) & 0xF) << 16)
+        let mut temp: f32 = ((((self.vec[3] as u32) & 0xF) << 16)
             | (self.vec[4] as u32) << 8
-            | (self.vec[5]) as u32) as f64;
-        temp = ((temp as f64 * 200.0) / 0x100000 as f64) - 50.0;
+            | (self.vec[5]) as u32) as f32;
+        temp = ((temp as f32 * 200.0) / 0x100000 as f32) - 50.0;
         return temp;
     }
 }

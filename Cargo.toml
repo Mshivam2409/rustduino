@@ -28,17 +28,11 @@ exclude = [
 ]
 license="AGPL-3.0-only"
 
-<<<<<<< HEAD
-[features]
-com = []
-sensors=[]
-=======
 
 [features]
 com = []
 sensors=[]
 analog=[]
->>>>>>> 4cc062aeacfafa30ec421d6df3c66a5d99a7e247
 atmega328p=[]
 atmega328p-hal=[]
 atmega328p-core = ["atmega328p","atmega328p-hal"]
@@ -47,10 +41,7 @@ atmega2560p-hal=[]
 atmega2560p-core = ["atmega2560p","atmega2560p-hal"]
 atmega328p-com=["atmega328p-core","com"]
 atmega2560p-com=["atmega2560p-core","com"]
-<<<<<<< HEAD
 default=["sensors","atmega328p-com","atmega2560p-com"]
-=======
->>>>>>> 4cc062aeacfafa30ec421d6df3c66a5d99a7e247
 
 
 [dependencies]
