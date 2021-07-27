@@ -80,7 +80,6 @@ const MR_SLA_ACK: u8 = 0x40;
 const MR_DATA_ACK: u8 = 0x50;
 const MR_DATA_NACK: u8 = 0x58;
 
-
 // Defines and constants
 const TWSR_STATUS_MASK: u8 = 0xF8;
 
