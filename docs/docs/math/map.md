@@ -5,6 +5,7 @@ title: Continuous Data Map
 ---
 
 *data type change is important but how without significant data loss?*
+
 ---
 
 ## Description
