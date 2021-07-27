@@ -3,6 +3,8 @@
 #![feature(asm)]
 #![feature(llvm_asm)]
 
+// #![cfg(feature="rustduino")]
+
 /// Library for AVR ATMEGA2560P Micro-controller
 /// For more information see the data sheet provided below
 /// `<https://ww1.microchip.com/downloads/en/devicedoc/atmel-2549-8-bit-avr-microcontroller-atmega640-1280-1281-2560-2561_datasheet.pdf>`
@@ -10,7 +12,7 @@
 pub mod atmega2560p {
 
     /// Hardware Abstraction Library (HAL)
-    #[cfg(feature = "atmega2560p-hal")]
+    #[cfg(feature = "hal")]
     pub mod hal {
         pub mod power;
 
@@ -57,7 +59,7 @@ pub use atmega2560p::*;
 pub mod atmega328p {
 
     /// Hardware Abstraction Library (HAL)
-    #[cfg(feature = "atmega328p-hal")]
+    #[cfg(feature = "hal")]
     pub mod hal {
         pub mod power;
 

@@ -23,7 +23,7 @@
 /// Other source codes required.
 use crate::atmega2560p::hal::power::Power;
 use crate::avr::__nop;
-use crate::hal::pin::{AnalogPin, DigitalPin};
+use crate::atmega2560p::hal::pin::{AnalogPin, DigitalPin};
 
 /// Crates to be used for the implementation.
 use bit_field::BitField;
