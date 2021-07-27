@@ -10,7 +10,7 @@ title: Digital
  For more details see section 16,17,25 and 26 of ATMEGA2560P datasheet.
 
 ```rust
-/// Include the required source codes.
+/// Include the required source codes before struct creation
 use crate::hal::pin::*;
 use core::ptr::{read_volatile, write_volatile};
 ```
@@ -37,16 +37,34 @@ pub struct DigitalPin {
         unsafe { write_volatile(&mut (*self.pin.port).pin, 0x1 << self.pin.pin) }
     }
 ```
+#### Usage
+
+```rust
+   use rustduino::atmega2560p::hal::pin::Pins;
+   let mut pins = Pins::new();// This pins represents pin 7 of port B ( pin 13).
+   pins.digital[13].toggle();   
+```
+
 ### impl `high`
 Set the pin to high output value.
 
 ```rust
-    pub fn high(&mut self) { /* fields omitted */}
+   pub fn high(&mut self) { /* fields omitted */}
         
+```
+#### Usage
+```rust
+   pins.digital[13].high();   //This sets pin high.
+
 ```
 
 ### impl `low`
 Sets the pin to low output value.
 ```rust
     pub fn low(&mut self) {/* fields omitted */}
+```
+#### Usage 
+```rust
+   pins.digital[13].low();   //This sets pin low.
+
 ```
