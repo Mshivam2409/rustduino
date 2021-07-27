@@ -58,6 +58,11 @@ pub mod atmega328p {
 #[cfg(feature = "atmega328p")]
 pub use atmega328p::*;
 
-pub mod avr;
+#[cfg(feature = "avr")]
+pub mod avr {
+    pub mod display;
+
+    pub mod shift;
+}
 pub mod config;
 pub mod delay;

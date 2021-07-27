@@ -33,6 +33,7 @@ exclude = [
 license="AGPL-3.0-only"
 
 [features]
+avr=[]
 com = []
 sensors=[]
 atmega328p=[]
