@@ -20,10 +20,11 @@
 //! This code implements the Analog Write function to write into the buffer using analog signals.
 //! Refer to section 16,17,25 and 26 of ATMEGA2560P datasheet.
 
+use crate::atmega2560p::com::usart_initialize::{UsartNum, UsartObject};
+use crate::atmega2560p::hal::pin::{AnalogPin, DigitalPin};
 /// Other source codes required.
 use crate::atmega2560p::hal::power::Power;
 use crate::avr::__nop;
-use crate::atmega2560p::hal::pin::{AnalogPin, DigitalPin};
 
 /// Crates to be used for the implementation.
 use bit_field::BitField;
@@ -390,6 +391,8 @@ impl DigitalPin {
             }
             9 | 10 => {
                 let timer = Timer8::new(TimerNo8::Timer2);
+                let mut usart = unsafe { UsartObject::new(UsartNum::Usart0) };
+                usart.set_power(UsartNum::Usart0);
                 timer.tccra.update(|ctrl| {
                     ctrl.set_bits(0..2, 0b11);
                 });
@@ -410,6 +413,8 @@ impl DigitalPin {
             }
             11 | 12 => {
                 let timer = Timer16::new(TimerNo16::Timer1);
+                let mut usart = unsafe { UsartObject::new(UsartNum::Usart0) };
+                usart.set_power(UsartNum::Usart0);
                 timer.tccra.update(|ctrl| {
                     ctrl.set_bits(0..2, 0b01);
                 });
@@ -430,6 +435,8 @@ impl DigitalPin {
             }
             2 | 3 | 5 => {
                 let timer = Timer16::new(TimerNo16::Timer3);
+                let mut usart = unsafe { UsartObject::new(UsartNum::Usart1) };
+                usart.set_power(UsartNum::Usart1);
                 timer.tccra.update(|ctrl| {
                     ctrl.set_bits(0..2, 0b01);
                 });
@@ -456,6 +463,8 @@ impl DigitalPin {
             }
             6 | 7 | 8 => {
                 let timer = Timer16::new(TimerNo16::Timer4);
+                let mut usart = unsafe { UsartObject::new(UsartNum::Usart0) };
+                usart.set_power(UsartNum::Usart0);
                 timer.tccra.update(|ctrl| {
                     ctrl.set_bits(0..2, 0b01);
                 });
@@ -481,7 +490,9 @@ impl DigitalPin {
                 }
             }
             44 | 45 | 46 => {
-                let timer = Timer16::new(TimerNo16::Timer3);
+                let timer = Timer16::new(TimerNo16::Timer5);
+                let mut usart = unsafe { UsartObject::new(UsartNum::Usart1) };
+                usart.set_power(UsartNum::Usart1);
                 timer.tccra.update(|ctrl| {
                     ctrl.set_bits(0..2, 0b01);
                 });

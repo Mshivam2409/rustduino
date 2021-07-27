@@ -18,7 +18,7 @@
 //! which might be attached or in-built to the current
 //! AVR Micro-controller.
 
-use crate::{com, delay::delay_ms};
+use crate::{com::i2c, delay::delay_ms};
 use bit_field::BitField;
 use fixed_slice_vec::FixedSliceVec;
 
@@ -220,7 +220,7 @@ impl<'a> MPU6050<'a> {
     fn readregister(&mut self, reg: u8) -> u8 {
         let mut vec1: FixedSliceVec<u8> = FixedSliceVec::new(&mut []);
         vec1.push(reg);
-        let i2c = com::i2c::Twi::new();
+        let i2c = i2c::Twi::new();
         i2c.read_from_slave(MPU6050_ADDRESS, 1, &mut vec1);
         return vec1[1];
     }
@@ -229,7 +229,7 @@ impl<'a> MPU6050<'a> {
         let mut vec2: FixedSliceVec<u8> = FixedSliceVec::new(&mut []);
         vec2.push(reg);
         vec2.push(value);
-        let i2c = com::i2c::Twi::new();
+        let i2c = i2c::Twi::new();
         i2c.write_to_slave(MPU6050_ADDRESS, &vec2);
     }
 
@@ -510,7 +510,7 @@ impl<'a> MPU6050<'a> {
     pub fn read_accel(&mut self) {
         let mut v: FixedSliceVec<u8> = FixedSliceVec::new(&mut []);
         v.push(MPU6050_REG_ACCEL_XOUT_H);
-        let i2c = com::i2c::Twi::new();
+        let i2c = i2c::Twi::new();
         i2c.read_from_slave(MPU6050_ADDRESS, 6, &mut v); //input from slave
         self.accel_output
             .push((((v[1] as u16) << 8) | (v[2] as u16)) as f32); //input of X axis
@@ -526,7 +526,7 @@ impl<'a> MPU6050<'a> {
     pub fn read_gyro(&mut self) {
         let mut v: FixedSliceVec<u8> = FixedSliceVec::new(&mut []);
         v.push(MPU6050_REG_GYRO_XOUT_H);
-        let i2c = com::i2c::Twi::new();
+        let i2c = i2c::Twi::new();
         i2c.read_from_slave(MPU6050_ADDRESS, 6, &mut v); //input from slave
         self.gyro_output
             .push((((v[1] as u16) << 8) | (v[2] as u16)) as f32); //input of X axis
