@@ -42,15 +42,9 @@ impl Watchdog {
     }
     /// Resets watchdog timer.
     pub fn reset_watchdog(&mut self) {
-<<<<<<< HEAD
-            let mut ctrl_mcusr = self.mcusr.read();
-            ctrl_mcusr &= 0x7;
-            self.mcusr.write(ctrl_mcusr);
-=======
         let mut ctrl_mcusr = self.mcusr.read();
         ctrl_mcusr &= 0x7;
         self.mcusr.write(ctrl_mcusr);
->>>>>>> 8afae532420c24a3669e20f32a7579be91cfe954
     }
     /// Disables watchdog
     pub fn disable(&mut self) {
