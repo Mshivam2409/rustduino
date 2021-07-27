@@ -98,6 +98,9 @@ pub mod atmega328p {
 pub use atmega328p::*;
 
 /// Sensor control for AVR Chips
+/// For more information see the following links.
+/// `<https://server4.eca.ir/eshop/AHT10/Aosong_AHT10_en_draft_0c.pdf>`
+/// `<https://invensense.tdk.com/wp-content/uploads/2015/02/MPU-6000-Datasheet1.pdf>`
 #[cfg(feature = "sensors")]
 pub mod sensors;
 

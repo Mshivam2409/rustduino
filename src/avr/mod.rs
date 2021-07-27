@@ -18,6 +18,8 @@ mod llvm;
 
 pub use llvm::__nop;
 
+/// Shift register setup controls functions for the AVR Chips.
 pub mod shift;
 
+/// 7-Segment Display setup and control functions for the AVR Chips.
 pub mod display;

@@ -155,6 +155,7 @@ const _MPU6050_REG_FIFO_COUNTL: u8 = 0x73;
 const _MPU6050_REG_FIFO_R_W: u8 = 0x74;
 const _MPU6050_REG_WHO_AM_I: u8 = 0x75; // Who Am I
 
+/// Selection of Source of the clock.
 #[derive(Clone, Copy)]
 pub enum MPUClockSourceT {
     MPU6050ClockInternal8MHZ,
@@ -166,6 +167,7 @@ pub enum MPUClockSourceT {
     MPU6050ClockKeepReset,
 }
 
+/// DPS rate selection for MPU6050.
 #[derive(Clone, Copy)]
 pub enum MPUdpsT {
     MPU6050Scale2000DPS,
@@ -174,6 +176,7 @@ pub enum MPUdpsT {
     MPU6050Scale250DPS,
 }
 
+/// Selection of bandwidth range of clock for MPU6050.
 #[derive(Clone, Copy)]
 pub enum MPURangeT {
     MPU6050Range2G,
@@ -182,6 +185,7 @@ pub enum MPURangeT {
     MPU6050Range16G,
 }
 
+/// One cycle delay time selection.
 #[derive(Clone, Copy)]
 pub enum MPUOnDelayT {
     MPU6050Delay3MS,
@@ -190,6 +194,7 @@ pub enum MPUOnDelayT {
     MPU6050NoDelay,
 }
 
+/// DHPF Timer setup.
 #[derive(Clone, Copy)]
 pub enum MPUdhpfT {
     MPU6050dhpfReset,
@@ -200,6 +205,7 @@ pub enum MPUdhpfT {
     MPU6050dhpfHold,
 }
 
+/// DLPF time setup.
 #[derive(Clone, Copy)]
 pub enum MPUdlpfT {
     MPU6050dlpf6,
@@ -211,6 +217,11 @@ pub enum MPUdlpfT {
     MPU6050dlpf0,
 }
 
+/// Controls the MPU6050 Gyroscopic Sensor.
+/// # Elements
+/// * `address` - a u8, used to store the address to control the functioning AHT10 sensor.
+/// * `accel_output` - a vector with u8 objects, It would be used to store the two byte accelerometer data read through the sensors.
+/// * `gyro_output` - a vector with u8 objects, It would be used to store the two byte gyroscopic data read through the sensors.
 #[repr(C, packed)]
 pub struct MPU6050<'a> {
     pub address: u8,
@@ -253,6 +264,7 @@ impl<'a> MPU6050<'a> {
         self.writeregister(reg, value);
     }
 
+    /// Set the DLPF mode according to the instruction from user.
     pub fn set_dlpf_mode(&mut self, dlpf: MPUdlpfT) {
         let mut value: u8;
         value = self.readregister(MPU6050_REG_CONFIG);
@@ -269,6 +281,7 @@ impl<'a> MPU6050<'a> {
         self.writeregister(MPU6050_REG_CONFIG, value);
     }
 
+    /// Set the DHPF mode according to the instruction from user.
     pub fn set_dhpf_mode(&mut self, dhpf: MPUdhpfT) {
         let mut value: u8;
         value = self.readregister(MPU6050_REG_CONFIG);
@@ -284,6 +297,7 @@ impl<'a> MPU6050<'a> {
         self.writeregister(MPU6050_REG_CONFIG, value);
     }
 
+    /// Set the DPS scale for MPU6050 according to the instruction from user.
     pub fn set_scale(&mut self, scale: MPUdpsT) {
         let mut value: u8;
         value = self.readregister(MPU6050_REG_GYRO_CONFIG);
@@ -297,6 +311,7 @@ impl<'a> MPU6050<'a> {
         self.writeregister(MPU6050_REG_GYRO_CONFIG, value);
     }
 
+    /// Get the scale in DPS on which MPU6050 is currently set.
     pub fn get_scale(&mut self) -> MPUdpsT {
         let mut value: u8;
         value = self.readregister(MPU6050_REG_GYRO_CONFIG);
@@ -313,6 +328,7 @@ impl<'a> MPU6050<'a> {
         }
     }
 
+    /// Set the bandwidth range of MPU6050.
     pub fn set_range(&mut self, range: MPURangeT) {
         let mut value: u8;
         value = self.readregister(MPU6050_REG_ACCEL_CONFIG);
@@ -326,6 +342,7 @@ impl<'a> MPU6050<'a> {
         self.writeregister(MPU6050_REG_ACCEL_CONFIG, value);
     }
 
+    /// Get the bandwidth range of MPU6050 currently set.
     pub fn get_range(&mut self) -> MPURangeT {
         let mut value: u8;
         value = self.readregister(MPU6050_REG_ACCEL_CONFIG);
@@ -342,6 +359,7 @@ impl<'a> MPU6050<'a> {
         }
     }
 
+    /// Set the clock source for MPU6050 according to user input.
     pub fn set_clock_source(&mut self, source: MPUClockSourceT) {
         let mut value: u8;
         value = self.readregister(MPU6050_REG_PWR_MGMT_1);
@@ -358,6 +376,7 @@ impl<'a> MPU6050<'a> {
         self.writeregister(MPU6050_REG_PWR_MGMT_1, value);
     }
 
+    /// Get the clock source for MPU6050 currently set.
     pub fn get_clock_source(&mut self) -> MPUClockSourceT {
         let mut value: u8;
         value = self.readregister(MPU6050_REG_PWR_MGMT_1);
@@ -379,15 +398,7 @@ impl<'a> MPU6050<'a> {
         }
     }
 
-    pub fn set_int_free_fall_enabled(&mut self, state: bool) {
-        self.writeregister_bit(MPU6050_REG_INT_ENABLE, 7, state);
-    }
-
-    pub fn get_int_free_fall_enabled(&mut self) -> bool {
-        let value = self.readregister(MPU6050_REG_INT_ENABLE);
-        return value.get_bit(6);
-    }
-
+    /// Set the acceleration power of MPU6050 on appropriate delay given by the user.
     pub fn set_accel_power_on_delay(&mut self, delay: MPUOnDelayT) {
         let mut value: u8;
         value = self.readregister(MPU6050_REG_MOT_DETECT_CTRL);
@@ -401,6 +412,7 @@ impl<'a> MPU6050<'a> {
         self.writeregister(MPU6050_REG_MOT_DETECT_CTRL, value);
     }
 
+    /// Get the acceleration power of MPU6050 currently set.
     pub fn get_accel_power_on_delay(&mut self) -> MPUOnDelayT {
         let mut value: u8;
         value = self.readregister(MPU6050_REG_MOT_DETECT_CTRL);
@@ -414,6 +426,15 @@ impl<'a> MPU6050<'a> {
         } else {
             return MPUOnDelayT::MPU6050NoDelay;
         }
+    }
+
+    pub fn set_int_free_fall_enabled(&mut self, state: bool) {
+        self.writeregister_bit(MPU6050_REG_INT_ENABLE, 7, state);
+    }
+
+    pub fn get_int_free_fall_enabled(&mut self) -> bool {
+        let value = self.readregister(MPU6050_REG_INT_ENABLE);
+        return value.get_bit(6);
     }
 
     pub fn set_motion_detection_threshold(&mut self, threshold: u8) {

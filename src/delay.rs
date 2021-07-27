@@ -21,8 +21,6 @@
 /// Internal function to implement a variable busy-wait loop.
 /// # Arguments
 /// * `count` - an i32, the number of times to cycle the loop.
-/// # Usage
-/// rustduino::delay::delay(...)
 #[inline(always)]
 pub fn delay(count: u32) {
     // Our asm busy-wait takes a 16 bit word as an argument,
@@ -53,8 +51,6 @@ pub fn delay(count: u32) {
 ///delay for N seconds
 /// # Arguments
 /// * `s` - an u32, number of seconds to busy-wait
-/// # Usage
-/// rustduino::delay::delay_s(...)
 #[inline(always)]
 pub fn delay_s(s: u32) {
     // microseconds
@@ -65,8 +61,6 @@ pub fn delay_s(s: u32) {
 ///delay for N miliseconds
 /// # Arguments
 /// * `ms` - an u32, number of milliseconds to busy-wait
-/// # Usage
-/// rustduino::delay::delay_ms(...)
 #[inline(always)]
 pub fn delay_ms(ms: u32) {
     // microseconds
@@ -77,8 +71,6 @@ pub fn delay_ms(ms: u32) {
 ///delay for N microseconds
 /// # Arguments
 /// * `us` - an u32, number of microseconds to busy-wait
-/// # Usage
-/// rustduino::delay::delay_us(...)
 #[inline(always)]
 pub fn delay_us(us: u32) {
     // nanoseconds

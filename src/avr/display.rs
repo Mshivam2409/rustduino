@@ -14,11 +14,18 @@
 //     You should have received a copy of the GNU Affero General Public License
 //     along with this program.  If not, see <https://www.gnu.org/licenses/>
 
-use core::usize;
-
 use crate::avr::shift::*;
 use crate::hal::pin::Pins;
+use core::usize;
 
+/// Setup for the 7-Segment Display.
+/// # Arguments
+/// * `datapin` -
+/// * `clockpin` -
+/// * `latchpin` -
+/// * `decpt` -
+/// * `common_anode` -
+/// * `value` -
 pub fn setup(
     datapin: usize,
     clockpin: usize,
