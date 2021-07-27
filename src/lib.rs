@@ -57,12 +57,22 @@ pub mod atmega328p {
         pub mod power;
 
         pub mod gating;
+    }
+
+    #[cfg(feature = "com")]
+    pub mod com {
+        pub mod serial;
+
+        pub mod usart;
 
     }
 }
 
 #[cfg(feature = "atmega328p")]
 pub use atmega328p::*;
+
+#[cfg(feature = "sensors")]
+pub mod sensors;
 
 pub mod avr;
 pub mod config;

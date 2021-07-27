@@ -34,15 +34,7 @@ module.exports = {
     {
       type: 'category',
       label: 'Arduino',
-<<<<<<< HEAD
-      items: [
-        'arduino/index', 
-        'arduino/atmega328p', 
-        'arduino/atmega2560p'
-      ]
-=======
       items: ['arduino/index', 'arduino/atmega328p', 'arduino/atmega2560p']
->>>>>>> 4cc062aeacfafa30ec421d6df3c66a5d99a7e247
     },
     {
       type: 'category',
@@ -51,20 +43,20 @@ module.exports = {
         'core/interrupts',
         'core/watchdog', 
         'core/power', 
-        'core/ports', 
+        'core/port', 
         'core/gpio', 
         'core/sleep_mode'
       ]
     },
     {
-      type: 'category',
-      label: 'Communications',
-      items: ['com/usart','com/i2c']
+      type:'category',
+      label:'Communication',
+      items:['com/i2c', 'com/usart', 'com/usart2560']
     },
     {
       type: 'category',
       label: 'Analog',
-      items: ['analog/analog']
+      items: ['analog/analog', 'analog/digital']
     },
     {
       type: 'category',
@@ -75,6 +67,11 @@ module.exports = {
       type: 'category',
       label: 'Sensors',
       items: ['sensors/aht10','sensors/mpu6050']
+    },
+    {
+      type: 'category',
+      label: 'Math Library',
+      items: ['math/index_math','math/map','math/random']
     },
     {
       type: 'category',
@@ -90,21 +87,6 @@ module.exports = {
       type: 'doc',
       label: 'Contributors',
       id: 'contributors'
-    },
-    {
-      type:'category',
-      label:'Communication',
-      items:['com/i2c', 'com/usart', 'com/usart2560']
-    },
-    {
-      type:'category',
-      label:'Sensors',
-      items : ['sensors/aht10']
-    },
-    {
-      type: 'category',
-      label: 'Analog',
-      items: ['analog/analog', 'analog/digital']
     }
     
   ]

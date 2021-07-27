@@ -27,6 +27,7 @@ provided On-chip.
 ## Structure definition
 ---
 * Structure to control the implementation of Integrated Analog Circuit which contain ACSR (Analog Comparator Control and Status Register)
+
 ```rust
 pub struct AnalogComparator {
     acsr: Volatile<u8>,
@@ -53,11 +54,14 @@ This creates a memory mapped IO for timer 8 type which will assist in analog wri
 ```
 
 ### Impl `new` for `Timer16`
+
 This creates a memory mapped IO for timer 16 type which will assist in analog write.
+
 ```rust
     pub fn new(timer: TimerNo16) -> &'static mut Timer16 {/* fields omitted */}
 ```
-### Impl `new` for `AnalogComparator`       
+### Impl `new` for `AnalogComparator`  
+
 New pointer object created for Analog Comparator Structure.
 ```rust
     pub unsafe fn new() -> &'static mut AnalogComparator {
@@ -79,28 +83,25 @@ is presented in the ADC Data Registers, ADCH and ADCL.
 
 ## Analog Read
 
+New pointer object created for Analog Structure.
+```rust
+    pub unsafe fn new() -> &'static mut Analog {/* fields omitted */}
+       
+```
 Before enabling ADC, set the PRADC(Power Reduction ADC bit) to zero in prr0 register 
 to disable it.
 
 ```rust
-    pub fn power_adc_disable(&mut self) {
-        unsafe {
-            let pow = Power::new();
-            write_volatile(&mut pow.prr0, pow.prr0 & (254));
-        }
-    }
+    pub fn power_adc_disable(&mut self) {/* fields omitted */}
+        
 ```
 
 Then to enable the Analog to digital converter, write one to the ADEN bit in the 
 ADCSRA register.
 
 ```rust
-    pub fn adc_enable(&mut self) {
-        self.adcsra.update(|aden| {
-            aden.set_bit(7, true);
-        });
-    }
-
+    pub fn adc_enable(&mut self) {/* fields omitted */}
+        
 ```
 Also we need to make sure that auto triggering for the ADC is off, and setup the 
 prescaler by choosing the division factor between the XTAL frequency and ADC
@@ -109,22 +110,32 @@ frequency. This is done by setting bits in ADCSRA register'S ADPS0,ADPS1,ADPS2.
 ```rust
 pub fn analog_prescaler(&mut self, factor: u8) {/*fiels omitted */}
 ```
-    pub fn adc_auto_trig(&mut self) {
 
 When Bit 5 – ADATE: ADC Auto Trigger Enable is written to one, Auto Triggering of the ADC is enabled.
 The ADC will start a conversion on a positive edge of the selected trigger signal. The trigger source
 is selected by setting the ADC Trigger Select bits, ADTS in ADCSRB.
 
 ```rust
- pub fn adc_auto_trig(&mut self) {
-        self.adcsra.update(|aden| {
-            aden.set_bit(5, false);
-        });
- }    
+ pub fn adc_auto_trig(&mut self) {/* fields omitted */}
+        
 ```
+
+### Usage
+
+```rust
+
+use rustduino::hal::analog;
+let analog = Analog::new();  //
+analog.power_adc_disable();  //PRADC disable to enable ADC
+analog.adc_enable();
+analog.analog_prescaler(2);
+analog.adc_auto_trig();
+```
+
 Finally setup the ADC input pins by using the MUX bits and also make digital input 
 buffer on that pin to be disabled to reduce power consumption. Depending on which
-pin you want, you can set the MUX bits and DIDR bit. 
+pin you want, you can set the MUX bits and DIDR bit in place of `**` in following template.
+
 ```rust                   
         analog.admux.update(|admux| {
             admux.set_bits(0..3,**);
@@ -141,45 +152,22 @@ Writing this bit to one enables the ADC. By writing it to zero, the ADC is turne
 Turning the ADC off while a conversion is in progress, will terminate this conversion.
 
 ```rust
-        self.adcsra.update(|aden| {
-            aden.set_bit(6, true);
-        });
+    pub fn adc_con_start(&mut self) {/* fields omitted */}
 ```
 
-Since we are doing first conversion it takes 25 ADC cycles as first conversion also
-include setting ADC, then give output as a u32 whose first 10 bits represent the 
-final result which is stored in the ADCH and ADCL register. then finally you can 
-disable the ADC by writing 0 to ADEN bit.
-
-
-```rust
-            let mut i: i32 = 25;
-            let adcsra = analog.adcsra.read();
-
-            while adcsra.get_bit(4) == true {
-                if i != 0 {
-                    i = i - 1;
-                    __nop();
-                    __nop(); //add delay of system clock
-                } else {
-                    unreachable!()
-                }
-            }
-            let mut a: u32 = 0;
-            a.set_bits(0..8, analog.adcl.read() as u32);
-
-            a.set_bits(8..10, analog.adch.read() as u32);
-
-        self.adcsra.update(|aden| {
-            aden.set_bit(7, false);
-        });
-```
 
 The Function to analog `read` is inside `AnalogPin` impl, it gives u32 as return value with 10 
 of its bits as the result of conversion, all the upper functions are inside this read 
 function and will automatically setup and convert the analog to digital.
 ```rust
 pub fn read(&mut self) -> u32{/*fields omitted */}
+
+```
+
+### Usage
+```rust
+    let mut pins = Pins::new();
+    let a: u32 = pins.analog[0].read(); // Take input into the zeroth analog pin.
 ```
 ## Analog Reference
 
@@ -191,31 +179,8 @@ conversion, the change will not go in effect until this conversion is complete (
 voltage reference options may not be used if an external reference voltage is being applied to the AREF pin.
 
 ```rust
-pub fn analog_reference(reftype: RefType) {
-    let analog = unsafe { Analog::new() };
-    match reftype {
-        RefType::DEFAULT => {
-            analog.admux.update(|admux| {
-                admux.set_bits(6..8, 0b01);
-            });
-        }
-        RefType::INTERNAL1V1 => {
-            analog.admux.update(|admux| {
-                admux.set_bits(6..8, 0b10);
-            });
-        }
-        RefType::INTERNAL2V56 => {
-            analog.admux.update(|admux| {
-                admux.set_bits(6..8, 0b11);
-            });
-        }
-        RefType::EXTERNAL => {
-            analog.admux.update(|admux| {
-                admux.set_bits(6..8, 0b00);
-            });
-        }
-    }
-}
+pub fn analog_reference(reftype: RefType) {/* fields omitted */}
+    
 ```
 
 ## Analog write
@@ -226,9 +191,6 @@ while all pin except 4 and 13 are set to give output at 490 hertz.
 
 The analog Write function takes in the value generated by mapping the 10 bit result
 from analog Read to a 8 bit number.
-```rust
-pub fn 
-```
 
 The result is then given as a parameter to the analog Write function, which first 
 check which pin to give output to and thenn accordingly set the tccra and tccrb 
@@ -238,153 +200,15 @@ feature a 16 bit timer.
 The we setup the Waveform Generation mode which is Fast PWM for our purpose, 
 maximum counter value and the clock source to be used by the Timer/Counter we
 set prescaling to obtain clock source.
+
 ```rust
- pub fn write(&mut self, value1: u8) {
-        self.pin.output();
+   pub fn write(&mut self, value1: u8) {/* fields omitted */}
+        
+```
 
-        let pin1 = self.pinno;
-
-        match pin1 {
-            4 | 13 => {
-                let timer = Timer8::new(TimerNo8::Timer0);
-                timer.tccra.update(|ctrl| {
-                    ctrl.set_bits(0..2, 0b11);
-                });
-                timer.tccrb.update(|ctrl| {
-                    ctrl.set_bits(0..4, 0b0011);
-                });
-
-                if pin1 == 4 {
-                    timer.tccra.update(|ctrl| {
-                        ctrl.set_bits(4..8, 0b0010);
-                    });
-                    timer.ocrb.write(value1);
-                } else {
-                    timer.tccra.update(|ctrl| {
-                        ctrl.set_bits(4..8, 0b1000);
-                    });
-                    timer.ocra.write(value1);
-                }
-            }
-            9 | 10 => {
-                let timer = Timer8::new(TimerNo8::Timer2);
-                timer.tccra.update(|ctrl| {
-                    ctrl.set_bits(0..2, 0b11);
-                });
-                timer.tccrb.update(|ctrl| {
-                    ctrl.set_bits(0..4, 0b0101);
-                });
-                if pin1 == 9 {
-                    timer.tccra.update(|ctrl| {
-                        ctrl.set_bits(4..8, 0b0010);
-                    });
-                    timer.ocrb.write(value1);
-                } else {
-                    timer.tccra.update(|ctrl| {
-                        ctrl.set_bits(4..8, 0b1000);
-                    });
-                    timer.ocra.write(value1);
-                }
-            }
-            11 | 12 => {
-                let timer = Timer16::new(TimerNo16::Timer1);
-                timer.tccra.update(|ctrl| {
-                    ctrl.set_bits(0..2, 0b01);
-                });
-                timer.tccrb.update(|ctrl| {
-                    ctrl.set_bits(0..5, 0b00011);
-                });
-                if pin1 == 12 {
-                    timer.tccra.update(|ctrl| {
-                        ctrl.set_bits(2..8, 0b001000);
-                    });
-                    timer.ocrbl.write(value1);
-                } else {
-                    timer.tccra.update(|ctrl| {
-                        ctrl.set_bits(2..8, 0b100000);
-                    });
-                    timer.ocral.write(value1);
-                }
-            }
-            2 | 3 | 5 => {
-                let timer = Timer16::new(TimerNo16::Timer3);
-                timer.tccra.update(|ctrl| {
-                    ctrl.set_bits(0..2, 0b01);
-                });
-                timer.tccrb.update(|ctrl| {
-                    ctrl.set_bits(0..5, 0b00011);
-                });
-
-                if pin1 == 2 {
-                    timer.tccra.update(|ctrl| {
-                        ctrl.set_bits(2..8, 0b001000);
-                    });
-                    timer.ocrbl.write(value1);
-                } else if pin1 == 5 {
-                    timer.tccra.update(|ctrl| {
-                        ctrl.set_bits(2..8, 0b100000);
-                    });
-                    timer.ocral.write(value1);
-                } else {
-                    timer.tccra.update(|ctrl| {
-                        ctrl.set_bits(2..8, 0b000010);
-                    });
-                    timer.ocrcl.write(value1);
-                }
-            }
-            6 | 7 | 8 => {
-                let timer = Timer16::new(TimerNo16::Timer4);
-                timer.tccra.update(|ctrl| {
-                    ctrl.set_bits(0..2, 0b01);
-                });
-                timer.tccrb.update(|ctrl| {
-                    ctrl.set_bits(0..5, 0b00011);
-                });
-
-                if pin1 == 7 {
-                    timer.tccra.update(|ctrl| {
-                        ctrl.set_bits(2..8, 0b001000);
-                    });
-                    timer.ocrbl.write(value1);
-                } else if pin1 == 6 {
-                    timer.tccra.update(|ctrl| {
-                        ctrl.set_bits(2..8, 0b100000);
-                    });
-                    timer.ocral.write(value1);
-                } else {
-                    timer.tccra.update(|ctrl| {
-                        ctrl.set_bits(2..8, 0b000010);
-                    });
-                    timer.ocrcl.write(value1);
-                }
-            }
-            44 | 45 | 46 => {
-                let timer = Timer16::new(TimerNo16::Timer3);
-                timer.tccra.update(|ctrl| {
-                    ctrl.set_bits(0..2, 0b01);
-                });
-                timer.tccrb.update(|ctrl| {
-                    ctrl.set_bits(0..5, 0b00011);
-                });
-
-                if pin1 == 45 {
-                    timer.tccra.update(|ctrl| {
-                        ctrl.set_bits(2..8, 0b001000);
-                    });
-                    timer.ocrbl.write(value1);
-                } else if pin1 == 46 {
-                    timer.tccra.update(|ctrl| {
-                        ctrl.set_bits(2..8, 0b100000);
-                    });
-                    timer.ocral.write(value1);
-                } else {
-                    timer.tccra.update(|ctrl| {
-                        ctrl.set_bits(2..8, 0b000010);
-                    });
-                    timer.ocrcl.write(value1);
-                }
-            }
-            _ => unreachable!(),
-        }
-    }
+### Usage
+```rust
+   let mut pins = Pins::new();
+   let b: u8 = {/* Make the input value ready to be sent through a digital pin.*/};
+   pins.digital[13].write(b); // Give output from the 13th digital pin.
 ```
