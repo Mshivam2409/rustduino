@@ -219,7 +219,6 @@ pub struct MPU6050<'a> {
 }
 
 impl<'a> MPU6050<'a> {
-    
     /// Creates a mutable refernce to the struct to be used in the implementations.
     /// # Returns
     /// * `a MPU6050 object` - To control the sensor through I2C data protocol.

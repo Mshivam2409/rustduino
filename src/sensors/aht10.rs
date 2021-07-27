@@ -14,9 +14,9 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>
 
-//! This code implements the I2C protocol to control the AHT10 
+//! This code implements the I2C protocol to control the AHT10
 //! sensor which could be used to read the temperature and
-//! humidity and stored in a sliced vector which could be given 
+//! humidity and stored in a sliced vector which could be given
 //! as an output.
 
 use crate::com::i2c;
@@ -43,7 +43,6 @@ const AHT10_INIT_CAL_ENABLE: u8 = 0x08; //load factory calibration coeff
 const AHT10_INIT_BUSY: u8 = 0x08; //Status bit for busy
 
 impl<'a> AHT10<'a> {
-    
     /// Creates a new memory mapped IO at the correct location including a 20ms reset delay for wake-up.
     /// # Returns
     /// * `a reference to AHT10 structure` - Which would be used to control the sensor.
@@ -68,7 +67,7 @@ impl<'a> AHT10<'a> {
     }
 
     /// Initiates the transmission by self initiating the sensor.
-    /// # Returns 
+    /// # Returns
     /// * `a boolean` - Which is true if transmission initiated otherwise false.
     pub unsafe fn initialise(&mut self) -> bool {
         self.vec.clear();
@@ -88,13 +87,13 @@ impl<'a> AHT10<'a> {
 
     /// Restart sensor, without power off in around ~20ms with all registers restored to default.
     pub fn soft_reset(&mut self) {
-            self.vec.clear();
-            self.vec.push(AHT10_SOFT_RESET_CMD);
+        self.vec.clear();
+        self.vec.push(AHT10_SOFT_RESET_CMD);
 
-            if !self.i2c.write_to_slave(self.address, &self.vec) {
-                unreachable!();
-            }
-            delay_ms(20);
+        if !self.i2c.write_to_slave(self.address, &self.vec) {
+            unreachable!();
+        }
+        delay_ms(20);
     }
 
     /// Reads data from slave mode using the I2C protocol.
