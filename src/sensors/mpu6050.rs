@@ -29,7 +29,7 @@ const _MPU6050_REG_ACCEL_YOFFS_H: u8 = 0x08;
 const _MPU6050_REG_ACCEL_YOFFS_L: u8 = 0x09;
 const _MPU6050_REG_ACCEL_ZOFFS_H: u8 = 0x0A;
 const _MPU6050_REG_ACCEL_ZOFFS_L: u8 = 0x0B;
-///Register for sample rate division
+// Register for sample rate division
 const _MPU6050_REG_ACCEL_SMPLRT_DIV: u8 = 0x0C;
 const _MPU6050_REG_GYRO_XOFFS_H: u8 = 0x13; //Defining registers for gyroscope X,Y & Z axis for high(H) and low(L).
 const _MPU6050_REG_GYRO_XOFFS_L: u8 = 0x14;
@@ -38,16 +38,16 @@ const _MPU6050_REG_GYRO_YOFFS_L: u8 = 0x16;
 const _MPU6050_REG_GYRO_ZOFFS_H: u8 = 0x17;
 const _MPU6050_REG_GYRO_ZOFFS_L: u8 = 0x18;
 
-///* This register configures the external Frame Synchronization (FSYNC) pin sampling and the Digital Low Pass Filter (DLPF) setting for both the gyroscopes and accelerometers.
-///* Used in functions :`set_dhpf_mode()` , `set_dlpf_mode()`
+// This register configures the external Frame Synchronization (FSYNC) pin sampling and the Digital Low Pass Filter (DLPF) setting for both the gyroscopes and accelerometers.
+// Used in functions :`set_dhpf_mode()` , `set_dlpf_mode()`
 const MPU6050_REG_CONFIG: u8 = 0x1A;
 
-///* This register is used to trigger gyroscope self-test and configure the gyroscopes’ full scale range.
-///* Used in functions : `set_scale()` , `get_scale()`
+// This register is used to trigger gyroscope self-test and configure the gyroscopes’ full scale range.
+// Used in functions : `set_scale()` , `get_scale()`
 const MPU6050_REG_GYRO_CONFIG: u8 = 0x1B;
 
-///* This register is used to trigger accelerometer self-test and to configure the accelerometers’ full scale range.
-/// Used in functions : `set_range()` , `get_range()`
+// This register is used to trigger accelerometer self-test and to configure the accelerometers’ full scale range.
+// Used in functions : `set_range()` , `get_range()`
 const MPU6050_REG_ACCEL_CONFIG: u8 = 0x1C;
 const MPU6050_REG_FF_THRESHOLD: u8 = 0x1D;
 const MPU6050_REG_FF_DURATION: u8 = 0x1E;
@@ -56,50 +56,50 @@ const MPU6050_REG_MOT_DURATION: u8 = 0x20;
 const MPU6050_REG_ZMOT_THRESHOLD: u8 = 0x21;
 const MPU6050_REG_ZMOT_DURATION: u8 = 0x22;
 
-///This register determines which sensor measurements are loaded into the FIFO buffer.
+// This register determines which sensor measurements are loaded into the FIFO buffer.
 const _MPU6050_REG_FIFO_EN: u8 = 0x23;
 
-///This register configures the auxiliary I2C bus for single-master or multi-master control.
+// This register configures the auxiliary I2C bus for single-master or multi-master control.
 const _MPU6050_REG_I2C_MST_CTRL: u8 = 0x24;
-///Used to specify the I2C slave address of Slave 0
+// Used to specify the I2C slave address of Slave 0
 const _MPU6050_REG_I2C_SLV0_ADDR: u8 = 0x25;
 const _MPU6050_REG_I2C_SLV0_REG: u8 = 0x26;
 const _MPU6050_REG_I2C_SLV0_CTRL: u8 = 0x27;
-///Used to specify the I2C slave address of Slave 1.
+// Used to specify the I2C slave address of Slave 1.
 const _MPU6050_REG_I2C_SLV1_ADDR: u8 = 0x28;
 const _MPU6050_REG_I2C_SLV1_REG: u8 = 0x29;
 const _MPU6050_REG_I2C_SLV1_CTRL: u8 = 0x2A;
-///Used to specify the I2C slave address of Slave 2.
+// Used to specify the I2C slave address of Slave 2.
 const _MPU6050_REG_I2C_SLV2_ADDR: u8 = 0x2B;
 const _MPU6050_REG_I2C_SLV2_REG: u8 = 0x2C;
 const _MPU6050_REG_I2C_SLV2_CTRL: u8 = 0x2D;
-///Used to specify the I2C slave address of Slave 3.
+// Used to specify the I2C slave address of Slave 3.
 const _MPU6050_REG_I2C_SLV3_ADDR: u8 = 0x2E;
-///Slave3 configuration registers
+// Slave3 configuration registers
 const _MPU6050_REG_I2C_SLV3_REG: u8 = 0x2F;
 const _MPU6050_REG_I2C_SLV3_CTRL: u8 = 0x30;
-///Used to specify the I2C slave address of Slave 4.
+// Used to specify the I2C slave address of Slave 4.
 const _MPU6050_REG_I2C_SLV4_ADDR: u8 = 0x31;
-///Slave4 configuration registers
+// Slave4 configuration registers
 const _MPU6050_REG_I2C_SLV4_REG: u8 = 0x32;
 const _MPU6050_REG_I2C_SLV4_DO: u8 = 0x33;
 const _MPU6050_REG_I2C_SLV4_CTRL: u8 = 0x34;
 const _MPU6050_REG_I2C_SLV4_DI: u8 = 0x35;
 const _MPU6050_REG_I2C_MST_STATUS: u8 = 0x36; //Indicates master control status
 
-///* This register configures the behavior of the interrupt signals at the INT pins. This register is also used to enable the FSYNC Pin to be used as an interrupt to the host application processor, as well as to enable Bypass Mode on the I2C Master. This bit also enables the clock output
-///* Used in functions :`set_i2c_byepass_enabled()`, `get_i2c_bypass_enabled()`
+// This register configures the behavior of the interrupt signals at the INT pins. This register is also used to enable the FSYNC Pin to be used as an interrupt to the host application processor, as well as to enable Bypass Mode on the I2C Master. This bit also enables the clock output
+// Used in functions :`set_i2c_byepass_enabled()`, `get_i2c_bypass_enabled()`
 const MPU6050_REG_INT_PIN_CFG: u8 = 0x37;
 
-///* This register enables interrupt generation by interrupt sources.
-///* Used in functions :`set_int_motion_enable()` , `get_int_motion_enable()`, `set_int_free_fall_enabled()`, `get_int_free_fall_enabled()`, `set_int_zero_motion_enabled()`, `get_int_zero_motion_enabled()`.
+// This register enables interrupt generation by interrupt sources.
+// Used in functions :`set_int_motion_enable()` , `get_int_motion_enable()`, `set_int_free_fall_enabled()`, `get_int_free_fall_enabled()`, `set_int_zero_motion_enabled()`, `get_int_zero_motion_enabled()`.
 const MPU6050_REG_INT_ENABLE: u8 = 0x38; // INT Enable
 
-///* This register shows the interrupt status of each interrupt generation source.
-///* Used in function : `get_int_status()`.
+// This register shows the interrupt status of each interrupt generation source.
+// Used in function : `get_int_status()`.
 const MPU6050_REG_INT_STATUS: u8 = 0x3A;
 
-///* These registers store the most recent accelerometer measurements
+// These registers store the most recent accelerometer measurements
 const MPU6050_REG_ACCEL_XOUT_H: u8 = 0x3B; // Accel XOUT High
 const _MPU6050_REG_ACCEL_XOUT_L: u8 = 0x3C; // Accel XOUT Low
 const _MPU6050_REG_ACCEL_YOUT_H: u8 = 0x3D; // Accel YOUT High
@@ -108,7 +108,7 @@ const _MPU6050_REG_ACCEL_ZOUT_H: u8 = 0x3F; // Accel ZOUT High
 const _MPU6050_REG_ACCEL_ZOUT_L: u8 = 0x40; // Accel ZOUT Low
 const _MPU6050_REG_TEMP_OUT_H: u8 = 0x41;
 const _MPU6050_REG_TEMP_OUT_L: u8 = 0x42;
-/// These registers store the most recent gyroscope measurements.
+// These registers store the most recent gyroscope measurements.
 const MPU6050_REG_GYRO_XOUT_H: u8 = 0x43; //Registers for output of X,Y & Z axis.
 const _MPU6050_REG_GYRO_XOUT_L: u8 = 0x44;
 const _MPU6050_REG_GYRO_YOUT_H: u8 = 0x45;
@@ -155,6 +155,7 @@ const _MPU6050_REG_FIFO_COUNTL: u8 = 0x73;
 const _MPU6050_REG_FIFO_R_W: u8 = 0x74;
 const _MPU6050_REG_WHO_AM_I: u8 = 0x75; // Who Am I
 
+#[derive(Clone, Copy)]
 pub enum MPUClockSourceT {
     MPU6050ClockInternal8MHZ,
     MPU6050ClockPllGyrox,
@@ -165,6 +166,7 @@ pub enum MPUClockSourceT {
     MPU6050ClockKeepReset,
 }
 
+#[derive(Clone, Copy)]
 pub enum MPUdpsT {
     MPU6050Scale2000DPS,
     MPU6050Scale1000DPS,
@@ -172,6 +174,7 @@ pub enum MPUdpsT {
     MPU6050Scale250DPS,
 }
 
+#[derive(Clone, Copy)]
 pub enum MPURangeT {
     MPU6050Range2G,
     MPU6050Range4G,
@@ -179,6 +182,7 @@ pub enum MPURangeT {
     MPU6050Range16G,
 }
 
+#[derive(Clone, Copy)]
 pub enum MPUOnDelayT {
     MPU6050Delay3MS,
     MPU6050Delay2MS,
@@ -186,6 +190,7 @@ pub enum MPUOnDelayT {
     MPU6050NoDelay,
 }
 
+#[derive(Clone, Copy)]
 pub enum MPUdhpfT {
     MPU6050dhpfReset,
     MPU6050dhpf5HZ,
@@ -195,6 +200,7 @@ pub enum MPUdhpfT {
     MPU6050dhpfHold,
 }
 
+#[derive(Clone, Copy)]
 pub enum MPUdlpfT {
     MPU6050dlpf6,
     MPU6050dlpf5,
@@ -205,6 +211,7 @@ pub enum MPUdlpfT {
     MPU6050dlpf0,
 }
 
+#[repr(C, packed)]
 pub struct MPU6050<'a> {
     pub address: u8,
     pub accel_output: FixedSliceVec<'a, f32>,
@@ -212,7 +219,10 @@ pub struct MPU6050<'a> {
 }
 
 impl<'a> MPU6050<'a> {
-    ///Returns a mutable refernce to the struct to be used in the implementations
+    
+    /// Creates a mutable refernce to the struct to be used in the implementations.
+    /// # Returns
+    /// * `a MPU6050 object` - To control the sensor through I2C data protocol.
     pub fn new() -> &'static mut Self {
         unsafe { &mut *(0x00 as *mut Self) }
     }
@@ -512,31 +522,37 @@ impl<'a> MPU6050<'a> {
         v.push(MPU6050_REG_ACCEL_XOUT_H);
         let i2c = i2c::Twi::new();
         i2c.read_from_slave(MPU6050_ADDRESS, 6, &mut v); //input from slave
-        self.accel_output
-            .push((((v[1] as u16) << 8) | (v[2] as u16)) as f32); //input of X axis
-        self.accel_output
-            .push((((v[3] as u16) << 8) | (v[4] as u16)) as f32); //input of Y axis
-        self.accel_output
-            .push((((v[5] as u16) << 8) | (v[6] as u16)) as f32); //input of Z axis
+        {
+            self.accel_output
+                .push((((v[1] as u16) << 8) | (v[2] as u16)) as f32); //input of X axis
+            self.accel_output
+                .push((((v[3] as u16) << 8) | (v[4] as u16)) as f32); //input of Y axis
+            self.accel_output
+                .push((((v[5] as u16) << 8) | (v[6] as u16)) as f32); //input of Z axis
+        }
     }
 
-    ///* Reads the three, two-byte gyroscope values from the sensor.
-    ///* Returns the two-byte raw gyroscope values as a 32-bit float.
-    ///* The vec gyro_output stores the raw values of the gyroscope where `gyro_output[0]` is the x-axis, `gyro_output[1]` is the y-axis and `gyro_output[2]` is the z-axis output respectively. These raw values are then converted to degrees per second according to the scale given as input in `begin()` function.
+    /// Reads the three, two-byte gyroscope values from the sensor.
+    /// Returns the two-byte raw gyroscope values as a 32-bit float.
+    /// The vec gyro_output stores the raw values of the gyroscope where `gyro_output[0]` is the x-axis, `gyro_output[1]` is the y-axis and `gyro_output[2]` is the z-axis output respectively. These raw values are then converted to degrees per second according to the scale given as input in `begin()` function.
     pub fn read_gyro(&mut self) {
         let mut v: FixedSliceVec<u8> = FixedSliceVec::new(&mut []);
         v.push(MPU6050_REG_GYRO_XOUT_H);
         let i2c = i2c::Twi::new();
         i2c.read_from_slave(MPU6050_ADDRESS, 6, &mut v); //input from slave
-        self.gyro_output
-            .push((((v[1] as u16) << 8) | (v[2] as u16)) as f32); //input of X axis
-        self.gyro_output
-            .push((((v[3] as u16) << 8) | (v[4] as u16)) as f32); //input of Y axis
-        self.gyro_output
-            .push((((v[5] as u16) << 8) | (v[6] as u16)) as f32); //input of Z axis
+        {
+            self.gyro_output
+                .push((((v[1] as u16) << 8) | (v[2] as u16)) as f32); //input of X axis
+            self.gyro_output
+                .push((((v[3] as u16) << 8) | (v[4] as u16)) as f32); //input of Y axis
+            self.gyro_output
+                .push((((v[5] as u16) << 8) | (v[6] as u16)) as f32); //input of Z axis
+        }
     }
 
     /// Starts the sensor by setting the device to active mode ,setting the accelerometer range and gyroscope scale.
+    /// # Returns
+    /// * `a boolean value` - true if started successfully otherwise false
     pub fn begin(&mut self, scale: MPUdpsT, range: MPURangeT) -> bool {
         delay_ms(5);
 

@@ -14,18 +14,12 @@
 //     You should have received a copy of the GNU Affero General Public License
 //     along with this program.  If not, see <https://www.gnu.org/licenses/>
 
-//! This code contains two functions to generate random numbers using
-//! the analog read implementation and MPU 6050 gyroscopic sensor.
-//! ARDUINO being a micro-controller doesn't contain very precise and robust random
-//! number generator algorithms which are both fast and truly random.
-//! In this source code we try to implement two fairly efficient ways of generating random numbers.
-
 use crate::delay::delay_ms;
 use crate::hal::pin::Pins;
 use crate::sensors::mpu6050::{MPURangeT, MPUdpsT, MPU6050};
 use bit_field::BitField;
 
-/// Structure to control the implementation of Random Number Generators.
+/// Controls the implementation of Random Number Generators.
 /// # Elements
 /// * `pins` - structure containing array to control all pins of micro-controller.
 /// * `mpu` - a static mutable reference to the pointer location to control MPU6050 gyroscope.
@@ -37,7 +31,7 @@ pub struct RandomNumberGenerator {
 
 impl RandomNumberGenerator {
     /// Create a new structure object for Random Number Generation.
-    /// This structure contains elements for both type of number generation.
+    /// This structure contains elements for both ways of number generation implemented.
     /// # Returns
     /// * `a struct of type Random Number Generator` - to be used for the struct's implementation.
     pub fn new() -> RandomNumberGenerator {
