@@ -52,7 +52,7 @@ pub mod atmega328p {
 
         pub mod interrupt;
 
-        pub mod power;
+        pub mod sleep_mode;
 
         pub mod gating;
     }
