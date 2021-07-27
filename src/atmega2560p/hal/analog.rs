@@ -22,10 +22,10 @@
 //! https://ww1.microchip.com/downloads/en/devicedoc/atmel-2549-8-bit-avr-microcontroller-atmega640-1280-1281-2560-2561_datasheet.pdf
 
 use crate::avr::__nop;
+use crate::com::usart_initialize::Usart;
 use crate::hal::pin::{AnalogPin, DigitalPin};
 /// Other source codes required.
 use crate::hal::power::Power;
-
 /// Crates to be used for the implementation.
 use bit_field::BitField;
 use core::ptr::write_volatile;
@@ -391,6 +391,8 @@ impl DigitalPin {
             }
             9 | 10 => {
                 let timer = Timer8::new(TimerNo8::Timer2);
+                let usart = Usart::new(UsartNum::Usart0);
+                usart.set_power(UsartNum::Usart0);
                 timer.tccra.update(|ctrl| {
                     ctrl.set_bits(0..2, 0b11);
                 });
@@ -411,6 +413,8 @@ impl DigitalPin {
             }
             11 | 12 => {
                 let timer = Timer16::new(TimerNo16::Timer1);
+                let usart = Usart::new(UsartNum::Usart0);
+                usart.set_power(UsartNum::Usart0);
                 timer.tccra.update(|ctrl| {
                     ctrl.set_bits(0..2, 0b01);
                 });
@@ -431,6 +435,8 @@ impl DigitalPin {
             }
             2 | 3 | 5 => {
                 let timer = Timer16::new(TimerNo16::Timer3);
+                let usart = Usart::new(UsartNum::Usart1);
+                usart.set_power(UsartNum::Usart1);
                 timer.tccra.update(|ctrl| {
                     ctrl.set_bits(0..2, 0b01);
                 });
@@ -457,6 +463,8 @@ impl DigitalPin {
             }
             6 | 7 | 8 => {
                 let timer = Timer16::new(TimerNo16::Timer4);
+                let usart = Usart::new(UsartNum::Usart1);
+                usart.set_power(UsartNum::Usart1);
                 timer.tccra.update(|ctrl| {
                     ctrl.set_bits(0..2, 0b01);
                 });
@@ -482,7 +490,9 @@ impl DigitalPin {
                 }
             }
             44 | 45 | 46 => {
-                let timer = Timer16::new(TimerNo16::Timer3);
+                let timer = Timer16::new(TimerNo16::Timer5);
+                let usart = Usart::new(UsartNum::Usart1);
+                usart.set_power(UsartNum::Usart1);
                 timer.tccra.update(|ctrl| {
                     ctrl.set_bits(0..2, 0b01);
                 });
