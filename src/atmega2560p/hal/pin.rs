@@ -15,7 +15,7 @@
 //     along with this program.  If not, see <https://www.gnu.org/licenses/>
 
 /// Include the required crates for the code.
-use crate::hal::port::*;
+use crate::atmega2560p::hal::port::*;
 
 ///  The ATMEGA2560P microcontroller IC has a total of 100 pins to configure the functioning of the
 ///  microcontroller. Out of those 86 pins are set as I/O pins which are configured into 11 ports each controlling

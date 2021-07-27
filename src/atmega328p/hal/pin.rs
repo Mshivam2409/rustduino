@@ -1,6 +1,6 @@
 //! Pins implementation.
 
-use crate::hal::port::*;
+use crate::atmega328p::hal::port::*;
 
 /// All pins inside a single struct.
 pub struct Pins {

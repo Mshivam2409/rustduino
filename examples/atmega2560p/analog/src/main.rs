@@ -3,8 +3,8 @@
 #![deny(warnings)]
 
 /// Crates to be used.
-use rustduino::hal::pin::Pins;
-use rustduino::hal::watchdog::WatchDog;
+use rustduino::atmega2560p::hal::pin::Pins;
+use rustduino::atmega2560p::hal::watchdog::WatchDog;
 use rustduino::math::map;
 
 #[no_mangle]

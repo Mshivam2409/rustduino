@@ -131,6 +131,7 @@ impl Sleep {
         }
     }
 }
+
 /// Enables the Chosen ppower mode.
 pub fn enable_mode(mode: SleepMode) {
     match mode {

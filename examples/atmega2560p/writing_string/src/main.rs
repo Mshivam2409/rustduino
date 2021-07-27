@@ -3,7 +3,7 @@
 #![deny(warnings)]
 
 /// Crates included to show the Transmission of String example.
-use rustduino::com::serial::Serial;
+use rustduino::atmega2560p::com::serial::Serial;
 
 #[no_mangle]
 pub fn main() {

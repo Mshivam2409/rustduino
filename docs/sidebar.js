@@ -47,9 +47,25 @@ module.exports = {
       items: ['guides/blink']
     },
     {
+      type:'category',
+      label:'Communication',
+      items:['com/i2c']
+    },
+    {
+      type:'category',
+      label:'Sensors',
+      items : ['sensors/aht10']
+    },
+    {
+      type: 'category',
+      label: 'Shift Register',
+      items: ['shift register/shift']
+    },
+    {
       type: 'doc',
       label: 'Contributors',
       id: 'contributors'
     }
+    
   ]
 }
