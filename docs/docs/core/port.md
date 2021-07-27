@@ -1,6 +1,6 @@
 ---
-id: ports
-slug: /ports
+id: port
+slug: /port
 title: Ports and Pins
 ---
 

@@ -234,9 +234,12 @@ impl Usart {
         pow = gating::Power::new();
 
         match num {
-            UsartNum::Usart0 => unsafe {
-                write_volatile(&mut pow.prr, pow.prr & !(1 << 1));
-            },
+            UsartNum::Usart0 => {
+                // write_volatile(&mut pow.prr, pow.prr & !(1 << 1));
+                pow.prr.update(|prr| {
+                    prr.set_bit(1, false);
+                });
+            }
         }
     }
 
