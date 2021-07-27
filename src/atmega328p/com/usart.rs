@@ -23,9 +23,9 @@
 
 /// Crates which would be used in the implementation.
 ///
-use crate::atmega328p::com::serial::Serial;
-use crate::atmega328p::com::usart_initialize::Usart;
-use crate::atmega328p::com::usart_initialize::{
+use crate::com::serial::Serial;
+use crate::com::usart_initialize::Usart;
+use crate::com::usart_initialize::{
     UsartDataSize, UsartModes, UsartNum, UsartParity, UsartPolarity, UsartStop,
 };
 //Standard datatypes to be used

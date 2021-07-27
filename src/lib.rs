@@ -7,7 +7,6 @@
 #[cfg(feature = "atmega2560p")]
 pub mod atmega2560p {
     /// Hardware Abstraction Library (HAL).
-    #[cfg(feature = "atmega2560p-hal")]
     pub mod hal {
         pub mod port;
 
@@ -44,7 +43,6 @@ pub use atmega2560p::*;
 #[cfg(feature = "atmega328p")]
 pub mod atmega328p {
     /// Hardware Abstraction Library (HAL).
-    #[cfg(feature = "atmega328p-hal")]
     pub mod hal {
         pub mod port;
 
@@ -61,10 +59,17 @@ pub mod atmega328p {
 
     #[cfg(feature = "com")]
     pub mod com {
+        pub mod i2c;
+
         pub mod serial;
 
         pub mod usart;
 
+        pub mod usart_initialize;
+
+        pub mod usart_receive;
+
+        pub mod usart_transmit;
     }
 }
 
