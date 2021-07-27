@@ -1,21 +1,24 @@
-##![no_std]
+#![no_std]
 #![no_main]
-#![deny(warnings)]
+//#![deny(warnings)]
 
 use rustduino::delay::delay_ms;
 use crate::atmega2560p::hal::port::*;
 use crate::avr::shift::*;
+use crate::avr::display::*;
 
 #[no_mangle]
 pub fn main() {
-    let mut pins = Pins::new();
+    let mut i:u8=0;
     loop{
-        pins.setup();
-        // Waiting for 2 seconds.
-        delay_ms(2000);
+        if i%2==0{
+            setup(4,8,7,true,true,0);
+        }
+        else {
+            setup(4,8,7,false,true,1);
+        }
+        i +=1;
     }
-    
-    
 }
 
 // This function is called on panic.
