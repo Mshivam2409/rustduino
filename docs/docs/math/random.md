@@ -5,6 +5,7 @@ title: Random Number Generation
 ---
 
 *even we don't know the output*
+
 ---
 
 ## Introduction
