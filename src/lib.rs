@@ -1,9 +1,9 @@
+#![cfg(feature="rustduino")]
 #![no_std]
 #![deny(warnings)]
 #![feature(asm)]
 #![feature(llvm_asm)]
 
-// #![cfg(feature="rustduino")]
 
 /// Library for AVR ATMEGA2560P Micro-controller
 /// For more information see the data sheet provided below

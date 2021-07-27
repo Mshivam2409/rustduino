@@ -13,7 +13,7 @@ pub fn main() {
     watchdog.disable();
 
     // Create a new Serial struct to access all USART's
-    let mut serial = unsafe { Serial::new() };
+    let serial = unsafe { Serial::new() };
 
     // This initializes USART0 and makes it ready to transmit and recieve.
     unsafe { serial.usart[0].begin() };
