@@ -43,8 +43,7 @@ module.exports = {
         'core/watchdog',
         'core/interrupts', 
         'core/power', 
-        'core/port', 
-        'core/gpio', 
+        'core/port',  
         'core/sleep_mode'
       ]
     },
@@ -81,7 +80,7 @@ module.exports = {
         'guides/print',
         'guides/writing_string',
         'guides/analog_io',
-	'guides/temp_sensor',
+	      'guides/temp_sensor',
         'guides/generate'
       ]
     },
