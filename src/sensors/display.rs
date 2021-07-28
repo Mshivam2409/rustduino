@@ -14,8 +14,8 @@
 //     You should have received a copy of the GNU Affero General Public License
 //     along with this program.  If not, see <https://www.gnu.org/licenses/>
 
-use crate::avr::shift::*;
 use crate::hal::pin::Pins;
+use crate::hal::shift::*;
 use core::usize;
 
 /// Setup for the 7-Segment Display.

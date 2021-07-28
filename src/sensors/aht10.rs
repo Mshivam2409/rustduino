@@ -87,13 +87,10 @@ impl<'a> AHT10<'a> {
 
     /// Restart sensor, without power off in around ~20ms with all registers restored to default.
     pub fn soft_reset(&mut self) {
-        unsafe {
-            self.vec.clear();
-            self.vec.push(AHT10_SOFT_RESET_CMD);
+        self.vec.clear();
+        self.vec.push(AHT10_SOFT_RESET_CMD);
 
-            if !self.i2c.write_to_slave(self.address, &self.vec) {
-                unreachable!();
-            }
+        if !self.i2c.write_to_slave(self.address, &self.vec) {
             delay_ms(20);
         }
     }

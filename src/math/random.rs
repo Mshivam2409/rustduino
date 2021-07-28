@@ -16,7 +16,8 @@
 
 use crate::delay::delay_ms;
 use crate::hal::pin::Pins;
-use crate::sensors::mpu6050::{MPURangeT, MPUdpsT, MPU6050};
+
+use crate::sensors::*;
 use bit_field::BitField;
 
 /// Controls the implementation of Random Number Generators.
@@ -204,14 +205,11 @@ pub fn generate_mpu() -> (u8, u8, u8, u8, u8, u8) {
     obj.mpu.read_accel();
     delay_ms(1000);
 
-    unsafe {
-        let d: u8 = obj.mpu.gyro_output[0] as u8;
-        let e: u8 = obj.mpu.gyro_output[1] as u8;
-        let f: u8 = obj.mpu.gyro_output[2] as u8;
-        let a: u8 = obj.mpu.accel_output[0] as u8;
-        let b: u8 = obj.mpu.accel_output[1] as u8;
-        let c: u8 = obj.mpu.accel_output[2] as u8;
-
-        (a, b, c, d, e, f)
-    }
+    let d: u8 = obj.mpu.gyro_output[0] as u8;
+    let e: u8 = obj.mpu.gyro_output[1] as u8;
+    let f: u8 = obj.mpu.gyro_output[2] as u8;
+    let a: u8 = obj.mpu.accel_output[0] as u8;
+    let b: u8 = obj.mpu.accel_output[1] as u8;
+    let c: u8 = obj.mpu.accel_output[2] as u8;
+    (a, b, c, d, e, f)
 }

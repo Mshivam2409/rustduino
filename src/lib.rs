@@ -2,7 +2,6 @@
 #![deny(warnings)]
 #![feature(asm)]
 #![feature(llvm_asm)]
-#![allow(unused_unsafe)]
 
 /// Library for AVR ATMEGA2560P Micro-controller
 /// For more information see the data sheet provided below
@@ -11,7 +10,6 @@
 pub mod atmega2560p {
 
     /// Hardware Abstraction Library (HAL)
-    #[cfg(feature = "hal")]
     pub mod hal {
         pub mod power;
 
@@ -28,6 +26,8 @@ pub mod atmega2560p {
         pub mod analog;
 
         pub mod digital;
+
+        pub mod shift;
     }
 
     /// Communication Control Library
@@ -47,9 +47,15 @@ pub mod atmega2560p {
     }
 }
 
-/// Library for AVR ATMEGA2560P Micro-controller
 #[cfg(feature = "atmega2560p")]
-pub use atmega2560p::*;
+cfg_if::cfg_if! {
+    if #[cfg(doc)]{
+
+    }
+    else {
+        pub use atmega2560p::*;
+    }
+}
 
 /// Library for AVR ATMEGA328P Micro-controller
 /// For more information see the data sheet provided below
@@ -58,7 +64,6 @@ pub use atmega2560p::*;
 pub mod atmega328p {
 
     /// Hardware Abstraction Library (HAL)
-    #[cfg(feature = "hal")]
     pub mod hal {
         pub mod power;
 
@@ -75,6 +80,8 @@ pub mod atmega328p {
         pub mod analog;
 
         pub mod digital;
+
+        pub mod shift;
     }
 
     /// Communication Control Library
@@ -94,8 +101,8 @@ pub mod atmega328p {
     }
 }
 
-/// Library for AVR ATMEGA328P Micro-controller
 #[cfg(feature = "atmega328p")]
+#[doc(hidden)]
 pub use atmega328p::*;
 
 /// Sensor control for AVR Chips
@@ -105,13 +112,12 @@ pub use atmega328p::*;
 #[cfg(feature = "sensors")]
 pub mod sensors;
 
-/// Low level control for AVR Chips
-#[cfg(feature = "avr")]
-pub mod avr;
-
 /// Math functions for assistance in implementation
 #[cfg(feature = "math")]
 pub mod math;
+
+/// Low level control for AVR Chips
+pub mod avr;
 
 /// Configuration setup and time control
 pub mod config;

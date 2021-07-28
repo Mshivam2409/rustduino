@@ -14,9 +14,8 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>
 
+use crate::atmega328p::hal::pin::Pins;
 use core::usize;
-
-use crate::hal::pin::Pins;
 
 /// Enum for bit order of the value.
 pub enum BitOrder {

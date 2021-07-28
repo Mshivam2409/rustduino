@@ -542,14 +542,12 @@ impl<'a> MPU6050<'a> {
         v.push(MPU6050_REG_ACCEL_XOUT_H);
         let i2c = i2c::Twi::new();
         i2c.read_from_slave(MPU6050_ADDRESS, 6, &mut v); //input from slave
-        unsafe {
-            self.accel_output
-                .push((((v[1] as u16) << 8) | (v[2] as u16)) as f32); //input of X axis
-            self.accel_output
-                .push((((v[3] as u16) << 8) | (v[4] as u16)) as f32); //input of Y axis
-            self.accel_output
-                .push((((v[5] as u16) << 8) | (v[6] as u16)) as f32); //input of Z axis
-        }
+        self.accel_output
+            .push((((v[1] as u16) << 8) | (v[2] as u16)) as f32); //input of X axis
+        self.accel_output
+            .push((((v[3] as u16) << 8) | (v[4] as u16)) as f32); //input of Y axis
+        self.accel_output
+            .push((((v[5] as u16) << 8) | (v[6] as u16)) as f32); //input of Z axis
     }
 
     /// Reads the three, two-byte gyroscope values from the sensor.
@@ -559,15 +557,14 @@ impl<'a> MPU6050<'a> {
         let mut v: FixedSliceVec<u8> = FixedSliceVec::new(&mut []);
         v.push(MPU6050_REG_GYRO_XOUT_H);
         let i2c = i2c::Twi::new();
+
         i2c.read_from_slave(MPU6050_ADDRESS, 6, &mut v); //input from slave
-        unsafe {
-            self.gyro_output
-                .push((((v[1] as u16) << 8) | (v[2] as u16)) as f32); //input of X axis
-            self.gyro_output
-                .push((((v[3] as u16) << 8) | (v[4] as u16)) as f32); //input of Y axis
-            self.gyro_output
-                .push((((v[5] as u16) << 8) | (v[6] as u16)) as f32); //input of Z axis
-        }
+        self.gyro_output
+            .push((((v[1] as u16) << 8) | (v[2] as u16)) as f32); //input of X axis
+        self.gyro_output
+            .push((((v[3] as u16) << 8) | (v[4] as u16)) as f32); //input of Y axis
+        self.gyro_output
+            .push((((v[5] as u16) << 8) | (v[6] as u16)) as f32); //input of Z axis
     }
 
     /// Starts the sensor by setting the device to active mode ,setting the accelerometer range and gyroscope scale.

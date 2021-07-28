@@ -16,8 +16,11 @@
 
 mod map;
 
-pub use map::map;
+pub use map::*;
 
-mod random;
-
-pub use random::RandomNumberGenerator;
+cfg_if::cfg_if! {
+    if #[cfg(feature = "random")] {
+        mod random;
+        pub use random::*;
+    }
+}

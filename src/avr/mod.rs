@@ -17,9 +17,3 @@
 mod llvm;
 
 pub use llvm::__nop;
-
-///  Implement SN74HC164 8 bit shift register using digital pins for the AVR Chips.
-pub mod shift;
-
-/// 7-Segment Display setup and control functions for the AVR Chips.
-pub mod display;

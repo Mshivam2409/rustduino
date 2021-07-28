@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>
 
-//! This crate contains the delay functions which would be used in
+//! This module contains the delay functions which would be used in
 //! various places in the library for pausing the program for the
 //! given amount of time.
 
