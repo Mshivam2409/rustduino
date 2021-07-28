@@ -7,23 +7,22 @@ title: Power Modes
 ## Enum Description
 
 ```rust
-pub enum Options {/*fields omitted */}  // `Options` corresponds to 
-                                        //`Peripherals` enum in atmega328p code
+pub enum Options {/*fields omitted */}  // "Options" corresponds to "Peripherals" enum in atmega328p code
 ```
 The `Options` correspond to real world as shown -
-* `TWI    :  Power Reduction TWI`     
-* `TIMER2 :  Power Reduction Timer/Counter2`
-* `TIMER0 :  Power Reduction Timer/Counter0`
-* `TIMER1 :  Power Reduction Timer/Counter1`
-* `SPI    :  Power Reduction Serial Peripheral Interface`
-* `USART0 :  Power Reduction USART0`
-* `ADC    :  Power Reduction ADC`
-* `TIMER5 :  Power Reduction Timer/Counter5`
-* `TIMER4 :  Power Reduction Timer/Counter4`
-* `TIMER3 :  Power Reduction Timer/Counter3`
-* `USART3 :  Power Reduction USART3`
-* `USART2 :  Power Reduction USART2`
-* `USART1 :  Power Reduction USART1`
+* `TWI`    :  *Power Reduction TWI*
+* `TIMER2` :  *Power Reduction Timer/Counter2*
+* `TIMER0` :  *Power Reduction Timer/Counter0*
+* `TIMER1` :  *Power Reduction Timer/Counter1*
+* `SPI`    :  *Power Reduction Serial Peripheral Interface*
+* `USART0` :  *Power Reduction USART0*
+* `ADC`    :  *Power Reduction ADC*
+* `TIMER5` :  *Power Reduction Timer/Counter5*
+* `TIMER4` :  *Power Reduction Timer/Counter4*
+* `TIMER3` :  *Power Reduction Timer/Counter3*
+* `USART3` :  *Power Reduction USART3*
+* `USART2` :  *Power Reduction USART2*
+* `USART1` :  *Power Reduction USART1*
 
 ## Struct Definitions
 
@@ -64,16 +63,15 @@ in the enum `Options` above.
  ### Usage:
 
  ```rust
-    use rustduino::atmega2560p::hal::power;
+    use rustduino::hal::power;
     power::disable_clocks(Options::/*mode*/);
     // here mode is from the given enum list.
  ```
- 
+
 ### Impl `enable_clocks` for `Power`
 
  ```rust
     pub fn enable_clocks(&mut self, mode: Options) {/* fields omitted */}
- 
  ```
 
  This is the function for enabling the clock system of your choice.
@@ -82,5 +80,4 @@ in the enum `Options` above.
 
  ```rust
     power::disable_clocks(Options::/*mode*/);
-
  ```
