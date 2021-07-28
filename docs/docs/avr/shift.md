@@ -4,7 +4,7 @@ slug: /shift
 title: Shift Register
 ---
 
-# Enum definition
+## Enum definition
 
 ```rust
 pub enum BitOrder{/*files omitted*/}
@@ -15,9 +15,9 @@ Helper enum for bit order of the value.
 * `LSBFIRST` : Least significant bit first.
 * `MSBFIRST` : Most significant bit first.
 
-# Function Definition
+## Function Definition
 
-## `shift_in`
+### `shift_in`
 
 ```rust
 pub fn shift_in(datapin: u8, clockpin: u8, bit_order: BitOrder) -> u8 
@@ -38,7 +38,7 @@ Returns the value stored in the shift register.
 
 
 
-## `shift_out`
+### `shift_out`
 
 ```rust
 pub fn shift_out(datapin: u8, clockpin: u8, bit_order: BitOrder, mut value:u8)

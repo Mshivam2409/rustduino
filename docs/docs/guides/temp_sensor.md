@@ -1,6 +1,6 @@
 ---
-id: Temperature Sensor
-slug: /Temperature Sensor
+id: temp_sensor
+slug: /temp_sensor
 title: Reading Values from a Temperature Sensor.
 ---
 
