@@ -20,14 +20,14 @@
 //! This code implements the Analog Write function to write into the buffer using analog signals.
 //! Refer to section 14,15,22 and 23 of ATMEGA328P datasheet.
 
-/// Crates to be used for the implementation.
+// Crates to be used for the implementation.
 use bit_field::BitField;
 use core::ptr::write_volatile;
 use volatile::Volatile;
 
 use crate::atmega328p::com::usart_initialize::{Usart, UsartNum};
 use crate::atmega328p::hal::pin::{AnalogPin, DigitalPin};
-/// Source codes to be used here.
+// Source codes to be used here.
 use crate::atmega328p::hal::sleep_mode::Sleep;
 
 /// Selection of reference type for the implementation of Analog Pins.
@@ -101,9 +101,13 @@ pub struct Timer16 {
     _ocrbh: Volatile<u8>,
 }
 
-/// Structure to control the timer of type 8 for Analog Write.
+// Structure to control the timer of type 8 for Analog Write.
 impl Timer8 {
-    /// Returns pointer to structure for control on Timer of 8 type.
+    /// Create a memory mapped IO for timer 8 type which will assist in analog write.
+    /// # Arguments
+    /// * `timer` - a `TimerNo8` object, which defines the Timer number for which object is to be made.
+    /// # Returns
+    /// * `a reference to Timer8 object` - which will be used for further implementations.
     pub fn new(timer: TimerNo8) -> &'static mut Timer8 {
         match timer {
             TimerNo8::Timer0 => unsafe { &mut *(0x44 as *mut Timer8) },
@@ -112,9 +116,13 @@ impl Timer8 {
     }
 }
 
-/// Structure to control the timer of type 16 for Analog Write.
+// Structure to control the timer of type 16 for Analog Write.
 impl Timer16 {
     /// Create a memory mapped IO for timer 16 type which will assist in analog write.
+    /// # Arguments
+    /// * `timer` - a `TimerNo16` object, which defines the Timer number for which object is to be made.
+    /// # Returns
+    /// * `a reference to Timer16 object` - which will be used for further implementations.
     pub fn new(timer: TimerNo16) -> &'static mut Timer16 {
         match timer {
             TimerNo16::Timer1 => unsafe { &mut *(0x80 as *mut Timer16) },
@@ -124,20 +132,27 @@ impl Timer16 {
 
 impl AnalogComparator {
     /// New pointer object created for Analog Comparator Structure.
+    /// # Returns
+    /// * `a reference to AnalogComparator object` - which will be used for further implementations.
     pub unsafe fn new() -> &'static mut AnalogComparator {
         &mut *(0x50 as *mut AnalogComparator)
     }
 }
 
 impl Digital {
-    /// New pointer object created for Digital Structure.
+    /// Creates a pointer object for Digital Structure.
+    /// # Returns
+    /// * `a reference to Digital object` - which will be used further.
     pub unsafe fn new() -> &'static mut Digital {
         &mut *(0x7E as *mut Digital)
     }
 }
 
 impl AnalogPin {
-    /// Function to create a reference for Analog signals.
+    /// Read the signal input to the analog pin.
+    /// Any analog pin can be freely used for this purpose.
+    /// # Returns
+    /// `a u32` - Value read from the analog pin.
     pub fn read(&mut self) -> u32 {
         let pin = self.pinno;
         unsafe {
@@ -259,7 +274,12 @@ impl AnalogPin {
 }
 
 impl DigitalPin {
-    ///This function is used to write a PWM wave to a digital pin.
+    /// This is used to write a PWM wave to a digital pin.
+    /// Only 2-13 and 44-46 digital pins can be used in this function, other pins will lead to crash.
+    /// All pin except 4 and 13 are set to give output at 490 hertz.
+    /// pin 4 and 13 will give output at 980 hertz.
+    /// # Arguments
+    /// * `value1` - a u8, value to be written on the analog pin for output.
     pub fn write(&mut self, value1: u8) {
         self.pin.set_output();
         let pin1 = self.pinno;
@@ -336,11 +356,15 @@ impl DigitalPin {
 
 impl Analog {
     /// New pointer object created for Analog Structure.
+    /// # Returns
+    /// * `a reference to Analog object` - which will be used for further implementations.
     pub unsafe fn new() -> &'static mut Analog {
         &mut *(0x78 as *mut Analog)
     }
 
     /// Function to create a reference for Analog signals.
+    /// # Arguments
+    /// * `reftype` - a `RefType` object, the type of reference setup required for the analog pins.
     pub fn analog_reference(&mut self, reftype: RefType) {
         match reftype {
             RefType::DEFAULT => {

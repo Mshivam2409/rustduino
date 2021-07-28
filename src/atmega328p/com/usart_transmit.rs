@@ -1,5 +1,5 @@
 //     RustDuino : A generic HAL implementation for Arduino Boards in Rust
-//     Copyright (C) 2021  Richa Prakash Sachan and Kshitij Kaithal, Indian Institute of Technology Kanpur
+//     Copyright (C) 2021  Richa Prakash Sachan, Indian Institute of Technology Kanpur
 //
 //     This program is free software: you can redistribute it and/or modify
 //     it under the terms of the GNU Affero General Public License as published
@@ -17,17 +17,18 @@
 //! This file contains functions to enable transmission through the USART and do the transmission.
 //! Flushing data in case of error and writing string are some complex implementations provided.
 //! See the section 19 of ATMEGA328P datasheet.
-//! https://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-7810-Automotive-Microcontrollers-ATmega328P_Datasheet.pdf
 
 // Source code crates required
 use crate::atmega328p::com::usart_initialize::{Usart, UsartDataSize};
 use crate::delay::delay_ms;
-/// Crates which would be used in the implementation.
-/// We will be using standard volatile and bit_field crates now for a better read and write.
+
+// Crates which would be used in the implementation.
+// We will be using standard volatile and bit_field crates now for a better read and write.
 use bit_field::BitField;
 use core::{f64, u8, usize};
 use fixed_slice_vec::FixedSliceVec;
-//This is a implementation for Usart
+
+// This is a implementation for Usart
 impl Usart {
     /// Initialization setting begin function
     /// This function is to enable the Transmitter
@@ -39,6 +40,9 @@ impl Usart {
     }
 
     /// Storing data in Transmit Buffer which takes parameter as a u32 and and data bit length.
+    /// # Arguments
+    /// * `data` - a u32, the data to be transmitted.
+    /// * `len` -  a `UsartDataSize` object, which contains the length of data frame of USART.
     pub fn transmitting_data(&mut self, data: u32, len: UsartDataSize) {
         // Checks if the Transmit buffer is empty to receive data.
         // If not the program waits till the time comes.
@@ -76,7 +80,10 @@ impl Usart {
             }
         }
     }
-    ///This function checks that transmission buffer is ready to be
+
+    /// Checks that transmission buffer if ready for transmission.
+    /// # Returns
+    /// * `a boolean` - Which is true if ready otherwise false.
     pub fn avai_write(&mut self) -> bool {
         let ucsra = self.ucsra.read();
         if ucsra.get_bit(5) == true {
@@ -87,7 +94,7 @@ impl Usart {
     }
 
     /// This functions waits for the transmission to complete by checking TXCn bit in the ucsrna register
-    /// TXCn is set 1 when the transmit is completed and it can start transmitting new data
+    /// TXCn is set 1 when the transmit is completed and it can start transmitting new data.
     pub fn flush_transmit(&mut self) {
         let mut ucsra = self.ucsra.read();
         let mut i: i32 = 10;
@@ -103,7 +110,7 @@ impl Usart {
     }
 
     /// This function is used to disable the Transmitter and once disabled the TXDn pin is no longer
-    /// used as the transmitter output pin and functions as a normal I/O pin
+    /// used as the transmitter output pin and functions as a normal I/O pin.
     pub fn transmit_disable(&mut self) {
         let ucsra = self.ucsra.read();
         let mut uscra6 = ucsra.get_bit(6);
@@ -129,6 +136,8 @@ impl Usart {
     }
 
     /// This function sends a character byte of 5,6,7 or 8 bits
+    /// # Arguments
+    /// * `data` - a u8, consisting of the current data frame to send from USART.
     pub fn transmit_data(&mut self, data: u8) {
         let mut ucsra = self.ucsra.read();
         let mut udre = ucsra.get_bit(5);
@@ -151,6 +160,8 @@ impl Usart {
 
     /// This function send data type of string byte by byte.
     /// This function send data type of string byte by byte.
+    /// # Arguments
+    /// * `data` - a static string object, which is to be transmitted using USART.
     pub fn write_string(&mut self, data: &'static str) {
         let mut vec: FixedSliceVec<u8> = FixedSliceVec::new(&mut []);
 
@@ -164,6 +175,8 @@ impl Usart {
     }
 
     /// This function send data type of int(u32) byte by byte.
+    /// # Arguments
+    /// * `data` - a u32, which is to be transmitted using USART.
     pub fn write_integer(&mut self, data: u32) {
         let mut vec: FixedSliceVec<u8> = FixedSliceVec::new(&mut []);
         let mut a = data;
@@ -190,6 +203,9 @@ impl Usart {
     }
 
     /// This function send data type of float(f32) byte by byte.
+    /// # Arguments
+    /// * `data` - a f64, which is to be transmitted using USART.
+    /// * `precision` - a u32, the number of decimal precision required in the transmission.
     pub fn write_float(&mut self, data: f64, precision: u32) {
         let mut vec: FixedSliceVec<u8> = FixedSliceVec::new(&mut []);
         let a: f64 = data;

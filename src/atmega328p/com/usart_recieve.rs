@@ -1,5 +1,5 @@
 //     RustDuino : A generic HAL implementation for Arduino Boards in Rust
-//     Copyright (C) 2021  Richa Prakash Sachan and Kshitij Kaithal, Indian Institute of Technology Kanpur
+//     Copyright (C) 2021  Kshitij Kaithal, Indian Institute of Technology Kanpur
 //
 //     This program is free software: you can redistribute it and/or modify
 //     it under the terms of the GNU Affero General Public License as published
@@ -14,11 +14,15 @@
 //     You should have received a copy of the GNU Affero General Public License
 //     along with this program.  If not, see <https://www.gnu.org/licenses/>
 
+//! This file contains the code for recieving data through a initialized USART.
+//! This has functions to put USART in reciever mode and then read the data from the appropriate location.
+//! See the section 19 of ATMEGA328P datasheet.
+
 // Source code crates required
 use crate::atmega328p::com::usart_initialize::Usart;
 
-/// Crates which would be used in the implementation.
-/// We will be using standard volatile and bit_field crates now for a better read and write.
+// Crates which would be used in the implementation.
+// We will be using standard volatile and bit_field crates now for a better read and write.
 use crate::delay::delay_ms;
 use bit_field::BitField;
 use core::u32;
@@ -32,8 +36,8 @@ impl Usart {
     }
 
     /// This function checks if the data is avialable for reading or not.
-    /// If no data is available for reading then 0 is returned.
-    /// If data is available then 1 is returned.
+    /// # Returns
+    /// * `a boolean` - Which is false for no reading data and true if everything fine.
     pub fn available(&mut self) -> bool {
         let ucsra = self.ucsra.read();
         if ucsra.get_bit(7) == true {
@@ -48,6 +52,8 @@ impl Usart {
     /// In case of 5 to 8 bits this function returns u8.
     /// In case of 9 bits it retuns u32 of which first 9 bits are data recieved and remaining bits are insignificant.
     /// In case ,if an frame error or parity error occurs, this function returns Nothing.
+    /// # Returns
+    /// * `a Option<u32>` - which is NULL in case of wrong settings and read data u32 if valid input.
     pub fn recieve_data(&mut self) -> Option<u32> {
         let ucsrc = self.ucsrc.read();
         let ucsrb = self.ucsrb.read();
@@ -87,6 +93,8 @@ impl Usart {
 
     /// This function can be used to check frame error,Data OverRun and Parity errors.
     /// It returns true if error occurs,else false.
+    /// # Returns
+    /// * `a boolean` - Which is true if error occurs,else false.
     pub fn error_check(&mut self) -> bool {
         let ucsra = self.ucsra.read();
         if ucsra.get_bits(3..5) != 0b00 {
@@ -98,6 +106,8 @@ impl Usart {
 
     /// This function can be used to check parity error.
     /// It returns true if error occurs else false.
+    /// # Returns
+    /// * `a boolean` - Which is true if error occurs,else false.
     pub fn parity_check(&mut self) -> bool {
         let ucsra = self.ucsra.read();
         if ucsra.get_bit(2) == true {
@@ -113,6 +123,7 @@ impl Usart {
             ucsrb.set_bit(4, false);
         });
     }
+
     /// This function clears the unread data in the receive buffer by flushing it
     pub fn flush_recieve(&mut self) {
         let mut _udr = self.udr.read();
@@ -140,6 +151,8 @@ impl Usart {
     ///  In case of 5 to 8 bits this function returns u8.
     ///  In case of 9 bits it retuns u32 of which first 9 bits are data recieved and remaining bits are insignificant.
     ///  In case ,if an frame error or parity error occurs, this function returns -1.
+    /// # Returns
+    /// * `a Option<u32>` - which is NULL in case of wrong settings and read data u32 if valid input.
     pub fn read(&mut self) -> Option<u32> {
         let ucsrc = self.ucsrc.read();
         let ucsrb = self.ucsrb.read();

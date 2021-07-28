@@ -2,6 +2,7 @@
 #![deny(warnings)]
 #![feature(asm)]
 #![feature(llvm_asm)]
+#![allow(unused_unsafe)]
 
 /// Library for AVR ATMEGA2560P Micro-controller
 /// For more information see the data sheet provided below

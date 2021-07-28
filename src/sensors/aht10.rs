@@ -87,13 +87,15 @@ impl<'a> AHT10<'a> {
 
     /// Restart sensor, without power off in around ~20ms with all registers restored to default.
     pub fn soft_reset(&mut self) {
-        self.vec.clear();
-        self.vec.push(AHT10_SOFT_RESET_CMD);
+        unsafe {
+            self.vec.clear();
+            self.vec.push(AHT10_SOFT_RESET_CMD);
 
-        if !self.i2c.write_to_slave(self.address, &self.vec) {
-            unreachable!();
+            if !self.i2c.write_to_slave(self.address, &self.vec) {
+                unreachable!();
+            }
+            delay_ms(20);
         }
-        delay_ms(20);
     }
 
     /// Reads data from slave mode using the I2C protocol.

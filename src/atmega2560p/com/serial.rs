@@ -24,7 +24,7 @@ use crate::atmega2560p::com::usart_initialize::{UsartNum, UsartObject};
 /// This struct contains all 4 USART in ARDUINO MEGA arranged in a array.
 /// First a new Serial is needed to be created to access all USARTs.
 /// Each USART can be accesed through the serial struct using
-/// serial.usart[/n/], where 0 <= n <= 3 and serial is a object of this structure.
+/// serial.usart[n\], where 0 <= n <= 3 and serial is a object of this structure.
 #[repr(C, packed)]
 pub struct Serial {
     pub usart: [UsartObject; 4],

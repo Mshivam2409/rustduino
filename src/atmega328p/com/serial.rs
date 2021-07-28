@@ -15,14 +15,14 @@
 //     along with this program.  If not, see <https://www.gnu.org/licenses/>
 
 //! This files contain the code for combining  serial ports into a structure for easier implementation.
-//!  https://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-7810-Automotive-Microcontrollers-ATmega328P_Datasheet.pdf
+//! See the section 19 of ATMEGA328P datasheet.
 
 // Source code crates required
 use crate::atmega328p::com::usart_initialize::{Usart, UsartNum};
 
 /// This struct contains  USART0 in ARDUINO MEGA arranged in a array.
 /// First a new Serial is needed to be created to access all USARTs.
-
+#[repr(C, packed)]
 pub struct Serial {
     pub usart: [&'static mut Usart; 1],
 }
@@ -30,6 +30,8 @@ pub struct Serial {
 impl Serial {
     /// This function creates a new Serial struct.
     /// The struct serial will contain all the USARTs at one place.
+    /// # Returns
+    /// * `a struct object` - Which is to be worked upon.
     pub unsafe fn new() -> Serial {
         Serial {
             usart: [Usart::new(UsartNum::Usart0)],

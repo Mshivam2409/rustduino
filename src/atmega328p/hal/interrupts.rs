@@ -15,6 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>
 
 use core::ptr::{read_volatile, write_volatile};
+
 /// SREG (Status control Register)
 /// The status register contains information about the result of the most recently executed arithmetic instruction. This
 /// information can be used for altering program flow in order to perform conditional operations. Note that the status register is
@@ -24,16 +25,19 @@ use core::ptr::{read_volatile, write_volatile};
 /// interrupt. This must be handled by software.
 ///
 /// Toggling 8th bit to 0 or 1 can enable or disable interrupt respectively.
-///
-/// section 6.3.1 of manual
+#[repr(C, packed)]
 pub struct Interrupt {
     sreg: u8,
 }
 
 impl Interrupt {
+    /// Creates a new struct of Global_Interrupts.
+    /// # Returns
+    /// * `a reference to Interrupt structure` - to control the global interrupt implementations.
     pub unsafe fn new() -> &'static mut Interrupt {
         &mut *(0x5F as *mut Interrupt)
     }
+
     /// Disables Interrupts.
     pub fn disable(&mut self) {
         unsafe {

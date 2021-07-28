@@ -18,7 +18,6 @@
 //! Pins array which would be used so that we get meaningful functions to work upon and
 //! also the implementation of rustduino library is easier for the user.
 //! Refer to section 14,15,22 and 23 of ATMEGA328P datasheet.
-//! https://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-7810-Automotive-Microcontrollers-ATmega328P_Datasheet.pdf
 
 // Include the required crates for the code.
 use crate::atmega328p::hal::pin::*;

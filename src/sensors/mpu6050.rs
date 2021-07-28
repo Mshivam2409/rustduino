@@ -542,7 +542,7 @@ impl<'a> MPU6050<'a> {
         v.push(MPU6050_REG_ACCEL_XOUT_H);
         let i2c = i2c::Twi::new();
         i2c.read_from_slave(MPU6050_ADDRESS, 6, &mut v); //input from slave
-        {
+        unsafe {
             self.accel_output
                 .push((((v[1] as u16) << 8) | (v[2] as u16)) as f32); //input of X axis
             self.accel_output
@@ -560,7 +560,7 @@ impl<'a> MPU6050<'a> {
         v.push(MPU6050_REG_GYRO_XOUT_H);
         let i2c = i2c::Twi::new();
         i2c.read_from_slave(MPU6050_ADDRESS, 6, &mut v); //input from slave
-        {
+        unsafe {
             self.gyro_output
                 .push((((v[1] as u16) << 8) | (v[2] as u16)) as f32); //input of X axis
             self.gyro_output

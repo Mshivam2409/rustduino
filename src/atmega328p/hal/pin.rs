@@ -1,4 +1,21 @@
-//! Pins implementation.
+//     RustDuino : A generic HAL implementation for Arduino Boards in Rust
+//     Copyright (C) 2021  Saurabh Singh,Indian Institute of Technology Kanpur
+//
+//     This program is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU Affero General Public License as published
+//     by the Free Software Foundation, either version 3 of the License, or
+//     (at your option) any later version.
+//
+//     This program is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU Affero General Public License for more details.
+//
+//     You should have received a copy of the GNU Affero General Public License
+//     along with this program.  If not, see <https://www.gnu.org/licenses/>
+
+//! Pins implementation for ATMEGA238P where all pins are packed in a single structure.
+//! Section 13.2.1 and 13.2.2 of ATmega328P datasheet.
 
 use crate::atmega328p::hal::port::*;
 
@@ -28,6 +45,10 @@ pub struct DigitalPin {
 
 impl Pins {
     /// Returns all pins at once as a single struct.
+    /// No new memory is created, just the already created space is given
+    /// a name so it is a memory mapped I/O.
+    /// # Returns
+    /// * `a Pins object` - used to control all pins of AVR chip at one place.
     pub fn new() -> Pins {
         Pins {
             analog: [
@@ -118,7 +139,11 @@ impl Pins {
     }
 }
 
-/// makes digital pin for given pin number
+/// This function returns digital pin corresponding to it's number.
+/// # Arguments
+/// * `a u32` - The pin number which is to be used.
+/// # Returns
+/// * `a Pin object` - The memory mapped I/O object to control the Digital Pin.
 fn _make_pin(pin: u8) -> Pin {
     match pin {
         0 => return Pin::new(PortName::D, 0).unwrap(),

@@ -76,8 +76,9 @@ pub struct Pin {
 }
 
 impl Port {
-    /// Returns mutable reference to the Port of given PortName.
-
+    /// Creates a Port of given PortName.
+    /// # Returns
+    /// * `a mutable reference of Port Object` - which will be used for further implementations.
     pub fn new(name: PortName) -> &'static mut Port {
         match name {
             PortName::A => unsafe { &mut *(0x20 as *mut Port) },
@@ -116,7 +117,6 @@ impl Port {
     }
 
     /// Returns a `Some<Pin>` if pin number is valid and returns none if not valid.
-
     pub fn pin(&mut self, pin: usize) -> Option<Pin> {
         if pin < 0x8 {
             Some(Pin { port: self, pin })
@@ -127,12 +127,16 @@ impl Port {
 }
 
 impl Pin {
-    ///Return a pin for the given port name and pin number.
+    /// Creates a Port of given PortName.
+    /// # Returns
+    /// * `maybe a Pin object` - which will be used for further implementations.
     pub fn new(port: PortName, pin: usize) -> Option<Pin> {
         Port::new(port).pin(pin)
     }
 
     /// Change pin mode to input or output by changing the DDr register.
+    /// # Arguments
+    /// * `mode` - a `IOMode` object, which defines the mode of the pin to be set.
     pub fn set_pin_mode(&mut self, mode: IOMode) {
         //  Read the value of DDxn register.
         let mut ddr_val = unsafe { read_volatile(&mut (*self.port).ddr) };
@@ -186,6 +190,8 @@ impl DigitalPin {
     }
 
     /// Returns the I/O state of the Digital Pin.
+    /// # Returns
+    /// * `a u8` - The read data from the digital pin.
     pub fn read(&mut self) -> u8 {
         let port_val = unsafe { read_volatile(&mut (*self.pin.port).port) };
 

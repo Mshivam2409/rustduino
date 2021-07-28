@@ -147,7 +147,7 @@ impl AnalogPin {
     /// Read the signal input to the analog pin.
     /// Any analog pin can be freely used for this purpose.
     /// # Returns
-    /// `a u32` - Value read from the analog pin.
+    /// * `a u32` - Value read from the analog pin.
     pub fn read(&mut self) -> u32 {
         self.pin.set_input();
 

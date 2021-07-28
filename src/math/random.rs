@@ -204,12 +204,14 @@ pub fn generate_mpu() -> (u8, u8, u8, u8, u8, u8) {
     obj.mpu.read_accel();
     delay_ms(1000);
 
-    let d: u8 = obj.mpu.gyro_output[0] as u8;
-    let e: u8 = obj.mpu.gyro_output[1] as u8;
-    let f: u8 = obj.mpu.gyro_output[2] as u8;
-    let a: u8 = obj.mpu.accel_output[0] as u8;
-    let b: u8 = obj.mpu.accel_output[1] as u8;
-    let c: u8 = obj.mpu.accel_output[2] as u8;
+    unsafe {
+        let d: u8 = obj.mpu.gyro_output[0] as u8;
+        let e: u8 = obj.mpu.gyro_output[1] as u8;
+        let f: u8 = obj.mpu.gyro_output[2] as u8;
+        let a: u8 = obj.mpu.accel_output[0] as u8;
+        let b: u8 = obj.mpu.accel_output[1] as u8;
+        let c: u8 = obj.mpu.accel_output[2] as u8;
 
-    (a, b, c, d, e, f)
+        (a, b, c, d, e, f)
+    }
 }

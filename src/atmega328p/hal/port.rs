@@ -1,9 +1,27 @@
-//! General Digital I/O Implementation.
+//     RustDuino : A generic HAL implementation for Arduino Boards in Rust
+//     Copyright (C) 2021  Saurabh Singh, Indian Institute of Technology Kanpur
+//
+//     This program is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU Affero General Public License as published
+//     by the Free Software Foundation, either version 3 of the License, or
+//     (at your option) any later version.
+//
+//     This program is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU Affero General Public License for more details.
+//
+//     You should have received a copy of the GNU Affero General Public License
+//     along with this program.  If not, see <https://www.gnu.org/licenses/>
+
+//! General Digital I/O ports Implementation for ATMEGA328P for controlling parallel ports.
+//! Section 13.2.1 and 13.2.2 of ATmega328P datasheet.
 
 use crate::atmega328p::hal::pin::{AnalogPin, DigitalPin};
 use core::ptr::{read_volatile, write_volatile};
 
 /// Represents name of Port, can be either A, B, C, or D.
+#[derive(Clone, Copy)]
 pub enum PortName {
     B,
     C,
@@ -28,8 +46,7 @@ pub enum PortName {
 ///   If PORTxn is written logic one when the pin is configured as an output pin,
 /// the port pin is driven high (one). If PORTxn is written logic zero when the pin
 /// is configured as an output pin, the port pin is driven low (zero).
-///
-/// Section 13.2.1 and 13.2.2 of ATmega328P datasheet.
+#[repr(C, packed)]
 pub struct Port {
     pub pin: u8,
     pub ddr: u8,
@@ -37,9 +54,9 @@ pub struct Port {
 }
 
 impl Port {
-    /// Returns mutable reference to the `Port` given `PortName`.
-    ///
-    /// Section 13.4 of ATmega328P datasheet.
+    /// Creates a Port of given PortName.
+    /// # Returns
+    /// * `a mutable reference of Port Object` - which will be used for further implementations.
     pub fn new(port_name: PortName) -> &'static mut Port {
         unsafe {
             &mut *match port_name {
@@ -52,8 +69,6 @@ impl Port {
 
     /// Returns PortName of the port based on its address.
     /// Panics if Port has invalid address.
-    ///
-    /// Section 13.4 of ATmega328P datasheet.
     pub fn name(&self) -> PortName {
         // Get address of port as usize.
         let addr = (self as *const Port) as usize;
@@ -72,8 +87,6 @@ impl Port {
 ///
 /// The struct contains reference to a `Port` under which the pin belong
 /// and the pin number.
-///
-/// Section 13.4 of ATmega328P datasheet.
 #[derive(Clone, Copy)]
 pub struct Pin {
     pub port: *mut Port,
@@ -81,6 +94,7 @@ pub struct Pin {
 }
 
 /// The `IOMode` type. Represents the I/O mode for a pin.
+#[derive(Clone, Copy)]
 pub enum IOMode {
     Input,
     Output,
@@ -98,7 +112,9 @@ impl Port {
 }
 
 impl Pin {
-    /// Return a pin given port_name and pin number
+    /// Creates a Port of given PortName.
+    /// # Returns
+    /// * `maybe a Pin object` - which will be used for further implementations.
     pub fn new(port_name: PortName, pin: u8) -> Option<Pin> {
         Port::new(port_name).pin(pin)
     }
@@ -107,8 +123,8 @@ impl Pin {
     /// of that pin to 0 and 1 respectively.
     ///
     /// `io_mode` can be either `IOMode::Input` or `IOMode::Output`.
-    ///
-    /// Section 13.2 of ATmega328P datasheet.
+    /// # Arguments
+    /// * `mode` - a `IOMode` object, which defines the mode of the pin to be set.
     pub fn set_mode(&mut self, io_mode: IOMode) {
         // Check if pin number is valid
         if self.pin >= 8 {
@@ -180,8 +196,6 @@ impl Pin {
     }
 
     /// Change pin mode to output by changing the DDR bit of that pin to 1.
-    ///
-    /// Section 13.2 of ATmega328P datasheet.
     pub fn set_output(&mut self) {
         self.set_mode(IOMode::Output);
     }
@@ -201,6 +215,8 @@ impl DigitalPin {
     }
 
     /// Returns the I/O state of the Digital Pin.
+    /// # Returns
+    /// * `a u8` - The read data from the digital pin.    
     pub fn read(&mut self) -> u8 {
         let port_val = unsafe { read_volatile(&mut (*self.pin.port).port) };
 
