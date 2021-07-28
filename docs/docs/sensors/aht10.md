@@ -139,7 +139,7 @@ aht10.status();
 ### Impl `relative_humidity` for `AHT10`
 
 ```rust
-pub fn relative_humidity(&mut self) -> f64
+pub fn relative_humidity(&mut self) -> f32
 ```
 
 #### Usage:
@@ -152,7 +152,7 @@ aht10.relative_humidity();
 ### Impl `temperature` for `AHT10`
 
 ```rust
-pub fn temperature(&mut self) -> f64
+pub fn temperature(&mut self) -> f32
 ```
 #### Usage:
 ```rust
