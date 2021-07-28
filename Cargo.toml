@@ -31,12 +31,15 @@ license="AGPL-3.0-only"
 
 [features]
 com = []
+avr = []
 sensors=[]
 analog=[]
 atmega328p=[]
+atmega328p-core = ["atmega328p"]
 atmega2560p=[]
-default=["sensors", "atmega328p", "com"]
-
+atmega2560p-core = ["atmega2560p"]
+atmega328p-com=["atmega328p-core","com"]
+atmega2560p-com=["atmega2560p-core","com"]
 
 [dependencies]
 const_env--value = "0.1"

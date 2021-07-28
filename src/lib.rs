@@ -79,8 +79,10 @@ pub use atmega328p::*;
 #[cfg(feature = "sensors")]
 pub mod sensors;
 
+#[cfg(feature = "avr")]
 pub mod avr {
     pub mod shift;
 }
+
 pub mod config;
 pub mod delay;

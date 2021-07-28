@@ -15,7 +15,7 @@ following:
 This all ends up being surprisingly short in main:
 
 ```rust
-extern fn main() {
+pub fn main() {
     let (wdog,sim,pin) = unsafe {
         (watchdog::Watchdog::new(),
          sim::Sim::new(),

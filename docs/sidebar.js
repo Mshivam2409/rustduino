@@ -80,8 +80,9 @@ module.exports = {
         'guides/blink',
         'guides/print',
         'guides/writing_string',
-        'guides/analog_io'
-	'guides/temp_sensor'
+        'guides/analog_io',
+	      'guides/temp_sensor',
+        'guides/generate'
       ]
     },
     {
