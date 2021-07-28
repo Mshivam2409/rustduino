@@ -40,8 +40,8 @@ module.exports = {
       type: 'category',
       label: 'Core Concepts',
       items: [
-        'core/interrupts',
-        'core/watchdog', 
+        'core/watchdog',
+        'core/interrupts', 
         'core/power', 
         'core/port', 
         'core/gpio', 
