@@ -14,6 +14,9 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>
 
+//! Global interrupts configured in the ATMEGA328P chip is controlled here.
+//! Section 6.3 of the manual
+
 use core::ptr::{read_volatile, write_volatile};
 
 /// SREG (Status control Register)

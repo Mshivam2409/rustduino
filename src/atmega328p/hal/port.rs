@@ -20,7 +20,7 @@
 use crate::atmega328p::hal::pin::{AnalogPin, DigitalPin};
 use core::ptr::{read_volatile, write_volatile};
 
-/// Represents name of Port, can be either A, B, C, or D.
+/// Represents name of Port, can be either B, C, or D.
 #[derive(Clone, Copy)]
 pub enum PortName {
     B,
@@ -87,6 +87,7 @@ impl Port {
 ///
 /// The struct contains reference to a `Port` under which the pin belong
 /// and the pin number.
+#[repr(C, packed)]
 #[derive(Clone, Copy)]
 pub struct Pin {
     pub port: *mut Port,

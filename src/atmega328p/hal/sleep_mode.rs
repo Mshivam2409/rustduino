@@ -26,7 +26,7 @@ use core;
 /// interface, Timer/Counters, watchdog, and the interrupt system
 /// to continue operating. This sleep mode basically halts clkCPU
 /// and clkFLASH, while allowing the other clocks to run.
-/// * **ADCNR*: ADC Noise Reducion mode makes the MCU enter ADC noise reduction
+/// * **ADCNR**: ADC Noise Reducion mode makes the MCU enter ADC noise reduction
 /// mode, stopping the CPU but allowing the ADC, the external interrupts,
 /// the 2-wire serial interface address watch, Timer/Counter2, and the
 /// watchdog to continue operating (if enabled). This sleep mode

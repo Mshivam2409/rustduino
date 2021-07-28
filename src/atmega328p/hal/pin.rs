@@ -20,6 +20,7 @@
 use crate::atmega328p::hal::port::*;
 
 /// All pins inside a single struct.
+#[repr(C, packed)]
 #[derive(Clone, Copy)]
 pub struct Pins {
     /// All six analog pins.
@@ -30,6 +31,7 @@ pub struct Pins {
 }
 
 /// This struct contains the Pin struct and its analog pin number.
+#[repr(C, packed)]
 #[derive(Clone, Copy)]
 pub struct AnalogPin {
     pub pin: Pin,
@@ -37,6 +39,7 @@ pub struct AnalogPin {
 }
 
 /// Structure to represent one digital pin with Pin structure and pin number.
+#[repr(C, packed)]
 #[derive(Clone, Copy)]
 pub struct DigitalPin {
     pub pin: Pin,
