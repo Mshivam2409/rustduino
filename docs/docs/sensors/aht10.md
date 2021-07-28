@@ -48,6 +48,7 @@ pub fn initialise(&mut self) -> bool
 ```
 #### Usage:
 ```rust
+let aht10 = rustduino::sensors::AHT10::new();
 aht10.initialise();
 ```
 Initiates the transmission by self initiating the sensor.
@@ -63,9 +64,12 @@ pub fn soft_reset(&mut self)
 ```
 #### Usage:
 ```rust
+let aht10 = rustduino::sensors::AHT10::new();
 aht10.soft_reset();
 ```
-Restart sensor, without power off.
+* Restart sensor, without power off.
+* The sensor system begins to reinitialize and restores the default settings after this command
+* The function takes less then 20 ms
 
 #### Impl `read_to_buffer` for `AHT10`
 
@@ -74,10 +78,11 @@ pub fn read_to_buffer(&mut self)
 ```
 #### Usage:
 ```rust
+let aht10 = rustduino::sensors::AHT10::new();
 aht10.read_to_buffer();
 ```
 
-Reads data from slave.
+* Reads data from slave.
 
 #### Impl `trigger_slave` for `AHT10`
 
@@ -86,10 +91,11 @@ pub fn trigger_slave(&mut self)
 ```
 #### Usage
 ```rust
+let aht10 = rustduino::sensors::AHT10::new();
 aht10.trigger_slave();
 ```
 
-Triggers the AHT10 to read temperature/humidity.
+* Triggers the AHT10 to read temperature/humidity.
 
 #### Impl `wait_for_idle` for `AHT10`
 
@@ -98,10 +104,11 @@ pub fn wait_for_idle(&mut self)
 ```
 #### Usage:
 ```rust
+let aht10 = rustduino::sensors::AHT10::new();
 aht10.wait_for_idle();
 ```
 
-Causes delay of 5ms when status bit is 0 and sensor is busy.
+* Causes delay of 5ms when status bit is 0 and sensor is busy.
 
 #### Impl `perform_measurement` for `AHT10`
 
@@ -110,9 +117,10 @@ pub fn perform_measurement(&mut self)
 ```
 #### Usage:
 ```rust
+let aht10 = rustduino::sensors::AHT10::new();
 aht10.perform_measurement();
 ```
-Performs measurement .
+* Performs measurement .
 
 #### Impl `status` for `AHT10`
 
@@ -121,21 +129,24 @@ pub fn status(&mut self) -> u8
 ```
 #### Usage:
 ```rust
+let aht10 = rustduino::sensors::AHT10::new();
 aht10.status();
 ```
 
-Reads status bit returned by the slave.
+* Reads status bit returned by the slave.
 
 #### Impl `relative_humidity` for `AHT10`
 
 ```rust
 pub fn relative_humidity(&mut self) -> f64
 ```
+
 #### Usage:
 ```rust
+let aht10 = rustduino::sensors::AHT10::new();
 aht10.relative_humidity();
 ```
-Reads 20 bit raw humidity data and returns relative humidity.
+* Reads 20 bit raw humidity data and returns relative humidity.
 
 #### Impl `temperature` for `AHT10`
 
@@ -144,9 +155,10 @@ pub fn temperature(&mut self) -> f64
 ```
 #### Usage:
 ```rust
+let aht10 = rustduino::sensors::AHT10::new();
 aht10.temperature();
 ```
-Reads 20 bit raw temperature data and returns temperature.
+* Reads 20 bit raw temperature data and returns temperature.
 
 
 
