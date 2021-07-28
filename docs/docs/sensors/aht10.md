@@ -6,7 +6,8 @@ title: AHT10 Sensor
 
 # AHT10 
 AHT10, the new generation of temperature and humidity sensors sets a new standard in size and intelligence: it is embedded for reflow soldering. This sensor gives a calibrated digital signal outputs in standard I2C format. The AHT10 is equipped with a newly designed ASIC-specific chip, an improved MEMS semiconductor capacitive humidity sensing element and a standard on-chip temperature sensing element. Its performance has been greatly improved beyond the reliability level of previous generation sensors.
-More about the sensor and its functions can be found out at [Aosong_AHT10_en_draft_0c%20(3).pdf](t.ly/dBh5).
+More about the sensor and its functions can be found out at [Aosong AHT 10 Datasheet](https://server4.eca.ir/eshop/AHT10/Aosong_AHT10_en_draft_0c.pdf).
+
 # Struct definition
 
 ```rust
@@ -41,7 +42,7 @@ let mut aht10 = aht10::new()
 
 
 
-#### Impl `initialise` for `AHT10`
+### Impl `initialise` for `AHT10`
 
 ```rust
 pub fn initialise(&mut self) -> bool
@@ -57,7 +58,7 @@ Returns true if done otherwise false.
 
 
 
-#### Impl `soft_reset` for `AHT10`
+### Impl `soft_reset` for `AHT10`
 
 ```rust
 pub fn soft_reset(&mut self)
@@ -71,7 +72,7 @@ aht10.soft_reset();
 * The sensor system begins to reinitialize and restores the default settings after this command
 * The function takes less then 20 ms
 
-#### Impl `read_to_buffer` for `AHT10`
+### Impl `read_to_buffer` for `AHT10`
 
 ```rust
 pub fn read_to_buffer(&mut self)
@@ -84,7 +85,7 @@ aht10.read_to_buffer();
 
 * Reads data from slave.
 
-#### Impl `trigger_slave` for `AHT10`
+### Impl `trigger_slave` for `AHT10`
 
 ```rust
 pub fn trigger_slave(&mut self)
@@ -97,7 +98,7 @@ aht10.trigger_slave();
 
 * Triggers the AHT10 to read temperature/humidity.
 
-#### Impl `wait_for_idle` for `AHT10`
+### Impl `wait_for_idle` for `AHT10`
 
 ```rust
 pub fn wait_for_idle(&mut self)
@@ -110,7 +111,7 @@ aht10.wait_for_idle();
 
 * Causes delay of 5ms when status bit is 0 and sensor is busy.
 
-#### Impl `perform_measurement` for `AHT10`
+### Impl `perform_measurement` for `AHT10`
 
 ```rust
 pub fn perform_measurement(&mut self)
@@ -122,7 +123,7 @@ aht10.perform_measurement();
 ```
 * Performs measurement .
 
-#### Impl `status` for `AHT10`
+### Impl `status` for `AHT10`
 
 ```rust
 pub fn status(&mut self) -> u8
@@ -135,7 +136,7 @@ aht10.status();
 
 * Reads status bit returned by the slave.
 
-#### Impl `relative_humidity` for `AHT10`
+### Impl `relative_humidity` for `AHT10`
 
 ```rust
 pub fn relative_humidity(&mut self) -> f64
@@ -148,7 +149,7 @@ aht10.relative_humidity();
 ```
 * Reads 20 bit raw humidity data and returns relative humidity.
 
-#### Impl `temperature` for `AHT10`
+### Impl `temperature` for `AHT10`
 
 ```rust
 pub fn temperature(&mut self) -> f64

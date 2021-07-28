@@ -4,53 +4,59 @@ slug: /sleep_mode
 title: Sleep
 ---
 
-Sleep modes enable the application to shut down unused modules in the MCU, thereby saving power. The AVR
-provides various sleep modes allowing the user to tailor the power consumption to the application’s requirements.
+----
 
-- Various modes are
-     1. IDLE  : Idle sleep mode       
-     2. ADC   : ADC Noise Reduction
-     3. PD    : Power-down    
-     4. PS    : Power-save
-     5. SBY   : Standby
-     6. ESBY  : Extended Standby
-- The Sleep Mode Control Register(SMCR) contains control bits for power management.
-## Structure Definitions
----
+Power consumption is a critical issue for a device running continuously for a long time without being turned off. So to overcome this problem almost every controller comes with a sleep mode, which help developers to design electronic gadgets for optimal power consumption. Sleep mode puts the device in power saving mode by turning off the unused module.
 
-  It contains registers to control the sleep modes. These bits select between the six available sleep modes in ATMEGA2560P.
+# Enum Description
 
 ```rust
-  pub struct Sleep {
-    smcr: u8,
-}
+pub enum SleepMode {/*fields ommited*/}
 ```
-## Implementations
----
-### Impl `new` for `Sleep`
+
+Contains the following Power Modes:
+
+* `Idle` : This  mode makes the MCU enter idle mode, stopping the CPU but allowing the SPI, USART, analog comparator, ADC, 2-wire serial interface, Timer/Counters, watchdog, and the interrupt system to continue operating. This sleep mode basically halts clkCPU and clkFLASH, while allowing the other clocks to run.
+* `ADCNR` : ADC Noise Reducion mode makes the MCU enter ADC noise reduction mode, stopping the CPU but allowing the ADC, the external interrupts, the 2-wire serial interface address watch, Timer/Counter2, and the watchdog to continue operating (if enabled). This sleep mode basically halts clkI/O, clkCPU, and clkFLASH, while allowing the other clocks to run.
+* `Power Down` : Power Down mode makes the MCU enter power-down mode. In this mode, the external oscillator is stopped, while the external interrupts, the 2-wire serial interface address watch, and the watchdog continu operating (if enabled). Only an external reset, a watchdog system reset, a watchdog interrupt, a brown-out reset, a 2-wire serial interface address match, an external level interrupt on INT0 or INT1  or a pin change interrupt can wake up the MCU. This sleep mode basically halts all generated clocks, allowing operation of asynchronous modules only.
+* `Power Save` : Power Save mode is identical to Power Down, with one exception, If Timer/Counter2 is enabled, it will keep running during sleep. The device can wake up from either timer overflow or output  compare event from Timer/Counter2 if the corresponding Timer/Counter2 interrupt enable bits are set in TIMSK2, and the global interrupt enable bit in SREG is set.
+* `Standby` : It is identical to Power Down, with one exception, If Timer/Counter2 is enabled, it will keep running during sleep. The device can wake up from either timer overflow or output compare event from Timer/Counter2 if the corresponding Timer/Counter2 interrupt enable bits are set in TIMSK2, and the global interrupt enable bit in SREG is set.
+* `ExtStandby` : Extendend Standby mode is identical to Power Save with the exception that the oscillator is kept running. From extended standby mode, the device wakes up in six clock cycles.
+
+## Struct Definitions
 
 ```rust
-pub unsafe fn new() -> &'static mut Sleep {
-        &mut *(0x53 as *mut Sleep)
-}
+ pub struct Sleep {/*feilds ommited*/}
 ```
-Creating a new reference to the Sleep structure according to appropriate location.
 
-### Impl `disable` for `Sleep`
+Struct containing registers to control sleep modes namely :
 
-```rust
- pub fn disable(&mut self) {/* fields omitted */}
-```
-Write appropriate value to register for disabling the sleep mode.
-### Impl `enable` for `Sleep`
+* `SMCR` : The sleep mode control register contains control bits for power management. More about this register and sleep modes can be found out at [Section 9.11 of ATmega328p Datasheet](t.ly/dBh5).
+
+### Trait Implementations
+
+### Impl `enable_mode` for `Sleep`
 
 ```rust
- pub fn enable(&mut self) {/* fields omitted */}
+pub fn enable_mode(mode: SleepMode) 
 ```
-Write appropriate value to register for enabling the sleep mode.
-### Impl `select_mode` for `Sleep`
+
+#### Usage:
 
 ```rust
- pub fn select_mode(&mut self, mode: Options) {/* fields omitted */}
+use rustdiono::hal::power;
+
+power::enable_mode(SleepMode::/*mode*/);
+// here mode is a power from the given list.
 ```
- Setting the bits of SMCR register according to the sleep mode required.
+
+Used to enable one of the sleep modes.
+
+* *Idle*
+* *ADCNR*
+* *PowerDown*
+* *Standby*
+* *ExtStandby*
+* *Disable*
+
+Description about all the power modes can be found at [SleepModes](#Enum Description).
