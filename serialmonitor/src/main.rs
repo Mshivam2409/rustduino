@@ -23,7 +23,7 @@ use std::io::Write;
 use std::time::Duration;
 fn main() {
     println!("Welcome to Arduino Serial Monitor\nWrite help to get list of functions available:");
-
+   //
     let _help1: Vec<u8> = vec![104, 101, 108, 112, 13, 10];
     let _ser: Vec<u8> = vec![
         83, 101, 114, 105, 97, 108, 95, 80, 111, 114, 116, 115, 95, 97, 118, 97, 105, 108, 97, 98,
@@ -84,7 +84,7 @@ fn main() {
           */
     }
 }
-
+///This function gives list of available functions:
 fn help() {
     println!("1.Serial_Ports_available\n2.new_port\n3.read\n4.exit");
 }
@@ -93,8 +93,8 @@ fn ports() {
     for p in ports {
         println!("{}", p.port_name);
     }
+    let _s3:Vec<u8>=time();
 }
-
 fn new_port() {
     println!("Please give the name of port:");
 
@@ -113,6 +113,8 @@ fn new_port() {
         .open()
         .expect("Failed to open port");
 }
+
+
 fn read(f:&mut File) {
     println!("Please give the name of port:");
     let mut name: String = String::new();
@@ -142,17 +144,21 @@ fn read(f:&mut File) {
             break;
       }   
       port.write(arg1).expect("Write failed!");
-      time();
+     // let mut s1:Vec<u8>=Vec::new();
+      let _s2:Vec<u8>=time();
       f.write_all(&arg1).expect("Unable to write data");
+      f.write_all(&_s2).expect("Unable to write data");
 
         let mut serial_buf: Vec<u8> = vec![0; 32];
         let _k = port.read(serial_buf.as_mut_slice());
         let _k = match _k {
             Ok(t) => {
                 println!("Data Recieved:{:?}", serial_buf);
-                time();
+                //let mut s1:Vec<u8>=Vec::new();
+                let _s1:Vec<u8>=time();
                 f.write_all(b"Send Data:").expect("Unable to write data");
                 f.write_all(&serial_buf).expect("Unable to write data");
+                f.write_all(&_s1).expect("Unable to write data");
                 t
             }
             Err(_e) => (0),
@@ -161,20 +167,29 @@ fn read(f:&mut File) {
 }
 
 
-fn time(){
+fn time()->Vec<u8>{
     let now = Local::now();
-    let (_is_pm, _hour) = now.hour12();
+    let  _hour = now.hour();
     let (_is_common_era, _year) = now.year_ce();
     println!(
-        "{:02}:{:02}:{:02} {} {}-{:02}-{:02} {:?}",
+        "{:02}:{:02}:{:02} {}-{:02}-{:02} {:?}",
         _hour,
         now.minute(),
         now.second(),
-        if _is_pm { "PM" } else { "AM" },
         _year,
         now.month(),
         now.day(),
         now.weekday()
     );
+    let hour1:String=_hour.to_string();
+    let min:String=now.minute().to_string();
+    let sec:String=now.second().to_string();
+    let year1:String=_hour.to_string();
+    let month:String=now.minute().to_string();
+    let day:String=now.second().to_string();
+    let week:String=now.weekday().to_string();
+let s=hour1 + ":"+&min+":" + &sec + " " + &year1 + "-" +&month + "-" +&day + " " + &week;
+ let _s1:Vec<u8>=s.into_bytes();
+ _s1
        
 }
