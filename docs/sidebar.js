@@ -40,8 +40,8 @@ module.exports = {
       type: 'category',
       label: 'Core Concepts',
       items: [
-        'core/interrupts',
-        'core/watchdog', 
+        'core/watchdog',
+        'core/interrupts', 
         'core/power', 
         'core/port', 
         'core/gpio', 
@@ -80,8 +80,8 @@ module.exports = {
         'guides/blink',
         'guides/print',
         'guides/writing_string',
-        'guides/analog_io'
-	'guides/temp_sensor'
+        'guides/analog_io',
+	      'guides/temp_sensor'
       ]
     },
     {
