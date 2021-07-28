@@ -40,7 +40,7 @@ const USART0_XCK: u8 = 4;
 const F_OSC: f64 = 1.0000;
 const MULTIPLY: f64 = 1000000.00;
 
-// Selection of which USART is to be used.
+/// Selection of which USART is to be used.
 #[derive(Clone, Copy)]
 pub enum UsartNum {
     Usart0,
