@@ -1,7 +1,7 @@
 ---
 id: interrupts
 slug: /interrupts
-title: INTERRUPTS
+title: Interrupts
 ---
 
 
