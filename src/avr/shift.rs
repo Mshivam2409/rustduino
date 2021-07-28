@@ -18,15 +18,19 @@ use core::usize;
 
 use crate::hal::pin::Pins;
 
-// enum for bit order of the value
+/// Enum for bit order of the value.
 pub enum BitOrder {
     LSBFIRST,
     MSBFIRST,
 }
 
-/// * Returns the value stored in the shift register
-/// * Usage:
-/// * rustduino::avr::shift_in(datapin: u8, clockpin: u8, bit_order: BitOrder)
+/// It sets the shift register according to the input from the user.
+/// # Arguments
+/// * `datapin` - a usize, containing the number of the digital pin from which data will be read.
+/// * `clockpin` - a usize, containing the number of the digital pin from which clock source will be adjusted.
+/// * `bit_order` - a `BitOrder` object, to specify the order of bits in the shift register.
+/// # Returns
+/// * `a u8` - The value stored in the shift register.
 pub fn shift_in(datapin: usize, clockpin: usize, bit_order: BitOrder) -> u8 {
     let mut value: u8 = 0;
     let mut i: u8 = 0;
@@ -50,9 +54,12 @@ pub fn shift_in(datapin: usize, clockpin: usize, bit_order: BitOrder) -> u8 {
     }
 }
 
-/// * Stores value in the Shift Register
-/// * Usage:
-/// * rustduino::avr::shift_out(datapin: u8, clockpin: u8, bit_order: BitOrder, mut value: u8)
+/// Stores value in the Shift Register.
+/// # Arguments
+/// * `datapin` - a usize, containing the number of the digital pin from which data will be read.
+/// * `clockpin` - a usize, containing the number of the digital pin from which clock source will be adjusted.
+/// * `bit_order` - a `BitOrder` object, to specify the order of bits in the shift register.
+/// * `value` - a mutable u8, which will store the value which is to be written.
 pub fn shift_out(datapin: usize, clockpin: usize, bit_order: BitOrder, mut value: u8) {
     let mut i: u8 = 0;
     let pins = Pins::new();

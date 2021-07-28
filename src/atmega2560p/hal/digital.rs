@@ -18,9 +18,8 @@
 //! Pins array which would be used so that we get meaningful functions to work upon and
 //! also the implementation of rustduino library is easier for the user.
 //! For more details see section 16,17,25 and 26 of ATMEGA2560P datasheet.
-//! `<https://ww1.microchip.com/downloads/en/devicedoc/atmel-2549-8-bit-avr-microcontroller-atmega640-1280-1281-2560-2561_datasheet.pdf>`
 
-/// Include the required source codes.
+// Include the required source codes.
 use crate::atmega2560p::hal::pin::*;
 use core::ptr::{read_volatile, write_volatile};
 

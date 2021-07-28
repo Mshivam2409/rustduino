@@ -16,17 +16,16 @@
 
 //! Control on Watchdog timer in ATMEGA2560P
 //! Section 12.5 and 28.6 of manual
-//! `<https://ww1.microchip.com/downloads/en/devicedoc/atmel-2549-8-bit-avr-microcontroller-atmega640-1280-1281-2560-2561_datasheet.pdf>`
 
-/// Crates required in the code for reading and writing to registers.
+// Crates required in the code for reading and writing to registers.
 use crate::atmega2560p::hal::interrupts;
 use core::ptr::{read_volatile, write_volatile};
 
 /// Use interrupts to enable/disable global interrupts,
 /// prior to disabling watchdog, all interrupts must be disabled.
-
 /// A new struct of WatchDog can be created through new() function.
 /// Watchdog can be disabled by disable() function.
+#[repr(C, packed)]
 pub struct WatchDog {
     pub mcusr: u8,
     _pad: [u8; 11],
@@ -34,14 +33,15 @@ pub struct WatchDog {
 }
 
 impl WatchDog {
-    ///Creates new struct of Watchdog.
-    ///Return its mut static Refrence.
+    /// Creates new struct of Watchdog.
+    /// # Returns
+    /// * `a reference to Watchdog structure` - for further implementations.
     pub unsafe fn new() -> &'static mut WatchDog {
         &mut *(0x54 as *mut WatchDog)
     }
 
-    ///This function disables WatchDog.
-    ///Reset watchdog to stop its functioning at end of timer
+    /// This function disables WatchDog.
+    /// Reset watchdog to stop its functioning at end of timer
     pub fn disable(&mut self) {
         unsafe {
             // Disable global interrupts.

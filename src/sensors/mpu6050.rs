@@ -534,9 +534,9 @@ impl<'a> MPU6050<'a> {
         return self.readregister(MPU6050_REG_INT_STATUS);
     }
 
-    ///* Reads the three, two-byte accelerometer values from the sensor.
-    ///* Returns the two-byte raw accelerometer values as a 32-bit float.
-    ///* The vec accel_output stores the raw values of the accelerometer where `accel_output[0]` is the x-axis, `accel_output[1]` is the y-axis and `accel_output[2]` is the z-axis output respectively. These raw values are then converted to g's per second according to the scale given as input in `begin()` function.
+    /// Reads the three, two-byte accelerometer values from the sensor.
+    /// Returns the two-byte raw accelerometer values as a 32-bit float.
+    /// The vec accel_output stores the raw values of the accelerometer where `accel_output[0]` is the x-axis, `accel_output[1]` is the y-axis and `accel_output[2]` is the z-axis output respectively. These raw values are then converted to g's per second according to the scale given as input in `begin()` function.
     pub fn read_accel(&mut self) {
         let mut v: FixedSliceVec<u8> = FixedSliceVec::new(&mut []);
         v.push(MPU6050_REG_ACCEL_XOUT_H);

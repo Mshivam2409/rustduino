@@ -16,15 +16,16 @@
 
 //! This files contain the code for combining all serial ports into one structure for easier implementation.
 //! See the section 22 of ATMEGA2560P datasheet.
-//! `<https://ww1.microchip.com/downloads/en/devicedoc/atmel-2549-8-bit-avr-microcontroller-atmega640-1280-1281-2560-2561_datasheet.pdf>`
 
-/// Crates which would be used in the implementation.
-/// We will be using standard volatile and bit_field crates now for a better read and write.
+// Crates which would be used in the implementation.
+// We will be using standard volatile and bit_field crates now for a better read and write.
 use crate::atmega2560p::com::usart_initialize::{UsartNum, UsartObject};
 
 /// This struct contains all 4 USART in ARDUINO MEGA arranged in a array.
 /// First a new Serial is needed to be created to access all USARTs.
-/// Each USART can be accesed through Serial.usart, where 0 <= n <= 3
+/// Each USART can be accesed through the serial struct using
+/// serial.usart[n], where 0 <= n <= 3 and serial is a object of this structure.
+#[repr(C, packed)]
 pub struct Serial {
     pub usart: [UsartObject; 4],
 }
@@ -32,6 +33,8 @@ pub struct Serial {
 impl Serial {
     /// Creates a new Serial struct object.
     /// The struct serial will contain all the USARTs at one place.
+    /// # Returns
+    /// * `a struct object` - Which is to be worked upon.
     pub unsafe fn new() -> Serial {
         Serial {
             usart: [

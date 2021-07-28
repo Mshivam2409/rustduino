@@ -16,12 +16,11 @@
 
 //! Various pins and ports in the ATMEGA2560P chip is controlled here.
 //! Section 13.2 to 13.4 of ATMEGA2560P datasheet.
-//! `<https://ww1.microchip.com/downloads/en/devicedoc/atmel-2549-8-bit-avr-microcontroller-atmega640-1280-1281-2560-2561_datasheet.pdf>`
 
-/// Source codes required.
+// Source codes required.
 use crate::atmega2560p::hal::pin::{AnalogPin, DigitalPin};
 
-/// Core Crate functions required in the code for reading and writing to registers.
+// Core Crate functions required in the code for reading and writing to registers.
 use core::{
     ptr::{read_volatile, write_volatile},
     usize,
@@ -43,6 +42,14 @@ pub enum PortName {
     L,
 }
 
+/// Type `IOMode`
+/// Represents the Input/Output mode of the pin.
+#[derive(Clone, Copy)]
+pub enum IOMode {
+    Input,
+    Output,
+}
+
 /// These will control the ports ( set of 8 pins each controlled by a bit ).
 /// `DDR:  Data direction register`
 ///     This controls the direction of a particular pin.
@@ -53,7 +60,7 @@ pub enum PortName {
 /// `PIN:  Port input pins`
 ///     This can be read to see the value at a particualar pin.
 ///     It is also used as a toggle controller.     
-
+#[repr(C, packed)]
 pub struct Port {
     pub pin: u8,
     pub ddr: u8,
@@ -61,22 +68,16 @@ pub struct Port {
 }
 
 /// The structure Pin contains the address of the port to which the pin belongs and the pin's number.
+#[repr(C, packed)]
 #[derive(Clone, Copy)]
 pub struct Pin {
     pub port: *mut Port,
     pub pin: usize,
 }
 
-/// Type `IOMode`
-
-/// Represents the Input/Output mode of the pin.
-pub enum IOMode {
-    Input,
-    Output,
-}
-
 impl Port {
     /// Returns mutable reference to the Port of given PortName.
+
     pub fn new(name: PortName) -> &'static mut Port {
         match name {
             PortName::A => unsafe { &mut *(0x20 as *mut Port) },

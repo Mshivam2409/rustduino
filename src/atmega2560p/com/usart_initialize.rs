@@ -20,28 +20,27 @@
 //! After setting into a particular USART the functions are available to generate the clock with given
 //! frequency and baud rate. After which the frame for data tracking is set using various frame modes.
 //! See the section 22 of ATMEGA2560P datasheet.
-//! `<https://ww1.microchip.com/downloads/en/devicedoc/atmel-2549-8-bit-avr-microcontroller-atmega640-1280-1281-2560-2561_datasheet.pdf>`
 
-/// Other source code files to be used.
+// Other source code files to be used.
 use crate::atmega2560p::hal::interrupts;
 use crate::atmega2560p::hal::port;
 use crate::atmega2560p::hal::power;
 
-/// Crates which would be used in the implementation.
-/// We will be using standard volatile and bit_field crates now for a better read and write.
+// Crates which would be used in the implementation.
+// We will be using standard volatile and bit_field crates now for a better read and write.
 use crate::delay::delay_ms;
 use bit_field::BitField;
 use core::ptr::write_volatile;
 use core::{f64, u32, u8};
 use volatile::Volatile;
 
-/// Some useful constants regarding bit manipulation for USART.
-/// Position of clock mode adjuster (xck) bit.
+// Some useful constants regarding bit manipulation for USART.
+// Position of clock mode adjuster (xck) bit.
 const USART0_XCK: u8 = 2;
 const USART1_XCK: u8 = 5;
 const USART2_XCK: u8 = 2;
 const USART3_XCK: u8 = 2;
-/// System Clock Crystal Oscillator Frequency in mHz.
+// System Clock Crystal Oscillator Frequency in mHz.
 const F_OSC: f64 = 1.0000;
 const MULTIPLY: f64 = 1000000.00;
 
@@ -110,6 +109,7 @@ pub struct Usart {
 }
 
 /// Contains the Usart as a Raw Pointer along with it's name.
+/// This controls a USART as a object for careful implementation.
 #[repr(C, packed)]
 pub struct UsartObject {
     pub usart: *mut Usart,
@@ -118,9 +118,12 @@ pub struct UsartObject {
 
 // new() functions to make the memory mapped IOs for both the structures.
 
-/// USART mutable reference declaration.
 impl Usart {
     /// This creates a new memory mapped structure of the type USART for it's control.
+    /// # Arguments
+    /// * `num` - a `UsartNum` object, which defines the USART for whom new reference is to be created.
+    /// # Returns
+    /// * `a reference to Usart` - which will be used to control the USART.
     pub unsafe fn new(num: UsartNum) -> &'static mut Usart {
         match num {
             UsartNum::Usart0 => &mut *(0xC0 as *mut Usart),
@@ -153,16 +156,18 @@ impl Usart {
     }
 }
 
-/// USART raw pointers declaration.
 impl UsartObject {
     /// This creates a raw pointer for formation of the serial structure ahead
     /// to control all the USARTs of ATMEGA2560P at one place.
+    /// # Arguments
+    /// * `num` - a `UsartNum` object, which defines the USART for whom new reference is to be created.
+    /// # Returns
+    /// * `a UsartObject` - which will be used to control the USART.
     pub unsafe fn new(num: UsartNum) -> UsartObject {
         Usart::new(num).create_object()
     }
 }
 
-/// Various implementation functions for the USART protocol.
 impl UsartObject {
     /// Disable global interrupts for smooth non-interrupted functioning of USART.
     pub fn disable(&self) {
@@ -180,8 +185,12 @@ impl UsartObject {
         }
     }
 
-    /// Returns the port containing bits to
+    /// Gives the port containing bits to
     /// manipulate Recieve,Transmit and XCK bit of the particular USART.
+    /// # Returns
+    /// * `a tuple` - which contains -
+    ///     * `a mutable reference to Port object` - The port which controls the given USART.
+    ///     * `a u8` - The index location of XCK bit for mode specific implementation.
     fn get_port_xck(&mut self) -> (&mut port::Port, u8) {
         let num: UsartNum = unsafe { (*self.usart).name() };
         match num {
@@ -192,7 +201,9 @@ impl UsartObject {
         }
     }
 
-    /// Returns 0 for asynchronous and 1 for synchronous.
+    /// Gives information about the current mode of USART.
+    /// # Returns
+    /// `a boolean` - which is false for asynchronous and true for synchronous.
     fn get_mode(&mut self) -> bool {
         let mut src = unsafe { (*self.usart).ucsrc.read() };
         src = src & (1 << 6);
@@ -204,6 +215,8 @@ impl UsartObject {
     }
 
     /// Set clock polarity mode according to input from user.
+    /// # Arguments
+    /// * `mode` - a `UsartPolarity` object, which will be set for the USART.
     pub unsafe fn set_polarity(&mut self, mode: UsartPolarity) {
         if self.get_mode() == false {
             (*self.usart).ucsrc.update(|src| {
@@ -226,6 +239,8 @@ impl UsartObject {
     }
 
     /// Set's various modes of the USART which is activated.
+    /// # Arguments
+    /// * `mode` - a `UsartModes` object, which will be set for the USART.
     pub unsafe fn mode_select(&mut self, mode: UsartModes) {
         match mode {
             UsartModes::Normasync                                  // Puts the USART into asynchronous mode.
@@ -279,6 +294,8 @@ impl UsartObject {
     }
 
     /// Set's the power reduction register so that USART functioning is allowed.
+    /// # Arguments
+    /// * `num` - a `UsartNum` object, for which the power configurations of the USART will be set.
     pub fn set_power(&mut self, num: UsartNum) {
         let pow: &mut power::Power;
         unsafe {
@@ -320,8 +337,7 @@ impl UsartObject {
         }
     }
 
-    /// Sets the interrupt bits in UCSRB so that ongoing
-    /// data transfers can be tracked.
+    /// Sets the interrupt bits in UCSRB so that ongoing data transfers can be tracked.
     unsafe fn _check(&mut self) {
         (*self.usart).ucsrb.update(|srb| {
             srb.set_bit(6, true);
@@ -329,8 +345,9 @@ impl UsartObject {
         });
     }
 
-    /// Return 1 if no ongoing transmission or recieval from the USART.
-    /// Return 0 if their is some transfer going on.
+    /// Checks for any currently undergoing recieval or transmission in the USART.
+    /// # Returns
+    /// * `a boolean` - Which is false if USART is busy otherwise true.
     unsafe fn check_ongoing(&self) -> bool {
         let ucsra = (*self.usart).ucsra.read();
         if ucsra.get_bit(6) == false && ucsra.get_bit(7) == false {
@@ -359,6 +376,9 @@ impl UsartObject {
     /// clock generator.
     /// Set the baud rate frequency for USART.
     /// Baud rate settings is used to set the clock for USART.
+    /// # Arguments
+    /// * `baud` - a i64, containing the baud rate frame to be set.
+    /// * `mode` - a `UsartModes` object,
     fn set_clock(&mut self, baud: i64, mode: UsartModes) {
         let ubrr: u32;
         match mode {
@@ -388,6 +408,8 @@ impl UsartObject {
     }
 
     /// Set the limit of data to be handled by USART.
+    /// # Arguments
+    /// * `size` - a `UsartDatSize` object, the size of set of bits to transmit.
     unsafe fn set_size(&mut self, size: UsartDataSize) {
         match size {
             UsartDataSize::Five
@@ -431,6 +453,8 @@ impl UsartObject {
     }
 
     /// Set the parity bit for initializing frame of USART.
+    /// # Arguments
+    /// * `parity` - a `UsartParity` object, which gives the Parity bit mode for USART.
     unsafe fn set_parity(&mut self, parity: UsartParity) {
         match parity {
             UsartParity::No => {
@@ -455,6 +479,8 @@ impl UsartObject {
     }
 
     /// Set the number of stop bits in the USART frame.
+    /// # Arguments
+    /// * `stop` - a `UsartStop` object, which will be used to set the stop bits of data frame.
     unsafe fn set_stop(&mut self, stop: UsartStop) {
         match stop {
             UsartStop::One => {
@@ -475,6 +501,10 @@ impl UsartObject {
     /// synchronization bits (start and stop bits), and optionally
     /// a parity bit for error checking.
     /// The USART accepts all 30 combinations of the following as valid frame formats.
+    /// # Arguments
+    /// * `stop` - a `UsartStop` object, which will be used to set the stop bits of data frame.
+    /// * `size` - a `UsartDatSize` object, the size of set of bits to transmit.
+    /// * `parity` - a `UsartParity` object, which gives the Parity bit mode for USART.
     unsafe fn set_frame(&mut self, stop: UsartStop, size: UsartDataSize, parity: UsartParity) {
         self.set_size(size);
         self.set_parity(parity);
@@ -484,6 +514,12 @@ impl UsartObject {
     /// This is the cumulative function for initializing a particular
     /// USART and it will take all the necessary details about the mode
     /// in which the USART pin is to be used.
+    /// # Arguments
+    /// * `mode` - a `UsartModes` object, which defines the mode of USART to use.
+    /// * `baud` - a i64, the baud rate of USART the user wants to set.
+    /// * `size` - a `UsartDatSize` object, the size of set of bits to transmit.
+    /// * `parity` - a `UsartParity` object, which gives the Parity bit mode for USART.
+    /// * `stop` - a `UsartStop` object, which will be used to set the stop bits of data frame.
     pub unsafe fn initialize(
         &mut self,
         mode: UsartModes,

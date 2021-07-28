@@ -17,9 +17,8 @@
 //! Implementation of Sleep Modes of ATMEGA2560P.
 //! Section 11.10.1 of the manual.
 //! Also references from Section 11.4.
-//! `<https://ww1.microchip.com/downloads/en/devicedoc/atmel-2549-8-bit-avr-microcontroller-atmega640-1280-1281-2560-2561_datasheet.pdf>`
 
-/// Crates required in the code for reading and writing to registers.
+// Crates required in the code for reading and writing to registers.
 use core::ptr::{read_volatile, write_volatile};
 
 /// Various modes are
@@ -29,7 +28,6 @@ use core::ptr::{read_volatile, write_volatile};
 /// `PS    : Power-save`
 /// `SBY   : Standby`      
 /// `ESBY  : Extended Standby`
-
 #[derive(Clone, Copy)]
 pub enum Options {
     IDLE,
@@ -49,6 +47,8 @@ pub struct Sleep {
 
 impl Sleep {
     /// Creates a new reference to the Sleep structure according to appropriate location.
+    /// # Returns
+    /// * `a reference to Sleep object` - which will be used for further implementations.
     pub unsafe fn new() -> &'static mut Sleep {
         &mut *(0x53 as *mut Sleep)
     }
@@ -72,11 +72,11 @@ impl Sleep {
     }
 
     /// Set the bits of SMCR register according to the sleep mode required.
-
     /// The sleep mode to be set will be given as the standard name.  
     /// For more details about the available Options for the sleep mode please check the
     /// comment given above the enum `Options` in the code.
-
+    /// # Arguments
+    /// * `mode` - a `Options` object, which defines the mode in which sleep mode is to be initiated.
     pub fn select_mode(&mut self, mode: Options) {
         self.enable(); // Enable the Sleep mode
         let mut smcr = 0x0F;

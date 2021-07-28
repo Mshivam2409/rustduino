@@ -14,14 +14,22 @@
 //     You should have received a copy of the GNU Affero General Public License
 //     along with this program.  If not, see <https://www.gnu.org/licenses/>
 
-/// Crates which would be used in the implementation.
+//!* This source code contains the functions to control the I2C communication protocol for ATMEGA2560P AVR Microcontroller.
+//!  The elements of I2C implementation are first enabling the I2C Two Wire Interface(TWI) to work on
+//!  the data bus and then using bits manipulation to exchange data and communicate
+//!  with the attached peripheral devices.
+//!* This has been implemented according to the chip ATMEGA2560P here.
+
 use crate::delay::delay_ms;
 use bit_field::BitField;
 use core::ptr::read_volatile;
 use fixed_slice_vec::FixedSliceVec;
 use volatile::Volatile;
 
-/// ## TWI registers definitions
+/// It will be used to control the I2C Twi
+/// implementations with the data registers assigned to
+/// it according to the data sheet.
+#[repr(C, packed)]
 pub struct Twi {
     _twbr: Volatile<u8>,
     twcr: Volatile<u8>,
@@ -31,7 +39,7 @@ pub struct Twi {
     _twamr: Volatile<u8>,
 }
 
-/// ## TWCR register's bits definitions
+// TWCR register's bits definitions
 const TWINT: u8 = 0;
 const TWEA: u8 = 1;
 const TWSTA: u8 = 2;
@@ -42,6 +50,16 @@ const _TWIE: u8 = 7;
 
 static TWI_FREQUENCY: u32 = 100000;
 
+///* This function reads the device clock freequency setup and provide
+///  the details in form of boolean numbers and a 8 bit unsigned integer to
+///  check the settings of the I2C carefully.
+///* If the clock freequency in very low then the function panics as the I2C protocol cannot be activated
+///  properly at such low freequencies.
+///  # Returns
+///  * `a tuple` - Consisting of the following 3 Items -
+///     * `a u8` - Which is a 2's exponent till 64 which defines the bandwidth rate for TWI I2C initialization.
+///     * `a boolean` - Which denotes the TWPS bit 1 settings.
+///     * `a boolean` - Which denotes the TWPS bit 2 settings.
 pub fn prescaler() -> (u8, bool, bool) {
     if (crate::config::CPU_FREQUENCY_HZ / TWI_FREQUENCY - 16) / (2 * 1) >= 10
         && (crate::config::CPU_FREQUENCY_HZ / TWI_FREQUENCY - 16) / (2 * 1) <= 0xFF
@@ -63,7 +81,8 @@ pub fn prescaler() -> (u8, bool, bool) {
         panic!("TWI_FREQUENCY too low!");
     }
 }
-/// ## TWCR register's bits definitions
+
+// TWCR register's bits definitions
 const TWPS1: u8 = 6;
 const TWPS0: u8 = 7;
 
@@ -113,7 +132,7 @@ const _BUS_ERROR: u8 = 0x00;
 const _TWCR_CMD_MASK: u8 = 0x0F;
 const TWSR_STATUS_MASK: u8 = 0xF8;
 
-//return values
+// return values
 const _I2C_OK: u8 = 0x00;
 const _I2C_ERROR_NODEV: u8 = 0x01;
 const I2C_TIMEOUT: u32 = 100;
@@ -137,12 +156,16 @@ pub fn read_sda() {
 }
 
 impl Twi {
-    // Returns a pointer to TWBR
+    /// Creates a pointer to TWI structure objects.
+    /// # Returns
+    /// * `a reference to Twi struct object` - Which would be used to control the implementation.
     pub fn new() -> &'static mut Self {
         unsafe { &mut *(0xB8 as *mut Self) }
     }
-    ///* Waits for the TWI to be ready.
-    ///* Returns true if the TWI is ready, false otherwise.
+
+    /// Waits for the TWI bus to be ready.
+    /// # Returns
+    /// * `a boolean` - Which is true if the TWI is ready, false otherwise.
     pub fn wait_to_complete(&mut self, start: u8) -> bool {
         let mut i: u32 = 0;
         //Waiting for TWINT flag set.
@@ -160,7 +183,8 @@ impl Twi {
             return true;
         }
     }
-    // Initiates the TWI Bus.
+
+    /// Initiates the TWI Bus.
     pub fn init(&mut self) {
         self.twsr.update(|sr| {
             sr.set_bit(TWPS0, prescaler().1);
@@ -170,7 +194,10 @@ impl Twi {
             cr.set_bit(TWEN, true);
         })
     }
-    // Sends a Start Signal.Returns true if process is successful, false otherwise.
+
+    /// Sends a Start Signal for TWI.
+    /// # Returns
+    /// * `a boolean` - Which is true if process is successful, false otherwise.
     pub fn start(&mut self) -> bool {
         write_sda();
         self.twcr.update(|x| {
@@ -181,7 +208,8 @@ impl Twi {
         });
         return self.wait_to_complete(START);
     }
-    // Stops the TWI Bus.
+
+    /// Stops the TWI Bus.
     pub fn stop(&mut self) {
         self.twcr.update(|x| {
             // TWCR: Disable TWI module
@@ -190,7 +218,10 @@ impl Twi {
             x.set_bit(TWEN, true);
         });
     }
-    ///Sends the Repeated Start Signal.Returns true if process is successful, false otherwise.
+
+    /// Sends the Repeated Start Signal.
+    /// # Returns
+    /// * `a boolean` - Which is true if process is successful, false otherwise.
     pub fn rep_start(&mut self) -> bool {
         self.twcr.update(|x| {
             // TWCR: Enable TWI module
@@ -201,8 +232,11 @@ impl Twi {
         return self.wait_to_complete(REP_START);
     }
 
-    /// * Loads the address of the slave device on SDA.
-    /// * The `address` argument passed into the function is a seven bit integer.
+    /// Loads the address of the slave device on SDA.
+    /// # Arguments
+    /// * `address` - It is passed into the function and  is a seven bit integer used for location of implementation.
+    /// # Returns
+    /// * `a boolean` - Which is true if the checking process is sucessful otherwise false.
     pub fn address_write(&mut self, address: u8) -> bool {
         self.twdr.write(address << 1);
         self.twcr.update(|x| {
@@ -213,8 +247,11 @@ impl Twi {
         return self.wait_to_complete(MT_SLA_ACK);
     }
 
-    /// * Loads the address of the slave device on SDA.
-    /// * The `address` argument passed into the function is a seven bit integer.
+    /// Loads the address of the slave device from SDA for other implementations.
+    /// # Arguments
+    /// * `address` - It is passed into the function and  is a seven bit integer used for location of implementation.
+    /// # Returns
+    /// * `a boolean` - Which is true if the checking process is sucessful otherwise false.
     pub fn address_read(&mut self, address: u8) -> bool {
         self.twdr.write(address << 1 | 0x01);
         self.twcr.update(|x| {
@@ -223,7 +260,12 @@ impl Twi {
         });
         return self.wait_to_complete(MR_SLA_ACK);
     }
-    /// Appends the value in TWCR to the given vector. Need to set address first. Returns true if process is completed.
+
+    /// Appends the value in TWCR to the given vector.
+    /// # Arguments
+    /// * `data` - a sliced vector consisting of u8, which will be filled with the data read.
+    /// # Returns
+    /// * `a boolean` - Which is true if process is completed otherwise false.
     pub fn read_ack(&mut self, data: &mut FixedSliceVec<u8>) -> bool {
         self.twcr.update(|x| {
             x.set_bit(TWINT, true);
@@ -233,7 +275,13 @@ impl Twi {
         data.push(self.twdr.read());
         return self.wait_to_complete(MR_DATA_ACK);
     }
-    /// Appends the value in TWCR to the given vector. Need to set address first. Returns true if process is completed.
+
+    /// Appends the value in TWCR to the given vector.
+    /// # Arguments
+    /// * `data` - a sliced vector consisting of u8, which is filled with the data read.
+    /// * `length` - a usize integer, which is the theoretically set value of length of the sliced vector `data`.
+    /// # Returns
+    /// * `a usize integer` - Which gives the critical length of the data bus above which no data exists.
     pub fn read_ack_burst(&mut self, data: &mut FixedSliceVec<u8>, length: usize) -> usize {
         let mut x: usize = 0;
         while x < length {
@@ -244,7 +292,12 @@ impl Twi {
         }
         return x + 1;
     }
-    /// Writes one byte of data to the Slave. Need to set address first. Returns true if process is successful
+
+    /// Writes one byte of data to the Slave.
+    /// # Arguments
+    /// * `data` - a u8, the integer which is to be written.
+    /// # Returns
+    /// * `a boolean` - Whcih is true if process is successful otherwise false.
     pub fn write(&mut self, data: u8) -> bool {
         delay_ms(1);
         self.twdr.write(data);
@@ -255,7 +308,12 @@ impl Twi {
         });
         return self.wait_to_complete(MT_DATA_ACK);
     }
-    /// Writes consecutive bytes of data to the Slave. Need to set address first. Returns number of bytes written
+
+    /// Writes continuous bytes on the TWCR.
+    /// # Arguments
+    /// * `data` - a sliced vector consisting of u8, which is filled with the data read.
+    /// # Returns
+    /// * `a usize integer` - Which gives the critical length of the data bus above which no data could be written.
     pub fn write_burst(&mut self, data: &FixedSliceVec<u8>) -> usize {
         let mut x: usize = 0;
         while x < data.len() {
@@ -267,6 +325,11 @@ impl Twi {
         return x + 1;
     }
 
+    /// Reads the nack value data in TWCR to the given vector.
+    /// # Arguments
+    /// * `data` - a sliced vector consisting of u8, which will be filled with the data read.
+    /// # Returns
+    /// * `a boolean` - Which is true if process is completed otherwise false.
     pub fn read_nack(&mut self, data: &mut FixedSliceVec<u8>) -> bool {
         self.twcr.update(|x| {
             x.set_bit(TWINT, true);
@@ -276,6 +339,12 @@ impl Twi {
         return self.wait_to_complete(MR_DATA_NACK);
     }
 
+    /// Reads the nack value data in TWCR to the given vector.
+    /// # Arguments
+    /// * `data` - a sliced vector consisting of u8, which is filled with the data read.
+    /// * `length` - a usize integer, which is the theoretically set value of length of the sliced vector `data`.
+    /// # Returns
+    /// * `a usize integer` - Which gives the critical length of the data bus above which no data exists.
     pub fn read_nack_burst(&mut self, data: &mut FixedSliceVec<u8>, length: usize) -> usize {
         let mut x: usize = 0;
 
@@ -287,11 +356,16 @@ impl Twi {
         }
         return x + 1;
     }
-    /// * Reads consecutive Data bytes from slave
-    /// * Requires number of bytes ro be read
-    /// * Returns true if process is completed and aborts if any of the steps, i.e
+
+    /// Reads consecutive Data bytes from slave.
+    /// Sends a stop signal if either of the steps fail or reading is successful.
+    /// # Arguments
+    /// * `address` - a u8, consisting the target address of the read implementation.
+    /// * `length` - a usize integer, showing the number of bytes to read.
+    /// * `data` - a sliced vector consisting of u8, where the data will be stored after reading.
+    /// # Returns
+    /// * `a boolean` - Which is true if process is completed otherwise false and aborts the process if any of the steps, i.e
     /// start, reading address, reading ACK or reading NACK fails.
-    /// * Sends a stop signal if either of the steps fail or reading is successful.
     pub fn read_from_slave(
         &mut self,
         address: u8,
@@ -321,10 +395,11 @@ impl Twi {
 
         return true;
     }
-    /// * Writes consecutive Data bytes to slave
-    /// * Returns true if process is completed and aborts if any of the steps, i.e
-    /// start, setting address or writing fails.
-    /// * Sends a stop signal if either of the steps fail or writing is successful.
+
+    /// Writes consecutive Data bytes to slave.
+    /// Also sends a stop signal if either of the steps fail or writing is successful.
+    /// # Returns
+    /// * `a boolean` - Which is true if process is completed and aborts if any of the steps, i.e start, setting address or writing fails.
     pub fn write_to_slave(&mut self, address: u8, data: &FixedSliceVec<u8>) -> bool {
         delay_ms(1);
         if !self.start() {

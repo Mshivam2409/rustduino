@@ -14,7 +14,10 @@
 //     You should have received a copy of the GNU Affero General Public License
 //     along with this program.  If not, see <https://www.gnu.org/licenses/>
 
-/// Include the required crates for the code.
+//! This files contain the code for combining all the parallel ports containing I/O ports into one structure for easier implementation.
+//! See the section 13.2 and 13.4 of ATMEGA2560P datasheet.
+
+// Include the required crates for the code.
 use crate::atmega2560p::hal::port::*;
 
 ///  The ATMEGA2560P microcontroller IC has a total of 100 pins to configure the functioning of the
@@ -22,15 +25,17 @@ use crate::atmega2560p::hal::port::*;
 ///  8 pins except port G which controls 6 pins. All 8 pins of port F and K are Analog pins and total 54 digital pins
 ///  are available and the rest 16 pins are for various other purposes.
 ///  This structure declaration contains the space to control all the 86 pins in one memory mapped I/O.
+#[repr(C, packed)]
 #[derive(Clone, Copy)]
 pub struct Pins {
-    /// All 16 analog pins.
+    // All 16 analog pins.
     pub analog: [AnalogPin; 16],
-    /// All 54 digital I/O pins.
+    // All 54 digital I/O pins.
     pub digital: [DigitalPin; 54],
 }
 
 /// This struct contain digital pin and its corresponding digital pin no.
+#[repr(C, packed)]
 #[derive(Clone, Copy)]
 pub struct DigitalPin {
     pub pin: Pin,
@@ -38,6 +43,7 @@ pub struct DigitalPin {
 }
 
 /// This struct contain analog pin and its corresponding analog pin no.
+#[repr(C, packed)]
 #[derive(Clone, Copy)]
 pub struct AnalogPin {
     pub pin: Pin,
@@ -48,7 +54,8 @@ impl Pins {
     /// Returns all pins at once as a single struct.
     /// No new memory is created, just the already created space is given
     /// a name so it is a memory mapped I/O.
-
+    /// # Returns
+    /// * `a Pins object` - used to control all pins of AVR chip at one place.
     pub fn new() -> Pins {
         Pins {
             analog: [
@@ -339,7 +346,11 @@ impl Pins {
     }
 }
 
-///This function returns digital pin corresponding to its number.
+/// This function returns digital pin corresponding to it's number.
+/// # Arguments
+/// * `a u32` - The pin number which is to be used.
+/// # Returns
+/// * `a Pin object` - The memory mapped I/O object to control the Digital Pin.
 pub fn make_pin(pin: u32) -> Pin {
     match pin {
         0 => return Pin::new(PortName::E, 0).unwrap(),

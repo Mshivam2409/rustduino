@@ -22,11 +22,11 @@
 
 use crate::atmega2560p::com::usart_initialize::{UsartNum, UsartObject};
 use crate::atmega2560p::hal::pin::{AnalogPin, DigitalPin};
-/// Other source codes required.
+// Other source codes required.
 use crate::atmega2560p::hal::power::Power;
 use crate::avr::__nop;
 
-/// Crates to be used for the implementation.
+// Crates to be used for the implementation.
 use bit_field::BitField;
 use core::ptr::write_volatile;
 use volatile::Volatile;
@@ -76,6 +76,7 @@ pub struct Analog {
 }
 
 /// Structure to control the timer of type 8 for Analog Write.
+#[repr(C, packed)]
 pub struct Timer8 {
     tccra: Volatile<u8>,
     tccrb: Volatile<u8>,
@@ -85,6 +86,7 @@ pub struct Timer8 {
 }
 
 /// Structure to control the timer of type 16 for Analog Write.
+#[repr(C, packed)]
 pub struct Timer16 {
     tccra: Volatile<u8>,
     tccrb: Volatile<u8>,
@@ -104,6 +106,10 @@ pub struct Timer16 {
 
 impl Timer8 {
     /// Create a memory mapped IO for timer 8 type which will assist in analog write.
+    /// # Arguments
+    /// * `timer` - a `TimerNo8` object, which defines the Timer number for which object is to be made.
+    /// # Returns
+    /// * `a reference to Timer8 object` - which will be used for further implementations.
     pub fn new(timer: TimerNo8) -> &'static mut Timer8 {
         match timer {
             TimerNo8::Timer0 => unsafe { &mut *(0x44 as *mut Timer8) },
@@ -114,6 +120,10 @@ impl Timer8 {
 
 impl Timer16 {
     /// Create a memory mapped IO for timer 16 type which will assist in analog write.
+    /// # Arguments
+    /// * `timer` - a `TimerNo16` object, which defines the Timer number for which object is to be made.
+    /// # Returns
+    /// * `a reference to Timer16 object` - which will be used for further implementations.
     pub fn new(timer: TimerNo16) -> &'static mut Timer16 {
         match timer {
             TimerNo16::Timer1 => unsafe { &mut *(0x80 as *mut Timer16) },
@@ -126,6 +136,8 @@ impl Timer16 {
 
 impl AnalogComparator {
     /// New pointer object created for Analog Comparator Structure.
+    /// # Returns
+    /// * `a reference to AnalogComparator object` - which will be used for further implementations.
     pub unsafe fn new() -> &'static mut AnalogComparator {
         &mut *(0x50 as *mut AnalogComparator)
     }
@@ -134,6 +146,8 @@ impl AnalogComparator {
 impl AnalogPin {
     /// Read the signal input to the analog pin.
     /// Any analog pin can be freely used for this purpose.
+    /// # Returns
+    /// `a u32` - Value read from the analog pin.
     pub fn read(&mut self) -> u32 {
         self.pin.set_input();
 
@@ -362,6 +376,8 @@ impl DigitalPin {
     /// Only 2-13 and 44-46 digital pins can be used in this function, other pins will lead to crash.
     /// All pin except 4 and 13 are set to give output at 490 hertz.
     /// pin 4 and 13 will give output at 980 hertz.
+    /// # Arguments
+    /// * `value1` - a u8, value to be written on the analog pin for output.
     pub fn write(&mut self, value1: u8) {
         self.pin.set_output();
 
@@ -524,6 +540,8 @@ impl DigitalPin {
 
 impl Analog {
     /// New pointer object created for Analog Structure.
+    /// # Returns
+    /// * `a reference to Analog object` - which will be used for further implementations.
     pub unsafe fn new() -> &'static mut Analog {
         &mut *(0x78 as *mut Analog)
     }
@@ -572,7 +590,9 @@ impl Analog {
         }
     }
 
-    /// Set prescaler for the ADC
+    /// Set prescaler for the ADC.
+    /// # Arguments
+    /// * `factor` - a u8, the prescaler power frequency factor to be set.
     pub fn analog_prescaler(&mut self, factor: u8) {
         match factor {
             2 => {
@@ -616,6 +636,8 @@ impl Analog {
 }
 
 /// Function to create a reference for Analog signals.
+/// # Arguments
+/// * `reftype` - a `RefType` object, the type of reference setup required for the analog pins.
 pub fn analog_reference(reftype: RefType) {
     let analog = unsafe { Analog::new() };
     match reftype {

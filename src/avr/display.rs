@@ -20,12 +20,12 @@ use core::usize;
 
 /// Setup for the 7-Segment Display.
 /// # Arguments
-/// * `datapin` -
-/// * `clockpin` -
-/// * `latchpin` -
-/// * `decpt` -
-/// * `common_anode` -
-/// * `value` -
+/// * `datapin` - a usize, to select the number of the digital pin to be used for 7-segment display data.
+/// * `clockpin` - a usize, to select the number of the digital pin to be used for clock setup.
+/// * `latchpin` - a usize, to select the number of the digital pin to be used for setup of latch adjustments.
+/// * `decpt` - a boolean, to check the decrypting value for display.
+/// * `common_anode` - a boolean, to set the common anode for the display.
+/// * `value` - a u8, to select the value which is to be displayed.
 pub fn setup(
     datapin: usize,
     clockpin: usize,
@@ -46,6 +46,14 @@ pub fn setup(
     out(datapin, clockpin, latchpin, decpt, common_anode, value);
 }
 
+/// Display the required data on the display screen.
+/// # Arguments
+/// * `datapin` - a usize, to select the number of the digital pin to be used for 7-segment display data.
+/// * `clockpin` - a usize, to select the number of the digital pin to be used for clock setup.
+/// * `latchpin` - a usize, to select the number of the digital pin to be used for setup of latch adjustments.
+/// * `decpt` - a boolean, to check the decrypting value for display.
+/// * `common_anode` - a boolean, to set the common anode for the display.
+/// * `value` - a u8, to select the value which is to be displayed.
 pub fn myfn_update_display(
     datapin: usize,
     clockpin: usize,
@@ -66,6 +74,14 @@ pub fn myfn_update_display(
     latch.high(); //update display
 }
 
+/// Set the appropriate registers for output.
+/// # Arguments
+/// * `datapin` - a usize, to select the number of the digital pin to be used for 7-segment display data.
+/// * `clockpin` - a usize, to select the number of the digital pin to be used for clock setup.
+/// * `latchpin` - a usize, to select the number of the digital pin to be used for setup of latch adjustments.
+/// * `decpt` - a boolean, to check the decrypting value for display.
+/// * `common_anode` - a boolean, to set the common anode for the display.
+/// * `value` - a u8, to select the value which is to be displayed.
 pub fn out(
     datapin: usize,
     clockpin: usize,
