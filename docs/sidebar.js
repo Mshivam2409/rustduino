@@ -81,7 +81,7 @@ module.exports = {
         'guides/print',
         'guides/writing_string',
         'guides/analog_io',
-	      'guides/temp_sensor',
+	'guides/temp_sensor',
         'guides/generate'
       ]
     },
