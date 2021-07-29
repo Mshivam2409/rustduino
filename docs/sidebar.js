@@ -54,8 +54,8 @@ module.exports = {
     },
     {
       type: 'category',
-      label: 'Analog',
-      items: ['analog/analog', 'analog/digital']
+      label: 'I/O',
+      items: ['analog/analog', 'analog/digital','analog/shift']
     },
     {
       type: 'category',
@@ -65,7 +65,7 @@ module.exports = {
     {
       type: 'category',
       label: 'Sensors',
-      items: ['sensors/aht10','sensors/mpu6050']
+      items: ['sensors/aht10','sensors/mpu6050','sensors/display']
     },
     {
       type: 'category',
