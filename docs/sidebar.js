@@ -34,22 +34,56 @@ module.exports = {
     {
       type: 'category',
       label: 'Arduino',
-      items: ['arduino/index', 'arduino/atmega328p', 'arduino/atmega4809p']
+      items: ['arduino/index', 'arduino/atmega328p', 'arduino/atmega2560p']
     },
     {
       type: 'category',
       label: 'Core Concepts',
-      items: ['core/watchdog', 'core/power', 'core/ports', 'core/gpio']
+      items: [
+        'core/watchdog',
+        'core/interrupts', 
+        'core/power', 
+        'core/port',  
+        'core/sleep_mode'
+      ]
+    },
+    {
+      type:'category',
+      label:'Communication',
+      items:['com/i2c', 'com/usart']
+    },
+    {
+      type: 'category',
+      label: 'I/O',
+      items: ['analog/analog', 'analog/digital','analog/shift']
+    },
+    {
+      type: 'category',
+      label: 'Sensors',
+      items: ['sensors/aht10','sensors/mpu6050','sensors/display']
+    },
+    {
+      type: 'category',
+      label: 'Math Library',
+      items: ['math/index_math','math/map','math/random']
     },
     {
       type: 'category',
       label: 'Guides',
-      items: ['guides/blink']
+      items: [
+        'guides/blink',
+        'guides/print',
+        'guides/writing_string',
+        'guides/analog_io',
+	      'guides/temp_sensor',
+        'guides/generate'
+      ]
     },
     {
       type: 'doc',
       label: 'Contributors',
       id: 'contributors'
     }
+    
   ]
 }

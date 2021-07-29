@@ -15,5 +15,9 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>
 
 mod llvm;
+// mod shift;
 
 pub use llvm::__nop;
+// pub use shift::shift_in;
+// pub use shift::shift_out;
+// pub use shift::BitOrder;
