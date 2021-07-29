@@ -11,11 +11,12 @@ pub mod atmega2560p {
 
     /// Hardware Abstraction Library (HAL)
     pub mod hal {
-        pub mod power;
 
         pub mod watchdog;
 
         pub mod sleep_mode;
+
+        pub mod power;
 
         pub mod port;
 
@@ -67,9 +68,9 @@ pub mod atmega328p {
     pub mod hal {
         pub mod power;
 
-        pub mod watchdog;
-
         pub mod sleep_mode;
+
+        pub mod watchdog;
 
         pub mod port;
 
@@ -117,7 +118,10 @@ pub mod sensors;
 pub mod math;
 
 /// Low level control for AVR Chips
-pub mod avr;
+pub mod llvm;
+
+#[doc(hidden)]
+pub use llvm::*;
 
 /// Configuration setup and time control
 pub mod config;
