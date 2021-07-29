@@ -18,6 +18,7 @@ use crate::atmega328p::hal::pin::Pins;
 use core::usize;
 
 /// Enum for bit order of the value.
+#[derive(Clone, Copy)]
 pub enum BitOrder {
     LSBFIRST,
     MSBFIRST,

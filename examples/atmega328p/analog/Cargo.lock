@@ -46,6 +46,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "fafbcddfce402d6170ee6e5037f032dd96233ce73c66f7d83a4150fb76814b44"
 
 [[package]]
+name = "micromath"
+version = "2.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "39617bc909d64b068dcffd0e3e31679195b5576d0c83fadc52690268cc2b2b55"
+
+[[package]]
 name = "proc-macro2"
 version = "1.0.27"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -71,6 +77,7 @@ dependencies = [
  "cfg-if",
  "const_env--value",
  "fixed-slice-vec",
+ "micromath",
  "volatile",
 ]
 

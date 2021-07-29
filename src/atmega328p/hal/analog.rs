@@ -22,11 +22,12 @@
 
 // Crates to be used for the implementation.
 use bit_field::BitField;
+use core::ptr::write_volatile;
 use volatile::Volatile;
 
-use crate::atmega328p::hal::pin::{AnalogPin, DigitalPin};
 // Source codes to be used here.
-use crate::atmega328p::hal::sleep_mode::Sleep;
+use crate::atmega328p::hal::pin::{AnalogPin, DigitalPin};
+use crate::atmega328p::hal::power::Power;
 
 /// Selection of reference type for the implementation of Analog Pins.
 #[derive(Clone, Copy)]
@@ -97,23 +98,6 @@ pub struct Timer16 {
     _ocrah: Volatile<u8>,
     ocrbl: Volatile<u8>,
     _ocrbh: Volatile<u8>,
-}
-
-/// Structure to control power settings for the timer/counter
-#[repr(C, packed)]
-pub struct Power {
-    prr: Volatile<u8>,
-}
-
-impl Power {
-    /// Create a memory mapped IO for Power type which will assist in enabling timer/counter.
-    /// # Arguments
-    /// * no parameters reqauired!
-    /// # Returns
-    /// * `a reference to Power object` - which will be used for further implementations.
-    pub unsafe fn new() -> Power {
-        &mut *(0x64 as *mut Timer8)
-    }
 }
 
 // Structure to control the timer of type 8 for Analog Write.
@@ -398,9 +382,10 @@ impl Analog {
     pub fn power_adc_enable(&mut self) {
         {
             let pow = Power::new();
-            self.prr.update(|aden| {
-                aden.set_bit(0, true);
-            });
+            pow.prr.set_bit(0, true);
+            // self.prr.update(|aden| {
+            //     aden.set_bit(0, true);
+            // });
         }
     }
 
@@ -408,9 +393,10 @@ impl Analog {
     pub fn power_adc_disable(&mut self) {
         {
             let pow = Power::new();
-            self.prr.update(|aden| {
-                aden.set_bit(0, false);
-            });
+            pow.prr.set_bit(0, false);
+            // self.prr.update(|aden| {
+            //     aden.set_bit(0, false);
+            // });
         }
     }
 
@@ -483,20 +469,21 @@ impl Analog {
 /// Function to create a reference for Analog signals.
 /// # Arguments
 /// * `reftype` - a `RefType` object, the type of reference setup required for the analog pins.
-pub fn analog_reference(&mut self, reftype: RefType) {
+pub fn analog_reference(reftype: RefType) {
+    let analog = unsafe { Analog::new() };
     match reftype {
         RefType::DEFAULT => {
-            self.admux.update(|admux| {
+            analog.admux.update(|admux| {
                 admux.set_bits(6..8, 0b01);
             });
         }
         RefType::INTERNAL1V1 => {
-            self.admux.update(|admux| {
+            analog.admux.update(|admux| {
                 admux.set_bits(6..8, 0b10);
             });
         }
         RefType::EXTERNAL => {
-            self.admux.update(|admux| {
+            analog.admux.update(|admux| {
                 admux.set_bits(6..8, 0b00);
             });
         }
