@@ -16,29 +16,29 @@
 //! This file contains functions to enable transmission through the USART and do the transmission.
 //! Flushing data in case of error and writing string are some complex implementations provided.
 //! See the section 22 of ATMEGA2560P datasheet.
-//! https://ww1.microchip.com/downloads/en/devicedoc/atmel-2549-8-bit-avr-microcontroller-atmega640-1280-1281-2560-2561_datasheet.pdf
 
-/// Other source code files to be used.
-use crate::atmega2560p::com::usart_initialize::{UsartDataSize, UsartObject};
-use crate::delay::delay_ms;
-
-/// Crates which would be used in the implementation.
-/// We will be using standard volatile and bit_field crates now for a better read and write.
+// Crates which would be used in the implementation.
+// We will be using standard volatile and bit_field crates now for a better read and write.
 use bit_field::BitField;
 use core::{f64, u8, usize};
 use fixed_slice_vec::FixedSliceVec;
 
-//This is a implementation for Usart
+// Other source code files to be used.
+use crate::atmega2560p::com::usart_initialize::{UsartDataSize, UsartObject};
+use crate::delay::delay_ms;
+
 impl UsartObject {
-    /// Enables the Transmitter.
-    /// once it is enabled it takes control of the TXDn pin as a transmitting output.   
+    /// Enables the Transmitter, once it is enabled it takes control of the TXDn pin as a transmitting output.   
     pub unsafe fn transmit_enable(&mut self) {
         (*self.usart).ucsrb.update(|srb| {
             srb.set_bit(3, true);
         });
     }
 
-    /// Storing data in Transmit Buffer which takes parameter as a u32 and and data bit length.
+    /// Storing data in Transmit Buffer.
+    /// # Arguments
+    /// * `data` - a u32, the data to be transmitted.
+    /// * `len` -  a `UsartDataSize` object, which contains the length of data frame of USART.
     pub unsafe fn transmitting_data(&mut self, data: u32, len: UsartDataSize) {
         // Checks if the Transmit buffer is empty to receive data.
         // If not the program waits till the time comes.
@@ -78,7 +78,8 @@ impl UsartObject {
     }
 
     /// Checks that transmission buffer if ready for transmission.
-    /// Returns true if ready otherwise false.
+    /// # Returns
+    /// * `a boolean` - Which is true if ready otherwise false.
     pub unsafe fn avai_write(&mut self) -> bool {
         let ucsra = (*self.usart).ucsra.read();
         if ucsra.get_bit(5) == true {
@@ -132,6 +133,8 @@ impl UsartObject {
     }
 
     /// Sends a character byte of 5,6,7 or 8 bits.
+    /// # Arguments
+    /// * `data` - a u8, consisting of the current data frame to send from USART.
     pub fn transmit_data(&mut self, data: u8) {
         let mut ucsra = unsafe { (*self.usart).ucsra.read() };
         let mut udre = ucsra.get_bit(5);
@@ -156,6 +159,8 @@ impl UsartObject {
     }
 
     /// Send's data of type string byte by byte using USART.
+    /// # Arguments
+    /// * `data` - a static string object, which is to be transmitted using USART.
     pub fn write_string(&mut self, data: &'static str) {
         let mut vec: FixedSliceVec<u8> = FixedSliceVec::new(&mut []);
 
@@ -169,6 +174,8 @@ impl UsartObject {
     }
 
     /// Send's data of type integer(u32) byte by byte.
+    /// # Arguments
+    /// * `data` - a u32, which is to be transmitted using USART.
     pub fn write_integer(&mut self, data: u32) {
         let mut vec: FixedSliceVec<u8> = FixedSliceVec::new(&mut []);
         let mut a = data;
@@ -195,6 +202,9 @@ impl UsartObject {
     }
 
     /// Send's data of type float(f64) byte by byte till the precision required.
+    /// # Arguments
+    /// * `data` - a f32, which is to be transmitted using USART.
+    /// * `precision` - a u32, the number of decimal precision required in the transmission.
     pub fn write_float(&mut self, data: f64, precision: u32) {
         let mut vec: FixedSliceVec<u8> = FixedSliceVec::new(&mut []);
         let a: f64 = data;

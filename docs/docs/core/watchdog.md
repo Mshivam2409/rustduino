@@ -4,9 +4,9 @@ slug: /watchdog
 title: Watchdog
 ---
 
-*Let's disable the house-keeper*
+_Let's disable the house-keeper_
 
-----
+---
 
 - A watchdog timer (WDT) is a hardware timer that automatically generates a
   system reset if the main program neglects to periodically service it. It is
@@ -26,27 +26,65 @@ title: Watchdog
 
 ## Structure Definitions
 
-WatchDog Represents a struct containing the register definition for watchdog
-timer.
-
 ```rust
-pub struct WatchDog { /* fields omitted */ }
+  pub struct WatchDog { /* fields omitted */ }
 ```
+
+WatchDog Represents a struct containing the register definition for watchdog
+timer. These include:
+
+- `MCUSR `_(MCU Status Register)_: The MCU status register provides information on which reset source caused an MCU reset.
+
+- `WDTCSR` _(Watchdog Timer Control Register)_ : Used to control the action of timer on timeout.
+
+  |           Mode Action           |               on Time-out               |
+  | :-----------------------------: | :-------------------------------------: |
+  |             Stopped             |                  None                   |
+  |         Interrupt mode          |                Interrupt                |
+  |        System reset mode        |                  Reset                  |
+  | Interrupt and system reset mode | Interrupt, then go to system reset mode |
+
+More about these registers and Watchdog timer can be found at Section 10.9 of ATmega328P datasheet.
 
 ## Trait Implementations
 
-### Impl `new` for `Watchdog`
+### Impl `new` for `WatchDog`
 
 ```rust
-pub unsafe fn new() -> &'static mut Watchdog
+  pub unsafe fn new() -> &'static mut WatchDog
 ```
 
-Return a struct containing register definition of the watchdog timer.
-
-### Impl `disable` for `Watchdog`
+#### Usage:
 
 ```rust
-pub fn disable(&mut self)
+  use rustduino::hal::WatchDog;
+  let mut wdt = WatchDog::new();
+
+  // Here wdt is the pointer to the struct Watchdog.
 ```
 
-Disables the watchdog timer.
+Return a struct pointer containing register definition of the watchdog timer.
+
+### Impl `disable` for `WatchDog`
+
+```rust
+  pub fn disable(&mut self)
+```
+
+#### Usage:
+
+```rust
+  use rustduino::hal::WatchDog;
+
+  let mut wdt = WatchDog::new(); 	// creating pointer to the struct Watchdog.
+  wdt.disable();					// disabling the watchdog timer.
+  OR
+  WatchDog::disable(WatchDog::new());
+```
+
+Disables the watchdog timer by performing the following sequence of operations:
+
+- _Disabling interrupts globally._
+- _Resetting Watchdog timer_
+- _Disabling watchdog timer_
+- _Restoring the previous interrupts state_

@@ -4,7 +4,7 @@ slug: /why-rust
 title: Why Rust?
 ---
 
-*High performance and memory safety; who doesn't want that?*
+_High performance and memory safety; who doesn't want that?_
 
 ----
 
@@ -24,3 +24,5 @@ title: Why Rust?
 
 * **Portability**: In embedded environments portability is an important topic. Every vendor and even each family from a single manufacturer offers different capabilities and similarly, the ways to interact with peripherals will vary. A common way to deal with this is by building Hardware Abstraction Layers (HALs).
 
+
+[I want to learn about Rust in detail](https://doc.rust-lang.org/stable/book/)

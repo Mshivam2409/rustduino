@@ -13,10 +13,10 @@ within hardware as well as software. So communications protocols are available
 around thousand types which are used all over in analog & digital
 communications.
 
-- **Protocol: ** A set of rules and regulations is called a protocol.
-- **Communication: ** Exchange of information from one system to another system
+- **Protocol:** A set of rules and regulations is called a protocol.
+- **Communication:** Exchange of information from one system to another system
   with a medium is called communication.
-- **Communication Protocol: ** A set of rules and regulations that allow two
+- **Communication Protocol:** A set of rules and regulations that allow two
   electronic devices to connect to exchange the data with one and another.
 
 There are two types of communication protocols which are classified below:
@@ -65,12 +65,6 @@ devices are used to convert the logic level signals of the UART to and from the
 external signalling levels, which may be standardised voltage levels, current
 levels, or other signals.
 
-The timing dependency is one of the big drawbacks of UART, and the solution is
-USART, for Universal Synchronous/Asynchronous Receiver Transmitter. This can do
-UART, but also a synchronous protocol. In synchronous there's not only data, but
-also a clock transmitted. With each bit a clock pulse tells the receiver it
-should latch that bit.
-
 A **UART** usually contains the following components:
 
 - a clock generator, usually a multiple of the bit rate to allow sampling in the
@@ -91,6 +85,11 @@ it's converted to a higher voltage, typically +12 V for a "0" and -12 V for a
 
 ### USART Protocol
 ----
+The timing dependency is one of the big drawbacks of UART, and the solution is
+USART, for Universal Synchronous/Asynchronous Receiver Transmitter. This can do
+UART, but also a synchronous protocol. In synchronous there's not only data, but
+also a clock transmitted. With each bit a clock pulse tells the receiver it
+should latch that bit.
 
 USART stands for a "universal synchronous and asynchronous transmitter and
 receiver". It is a serial communication of a two-wire protocol. The data cable

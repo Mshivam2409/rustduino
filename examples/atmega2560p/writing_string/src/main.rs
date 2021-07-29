@@ -3,8 +3,8 @@
 #![deny(warnings)]
 
 /// Crates included to show the Transmission of String example.
-use rustduino::atmega2560p::com::serial::Serial;
-use rustduino::atmega2560p::hal::watchdog::WatchDog;
+use rustduino::com::serial::Serial;
+use rustduino::hal::watchdog::WatchDog;
 
 #[no_mangle]
 pub fn main() {

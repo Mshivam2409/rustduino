@@ -16,21 +16,23 @@
 
 //! Global interrupts configured in the ATMEGA2560P chip is controlled here.
 //! Section 7.4 of the manual
-//! https://ww1.microchip.com/downloads/en/devicedoc/atmel-2549-8-bit-avr-microcontroller-atmega640-1280-1281-2560-2561_datasheet.pdf
 
-/// Crates required in the code for reading and writing to registers.
+// Crates required in the code for reading and writing to registers.
 use core::ptr::{read_volatile, write_volatile};
 
-///This contains the registers to be manipulated for controlling global interrupts setup.
-///This represents struct for Globalinterrupts and is used to control sreg register.
-pub struct GlobalInterrupts {
+/// This contains the registers to be manipulated for controlling global interrupts setup.
+/// This represents struct for Globalinterrupts and is used to control sreg register.
+#[repr(C, packed)]
+pub struct Interrupt {
     pub sreg: u8,
 }
 
-impl GlobalInterrupts {
-    ///  Returns new struct of Global_Interrupts.
-    pub unsafe fn new() -> &'static mut GlobalInterrupts {
-        &mut *(0x5F as *mut GlobalInterrupts)
+impl Interrupt {
+    /// Creates a new struct of Global_Interrupts.
+    /// # Returns
+    /// * `a reference to Interrupt structure` - to control the global interrupt implementations.
+    pub unsafe fn new() -> &'static mut Interrupt {
+        &mut *(0x5F as *mut Interrupt)
     }
 
     ///  This fnction Disable global interrupts.

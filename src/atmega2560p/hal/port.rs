@@ -16,9 +16,11 @@
 
 //! Various pins and ports in the ATMEGA2560P chip is controlled here.
 //! Section 13.2 to 13.4 of ATMEGA2560P datasheet.
-//! https://ww1.microchip.com/downloads/en/devicedoc/atmel-2549-8-bit-avr-microcontroller-atmega640-1280-1281-2560-2561_datasheet.pdf
 
-/// Core Crate functions required in the code for reading and writing to registers.
+// Source codes required.
+use crate::atmega2560p::hal::pin::{AnalogPin, DigitalPin};
+
+// Core Crate functions required in the code for reading and writing to registers.
 use core::{
     ptr::{read_volatile, write_volatile},
     usize,
@@ -40,6 +42,14 @@ pub enum PortName {
     L,
 }
 
+/// Type `IOMode`
+/// Represents the Input/Output mode of the pin.
+#[derive(Clone, Copy)]
+pub enum IOMode {
+    Input,
+    Output,
+}
+
 /// These will control the ports ( set of 8 pins each controlled by a bit ).
 /// `DDR:  Data direction register`
 ///     This controls the direction of a particular pin.
@@ -50,6 +60,7 @@ pub enum PortName {
 /// `PIN:  Port input pins`
 ///     This can be read to see the value at a particualar pin.
 ///     It is also used as a toggle controller.     
+#[repr(C, packed)]
 pub struct Port {
     pub pin: u8,
     pub ddr: u8,
@@ -57,20 +68,17 @@ pub struct Port {
 }
 
 /// The structure Pin contains the address of the port to which the pin belongs and the pin's number.
+#[repr(C, packed)]
+#[derive(Clone, Copy)]
 pub struct Pin {
-    port: *mut Port,
-    pin: usize,
-}
-
-/// Type `IOMode`
-/// Represents the Input/Output mode of the pin.
-pub enum IOMode {
-    Input,
-    Output,
+    pub port: *mut Port,
+    pub pin: usize,
 }
 
 impl Port {
-    /// Returns mutable reference to the Port of given PortName.
+    /// Creates a Port of given PortName.
+    /// # Returns
+    /// * `a mutable reference of Port Object` - which will be used for further implementations.
     pub fn new(name: PortName) -> &'static mut Port {
         match name {
             PortName::A => unsafe { &mut *(0x20 as *mut Port) },
@@ -119,18 +127,24 @@ impl Port {
 }
 
 impl Pin {
-    ///Return a pin for the given port name and pin number.
+    /// Creates a Port of given PortName.
+    /// # Returns
+    /// * `maybe a Pin object` - which will be used for further implementations.
     pub fn new(port: PortName, pin: usize) -> Option<Pin> {
         Port::new(port).pin(pin)
     }
 
     /// Change pin mode to input or output by changing the DDr register.
+    /// # Arguments
+    /// * `mode` - a `IOMode` object, which defines the mode of the pin to be set.
     pub fn set_pin_mode(&mut self, mode: IOMode) {
         //  Read the value of DDxn register.
         let mut ddr_val = unsafe { read_volatile(&mut (*self.port).ddr) };
 
         //  Calculate the value to be written to DDxn register.
+
         //  This will set the register according to the mode in which the pin is to be set.
+
         ddr_val &= !(0x1 << self.pin);
         ddr_val |= match mode {
             IOMode::Input => 0x0,
@@ -141,57 +155,48 @@ impl Pin {
         unsafe { write_volatile(&mut (*self.port).ddr, ddr_val) }
     }
 
-    /// Toggles the appropriate bit in PINxn register so that the mode of the pin
-    /// is changed from high to low or vice versa.
-    pub fn toggle(&mut self) {
-        unsafe { write_volatile(&mut (*self.port).pin, 0x1 << self.pin) }
-    }
-
-    /// Set the pin to high output value.
-    pub fn high(&mut self) {
-        // Checks if pin number is valid.
-        if self.pin >= 8 {
-            return;
-        }
-        let mut p = unsafe { read_volatile(&mut (*self.port).port) }; // Reading the value of PORTxn.
-        p = p & (1 << self.pin);
-        let ddr_value = unsafe { read_volatile(&mut (*self.port).ddr) }; // Read the DDRxn register.
-        if p == 0 && ddr_value == (0x1 << self.pin) {
-            // Toggling the value of PORTxn, if it isn't set to high.
-            self.toggle();
-        }
-    }
-
-    /// Sets the pin to low output value.
-    pub fn low(&mut self) {
-        // Check if pin number is valid.
-        if self.pin >= 8 {
-            return;
-        }
-        let mut p = unsafe { read_volatile(&mut (*self.port).port) }; //Reading the value of PORTxn.
-        p = p & (1 << self.pin);
-        let ddr_value = unsafe { read_volatile(&mut (*self.port).ddr) }; // Read the DDRxn register.
-        if p != 0 && ddr_value == (0x1 << self.pin) {
-            //Toggling the value of PORTxn, if it isn't set to low.
-            self.toggle();
-        }
-    }
-
     /// Change pin mode to Output by changing the value of DDxn register.
-    pub fn output(&mut self) {
+    pub fn set_output(&mut self) {
         self.set_pin_mode(IOMode::Output);
     }
 
     /// Change pin mode to Input by changing the value of DDxn register.
-    pub fn input(&mut self) {
+    pub fn set_input(&mut self) {
         self.set_pin_mode(IOMode::Input);
     }
+}
 
+impl AnalogPin {
+    /// Change pin mode to Output by changing the value of DDxn register.
+    pub fn set_output(&mut self) {
+        self.pin.set_pin_mode(IOMode::Output);
+    }
+
+    /// Change pin mode to Input by changing the value of DDxn register.
+    pub fn set_input(&mut self) {
+        self.pin.set_pin_mode(IOMode::Input);
+    }
+}
+
+impl DigitalPin {
+    /// Change pin mode to Output by changing the value of DDxn register.
+    pub fn set_output(&mut self) {
+        self.pin.set_pin_mode(IOMode::Output);
+    }
+
+    /// Change pin mode to Input by changing the value of DDxn register.
+    pub fn set_input(&mut self) {
+        self.pin.set_pin_mode(IOMode::Input);
+    }
+
+    /// Returns the I/O state of the Digital Pin.
+    /// # Returns
+    /// * `a u8` - The read data from the digital pin.
     pub fn read(&mut self) -> u8 {
-        let port_val = unsafe { read_volatile(&mut (*self.port).port) };
+        let port_val = unsafe { read_volatile(&mut (*self.pin.port).port) };
 
         // Check if value of PORTxn is already high, toggle if it isn't.
-        if port_val & (1 << self.pin) == 0 {
+        if port_val & (1 << self.pin.pin) == 0 {
             return 0;
         } else {
             return 1;

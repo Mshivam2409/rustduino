@@ -4,6 +4,10 @@ slug: /contributors
 title: Contributors
 ---
 
+*Oh! we forgot to tell you our name*
+
+---
+
 The project would never have been possible without our awesome contributors.
 
 - Akshit Verma

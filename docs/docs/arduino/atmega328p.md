@@ -4,7 +4,7 @@ slug: /atmega328p
 title: AtMega328P
 ---
 
-*Our First Chip*
+_Our First Chip_
 
 ----
 
@@ -17,7 +17,7 @@ interface, SPI serial port, a 6-channel 10-bit A/D converter (8-channels in TQFP
 and QFN/MLF packages), programmable watchdog timer with internal oscillator, and
 five software selectable power saving modes.
 
-**Arduino Uno** is a microcontroller board based on the **ATmega328P**(datasheet). It
+**Arduino Uno** is a microcontroller board based on the **ATmega328P** (datasheet). It
 has 14 digital input/output pins (of which 6 can be used as PWM outputs), 6
 analog inputs, a 16 MHz ceramic resonator, a USB connection, a power jack, an
 ICSP header and a reset button.
@@ -29,12 +29,12 @@ the Arduino Uno, but in a different package
 ## Compiling and Linking
 
 ```bash
-$ cargo +nightly build -Z build-std=core --release --target avr-atmega328p.json
-$ cargo +nightly build --release
+cargo +nightly build -Z build-std=core --release --target avr-atmega328p.json
+cargo +nightly build --release
 ```
 
 Then, to upload it to a device, assuming that you have avrdude installed, run:
 
 ```bash
-$ avrdude -v -patmega328p -carduino -P/dev/ttyACM0 -b115200 -D -Uflash:w:target/avr-atmega328p/release/examples/serial.elf:e
+avrdude -v -patmega328p -carduino -P/dev/ttyACM0 -b115200 -D -Uflash:w:target/avr-atmega328p/release/examples/serial.elf:e
 ```

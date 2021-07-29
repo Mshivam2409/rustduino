@@ -1,0 +1,1074 @@
+---
+id: mpu6050
+slug: /mpu6050
+title: MPU6050 Gyroscope
+---
+
+_It can see you_
+
+---
+
+MPU6050 sensor module is complete 6-axis Motion Tracking Device. It combines 3-axis Gyroscope, 3-axis Accelerometer and Digital Motion Processor all in small package. Also, it has additional feature of on-chip Temperature sensor. It has I2C bus interface to communicate with the microcontrollers.
+It has Auxiliary I2C bus to communicate with other sensor devices like 3-axis Magnetometer, Pressure sensor etc.
+If 3-axis Magnetometer is connected to auxiliary I2C bus, then MPU6050 can provide complete 9-axis Motion Fusion output.More about the sensor and its functions can be found out at [MPU6050 Datasheet](https://invensense.tdk.com/wp-content/uploads/2015/02/MPU-6000-Datasheet1.pdf)
+
+## 3-Axis Gyroscope
+
+The MPU6050 consist of 3-axis Gyroscope with Micro Electro Mechanical System(MEMS) technology. It is used to detect rotational velocity along the X, Y, Z axes.
+The full-scale range of output are +/- 250, +/- 500, +/- 1000, +/- 2000.
+It measures the angular velocity along each axis in degree per second unit.
+
+## 3-Axis Accelerometer
+
+The MPU6050 consist 3-axis Accelerometer with Micro Electro Mechanical (MEMs) technology. It used to detect angle of tilt or inclination along the X, Y and Z axes.
+The full-scale range of acceleration are +/- 2g, +/- 4g, +/- 8g, +/- 16g.
+It measured in g (gravity force) unit.
+
+#### Calculations
+
+Gyroscope and accelerometer sensor data of MPU6050 module consists of 16-bit raw data in 2’s complement form.
+
+Now suppose we have selected,
+
+- Accelerometer full scale range of +/- 2g with Sensitivity Scale Factor of 16,384 LSB(Count)/g.
+
+- Gyroscope full scale range of +/- 250 °/s with Sensitivity Scale Factor of 131 LSB (Count)/°/s.
+
+**Accelerometer values in g**
+Acceleration along the X axis = (Accelerometer X axis raw data/16384) g.
+
+Acceleration along the Y axis = (Accelerometer Y axis raw data/16384) g.
+
+Acceleration along the Z axis = (Accelerometer Z axis raw data/16384) g.
+
+**Gyroscope values in °/s**
+Angular velocity along the X axis = (Gyroscope X axis raw data/131) °/s.
+
+Angular velocity along the Y axis = (Gyroscope Y axis raw data/131) °/s.
+
+Angular velocity along the Z axis = (Gyroscope Z axis raw data/131) °/s.
+
+<hr />
+
+## Enums definition
+
+```rust
+pub enum MPUClockSource {
+    MPU6050ClockInternal8MHZ,
+    MPU6050ClockPllGyrox,
+    MPU6050ClockPllGyroy,
+    MPU6050ClockPllGyroz,
+    MPU6050ClockExternal32MHZ,
+    MPU6050ClockExternal19MHZ,
+    MPU6050ClockKeepReset,
+}
+```
+
+```rust
+pub enum MPUdpsT {
+    MPU6050Scale2000DPS,
+    MPU6050Scale1000DPS,
+    MPU6050Scale500DPS,
+    MPU6050Scale250DPS,
+}
+```
+
+```rust
+pub enum MPURangeT {
+    MPU6050Range2G,
+    MPU6050Range4G,
+    MPU6050Range8G,
+    MPU6050Range16G,
+}
+```
+
+```rust
+pub enum MPUOnDelayT {
+    MPU6050Delay3MS,
+    MPU6050Delay2MS,
+    MPU6050Delay1MS,
+    MPU6050NoDelay,
+}
+```
+
+```rust
+pub enum MPUdhpfT {
+    MPU6050dhpfReset,
+    MPU6050dhpf5HZ,
+    MPU6050dhpf2_5HZ,
+    MPU6050dhpf1_25HZ,
+    MPU6050dhpf0_63HZ,
+    MPU6050dhpfHold,
+}
+```
+
+```rust
+pub enum MPUdlpfT {
+    MPU6050dlpf6,
+    MPU6050dlpf5,
+    MPU6050dlpf4,
+    MPU6050dlpf3,
+    MPU6050dlpf2,
+    MPU6050dlpf1,
+    MPU6050dlpf0,
+}
+```
+
+## Struct definition
+
+```rust
+pub struct MPU6050 {/*fields omitted*/}
+```
+
+```rust
+use rustduino::sensors::mpu6050;
+let mut sensor = mpu6050::MPU6050;
+
+// Here sensor is a mutable struct of type MPU6050.
+```
+
+<hr />
+
+## Trait implementation
+
+### Impl `new` for `MPU6050`
+
+```rust
+pub fn new(&mut self) -> &'static mut Self
+```
+
+Returns pointer to the struct.
+
+#### Usage:
+
+```rust
+use rustduino::sensors::mpu6050;
+let mut sensor = MPU6050::new()
+
+// Here sensor is the pointer to the struct of the type MPU6050.
+// This sensor pointer is used further for different functions below.
+```
+
+### Impl `readregister` for `MPU6050`
+
+```rust
+fn readregister(&mut self, reg: u8) -> u8
+```
+
+Returns the 8 bit data stored in the register with address `reg` using the I2C module.
+
+### Impl `writeregister` for `MPU6050`
+
+```rust
+fn writeregister(&mut self, reg: u8, value: u8)
+```
+
+Writes the 8 bit `value` to register with address `reg` using the I2C module.
+
+### Impl `writeregister_bit` for `MPU6050`
+
+```rust
+fn writeregister_bit(&mut self, reg: u8, pos: u8, state: bool)
+```
+
+Writes the `state` to bit `pos` of the register with address `reg` using the I2C module.
+
+### Impl `set_dlpf_mode` for `MPU6050`
+
+```rust
+pub fn set_dlpf_mode(&mut self, dlpf: MPUdlpfT)
+```
+
+This configures the Digital Low Pass Filter (DLPF) setting for both the gyroscopes and accelerometers.
+The accelerometer and gyroscope are filtered according to the value of the enum MPUdlpfT as shown in the table below.
+
+<table>
+  <tbody>
+    <tr>
+      <th rowSpan={2}>MPUdlpfT::</th>
+      <th colSpan={2}>
+        Accelerometer
+        <br />
+        (Fs = 1kHz)
+      </th>
+      <th colSpan={3}>Gyroscope</th>
+    </tr>
+    <tr>
+      <td>
+        Bandwidth
+        <br />
+        (Hz)
+      </td>
+      <td>
+        Delay
+        <br />
+        (ms)
+      </td>
+      <td>
+        Bandwidth
+        <br />
+        (Hz)
+      </td>
+      <td>
+        Delay
+        <br />
+        (ms)
+      </td>
+      <td>
+        Fs
+        <br />
+        (kHz)
+      </td>
+    </tr>
+    <tr>
+      <td>MPU6050dlpf0</td>
+      <td>260</td>
+      <td>0</td>
+      <td>256</td>
+      <td>0.98</td>
+      <td>8</td>
+    </tr>
+    <tr>
+      <td>MPU6050dlpf1</td>
+      <td>184</td>
+      <td>2.0</td>
+      <td>188</td>
+      <td>1.9</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <td>MPU6050dlpf2</td>
+      <td>94</td>
+      <td>3.0</td>
+      <td>98</td>
+      <td>2.8</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <td>MPU6050dlpf3</td>
+      <td>44</td>
+      <td>4.9</td>
+      <td>42</td>
+      <td>4.8</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <td>MPU6050dlpf4</td>
+      <td>21</td>
+      <td>8.5</td>
+      <td>20</td>
+      <td>8.3</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <td>MPU6050dlpf5</td>
+      <td>10</td>
+      <td>13.8</td>
+      <td>10</td>
+      <td>13.4</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <td>MPU6050dlpf6</td>
+      <td>5</td>
+      <td>19.0</td>
+      <td>5</td>
+      <td>18.6</td>
+      <td>1</td>
+    </tr>
+  </tbody>
+</table>
+
+#### Usage
+
+```rust
+use rustduino::sensors::mpu6050;
+let mut sensor = mpu6050::new();
+
+sensor.set_dlpf_mode(MPUdlpf::MPU6050dlpf4);
+```
+
+### Impl `set_dhpf_mode` for `MPU6050`
+
+```rust
+pub fn set_dhpf_mode(&mut self, dhpf: MPUdhpfT)
+```
+
+This configures the Digital High Pass Filter (DHPF).
+The DHPF is a filter module in the path leading to motion detectors (Free
+Fall, Motion threshold, and Zero Motion). The high pass filter output is not
+available to the data registers (see Figure in Section 8 of the MPU-6000/
+MPU-6050 Product Specification document).
+The high pass filter has three modes:
+
+- Reset: The filter output settles to zero within one sample. This effectively disables the high pass filter. This mode may be toggled to quickly settle the filter.
+- On: The high pass filter will pass signals above the cut off frequency.
+- Hold: When triggered, the filter holds the present sample. The filter output will be the difference between the input sample and the held sample.
+
+<table>
+  <tbody>
+    <tr>
+      <th>MPUdhpfT::</th>
+      <th>Filter Mode</th>
+      <th>
+        Cutoff Frequency
+        <br />
+        (Hz)
+      </th>
+    </tr>
+    <tr>
+      <td>MPU6050dhpfReset</td>
+      <td>Reset</td>
+      <td>None</td>
+    </tr>
+    <tr>
+      <td>MPU6050dhpf5HZ</td>
+      <td>On</td>
+      <td>5Hz</td>
+    </tr>
+    <tr>
+      <td>MPU6050dhpf2_5HZ</td>
+      <td>On</td>
+      <td>2.5Hz</td>
+    </tr>
+    <tr>
+      <td>MPU6050dhpf1_25HZ</td>
+      <td>On</td>
+      <td>1.25Hz</td>
+    </tr>
+    <tr>
+      <td>MPU6050dhpf0_63HZ</td>
+      <td>On</td>
+      <td>0.63Hz</td>
+    </tr>
+    <tr>
+      <td>MPU6050dhpfHold</td>
+      <td>Hold</td>
+      <td>None</td>
+    </tr>
+  </tbody>
+</table>
+
+#### Usage
+
+```rust
+use rustduino::sensors::mpu6050;
+let mut sensor = mpu6050::new();
+
+sensor.set_dhpf_mode(MPUdhpfT::MPU6050dhpfReset);
+```
+
+### Impl `set_scale` for `MPU6050`
+
+```rust
+pub fn set_scale(&mut self, scale: MPUdpsT)
+```
+
+Sets the full scale range of the gyroscope.
+
+<table>
+  <tbody>
+    <tr>
+      <th>MPUdpsT::</th>
+      <th>
+        Full Scale Range
+        <br />
+        (deg/s)
+      </th>
+    </tr>
+    <tr>
+      <td>MPU6050dps250</td>
+      <td>+/-250</td>
+    </tr>
+    <tr>
+      <td>MPU6050dps500</td>
+      <td>+/-500</td>
+    </tr>
+    <tr>
+      <td>MPU6050dps1000</td>
+      <td>+/-1000</td>
+    </tr>
+    <tr>
+      <td>MPU6050dps2000</td>
+      <td>+/-2000</td>
+    </tr>
+  </tbody>
+</table>
+
+#### Usage
+
+```rust
+use rustduino::sensors::mpu6050;
+let mut sensor = mpu6050::new();
+
+sensor.set_scale(MPUdpsT::MPU6050dps500);
+```
+
+### Impl `get_scale` for `MPU6050`
+
+```rust
+pub fn get_scale(&mut self, scale: MPUdpsT) -> MPUdpsT
+```
+
+Returns the current full scale range of the gyroscope.
+
+#### Usage
+
+```rust
+use rustduino::sensors::mpu6050;
+let mut sensor = mpu6050::new();
+
+let scale = sensor.get_scale();
+```
+
+### Impl `set_range` for `MPU6050`
+
+```rust
+pub fn set_range(&mut self, range: MPURangeT)
+```
+
+Sets the range of the accelerometer.
+
+{" "}
+
+<table>
+  <tr>
+    <th>MPURangeT::</th>
+    <th>
+      Full Scale Range
+      <br />
+      (g)
+    </th>
+  </tr>
+  <tr>
+    <td>MPU6050Range2G</td>
+    <td>+/-2</td>
+  </tr>
+  <tr>
+    <td>MPU6050Range4G</td>
+    <td>+/-4</td>
+  </tr>
+  <tr>
+    <td>MPU6050Range8G</td>
+    <td>+/-8</td>
+  </tr>
+  <tr>
+    <td>MPU6050Range16G</td>
+    <td>+/-16</td>
+  </tr>
+</table>
+
+#### Usage
+
+```rust
+use rustduino::sensors::mpu6050;
+let mut sensor = mpu6050::new();
+
+sensor.set_range(MPURangeT::MPU6050Range8G);
+```
+
+### Impl `get_range` for `MPU6050`
+
+```rust
+pub fn get_range(&mut self) -> MPURangeT
+```
+
+Gets the current range of the accelerometer.
+
+#### Usage
+
+```rust
+use rustduino::sensors::mpu6050;
+let mut sensor = mpu6050::new();
+
+let range = sensor.get_range();
+```
+
+### Impl `set_clock_source` for `MPU6050`
+
+```rust
+pub fn set_clock_source(&mut self, source: MPUClockSourceT)
+```
+
+Set clock source setting.<br/>
+An internal 8MHz oscillator, gyroscope based clock, or external sources can be selected as the MPU-60X0 clock source. When the internal 8 MHz oscillator or an external source is chosen as the clock source, the MPU-60X0 can operate in low power modes with the gyroscopes disabled.<br/>
+Upon power up, the MPU-60X0 clock source defaults to the internal oscillator.However, it is highly recommended that the device be configured to use one of the gyroscopes (or an external clock source) as the clock reference for improved stability. The clock source can be selected according to the following table:
+
+<table>
+  <tbody>
+    <tr>
+      <th>MPUClockSourceT::</th>
+      <th>Clock Source</th>
+    </tr>
+    <tr>
+      <td>MPU6050ClockInternal8MHZ</td>
+      <td>Internal oscillator</td>
+    </tr>
+    <tr>
+      <td>MPU6050ClockPllGyrox</td>
+      <td>Gyroscope X axis reference</td>
+    </tr>
+    <tr>
+      <td>MPU6050ClockPllGyroy</td>
+      <td>Gyroscope Y axis reference</td>
+    </tr>
+    <tr>
+      <td>MPU6050ClockPllGyroz</td>
+      <td>Gyroscope Z axis reference</td>
+    </tr>
+    <tr>
+      <td>MPU6050ClockExternal32MHZ</td>
+      <td>Pll with external 32.768kHz reference</td>
+    </tr>
+    <tr>
+      <td>MPU6050ClockExternal19MHZ</td>
+      <td>Pll with external 19.2MHz reference</td>
+    </tr>
+    <tr>
+      <td>MPU6050ClockKeepReset</td>
+      <td>Keeps the timing generator in reset</td>
+    </tr>
+  </tbody>
+</table>
+
+#### Usage
+
+```rust
+use rustduino::sensors::mpu6050;
+let mut sensor = mpu6050::new();
+
+sensor.set_clock_source(MPUClockSourceT::MPU6050ClockSourcePLLGyroZ);
+```
+
+### Impl `get_clock_source` for `MPU6050`
+
+```rust
+pub fn get_clock_source(&mut self) -> MPUClockSourceT
+```
+
+Gets clock source setting.
+
+#### Usage
+
+```rust
+use rustduino::sensors::mpu6050;
+let mut sensor = mpu6050::new();
+
+let source = sensor.get_clock_source();
+```
+
+### Impl `set_int_free_fall_enabled` for `MPU6050`
+
+```rust
+pub fn set_int_free_fall_enabled(&mut self, state: bool)
+```
+
+Sets int free fall enabled setting.
+
+#### Usage
+
+```rust
+use rustduino::sensors::mpu6050;
+let mut sensor = mpu6050::new();
+
+sensor.set_int_free_fall_enabled(true);
+```
+
+### Impl `get_int_free_fall_enabled` for `MPU6050`
+
+```rust
+pub fn get_int_free_fall_enabled(&mut self) -> bool
+```
+
+Gets int free fall enabled setting.
+
+#### Usage
+
+```rust
+use rustduino::sensors::mpu6050;
+let mut sensor = mpu6050::new();
+
+let state = sensor.get_int_free_fall_enabled();
+```
+
+### Impl `set_accel_power_on_delay` for `MPU6050`
+
+```rust
+pub fn set_accel_power_on_delay(&mut self, delay: MPUOnDelayT)
+```
+
+Sets accelerometer power on delay setting.
+
+#### Usage
+
+```rust
+use rustduino::sensors::mpu6050;
+let mut sensor = mpu6050::new();
+
+set_accel_power_on_delay(MPUOnDelayT::MPU6050OnDelay1ms);
+```
+
+## Impl `get_accel_power_on_delay` for `MPU6050`
+
+```rust
+pub fn get_accel_power_on_delay(&mut self) -> MPUOnDelayT
+```
+
+Gets accelerometer power on delay setting.
+
+#### Usage
+
+```rust
+use rustduino::sensors::mpu6050;
+let mut sensor = mpu6050::new();
+
+let output = sensor.get_accel_power_on_delay();
+```
+
+### Impl `set_motion_detection_threshold` for `MPU6050`
+
+```rust
+pub fn set_motion_detection_threshold(&mut self, threshold: u8)
+```
+
+Sets motion detection threshold setting.
+
+#### Usage
+
+```rust
+use rustduino::sensors::mpu6050;
+let mut sensor = mpu6050::new();
+
+sensor.set_motion_detection_threshold(10);
+```
+
+### Impl `get_motion_detection_threshold` for `MPU6050`
+
+```rust
+pub fn get_motion_detection_threshold(&mut self) -> u8
+```
+
+Gets motion detection threshold setting.
+
+#### Usage
+
+```rust
+use rustduino::sensors::mpu6050;
+let mut sensor = mpu6050::new();
+
+let output = sensor.get_motion_detection_threshold();
+```
+
+### Impl `set_motion_detection_duration` for `MPU6050`
+
+```rust
+pub fn set_motion_detection_duration(&mut self, duration: u8)
+```
+
+Sets motion detection duration setting.
+
+#### Usage
+
+```rust
+use rustduino::sensors::mpu6050;
+let mut sensor = mpu6050::new();
+
+set_motion_detection_duration(10);
+```
+
+### Impl `get_motion_detection_duration` for `MPU6050`
+
+```rust
+pub fn get_motion_detection_duration(&mut self) -> u8
+```
+
+Gets motion detection duration setting.
+
+#### Usage
+
+```rust
+use rustduino::sensors::mpu6050;
+let mut sensor = mpu6050::new();
+
+let output = sensor.get_motion_detection_duration();
+```
+
+### Impl `set_zero_motion_detection_threshold` for `MPU6050`
+
+```rust
+pub fn set_zero_motion_detection_threshold(&mut self, threshold: u8)
+```
+
+Sets zero motion detection threshold setting.
+
+#### Usage
+
+```rust
+use rustduino::sensors::mpu6050;
+let mut sensor = mpu6050::new();
+
+sensor.set_zero_motion_detection_threshold(10);
+```
+
+### Impl `get_zero_motion_detection_threshold` for `MPU6050`
+
+```rust
+pub fn get_zero_motion_detection_threshold(&mut self) -> u8
+```
+
+Gets zero motion detection threshold setting.
+
+#### Usage
+
+```rust
+use rustduino::sensors::mpu6050;
+let mut sensor = mpu6050::new();
+
+let output = sensor.get_zero_motion_detection_threshold();
+```
+
+### Impl `set_zero_motion_detection_duration` for `MPU6050`
+
+```rust
+pub fn set_zero_motion_detection_duration(&mut self, duration: u8)
+```
+
+Sets zero motion detection duration setting.
+
+#### Usage
+
+```rust
+use rustduino::sensors::mpu6050;
+let mut sensor = mpu6050::new();
+
+sensor.set_zero_motion_detection_duration(10);
+```
+
+### Impl `get_zero_motion_detection_duration` for `MPU6050`
+
+```rust
+pub fn get_zero_motion_detection_duration(&mut self) -> u8
+```
+
+Gets zero motion detection duration setting.
+
+#### Usage
+
+```rust
+use rustduino::sensors::mpu6050;
+let mut sensor = mpu6050::new();
+
+let output = sensor.get_zero_motion_detection_duration();
+```
+
+### Impl `set_free_fall_detection_threshold` for `MPU6050`
+
+```rust
+pub fn set_free_fall_detection_threshold(&mut self, threshold: u8)
+```
+
+Sets free fall detection threshold setting.
+
+#### Usage
+
+```rust
+use rustduino::sensors::mpu6050;
+let mut sensor = mpu6050::new();
+
+sensor.set_free_fall_detection_threshold(10);
+```
+
+### Impl `get_free_fall_detection_threshold` for `MPU6050`
+
+```rust
+pub fn get_free_fall_detection_threshold(&mut self) -> u8
+```
+
+Gets free fall detection threshold setting.
+
+#### Usage
+
+```rust
+use rustduino::sensors::mpu6050;
+let mut sensor = mpu6050::new();
+
+let output = sensor.get_free_fall_detection_threshold();
+```
+
+### Impl `set_free_fall_detection_duration` for `MPU6050`
+
+```rust
+pub fn set_free_fall_detection_duration(&mut self, duration: u8)
+```
+
+Sets free fall detection duration setting.
+
+#### Usage
+
+```rust
+use rustduino::sensors::mpu6050;
+let mut sensor = mpu6050::new();
+
+sensor.set_free_fall_detection_duration(10);
+```
+
+### Impl `get_free_fall_detection_duration` for `MPU6050`
+
+```rust
+pub fn get_free_fall_detection_duration(&mut self) -> u8
+```
+
+Gets free fall detection duration setting.
+
+#### Usage
+
+```rust
+use rustduino::sensors::mpu6050;
+let mut sensor = mpu6050::new();
+
+let output = sensor.get_free_fall_detection_duration();
+```
+
+### Impl `set_sleep_enabled` for `MPU6050`
+
+```rust
+pub fn set_sleep_enabled(&mut self, state: bool)
+```
+
+Enables sleep mode.
+
+#### Usage
+
+```rust
+use rustduino::sensors::mpu6050;
+let mut sensor = mpu6050::new();
+
+sensor.set_sleep_enabled(true);
+```
+
+### Impl `get_sleep_enabled` for `MPU6050`
+
+```rust
+pub fn get_sleep_enabled(&mut self) -> bool
+```
+
+Gets the state of sleep mode.
+
+#### Usage
+
+```rust
+use rustduino::sensors::mpu6050;
+let mut sensor = mpu6050::new();
+
+let state =sensor.get_sleep_enabled();
+```
+
+### Impl `get_int_zero_motion_enabled` for `MPU6050`
+
+```rust
+pub fn get_int_zero_motion_enabled(&mut self) -> bool
+```
+
+Gets the state of zero motion detection interrupt.
+
+#### Usage
+
+```rust
+use rustduino::sensors::mpu6050;
+let mut sensor = mpu6050::new();
+
+let state =sensor.get_int_zero_motion_enabled();
+```
+
+### Impl `set_int_zero_motion_enabled` for `MPU6050`
+
+```rust
+pub fn set_int_zero_motion_enabled(&mut self, state: bool)
+```
+
+Sets the state of zero motion detection interrupt.
+
+#### Usage
+
+```rust
+use rustduino::sensors::mpu6050;
+let mut sensor = mpu6050::new();
+
+sensor.set_int_zero_motion_enabled(true);
+```
+
+### Impl `get_int_motion_enabled` for `MPU6050`
+
+```rust
+pub fn get_int_motion_enabled(&mut self) -> bool
+```
+
+Gets the state of motion detection interrupt.
+
+#### Usage
+
+```rust
+use rustduino::sensors::mpu6050;
+let mut sensor = mpu6050::new();
+
+let state =sensor.get_int_motion_enabled();
+```
+
+### Impl `set_int_motion_enabled` for `MPU6050`
+
+```rust
+pub fn set_int_motion_enabled(&mut self, state: bool)
+```
+
+Sets the state of motion detection interrupt.
+
+#### Usage
+
+```rust
+use rustduino::sensors::mpu6050;
+let mut sensor = mpu6050::new();
+
+sensor.set_int_motion_enabled(true);
+```
+
+### Impl `set_i2c_master_mode_enabled` for `MPU6050`
+
+```rust
+pub fn set_i2c_master_mode_enabled(&mut self, state: bool)
+```
+
+Enables I2C master mode.
+
+#### Usage
+
+```rust
+use rustduino::sensors::mpu6050;
+let mut sensor = mpu6050::new();
+
+sensor.set_i2c_master_mode_enabled(true);
+```
+
+### Impl `get_i2c_master_mode_enabled` for `MPU6050`
+
+```rust
+pub fn get_i2c_master_mode_enabled(&mut self) -> bool
+```
+
+Gets the status of I2C master mode.
+
+#### Usage
+
+```rust
+use rustduino::sensors::mpu6050;
+let mut sensor = mpu6050::new();
+
+let state =sensor.get_i2c_master_mode_enabled();
+```
+
+### Impl `set_i2c_byepass_enabled` for `MPU6050`
+
+```rust
+pub fn set_i2c_byepass_enabled(&mut self, state: bool)
+```
+
+Enables I2C bypass mode.
+
+#### Usage
+
+```rust
+use rustduino::sensors::mpu6050;
+let mut sensor = mpu6050::new();
+
+sensor.set_i2c_byepass_enabled(true);
+```
+
+### Impl `get_i2c_byepass_enabled` for `MPU6050`
+
+```rust
+pub fn get_i2c_byepass_enabled(&mut self) -> bool
+```
+
+Gets the status of I2C bypass mode.
+
+#### Usage
+
+```rust
+use rustduino::sensors::mpu6050;
+let mut sensor = mpu6050::new();
+
+let state =sensor.get_i2c_byepass_enabled();
+```
+
+### Impl `get_int_status` for `MPU6050`
+
+```rust
+pub fn get_int_status(&mut self) -> u8
+```
+
+Gets the interrupt status.
+
+#### Usage
+
+```rust
+use rustduino::sensors::mpu6050;
+let mut sensor = mpu6050::new();
+
+let state =sensor.get_int_status();
+```
+
+<hr />
+
+### Impl `read_accel` for `MPU6050`
+
+```rust
+pub fn read_accel(&mut self) -> FixedSliceVec<f32>
+```
+
+- Reads the three, two-byte accelerometer values from the sensor.
+- Returns the two-byte raw accelerometer values as a 32-bit float.
+- The vec accel_output stores the raw values of the accelerometer where `accel_output[0]` is the x-axis, `accel_output[1]` is the y-axis and `accel_output[2]` is the z-axis output respectively. These raw values are then converted to g's per second according to the scale given as input in `begin()` function.
+
+#### Usage
+
+```rust
+use rustduino::sensors::mpu6050;
+let mut sensor = mpu6050::new();
+
+let accel_output = sensor.read_accel();
+```
+
+### Impl `read_gyro` for `MPU6050`
+
+```rust
+pub fn read_gyro(&mut self) -> FixedSliceVec<f32>
+```
+
+- Reads the three, two-byte gyroscope values from the sensor.
+- Returns the two-byte raw gyroscope values as a 32-bit float.
+- The vec gyro_output stores the raw values of the gyroscope where `gyro_output[0]` is the x-axis, `gyro_output[1]` is the y-axis and `gyro_output[2]` is the z-axis output respectively. These raw values are then converted to degrees per second according to the scale given as input in `begin()` function.
+
+#### Usage
+
+```rust
+use rustduino::sensors::mpu6050;
+let mut sensor = mpu6050::new();
+
+let gyro_output = sensor.read_gyro();
+```
+
+### Impl `begin` for `MPU6050`
+
+```rust
+pub fn begin(&mut self, scale: MPUdpsT, range: MPURangeT) -> bool
+```
+
+Starts the sensor by setting the device to active mode ,setting the accelerometer range and gyroscope scale.
+
+#### Usage
+
+```rust
+use rustduino::sensors::mpu6050;
+let mut sensor = mpu6050::new();
+
+sensor.begin(MPUdpsT::MPU6050dps500,MPUrangeT::MPU6050Range8G);
+```
