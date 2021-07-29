@@ -23,7 +23,7 @@ pub fn map(val: u64, in_min: u64, in_max: u64, out_min: u64, out_max: u64) -> u6
 }
 ```
 
-#### A usage example -> 
+### A usage example
 While reading the data from analog pins and writing the same data to analog write we require to change the data from 32 bit un signed integer to 8 bit unsigned integer which is done using this function as shown below -
 
 ```rust

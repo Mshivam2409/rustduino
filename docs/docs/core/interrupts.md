@@ -29,9 +29,9 @@ title: Interrupts
 ```
 
 ## Trait Implementations
----- 
- 
-### Impl `new` for `WatchdogGlobalInterrupts`
+----
+
+### Impl `new` for `GlobalInterrupts`
 
 ```rust
 pub unsafe fn new() -> &'static mut GlobalInterrupts {
@@ -41,14 +41,14 @@ pub unsafe fn new() -> &'static mut GlobalInterrupts {
 
 Returns new struct of Global_Interrupts.
 
-### Impl `disable` for `WatchdogGlobalInterrupts`
+### Impl `disable` for `GlobalInterrupts`
 
 ```rust
  pub fn disable(&mut self){ /* fields omitted */}
 ```
 This fnction Disable global interrupts also known as CLI
 
-### Impl `enable` for `WatchdogGlobalInterrupts`
+### Impl `enable` for `GlobalInterrupts`
 
 ```rust
 pub fn enable(&mut self){ /* fields omitted */}

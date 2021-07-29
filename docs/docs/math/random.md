@@ -27,7 +27,7 @@ It would be something like this -
 while (have less than 8 bits stored)  
     store the least significant bit of analogRead()  
     wait for an arbitrary amount of time
-```    
+```
 
 ![at 4 microseconds](https://gist.githubusercontent.com/bloc97/b5831977ccfeae3aa71976686c9c8afa/raw/06dabbf93c6d0bf2920718b5934a6b2175187e88/4us.png)
 ![at 16 microseconds](https://gist.githubusercontent.com/bloc97/b5831977ccfeae3aa71976686c9c8afa/raw/06dabbf93c6d0bf2920718b5934a6b2175187e88/16us.png)
@@ -38,23 +38,23 @@ while (have less than 8 bits stored)
 It is common knowledge that the level of entropy from using the analogRead() method on floating pins is very low, as they are only 210 possible values and their overall amplitude changes very slowly. So this naive method is flawed and a quick visual check reveals the periodicity of its output.
 
 
-## Our Method of Extraction ->
+## Our Method of Extraction
 
 We have created analog implementation in our code which will help us in generating random numbers.
 First we will define some processes ->
-1) - Bitwise XOR (abbreviated as XOR from here on) - XOR of all the bits of u8 numbers.
+1)  Bitwise XOR (abbreviated as XOR from here on) - XOR of all the bits of u8 numbers.
 ```rust
 pub fn xor(a: u8, b: u8) -> u8 { /*code goes on */ }
 ```
-2) - Shifting - Will randomly shift bits of the u8 and take the XOR of all.
+2)  Shifting - Will randomly shift bits of the u8 and take the XOR of all.
 ```rust
 pub fn xor_shift(a: u8) -> u8 { /* code goes on */ }
 ```
-3) - Rotation - It is a seeding algorithm which read numbers 8 times from analofRead() which are XORed regularly. It starts our random number generation algorithm.
+3)  Rotation - It is a seeding algorithm which read numbers 8 times from analofRead() which are XORed regularly. It starts our random number generation algorithm.
 ```rust
 pub unsafe fn xor_rotate() -> u8 { /* code goes on */ }
 ```
-4) - Push - These would be used to push the bits into a u8 according to direction bias.
+4)  Push - These would be used to push the bits into a u8 according to direction bias.
 ```rust
 pub fn push_right(val: u8, change: u8) -> u8 { /* code goes on */ }
 pub fn push_left(val: u8, change: u8) -> u8 { /* code goes on */ }
@@ -71,7 +71,7 @@ pub struct RandomNumberGenerator {
 impl RandomNumberGenerator { /* Various functions provided */ }
 ```
 
-#### METHOD 1 (USING ANALOG READ) ->
+### METHOD 1:  *(USING ANALOG READ)* 
 We define a **Von Neumann extractor** as a transformation that maps a non-uniform bitstream into a uniform bitstream by presuming that rising edges (01) are as probable as falling edges (10) and that there is no correlation between successive bits. Such a transformation can help us get rid of the low frequency periodic components of the previous method however it is slow.
 We define a **Direct Sampling** as a transformation that maps a bitstream to another bitstream according to a defined XORing pattern where we create 2 rotate numbers and one of them is shifted then XORed with the other to give a result.Though it is quite fast but the results of this could be predicted for a particular environment after observing the results carefully.
 
@@ -84,10 +84,10 @@ At the end Von Neumann Extractor algorithm is used on the already created and sh
 pub fn generate_by_analog(&mut self) -> u8 { /* code goes on */ }
 ```
 
-*Note: An interesting property of this method is the ability for the user to choose the sample rate. A slower sample rate will yield a better random result (due to internal interference having less impact on the randomness of analogRead()) while a faster sample rate guarantees a quick response. This will generate 8 random bits within a reasonable amount of time.*
+>  **Note:** *An interesting property of this method is the ability for the user to choose the sample rate. A slower sample rate will yield a better random result (due to internal interference having less impact on the randomness of analogRead()) while a faster sample rate guarantees a quick response. This will generate 8 random bits within a reasonable amount of time.*
 
 
-#### METHOD 2 (USING MPU6050 GYROSCOPIC SENSOR) ->
+### METHOD 2:  *(USING MPU6050 GYROSCOPIC SENSOR)*
 The MPU6050 is a multipurpose Accelerometer and Gyroscope sensor module for the Arduino, it can read raw acceleration from 3 axis and raw turn rate from 3 orientations. Its acceleration sensor's noise level far surpasses its resolution, with at least 4 bits of recorded entropy.
 We can achieve 8 bits of randomness using 4 bits that are not necessarily the same magnitude from each axis. We are supposing that the upper 2 bits are not always reliable, so we will XOR each axis' higher 2 bits with another axis' lower 2 bits, and vice-versa.
 

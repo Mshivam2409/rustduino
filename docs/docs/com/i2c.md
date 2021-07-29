@@ -8,7 +8,7 @@ The I2C protocol also known as the two wire interface is a simple serial communi
 
 There are a number of conditions that can be made over the I2C bus such as start and stop sequence. The data line does not change when the clock line is HIGH. If the data line changes when the clock line is High, the slave device interprets it as a command and not as data. This is the only feature in the interface that puts a distinct line between the command and data.
 
-# Struct definition
+## Struct definition
 
 ```rust
 pub struct Twi{/*files omitted*/}
@@ -62,7 +62,7 @@ i2c::read_sda() // to set the data direction to read.
 
 ## Trait implementation
 
-## Impl `new` for `Twi`
+### Impl `new` for `Twi`
 
 ```rust
 pub fn new() -> &'static mut Self
