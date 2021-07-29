@@ -4,6 +4,10 @@ slug: /temp_sensor
 title: Reading Values from a Temperature Sensor.
 ---
 
+*Oh it's July !!!*
+
+---
+
 To get temperature and humidity reading from the sensor, our code will perform the following opertions.
 
 * Triggers the slave.

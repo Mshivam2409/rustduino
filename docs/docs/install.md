@@ -1,10 +1,8 @@
 ---
 id: install
 slug: /install
-title: Install
+title: Application Setup
 ---
-
-## Application Setup
 
 *Get your tools*
 

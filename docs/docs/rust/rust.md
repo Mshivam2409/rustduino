@@ -14,8 +14,8 @@ The biggest difference between Rust and other programming languages like C/C++ i
 High-level ergonomics and low-level control (such as memory usage) are often at odds in programming language design; Rust challenges that conflict.
 
 Rust's ownership and type-system enforce safety at compile time.
-In other words, Rust's compiler doesn't allow us to make subtle mistakes when writing code, especially related to memory management and races.
-Initially, it might feel daunting but in the long run, the strict checking at compile time helps us write code more confidently and faster without worrying about bugs related to memory access; which are notorious in languages like C/C++ and cause of many security vulnerabilities.
+In other words, Rust's compiler doesn't allow us to make subtle mistakes when writing code, especially related to memory management and data races.
+Initially, it might feel daunting but in the long run, the strict checking at compile time helps us write code more confidently and faster without worrying about bugs related to memory access; which are notorious in languages like C/C++ and cause of many security vulnerabilities which we don't wan't especially for a vulnerable microcontroller chip.
 
 Rust has been voted the most loved programming language in the [Stackoverflow Developer Survey](https://insights.stackoverflow.com/survey/2020) every year since 2016.
 

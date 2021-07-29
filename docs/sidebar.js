@@ -19,7 +19,12 @@ module.exports = {
     {
       type: 'category',
       label: 'Rust',
-      items: ['rust/rust', 'rust/why-rust', 'rust/unsafe']
+      items: [
+        'rust/index',
+        'rust/rust', 
+        'rust/why-rust', 
+        'rust/unsafe'
+      ]
     },
     {
       type: 'category',
@@ -40,27 +45,34 @@ module.exports = {
       type: 'category',
       label: 'Core Concepts',
       items: [
-        'core/watchdog',
-        'core/interrupts', 
-        'core/power', 
-        'core/port',  
-        'core/sleep_mode'
+        'core/index_core',
+        'core/interrupts',
+        'core/watchdog',    
+        'core/sleep_mode',
+        'core/power',
+        'core/port',
+        'core/shift'
       ]
     },
     {
       type:'category',
       label:'Communication',
-      items:['com/i2c', 'com/usart']
+      items:['com/index','com/i2c', 'com/usart']
     },
     {
       type: 'category',
-      label: 'I/O',
-      items: ['analog/analog', 'analog/digital','analog/shift']
+      label: 'I/O Features',
+      items: ['analog/index','analog/analog', 'analog/digital']
     },
     {
       type: 'category',
       label: 'Sensors',
-      items: ['sensors/aht10','sensors/mpu6050','sensors/display']
+      items: [
+        'sensors/index',
+        'sensors/aht10',
+        'sensors/mpu6050',
+        'sensors/display'
+      ]
     },
     {
       type: 'category',
@@ -71,11 +83,13 @@ module.exports = {
       type: 'category',
       label: 'Guides',
       items: [
+        'guides/index',
         'guides/blink',
         'guides/print',
         'guides/writing_string',
         'guides/analog_io',
 	      'guides/temp_sensor',
+        'guides/position',
         'guides/generate_analog',
         'guides/generate_mpu'
       ]

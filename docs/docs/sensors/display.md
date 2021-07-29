@@ -4,6 +4,10 @@ slug: /display
 title: 7 Segment Display
 ---
 
+*Okay see what we have inside*
+
+---
+
 Seven Segment display is how we see the numbers in modern day electronics. Digits are displayed with the help of 7 bars out of which 4 are vertical and 3 are horizaontal. Decimal point can also be displayed with this display by turning it on/off. 7 Segment display is used as it is easy to operate upon. We can display digits from 0 to 9, decimal point and alphabets from A to F too.
 
 ## Code implementation

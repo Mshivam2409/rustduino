@@ -4,6 +4,10 @@ slug: /aht10
 title: AHT10 Sensor
 ---
 
+*Oh it also sweats*
+
+---
+
 AHT10, the new generation of temperature and humidity sensors sets a new standard in size and intelligence: it is embedded for reflow soldering. This sensor gives a calibrated digital signal outputs in standard I2C format. The AHT10 is equipped with a newly designed ASIC-specific chip, an improved MEMS semiconductor capacitive humidity sensing element and a standard on-chip temperature sensing element. Its performance has been greatly improved beyond the reliability level of previous generation sensors.
 More about the sensor and its functions can be found out at [Aosong AHT 10 Datasheet](https://server4.eca.ir/eshop/AHT10/Aosong_AHT10_en_draft_0c.pdf).
 
