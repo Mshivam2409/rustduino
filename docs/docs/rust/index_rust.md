@@ -1,6 +1,6 @@
 ---
-id: index
-slug: /index
+id: index_rust
+slug: /index_rust
 title: Rust Explanation
 ---
 

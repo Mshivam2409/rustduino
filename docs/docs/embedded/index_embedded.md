@@ -1,5 +1,5 @@
 ---
-id: index
+id: index_embedded
 slug: /embedded
 title: Introduction
 ---

@@ -1,6 +1,6 @@
 ---
 id: index
-slug: /index
+slug: /examples
 title: Sample Code Snippets
 ---
 

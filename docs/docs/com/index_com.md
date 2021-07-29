@@ -1,6 +1,6 @@
 ---
-id: index
-slug: /index
+id: index_com
+slug: /index_com
 title: Communication Control Library
 ---
 

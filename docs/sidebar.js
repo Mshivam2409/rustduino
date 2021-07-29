@@ -20,7 +20,7 @@ module.exports = {
       type: 'category',
       label: 'Rust',
       items: [
-        'rust/index',
+        'rust/index_rust',
         'rust/rust', 
         'rust/why-rust', 
         'rust/unsafe'
@@ -30,7 +30,7 @@ module.exports = {
       type: 'category',
       label: 'Embedded',
       items: [
-        'embedded/index',
+        'embedded/index_embedded',
         'embedded/registers',
         'embedded/memory-mapped-io',
         'embedded/data-protocols'
@@ -57,7 +57,7 @@ module.exports = {
     {
       type:'category',
       label:'Communication',
-      items:['com/index','com/i2c', 'com/usart']
+      items:['com/index_com','com/i2c', 'com/usart']
     },
     {
       type: 'category',
