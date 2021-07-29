@@ -606,17 +606,21 @@ impl Analog {
 
     /// Set the appropriate power mode for ADC.
     pub fn power_adc_enable(&mut self) {
-        unsafe {
+        {
             let pow = Power::new();
-            write_volatile(&mut pow.prr0, pow.prr0 | (1));
+            self.prr0.update(|aden| {
+                aden.set_bit(0, true);
+            });
         }
     }
 
     /// Reset the power mode after the ADC implementation.
     pub fn power_adc_disable(&mut self) {
-        unsafe {
+        {
             let pow = Power::new();
-            write_volatile(&mut pow.prr0, pow.prr0 & (254));
+            self.prr0.update(|aden| {
+                aden.set_bit(0, false);
+            });
         }
     }
 
