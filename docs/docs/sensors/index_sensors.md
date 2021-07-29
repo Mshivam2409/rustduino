@@ -1,5 +1,5 @@
 ---
-id: index
+id: index_sensors
 slug: /sensors
 title: Sensors
 ---

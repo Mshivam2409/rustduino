@@ -68,7 +68,7 @@ module.exports = {
       type: 'category',
       label: 'Sensors',
       items: [
-        'sensors/index',
+        'sensors/index_sensors',
         'sensors/aht10',
         'sensors/mpu6050',
         'sensors/display'
@@ -83,7 +83,7 @@ module.exports = {
       type: 'category',
       label: 'Guides',
       items: [
-        'guides/index',
+        'guides/index_guide',
         'guides/blink',
         'guides/print',
         'guides/writing_string',

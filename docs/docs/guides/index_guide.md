@@ -1,5 +1,5 @@
 ---
-id: index
+id: index_guide
 slug: /examples
 title: Sample Code Snippets
 ---
