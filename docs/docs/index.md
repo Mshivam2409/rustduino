@@ -30,5 +30,5 @@ We would try to cover as many library features as possible but the very fact of 
 - [I don't know how to start?](install.md)
 - [What is rust?](rust/rust.md)
 - [What is arduino?](arduino/index.md)
-- [I know programming but what is embedded?](embedded/index.md)
+- [I know programming but what is embedded?](embedded/index_embedded.md)
 - [Yeah I know the basics start straight-away](core/index_core.md)

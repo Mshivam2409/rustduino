@@ -27,45 +27,56 @@ register block.
 
 ## Struct Definitions
 
-## Port
+### Port
 
 ```rust
-  pub struct Port {/*feilds ommited*/}
+  pub struct Port {/*fields ommited*/}
 ```
 
 Port represents a struct containing the register definition for a Port namely:
 
-- `pin`: _Port input pins_. Writing a logic one to PINxn toggles the value of PORTxn, independent on the value of DDRxn.
+- `pin` : _Port input pins_. Writing a logic one to PINxn toggles the value of PORTxn, independent on the value of DDRxn.
 
-- `ddr`: _Data direction register_. The DDxn bit in the DDRx register selects the direction of this pin. If DDxn is written logic one, Pxn is configured as an output pin. If DDxn is written logic zero, Pxn is configured as an input pin.
+- `ddr` : _Data direction register_. The DDxn bit in the DDRx register selects the direction of this pin. If DDxn is written logic one, Pxn is configured as an output pin. If DDxn is written logic zero, Pxn is configured as an input pin.
 
 - `port`: _Data register_. If PORTxn is written logic one when the pin is configured as an input pin, the pull-up resistor is activated. To switch the pull-up resistor off, PORTxn has to be written logic zero or the pin has to be configured as an output pin. The port pins are tri-stated when reset condition becomes active, even if no clocks are running. If PORTxn is written logic one when the pin is configured as an output pin, the port pin is driven high (one). If PORTxn is written logic zero when the pin is configured as an output pin, the port pin is driven low (zero).
 
 More about these registers can be found in Section 13.2.1 and 13.2.2 of ATmega328P datasheet and Section 13.2 to 13.4 of ATMEGA2560P datasheet.
 
-## Pin
+### Pin
 
 ```rust
-  pub struct Pin {/*feilds ommited*/}
+  pub struct Pin {/*fields omitted*/}
 ```
 
 Pin represents struct corresponding to a pin namely:
 
 - `port` : pointer of type struct Port
-- `pin` : Pin number of type usize
+- `pin`  : Pin number of type usize
+
+### Pins
+
+```rust
+  pub struct Pins { /*fields omitted */}
+```
+
+All pins inside a single struct:
+
+- `analog`  : controls the analog pins of the chip.
+- `digital` : controls the digital pins of the chip.
 
 ## Enums
 
-## PortName
+### PortName
 
 ```rust
-  pub enum Portname {/*feilds ommited*/}
+  pub enum Portname {/*fields ommited*/}
 ```
 
 Lists all ports available on the chip.
 
-- Ports _A to D **_except A_** _are available on atmega328p_.
-- Ports _A to L **_except I_** _are available on atmega2560p_.
+- Ports _A to D **except A**_ are available on atmega328p.
+- Ports _A to L **except I**_ are available on atmega2560p_.
 
 ## Trait Implementations
 
