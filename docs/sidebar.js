@@ -51,7 +51,6 @@ module.exports = {
         'core/sleep_mode',
         'core/power',
         'core/port',
-        'core/shift'
       ]
     },
     {
@@ -76,6 +75,14 @@ module.exports = {
     },
     {
       type: 'category',
+      label: 'AVR Tools',
+      items: [
+        'tools/shift',
+        'tools/display'
+      ]
+    },
+    {
+      type: 'category',
       label: 'Math Library',
       items: ['math/index_math','math/map','math/random']
     },
@@ -88,7 +95,7 @@ module.exports = {
         'guides/print',
         'guides/writing_string',
         'guides/analog_io',
-	      'guides/temp_sensor',
+	'guides/temp_sensor',
         'guides/motion',
         'guides/generate_analog',
         'guides/generate_mpu'
