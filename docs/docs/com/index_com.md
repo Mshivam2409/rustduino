@@ -4,7 +4,7 @@ slug: /index_com
 title: Communication Control Library
 ---
 
-*Okay we need to talk*
+_Okay we need to talk_
 
 ---
 

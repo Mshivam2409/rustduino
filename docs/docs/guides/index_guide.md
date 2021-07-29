@@ -4,7 +4,7 @@ slug: /examples
 title: Sample Code Snippets
 ---
 
-*Let us see how it looks like*
+_Let us see how it looks like_
 
 ---
 

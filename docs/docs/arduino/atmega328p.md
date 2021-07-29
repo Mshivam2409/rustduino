@@ -4,7 +4,7 @@ slug: /atmega328p
 title: AtMega328P
 ---
 
-*Our First Chip*
+_Our First Chip_
 
 ----
 
@@ -29,12 +29,12 @@ the Arduino Uno, but in a different package
 ## Compiling and Linking
 
 ```bash
-$ cargo +nightly build -Z build-std=core --release --target avr-atmega328p.json
-$ cargo +nightly build --release
+cargo +nightly build -Z build-std=core --release --target avr-atmega328p.json
+cargo +nightly build --release
 ```
 
 Then, to upload it to a device, assuming that you have avrdude installed, run:
 
 ```bash
-$ avrdude -v -patmega328p -carduino -P/dev/ttyACM0 -b115200 -D -Uflash:w:target/avr-atmega328p/release/examples/serial.elf:e
+avrdude -v -patmega328p -carduino -P/dev/ttyACM0 -b115200 -D -Uflash:w:target/avr-atmega328p/release/examples/serial.elf:e
 ```

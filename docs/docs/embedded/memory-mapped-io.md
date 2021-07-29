@@ -20,7 +20,7 @@ allotted to them :
 In first case it is simple because both have different set of address space and
 instruction but require more buses.
 
-### Isolated I/O –
+## Isolated I/O –
 ----
 
 Then we have Isolated I/O in which we have a common bus(data and address) for

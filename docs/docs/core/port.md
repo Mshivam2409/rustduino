@@ -4,7 +4,7 @@ slug: /port
 title: Ports and Pins
 ---
 
-*Our Communicators*
+_Our Communicators_
 
 ---
 
@@ -64,8 +64,8 @@ Pin represents struct corresponding to a pin namely:
 
 Lists all ports available on the chip.
 
-- Ports _A to D ***except A***_ are available on atmega328p.
-- Ports _A to L ***except I***_ are available on atmega2560p.
+- Ports _A to D **_except A_** _are available on atmega328p_.
+- Ports _A to L **_except I_** _are available on atmega2560p_.
 
 ## Trait Implementations
 

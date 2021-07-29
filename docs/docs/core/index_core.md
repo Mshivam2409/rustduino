@@ -4,7 +4,7 @@ slug: /index_core
 title: Hardware Abstraction Library
 ---
 
-*Okay so here we go*
+_Okay so here we go_
 
 ---
 
@@ -17,3 +17,4 @@ We have the following implementations in our **HAL (Hardware Abstraction Library
 - [Peripheral Power Control](power.md)
 - [Input-Output Ports](port.md)
 - [Shift Register Control](shift.md)
+

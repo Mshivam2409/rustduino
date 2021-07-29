@@ -41,7 +41,7 @@ Following contains the Usart as a Raw Pointer along with it's name.
 ```rust
    pub struct UsartObject {/* fields omitted */ }
 ```
-*Various implementation functions for the USART protocol*
+_Various implementation functions for the USART protocol_
 
  ### Impl `disable` & `enable`for `UsartObject`
 

@@ -4,7 +4,7 @@ slug: /power
 title: Power Modes Fine Adjustments
 ---
 
-*Let's adjust the star rating*
+_Let's adjust the star rating_
 
 ---
 
@@ -16,19 +16,19 @@ We can adjust specific settings in the power consumption of the AVR chip without
    pub enum Peripherals {/*fields omitted */}  
 ```
 The `Peripherals` correspond to real world as shown -
-* `TWI`    :  *Power Reduction TWI*
-* `ADC`    :  *Power Reduction ADC*
-* `SPI`    :  *Power Reduction Serial Peripheral Interface*
-* `TIMER2` :  *Power Reduction Timer/Counter2*
-* `TIMER0` :  *Power Reduction Timer/Counter0*
-* `TIMER1` :  *Power Reduction Timer/Counter1*
-* `TIMER3` :  *Power Reduction Timer/Counter3*
-* `TIMER4` :  *Power Reduction Timer/Counter4*
-* `TIMER5` :  *Power Reduction Timer/Counter5*
-* `USART0` :  *Power Reduction USART0*
-* `USART3` :  *Power Reduction USART3*
-* `USART2` :  *Power Reduction USART2*
-* `USART1` :  *Power Reduction USART1*
+- `TWI`    :  _Power Reduction TWI_
+- `ADC`    :  _Power Reduction ADC_
+- `SPI`    :  _Power Reduction Serial Peripheral Interface_
+- `TIMER2` :  _Power Reduction Timer/Counter2_
+- `TIMER0` :  _Power Reduction Timer/Counter0_
+- `TIMER1` :  _Power Reduction Timer/Counter1_
+- `TIMER3` :  _Power Reduction Timer/Counter3_
+- `TIMER4` :  _Power Reduction Timer/Counter4_
+- `TIMER5` :  _Power Reduction Timer/Counter5_
+- `USART0` :  _Power Reduction USART0_
+- `USART3` :  _Power Reduction USART3_
+- `USART2` :  _Power Reduction USART2_
+- `USART1` :  _Power Reduction USART1_
 
 **Note that USART1,USART2,USART3,TIMER3,TIMER4 and TIMER5 are not applicable for ATMEGA328P**
 
@@ -42,7 +42,7 @@ Contains registers to control the functioning of clocks in the chip.
 It would be used to control the power modes of the chip as mentioned
 in the enum `Peripherals` above.
 
-* `PRR` – Power Reduction Register contains control bits for power control through clock gating.
+- `PRR` – Power Reduction Register contains control bits for power control through clock gating.
 
 ### Trait Implementations
 

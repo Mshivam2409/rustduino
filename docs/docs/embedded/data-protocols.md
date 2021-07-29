@@ -13,10 +13,10 @@ within hardware as well as software. So communications protocols are available
 around thousand types which are used all over in analog & digital
 communications.
 
-- **Protocol: ** A set of rules and regulations is called a protocol.
-- **Communication: ** Exchange of information from one system to another system
+- **Protocol:** A set of rules and regulations is called a protocol.
+- **Communication:** Exchange of information from one system to another system
   with a medium is called communication.
-- **Communication Protocol: ** A set of rules and regulations that allow two
+- **Communication Protocol:** A set of rules and regulations that allow two
   electronic devices to connect to exchange the data with one and another.
 
 There are two types of communication protocols which are classified below:

@@ -4,7 +4,7 @@ slug: /sleep_mode
 title: Power Modes Global Adjustments
 ---
 
-*Let's it rest for sometime*
+_Let's it rest for sometime_
 
 ---
 

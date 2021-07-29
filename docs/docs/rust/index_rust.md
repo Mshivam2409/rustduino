@@ -4,7 +4,7 @@ slug: /index_rust
 title: Rust Explanation
 ---
 
-*Rust, something new !*
+_Rust, something new !_
 
 ---
 

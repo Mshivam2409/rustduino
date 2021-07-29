@@ -4,7 +4,7 @@ slug: /aht10
 title: AHT10 Sensor
 ---
 
-*Oh it also sweats*
+_Oh it also sweats_
 
 ---
 

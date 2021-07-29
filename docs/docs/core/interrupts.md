@@ -4,7 +4,7 @@ slug: /interrupts
 title: Interrupts
 ---
 
-*We have something important to fix !*
+_We have something important to fix !_
 
 ---
 

@@ -5,11 +5,11 @@ title: Continuous Write using USART
 ---
 
 To write string continuously using USART, our code will perform the following opertions.
- * Disable watchdog
- * Create a new Serial struct to access all USART's
- * initialize USART0 and makes it ready to transmit and recieve.
- * Loop to send a string using the USART multiple times.This sends string from arduino through TxD0 pin.
- * Disable USART0.
+ - Disable watchdog
+ - Create a new Serial struct to access all USART's
+ - initialize USART0 and makes it ready to transmit and recieve.
+ - Loop to send a string using the USART multiple times.This sends string from arduino through TxD0 pin.
+ - Disable USART0.
 
 
 ```rust
