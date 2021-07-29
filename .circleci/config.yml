@@ -10,13 +10,13 @@ jobs:
       - run:
           name: Install Toolchain
           command: |
-          rustup toolchain install nightly-2021-01-07
-          rustup override set nightly-2021-01-07
-          rustup +nightly-2021-01-07 component add rustfmt-preview
-          rustup +nightly-2021-01-07 component add rust-src
+            rustup toolchain install nightly-2021-01-07
+            rustup override set nightly-2021-01-07
+            rustup +nightly-2021-01-07 component add rustfmt-preview
+            rustup +nightly-2021-01-07 component add rust-src
       - run:
           name: Install AVR-GCC
-          command : |
+          command: |
             sudo apt update
             sudo apt install -y gcc-avr avr-libc binutils-avr avrdude
       - run:
@@ -27,4 +27,3 @@ jobs:
       - run:
           name: Test Examples
           command: bash test_examples.sh
-      
