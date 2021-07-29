@@ -180,7 +180,7 @@ pub fn set_dlpf_mode(&mut self, dlpf: MPUdlpfT)
 This configures the Digital Low Pass Filter (DLPF) setting for both the gyroscopes and accelerometers.
 The accelerometer and gyroscope are filtered according to the value of the enum MPUdlpfT as shown in the table below.
 
-<table style={{ width: "100%" }} >
+<table>
   <tbody>
     <tr>
       <th rowSpan={2}>MPUdlpfT::</th>
@@ -303,7 +303,7 @@ The high pass filter has three modes:
 - On: The high pass filter will pass signals above the cut off frequency.
 - Hold: When triggered, the filter holds the present sample. The filter output will be the difference between the input sample and the held sample.
 
-<table style={{ width: "100%" }}>
+<table>
   <tbody>
     <tr>
       <th>MPUdhpfT::</th>
@@ -364,7 +364,7 @@ pub fn set_scale(&mut self, scale: MPUdpsT)
 
 Sets the full scale range of the gyroscope.
 
-<table style={{ width: "100%" }}>
+<table>
   <tbody>
     <tr>
       <th>MPUdpsT::</th>
@@ -429,7 +429,7 @@ Sets the range of the accelerometer.
 
 {" "}
 
-<table style="width:100%">
+<table>
   <tr>
     <th>MPURangeT::</th>
     <th>
@@ -492,7 +492,7 @@ Set clock source setting.<br/>
 An internal 8MHz oscillator, gyroscope based clock, or external sources can be selected as the MPU-60X0 clock source. When the internal 8 MHz oscillator or an external source is chosen as the clock source, the MPU-60X0 can operate in low power modes with the gyroscopes disabled.<br/>
 Upon power up, the MPU-60X0 clock source defaults to the internal oscillator.However, it is highly recommended that the device be configured to use one of the gyroscopes (or an external clock source) as the clock reference for improved stability. The clock source can be selected according to the following table:
 
-<table style={{ width: "100%" }} >
+<table>
   <tbody>
     <tr>
       <th>MPUClockSourceT::</th>
