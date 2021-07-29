@@ -23,7 +23,7 @@ Twi represents a struct containing registers for TWI namely:
 - `TWSR`: _TWI Status Register_.
 - `TWAMR`: _TWI Address Mask_.
 
-More about there registers and their functions can be found out at Section 21.9 of ATmega328P datasheet.
+More about there registers and their functions can be found out at [Section 21.9 of ATmega328P datasheet](https://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-7810-Automotive-Microcontrollers-ATmega328P_Datasheet.pdf).
 
 #### Usage:
 

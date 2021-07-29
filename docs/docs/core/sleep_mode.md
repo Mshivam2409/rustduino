@@ -31,7 +31,7 @@ Contains the following Power Modes:
 
 Struct containing registers to control sleep modes namely :
 
-- `SMCR` : The sleep mode control register contains control bits for power management. More about this register and sleep modes can be found out at Section 9.11 of ATmega328p Datasheet.
+- `SMCR` : The sleep mode control register contains control bits for power management. More about this register and sleep modes can be found out at [Section 9.11 of ATmega328p Datasheet](https://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-7810-Automotive-Microcontrollers-ATmega328P_Datasheet.pdf) or [Section 11.10.1 of ATmega2560p Datasheet](https://ww1.microchip.com/downloads/en/devicedoc/atmel-2549-8-bit-avr-microcontroller-atmega640-1280-1281-2560-2561_datasheet.pdf).
 
 ### Trait Implementations
 

@@ -44,7 +44,7 @@ timer. These include:
   |        System reset mode        |                  Reset                  |
   | Interrupt and system reset mode | Interrupt, then go to system reset mode |
 
-More about these registers and Watchdog timer can be found at Section 10.9 of ATmega328P datasheet.
+More about these registers and Watchdog timer can be found at [Section 10.9 of ATmega328P datasheet](https://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-7810-Automotive-Microcontrollers-ATmega328P_Datasheet.pdf) or [Section 12.5 and 28.6 of ATmega2560p Datasheet](https://ww1.microchip.com/downloads/en/devicedoc/atmel-2549-8-bit-avr-microcontroller-atmega640-1280-1281-2560-2561_datasheet.pdf)
 
 ## Trait Implementations
 
