@@ -4,7 +4,7 @@
 
 use rustduino::hal::watchdog::WatchDog;
 /// Source codes required.
-use rustduino::math::RandomNumberGenerator;
+use rustduino::math::{Generator, RandomNumberGenerator};
 
 #[no_mangle]
 pub fn main() {
@@ -12,16 +12,12 @@ pub fn main() {
     let wdog = unsafe { WatchDog::new() };
     wdog.disable();
 
-    let mut rand = RandomNumberGenerator::new();
+    let mut rand = RandomNumberGenerator::new(Generator::Analog);
 
     loop {
         // Generate Random numbers using Analog pin inputs.
         // This number could be sent to peripheral device using USART.
         let _x: u8 = rand.generate_by_analog();
-
-        // Generate Random numbers by MPU6050 gyroscopic sensor.
-        // This number could be sent to peripheral device using USART.
-        let _y: u8 = rand.generate_by_mpu();
     }
 }
 

@@ -91,7 +91,7 @@ impl<'a> AHT10<'a> {
         self.vec.push(AHT10_SOFT_RESET_CMD);
 
         if !self.i2c.write_to_slave(self.address, &self.vec) {
-            delay_ms(20);
+            unreachable!()
         }
     }
 
