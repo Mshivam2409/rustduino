@@ -33,12 +33,11 @@ license="AGPL-3.0-only"
 [features]
 com = []
 sensors=["com"]
-avr=[]
 math=[]
 atmega328p=[]
 atmega2560p=[]
 random = ["math","sensors","com"]
-# default=["atmega328p","com","sensors","avr","math"]
+# default=["atmega2560p","com","sensors","math","random"]
 
 [dependencies]
 const_env--value = "0.1"
