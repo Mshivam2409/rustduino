@@ -59,11 +59,6 @@ module.exports = {
     },
     {
       type: 'category',
-      label: 'AVR Tools',
-      items: ['avr/shift','avr/display']
-    },
-    {
-      type: 'category',
       label: 'Sensors',
       items: ['sensors/aht10','sensors/mpu6050','sensors/display']
     },
