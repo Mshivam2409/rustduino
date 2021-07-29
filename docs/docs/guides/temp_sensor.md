@@ -12,7 +12,7 @@ To get temperature and humidity reading from the sensor, our code will perform t
 * Reads 20 bit raw humidity data and returns relative humidity.
 * Same are the steps for Tempereature reading too.
 
-> Note: *I2C Protocol is used for communication between master and slave.*
+> **Note:** *I2C Protocol is used for communication between master and slave.*
 
 All these steps are implemented in just few lines of driver code.
 

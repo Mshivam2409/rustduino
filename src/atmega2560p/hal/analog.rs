@@ -73,6 +73,11 @@ pub struct Analog {
     didr0: Volatile<u8>,
     didr1: Volatile<u8>,
 }
+///Structure to control power settings for the timer/counter
+pub struct Power {
+    prr0: Volatile<u8>,
+    prr1: Volatile<u8>,
+}
 
 /// Structure to control the timer of type 8 for Analog Write.
 #[repr(C, packed)]
@@ -114,6 +119,17 @@ impl Timer8 {
             TimerNo8::Timer0 => unsafe { &mut *(0x44 as *mut Timer8) },
             TimerNo8::Timer2 => unsafe { &mut *(0xB0 as *mut Timer8) },
         }
+    }
+}
+
+impl Power {
+    /// Create a memory mapped IO for Power type which will assist in enabling timer/counter.
+    /// # Arguments
+    /// * no parameters reqauired!
+    /// # Returns
+    /// * `a reference to Power object` - which will be used for further implementations.
+    pub unsafe fn new() -> Power {
+        &mut *(0x64 as *mut Timer8)
     }
 }
 
@@ -384,6 +400,10 @@ impl DigitalPin {
 
         match pin1 {
             4 | 13 => {
+                let pow = Power::new();
+                pow.prr0.update(|ctrl| {
+                    ctrl.set_bit(5, false);
+                });
                 let timer = Timer8::new(TimerNo8::Timer0);
                 timer.tccra.update(|ctrl| {
                     ctrl.set_bits(0..2, 0b11);
@@ -405,6 +425,11 @@ impl DigitalPin {
                 }
             }
             9 | 10 => {
+                let pow = Power::new();
+                pow.prr0.update(|ctrl| {
+                    ctrl.set_bit(6, false);
+                });
+
                 let timer = Timer8::new(TimerNo8::Timer2);
                 timer.tccra.update(|ctrl| {
                     ctrl.set_bits(0..2, 0b11);
@@ -425,6 +450,10 @@ impl DigitalPin {
                 }
             }
             11 | 12 => {
+                let pow = Power::new();
+                pow.prr0.update(|ctrl| {
+                    ctrl.set_bit(3, false);
+                });
                 let timer = Timer16::new(TimerNo16::Timer1);
                 timer.tccra.update(|ctrl| {
                     ctrl.set_bits(0..2, 0b01);
@@ -445,6 +474,10 @@ impl DigitalPin {
                 }
             }
             2 | 3 | 5 => {
+                let pow = Power::new();
+                pow.prr1.update(|ctrl| {
+                    ctrl.set_bit(3, false);
+                });
                 let timer = Timer16::new(TimerNo16::Timer3);
                 timer.tccra.update(|ctrl| {
                     ctrl.set_bits(0..2, 0b01);
@@ -472,6 +505,10 @@ impl DigitalPin {
             }
             6 | 7 | 8 => {
                 let timer = Timer16::new(TimerNo16::Timer4);
+                let pow = Power::new();
+                pow.prr1.update(|ctrl| {
+                    ctrl.set_bit(4, false);
+                });
                 timer.tccra.update(|ctrl| {
                     ctrl.set_bits(0..2, 0b01);
                 });
@@ -497,6 +534,10 @@ impl DigitalPin {
                 }
             }
             44 | 45 | 46 => {
+                let pow = Power::new();
+                pow.prr1.update(|ctrl| {
+                    ctrl.set_bit(5, false);
+                });
                 let timer = Timer16::new(TimerNo16::Timer5);
                 timer.tccra.update(|ctrl| {
                     ctrl.set_bits(0..2, 0b01);
@@ -565,17 +606,21 @@ impl Analog {
 
     /// Set the appropriate power mode for ADC.
     pub fn power_adc_enable(&mut self) {
-        unsafe {
+        {
             let pow = Power::new();
-            write_volatile(&mut pow.prr0, pow.prr0 | (1));
+            self.prr0.update(|aden| {
+                aden.set_bit(0, true);
+            });
         }
     }
 
     /// Reset the power mode after the ADC implementation.
     pub fn power_adc_disable(&mut self) {
-        unsafe {
+        {
             let pow = Power::new();
-            write_volatile(&mut pow.prr0, pow.prr0 & (254));
+            self.prr0.update(|aden| {
+                aden.set_bit(0, false);
+            });
         }
     }
 

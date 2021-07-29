@@ -22,7 +22,6 @@
 
 // Crates to be used for the implementation.
 use bit_field::BitField;
-use core::ptr::write_volatile;
 use volatile::Volatile;
 
 use crate::atmega328p::hal::pin::{AnalogPin, DigitalPin};
@@ -100,6 +99,23 @@ pub struct Timer16 {
     _ocrbh: Volatile<u8>,
 }
 
+/// Structure to control power settings for the timer/counter
+#[repr(C, packed)]
+pub struct Power {
+    prr: Volatile<u8>,
+}
+
+impl Power {
+    /// Create a memory mapped IO for Power type which will assist in enabling timer/counter.
+    /// # Arguments
+    /// * no parameters reqauired!
+    /// # Returns
+    /// * `a reference to Power object` - which will be used for further implementations.
+    pub unsafe fn new() -> Power {
+        &mut *(0x64 as *mut Timer8)
+    }
+}
+
 // Structure to control the timer of type 8 for Analog Write.
 impl Timer8 {
     /// Create a memory mapped IO for timer 8 type which will assist in analog write.
@@ -163,7 +179,7 @@ impl AnalogPin {
 
             analog.adc_auto_trig();
 
-            analog.analog_reference(RefType::DEFAULT);
+            analog.analog_prescaler(2);
 
             match pin {
                 0 => {
@@ -359,29 +375,6 @@ impl Analog {
         &mut *(0x78 as *mut Analog)
     }
 
-    /// Function to create a reference for Analog signals.
-    /// # Arguments
-    /// * `reftype` - a `RefType` object, the type of reference setup required for the analog pins.
-    pub fn analog_reference(&mut self, reftype: RefType) {
-        match reftype {
-            RefType::DEFAULT => {
-                self.admux.update(|admux| {
-                    admux.set_bits(6..8, 0b01);
-                });
-            }
-            RefType::INTERNAL1V1 => {
-                self.admux.update(|admux| {
-                    admux.set_bits(6..8, 0b10);
-                });
-            }
-            RefType::EXTERNAL => {
-                self.admux.update(|admux| {
-                    admux.set_bits(6..8, 0b00);
-                });
-            }
-        }
-    }
-
     /// Used to enable the Analog to Digital Converter.
     pub fn adc_enable(&mut self) {
         self.adcsra.update(|aden| {
@@ -391,17 +384,21 @@ impl Analog {
 
     /// Function to enable power after using ADC.
     pub fn power_adc_enable(&mut self) {
-        unsafe {
-            let pow = Sleep::new();
-            write_volatile(&mut pow.smcr, pow.smcr | (1));
+        {
+            let pow = Power::new();
+            self.prr.update(|aden| {
+                aden.set_bit(0, true);
+            });
         }
     }
 
     /// Function to disable power after using ADC.
     pub fn power_adc_disable(&mut self) {
-        unsafe {
-            let pow = Sleep::new();
-            write_volatile(&mut pow.smcr, pow.smcr & (254));
+        {
+            let pow = Power::new();
+            self.prr.update(|aden| {
+                aden.set_bit(0, false);
+            });
         }
     }
 
@@ -424,5 +421,72 @@ impl Analog {
         self.adcsra.update(|aden| {
             aden.set_bit(7, false);
         });
+    }
+
+    /// Set prescaler for the ADC.
+    /// # Arguments
+    /// * `factor` - a u8, the prescaler power frequency factor to be set.
+    pub fn analog_prescaler(&mut self, factor: u8) {
+        match factor {
+            2 => {
+                self.adcsra.update(|adcsra| {
+                    adcsra.set_bits(0..3, 0b000);
+                });
+            }
+            4 => {
+                self.adcsra.update(|adcsra| {
+                    adcsra.set_bits(0..3, 0b010);
+                });
+            }
+            8 => {
+                self.adcsra.update(|adcsra| {
+                    adcsra.set_bits(0..3, 0b011);
+                });
+            }
+            16 => {
+                self.adcsra.update(|adcsra| {
+                    adcsra.set_bits(0..3, 0b100);
+                });
+            }
+            32 => {
+                self.adcsra.update(|adcsra| {
+                    adcsra.set_bits(0..3, 0b101);
+                });
+            }
+            64 => {
+                self.adcsra.update(|adcsra| {
+                    adcsra.set_bits(0..3, 0b110);
+                });
+            }
+            128 => {
+                self.adcsra.update(|adcsra| {
+                    adcsra.set_bits(0..3, 0b111);
+                });
+            }
+            _ => unreachable!(),
+        }
+    }
+}
+
+/// Function to create a reference for Analog signals.
+/// # Arguments
+/// * `reftype` - a `RefType` object, the type of reference setup required for the analog pins.
+pub fn analog_reference(&mut self, reftype: RefType) {
+    match reftype {
+        RefType::DEFAULT => {
+            self.admux.update(|admux| {
+                admux.set_bits(6..8, 0b01);
+            });
+        }
+        RefType::INTERNAL1V1 => {
+            self.admux.update(|admux| {
+                admux.set_bits(6..8, 0b10);
+            });
+        }
+        RefType::EXTERNAL => {
+            self.admux.update(|admux| {
+                admux.set_bits(6..8, 0b00);
+            });
+        }
     }
 }
