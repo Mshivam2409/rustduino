@@ -6,7 +6,7 @@ title: MPU6050 Gyroscope
 
 MPU6050 sensor module is complete 6-axis Motion Tracking Device. It combines 3-axis Gyroscope, 3-axis Accelerometer and Digital Motion Processor all in small package. Also, it has additional feature of on-chip Temperature sensor. It has I2C bus interface to communicate with the microcontrollers.
 It has Auxiliary I2C bus to communicate with other sensor devices like 3-axis Magnetometer, Pressure sensor etc.
-If 3-axis Magnetometer is connected to auxiliary I2C bus, then MPU6050 can provide complete 9-axis Motion Fusion output.More about the sensor and its functions can be found out at <a href="https://invensense.tdk.com/wp-content/uploads/2015/02/MPU-6000-Datasheet1.pdf" target="_blank">MPU6050 Datasheet</a>.
+If 3-axis Magnetometer is connected to auxiliary I2C bus, then MPU6050 can provide complete 9-axis Motion Fusion output.More about the sensor and its functions can be found out at [MPU6050 Datasheet](https://invensense.tdk.com/wp-content/uploads/2015/02/MPU-6000-Datasheet1.pdf)
 
 ## 3-Axis Gyroscope
 
@@ -20,7 +20,7 @@ The MPU6050 consist 3-axis Accelerometer with Micro Electro Mechanical (MEMs) te
 The full-scale range of acceleration are +/- 2g, +/- 4g, +/- 8g, +/- 16g.
 It measured in g (gravity force) unit.
 
-### Calculations
+#### Calculations
 
 Gyroscope and accelerometer sensor data of MPU6050 module consists of 16-bit raw data in 2’s complement form.
 
@@ -46,7 +46,7 @@ Angular velocity along the Z axis = (Gyroscope Z axis raw data/131) °/s.
 
 <hr />
 
-# Enums definition
+## Enums definition
 
 ```rust
 pub enum MPUClockSource {
@@ -110,7 +110,7 @@ pub enum MPUdlpfT {
 }
 ```
 
-# Struct definition
+## Struct definition
 
 ```rust
 pub struct MPU6050 {/*fields omitted*/}
@@ -125,9 +125,9 @@ let mut sensor = mpu6050::MPU6050;
 
 <hr />
 
-# Trait implementation
+## Trait implementation
 
-## Impl `new` for `MPU6050`
+### Impl `new` for `MPU6050`
 
 ```rust
 pub fn new(&mut self) -> &'static mut Self
@@ -145,7 +145,7 @@ let mut sensor = MPU6050::new()
 // This sensor pointer is used further for different functions below.
 ```
 
-## Impl `readregister` for `MPU6050`
+### Impl `readregister` for `MPU6050`
 
 ```rust
 fn readregister(&mut self, reg: u8) -> u8
@@ -153,7 +153,7 @@ fn readregister(&mut self, reg: u8) -> u8
 
 Returns the 8 bit data stored in the register with address `reg` using the I2C module.
 
-## Impl `writeregister` for `MPU6050`
+### Impl `writeregister` for `MPU6050`
 
 ```rust
 fn writeregister(&mut self, reg: u8, value: u8)
@@ -161,7 +161,7 @@ fn writeregister(&mut self, reg: u8, value: u8)
 
 Writes the 8 bit `value` to register with address `reg` using the I2C module.
 
-## Impl `writeregister_bit` for `MPU6050`
+### Impl `writeregister_bit` for `MPU6050`
 
 ```rust
 fn writeregister_bit(&mut self, reg: u8, pos: u8, state: bool)
@@ -169,7 +169,7 @@ fn writeregister_bit(&mut self, reg: u8, pos: u8, state: bool)
 
 Writes the `state` to bit `pos` of the register with address `reg` using the I2C module.
 
-## Impl `set_dlpf_mode` for `MPU6050`
+### Impl `set_dlpf_mode` for `MPU6050`
 
 ```rust
 pub fn set_dlpf_mode(&mut self, dlpf: MPUdlpfT)
@@ -284,7 +284,7 @@ let mut sensor = mpu6050::new();
 sensor.set_dlpf_mode(MPUdlpf::MPU6050dlpf4);
 ```
 
-## Impl `set_dhpf_mode` for `MPU6050`
+### Impl `set_dhpf_mode` for `MPU6050`
 
 ```rust
 pub fn set_dhpf_mode(&mut self, dhpf: MPUdhpfT)
@@ -354,7 +354,7 @@ let mut sensor = mpu6050::new();
 sensor.set_dhpf_mode(MPUdhpfT::MPU6050dhpfReset);
 ```
 
-## Impl `set_scale` for `MPU6050`
+### Impl `set_scale` for `MPU6050`
 
 ```rust
 pub fn set_scale(&mut self, scale: MPUdpsT)
@@ -400,7 +400,7 @@ let mut sensor = mpu6050::new();
 sensor.set_scale(MPUdpsT::MPU6050dps500);
 ```
 
-## Impl `get_scale` for `MPU6050`
+### Impl `get_scale` for `MPU6050`
 
 ```rust
 pub fn get_scale(&mut self, scale: MPUdpsT) -> MPUdpsT
@@ -417,7 +417,7 @@ let mut sensor = mpu6050::new();
 let scale = sensor.get_scale();
 ```
 
-## Impl `set_range` for `MPU6050`
+### Impl `set_range` for `MPU6050`
 
 ```rust
 pub fn set_range(&mut self, range: MPURangeT)
@@ -463,7 +463,7 @@ let mut sensor = mpu6050::new();
 sensor.set_range(MPURangeT::MPU6050Range8G);
 ```
 
-## Impl `get_range` for `MPU6050`
+### Impl `get_range` for `MPU6050`
 
 ```rust
 pub fn get_range(&mut self) -> MPURangeT
@@ -480,7 +480,7 @@ let mut sensor = mpu6050::new();
 let range = sensor.get_range();
 ```
 
-## Impl `set_clock_source` for `MPU6050`
+### Impl `set_clock_source` for `MPU6050`
 
 ```rust
 pub fn set_clock_source(&mut self, source: MPUClockSourceT)
@@ -536,7 +536,7 @@ let mut sensor = mpu6050::new();
 sensor.set_clock_source(MPUClockSourceT::MPU6050ClockSourcePLLGyroZ);
 ```
 
-## Impl `get_clock_source` for `MPU6050`
+### Impl `get_clock_source` for `MPU6050`
 
 ```rust
 pub fn get_clock_source(&mut self) -> MPUClockSourceT
@@ -553,7 +553,7 @@ let mut sensor = mpu6050::new();
 let source = sensor.get_clock_source();
 ```
 
-## Impl `set_int_free_fall_enabled` for `MPU6050`
+### Impl `set_int_free_fall_enabled` for `MPU6050`
 
 ```rust
 pub fn set_int_free_fall_enabled(&mut self, state: bool)
@@ -570,7 +570,7 @@ let mut sensor = mpu6050::new();
 sensor.set_int_free_fall_enabled(true);
 ```
 
-## Impl `get_int_free_fall_enabled` for `MPU6050`
+### Impl `get_int_free_fall_enabled` for `MPU6050`
 
 ```rust
 pub fn get_int_free_fall_enabled(&mut self) -> bool
@@ -587,7 +587,7 @@ let mut sensor = mpu6050::new();
 let state = sensor.get_int_free_fall_enabled();
 ```
 
-## Impl `set_accel_power_on_delay` for `MPU6050`
+### Impl `set_accel_power_on_delay` for `MPU6050`
 
 ```rust
 pub fn set_accel_power_on_delay(&mut self, delay: MPUOnDelayT)
@@ -621,7 +621,7 @@ let mut sensor = mpu6050::new();
 let output = sensor.get_accel_power_on_delay();
 ```
 
-## Impl `set_motion_detection_threshold` for `MPU6050`
+### Impl `set_motion_detection_threshold` for `MPU6050`
 
 ```rust
 pub fn set_motion_detection_threshold(&mut self, threshold: u8)
@@ -638,7 +638,7 @@ let mut sensor = mpu6050::new();
 sensor.set_motion_detection_threshold(10);
 ```
 
-## Impl `get_motion_detection_threshold` for `MPU6050`
+### Impl `get_motion_detection_threshold` for `MPU6050`
 
 ```rust
 pub fn get_motion_detection_threshold(&mut self) -> u8
@@ -655,7 +655,7 @@ let mut sensor = mpu6050::new();
 let output = sensor.get_motion_detection_threshold();
 ```
 
-## Impl `set_motion_detection_duration` for `MPU6050`
+### Impl `set_motion_detection_duration` for `MPU6050`
 
 ```rust
 pub fn set_motion_detection_duration(&mut self, duration: u8)
@@ -672,7 +672,7 @@ let mut sensor = mpu6050::new();
 set_motion_detection_duration(10);
 ```
 
-## Impl `get_motion_detection_duration` for `MPU6050`
+### Impl `get_motion_detection_duration` for `MPU6050`
 
 ```rust
 pub fn get_motion_detection_duration(&mut self) -> u8
@@ -689,7 +689,7 @@ let mut sensor = mpu6050::new();
 let output = sensor.get_motion_detection_duration();
 ```
 
-## Impl `set_zero_motion_detection_threshold` for `MPU6050`
+### Impl `set_zero_motion_detection_threshold` for `MPU6050`
 
 ```rust
 pub fn set_zero_motion_detection_threshold(&mut self, threshold: u8)
@@ -706,7 +706,7 @@ let mut sensor = mpu6050::new();
 sensor.set_zero_motion_detection_threshold(10);
 ```
 
-## Impl `get_zero_motion_detection_threshold` for `MPU6050`
+### Impl `get_zero_motion_detection_threshold` for `MPU6050`
 
 ```rust
 pub fn get_zero_motion_detection_threshold(&mut self) -> u8
@@ -723,7 +723,7 @@ let mut sensor = mpu6050::new();
 let output = sensor.get_zero_motion_detection_threshold();
 ```
 
-## Impl `set_zero_motion_detection_duration` for `MPU6050`
+### Impl `set_zero_motion_detection_duration` for `MPU6050`
 
 ```rust
 pub fn set_zero_motion_detection_duration(&mut self, duration: u8)
@@ -740,7 +740,7 @@ let mut sensor = mpu6050::new();
 sensor.set_zero_motion_detection_duration(10);
 ```
 
-## Impl `get_zero_motion_detection_duration` for `MPU6050`
+### Impl `get_zero_motion_detection_duration` for `MPU6050`
 
 ```rust
 pub fn get_zero_motion_detection_duration(&mut self) -> u8
@@ -757,7 +757,7 @@ let mut sensor = mpu6050::new();
 let output = sensor.get_zero_motion_detection_duration();
 ```
 
-## Impl `set_free_fall_detection_threshold` for `MPU6050`
+### Impl `set_free_fall_detection_threshold` for `MPU6050`
 
 ```rust
 pub fn set_free_fall_detection_threshold(&mut self, threshold: u8)
@@ -774,7 +774,7 @@ let mut sensor = mpu6050::new();
 sensor.set_free_fall_detection_threshold(10);
 ```
 
-## Impl `get_free_fall_detection_threshold` for `MPU6050`
+### Impl `get_free_fall_detection_threshold` for `MPU6050`
 
 ```rust
 pub fn get_free_fall_detection_threshold(&mut self) -> u8
@@ -791,7 +791,7 @@ let mut sensor = mpu6050::new();
 let output = sensor.get_free_fall_detection_threshold();
 ```
 
-## Impl `set_free_fall_detection_duration` for `MPU6050`
+### Impl `set_free_fall_detection_duration` for `MPU6050`
 
 ```rust
 pub fn set_free_fall_detection_duration(&mut self, duration: u8)
@@ -808,7 +808,7 @@ let mut sensor = mpu6050::new();
 sensor.set_free_fall_detection_duration(10);
 ```
 
-## Impl `get_free_fall_detection_duration` for `MPU6050`
+### Impl `get_free_fall_detection_duration` for `MPU6050`
 
 ```rust
 pub fn get_free_fall_detection_duration(&mut self) -> u8
@@ -825,7 +825,7 @@ let mut sensor = mpu6050::new();
 let output = sensor.get_free_fall_detection_duration();
 ```
 
-## Impl `set_sleep_enabled` for `MPU6050`
+### Impl `set_sleep_enabled` for `MPU6050`
 
 ```rust
 pub fn set_sleep_enabled(&mut self, state: bool)
@@ -842,7 +842,7 @@ let mut sensor = mpu6050::new();
 sensor.set_sleep_enabled(true);
 ```
 
-## Impl `get_sleep_enabled` for `MPU6050`
+### Impl `get_sleep_enabled` for `MPU6050`
 
 ```rust
 pub fn get_sleep_enabled(&mut self) -> bool
@@ -859,7 +859,7 @@ let mut sensor = mpu6050::new();
 let state =sensor.get_sleep_enabled();
 ```
 
-## Impl `get_int_zero_motion_enabled` for `MPU6050`
+### Impl `get_int_zero_motion_enabled` for `MPU6050`
 
 ```rust
 pub fn get_int_zero_motion_enabled(&mut self) -> bool
@@ -876,7 +876,7 @@ let mut sensor = mpu6050::new();
 let state =sensor.get_int_zero_motion_enabled();
 ```
 
-## Impl `set_int_zero_motion_enabled` for `MPU6050`
+### Impl `set_int_zero_motion_enabled` for `MPU6050`
 
 ```rust
 pub fn set_int_zero_motion_enabled(&mut self, state: bool)
@@ -893,7 +893,7 @@ let mut sensor = mpu6050::new();
 sensor.set_int_zero_motion_enabled(true);
 ```
 
-## Impl `get_int_motion_enabled` for `MPU6050`
+### Impl `get_int_motion_enabled` for `MPU6050`
 
 ```rust
 pub fn get_int_motion_enabled(&mut self) -> bool
@@ -910,7 +910,7 @@ let mut sensor = mpu6050::new();
 let state =sensor.get_int_motion_enabled();
 ```
 
-## Impl `set_int_motion_enabled` for `MPU6050`
+### Impl `set_int_motion_enabled` for `MPU6050`
 
 ```rust
 pub fn set_int_motion_enabled(&mut self, state: bool)
@@ -927,7 +927,7 @@ let mut sensor = mpu6050::new();
 sensor.set_int_motion_enabled(true);
 ```
 
-## Impl `set_i2c_master_mode_enabled` for `MPU6050`
+### Impl `set_i2c_master_mode_enabled` for `MPU6050`
 
 ```rust
 pub fn set_i2c_master_mode_enabled(&mut self, state: bool)
@@ -944,7 +944,7 @@ let mut sensor = mpu6050::new();
 sensor.set_i2c_master_mode_enabled(true);
 ```
 
-## Impl `get_i2c_master_mode_enabled` for `MPU6050`
+### Impl `get_i2c_master_mode_enabled` for `MPU6050`
 
 ```rust
 pub fn get_i2c_master_mode_enabled(&mut self) -> bool
@@ -961,7 +961,7 @@ let mut sensor = mpu6050::new();
 let state =sensor.get_i2c_master_mode_enabled();
 ```
 
-## Impl `set_i2c_byepass_enabled` for `MPU6050`
+### Impl `set_i2c_byepass_enabled` for `MPU6050`
 
 ```rust
 pub fn set_i2c_byepass_enabled(&mut self, state: bool)
@@ -978,7 +978,7 @@ let mut sensor = mpu6050::new();
 sensor.set_i2c_byepass_enabled(true);
 ```
 
-## Impl `get_i2c_byepass_enabled` for `MPU6050`
+### Impl `get_i2c_byepass_enabled` for `MPU6050`
 
 ```rust
 pub fn get_i2c_byepass_enabled(&mut self) -> bool
@@ -995,7 +995,7 @@ let mut sensor = mpu6050::new();
 let state =sensor.get_i2c_byepass_enabled();
 ```
 
-## Impl `get_int_status` for `MPU6050`
+### Impl `get_int_status` for `MPU6050`
 
 ```rust
 pub fn get_int_status(&mut self) -> u8
@@ -1014,7 +1014,7 @@ let state =sensor.get_int_status();
 
 <hr />
 
-## Impl `read_accel` for `MPU6050`
+### Impl `read_accel` for `MPU6050`
 
 ```rust
 pub fn read_accel(&mut self) -> FixedSliceVec<f32>
@@ -1033,7 +1033,7 @@ let mut sensor = mpu6050::new();
 let accel_output = sensor.read_accel();
 ```
 
-## Impl `read_gyro` for `MPU6050`
+### Impl `read_gyro` for `MPU6050`
 
 ```rust
 pub fn read_gyro(&mut self) -> FixedSliceVec<f32>
@@ -1052,7 +1052,7 @@ let mut sensor = mpu6050::new();
 let gyro_output = sensor.read_gyro();
 ```
 
-## Impl `begin` for `MPU6050`
+### Impl `begin` for `MPU6050`
 
 ```rust
 pub fn begin(&mut self, scale: MPUdpsT, range: MPURangeT) -> bool

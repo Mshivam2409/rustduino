@@ -89,13 +89,12 @@ Any of the ADC input pins, as well as GND and a fixed bandgap voltage reference,
 be selected as single ended inputs to the ADC.The ADC generates a 10-bit result which
 is presented in the ADC Data Registers, ADCH and ADCL.
 
-## Analog Read
+## Analog
 
 New pointer object created for Analog Structure.
 
 ```rust
     pub unsafe fn new() -> &'static mut Analog {/* fields omitted */}
-
 ```
 
 Before enabling ADC, set the PRADC(Power Reduction ADC bit) to zero in prr0 register
@@ -103,7 +102,6 @@ to disable it.
 
 ```rust
     pub fn power_adc_disable(&mut self) {/* fields omitted */}
-
 ```
 
 Then to enable the Analog to digital converter, write one to the ADEN bit in the
@@ -111,7 +109,6 @@ ADCSRA register.
 
 ```rust
     pub fn adc_enable(&mut self) {/* fields omitted */}
-
 ```
 
 Also we need to make sure that auto triggering for the ADC is off, and setup the
@@ -128,7 +125,6 @@ is selected by setting the ADC Trigger Select bits, ADTS in ADCSRB.
 
 ```rust
  pub fn adc_auto_trig(&mut self) {/* fields omitted */}
-
 ```
 
 Then we can start the conversion by writing one to the aden bit in ADCSRA register.
@@ -139,10 +135,9 @@ Turning the ADC off while a conversion is in progress, will terminate this conv
     pub fn adc_con_start(&mut self) {/* fields omitted */}
 ```
 
-### Usage
+#### Usage
 
 ```rust
-
 use rustduino::hal::analog;
 let analog = Analog::new();  //
 analog.power_adc_disable();  //PRADC disable to enable ADC
@@ -160,7 +155,7 @@ pub fn read(&mut self) -> u32{/*fields omitted */}
 
 ```
 
-### Usage
+#### Usage
 
 ```rust
     let mut pins = Pins::new();
@@ -195,7 +190,7 @@ from analog Read to a 8 bit number.
 
 ```
 
-### Usage
+#### Usage
 
 ```rust
    let mut pins = Pins::new();
