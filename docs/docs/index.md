@@ -1,6 +1,6 @@
 ---
 id: index
-slug: /index
+slug: /
 title: Introduction
 ---
 

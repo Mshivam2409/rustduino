@@ -4,8 +4,6 @@ slug: /mpu6050
 title: MPU6050 Gyroscope
 ---
 
-# MPU6050
-
 MPU6050 sensor module is complete 6-axis Motion Tracking Device. It combines 3-axis Gyroscope, 3-axis Accelerometer and Digital Motion Processor all in small package. Also, it has additional feature of on-chip Temperature sensor. It has I2C bus interface to communicate with the microcontrollers.
 It has Auxiliary I2C bus to communicate with other sensor devices like 3-axis Magnetometer, Pressure sensor etc.
 If 3-axis Magnetometer is connected to auxiliary I2C bus, then MPU6050 can provide complete 9-axis Motion Fusion output.More about the sensor and its functions can be found out at <a href="https://invensense.tdk.com/wp-content/uploads/2015/02/MPU-6000-Datasheet1.pdf" target="_blank">MPU6050 Datasheet</a>.
@@ -46,7 +44,7 @@ Angular velocity along the Y axis = (Gyroscope Y axis raw data/131) °/s.
 
 Angular velocity along the Z axis = (Gyroscope Z axis raw data/131) °/s.
 
-<hr/>
+<hr />
 
 # Enums definition
 
@@ -125,7 +123,7 @@ let mut sensor = mpu6050::MPU6050;
 // Here sensor is a mutable struct of type MPU6050.
 ```
 
-<hr/>
+<hr />
 
 # Trait implementation
 
@@ -1014,7 +1012,7 @@ let mut sensor = mpu6050::new();
 let state =sensor.get_int_status();
 ```
 
-<hr/>
+<hr />
 
 ## Impl `read_accel` for `MPU6050`
 
