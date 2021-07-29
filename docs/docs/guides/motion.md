@@ -4,19 +4,19 @@ slug: /motion
 title: Reading values from Position sensor
 ---
 
-*Where are you?*
+_Where are you?_
 
 ---
 
 To get accelerometer and gyroscope reading from the sensor, our code will perform the following opertions.
 
-* Triggers the slave.
-* Waits for it to be idle.
-* Reads data to the buffer.
-* Reads raw data for Accelerometer.
-* Same are the steps for Gyroscope reading too.
+- Triggers the slave.
+- Waits for it to be idle.
+- Reads data to the buffer.
+- Reads raw data for Accelerometer.
+- Same are the steps for Gyroscope reading too.
 
-> **Note:** *I2C Protocol is used for communication between master and slave.*
+> **Note:** _I2C Protocol is used for communication between master and slave._
 
 All these steps are implemented in just few lines of driver code.
 

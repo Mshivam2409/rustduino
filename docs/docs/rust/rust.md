@@ -4,7 +4,7 @@ slug: /rust
 title: Intro to Rust
 ---
 
-*The most loved programming language*
+_The most loved programming language_
 
 ----
 
@@ -40,8 +40,8 @@ The best part about it is that none of the ownership features slows down your pr
 
 The ownership system consists of three simple rules:
 
-* Each value in Rust has a variable that's called the owner.
-* There can only be one owner at a time.
-* When the owner goes out of scope, the value will be dropped (no longer accessible).
+- Each value in Rust has a variable that's called the owner.
+- There can only be one owner at a time.
+- When the owner goes out of scope, the value will be dropped (no longer accessible).
 
 Although the above rules are simple, they have deep implications rest of the language.

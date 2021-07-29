@@ -4,7 +4,7 @@ slug: /index
 title: Input Output Features
 ---
 
-*Let's learn to read and write*
+_Let's learn to read and write_
 
 ---
 

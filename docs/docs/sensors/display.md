@@ -4,7 +4,7 @@ slug: /display
 title: 7 Segment Display
 ---
 
-*Okay see what we have inside*
+_Okay see what we have inside_
 
 ---
 
@@ -24,8 +24,8 @@ pub fn setup(datapin: u8, clockpin: u8, latchpin: u8, decpt: bool, common_anode:
 setup(4,7,8,true,true,2) //2 is display on the 7-segment display.
 ```
 
-*This function is the only one we need to call. We need to tell the pin numbers of datapin, clockpin,latchpin, true/false whether decimal is on/off, true/false if common anode is used/not used and the value to be displayed respectively in the arguments.
-*Here in example, I assumed datapin number =4, clockpin number=7, latchpin number =8 with decimal point on and display using common anode on. The number 2 wil be displayed on the 7 segment display.
+-This function is the only one we need to call. We need to tell the pin numbers of datapin, clockpin,latchpin, true/false whether decimal is on/off, true/false if common anode is used/not used and the value to be displayed respectively in the arguments.
+-Here in example, I assumed datapin number =4, clockpin number=7, latchpin number =8 with decimal point on and display using common anode on. The number 2 wil be displayed on the 7 segment display.
 
 ### Update display function
 

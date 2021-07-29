@@ -12,8 +12,8 @@ pub enum BitOrder{/*files omitted*/}
 
 Helper enum for bit order of the value. 
 
-* `LSBFIRST` : Least significant bit first.
-* `MSBFIRST` : Most significant bit first.
+- `LSBFIRST` : Least significant bit first.
+- `MSBFIRST` : Most significant bit first.
 
 ## Function Definition
 

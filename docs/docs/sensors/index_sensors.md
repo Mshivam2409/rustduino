@@ -4,7 +4,7 @@ slug: /sensors
 title: Sensors
 ---
 
-*Our code can feel !*
+_Our code can feel !_
 
 ---
 

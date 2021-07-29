@@ -4,19 +4,19 @@ slug: /temp_sensor
 title: Reading Values from a Temperature Sensor.
 ---
 
-*Oh it's July !!!*
+_Oh it's July !!!_
 
 ---
 
 To get temperature and humidity reading from the sensor, our code will perform the following opertions.
 
-* Triggers the slave.
-* Waits for it to be idle.
-* Reads data to the buffer.
-* Reads 20 bit raw humidity data and returns relative humidity.
-* Same are the steps for Tempereature reading too.
+- Triggers the slave.
+- Waits for it to be idle.
+- Reads data to the buffer.
+- Reads 20 bit raw humidity data and returns relative humidity.
+- Same are the steps for Tempereature reading too.
 
-> **Note:** *I2C Protocol is used for communication between master and slave.*
+> **Note:** _I2C Protocol is used for communication between master and slave._
 
 All these steps are implemented in just few lines of driver code.
 

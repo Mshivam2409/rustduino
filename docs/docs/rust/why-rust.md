@@ -4,7 +4,7 @@ slug: /why-rust
 title: Why Rust?
 ---
 
-*High performance and memory safety; who doesn't want that?*
+_High performance and memory safety; who doesn't want that?_
 
 ----
 
