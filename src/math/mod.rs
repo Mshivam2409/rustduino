@@ -17,6 +17,7 @@
 mod map;
 
 pub use map::*;
+pub use micromath::*;
 
 cfg_if::cfg_if! {
     if #[cfg(feature = "random")] {
