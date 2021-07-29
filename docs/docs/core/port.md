@@ -4,6 +4,8 @@ slug: /port
 title: Ports and Pins
 ---
 
+*Our Communicators*
+
 ---
 
 In computer programming a port is a communication endpoint. It completes the
@@ -57,30 +59,30 @@ Pin represents struct corresponding to a pin namely:
 ## PortName
 
 ```rust
-pub enum Portname {/*feilds ommited*/}
+  pub enum Portname {/*feilds ommited*/}
 ```
 
 Lists all ports available on the chip.
 
-- Ports _B, C & D_ are available on atmega328p.
-- Ports \*A to L **except I\*** available on atmega2560p.
+- Ports _A to D ***except A***_ are available on atmega328p.
+- Ports _A to L ***except I***_ are available on atmega2560p.
 
 ## Trait Implementations
 
 ### Impl `new` for `Port`
 
 ```rust
-pub fn new(name: PortName) -> &'static mut Port
+  pub fn new(name: PortName) -> &'static mut Port
 ```
 
 #### Usage:
 
 ```rust
-use rustduino::hal::port::*;
-let mut port = Port::new(Portname::B) // here B is the port name.
+  use rustduino::hal::port::*;
+  let mut port = Port::new(Portname::B) // here B is the port name.
 
-// port is the pointer to the struct.
-// we will use the port variable for demonstration of other functions also.
+  // port is the pointer to the struct.
+  // we will use the port variable for demonstration of other functions also.
 ```
 
 Matches a valid PortName and returns a struct containing register definition of the chosen Port.

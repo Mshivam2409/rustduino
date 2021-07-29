@@ -31,6 +31,7 @@ pub enum Generator {
 /// # Elements
 /// * `pins` - structure containing array to control all pins of micro-controller.
 /// * `mpu` - a static mutable reference to the pointer location to control MPU6050 gyroscope.
+/// * `mode` - a `Generator` object, which stores the implementation method for random number generator.
 #[repr(C, packed)]
 pub struct RandomNumberGenerator {
     pins: Pins,

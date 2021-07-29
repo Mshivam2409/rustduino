@@ -4,10 +4,14 @@ slug: /power
 title: Power Modes
 ---
 
+*Let's adjust the star rating*
+
+---
+
 ## Enum Description
 
 ```rust
-pub enum Options {/*fields omitted */}  // "Options" corresponds to "Peripherals" enum in atmega328p code
+   pub enum Options {/*fields omitted */}  // "Options" corresponds to "Peripherals" enum in atmega328p code
 ```
 The `Options` correspond to real world as shown -
 * `TWI`    :  *Power Reduction TWI*
@@ -27,7 +31,7 @@ The `Options` correspond to real world as shown -
 ## Struct Definitions
 
 ```rust
-pub struct Power {/* fields omitted */}
+   pub struct Power {/* fields omitted */}
 ```
 Contains registers to control the functioning of clocks in the chip.
 It would be used to control the power modes of the chip as mentioned
@@ -40,44 +44,44 @@ in the enum `Options` above.
 ### Impl `new` for `Power`
 
 ```rust
-    pub unsafe fn new() -> &'static mut Power {
-        &mut *(0x64 as *mut Power)
-    }
+   pub unsafe fn new() -> &'static mut Power {
+      &mut *(0x64 as *mut Power)
+   }
 ```
  Creates a new reference to the Sleep structure at a specified location.
 
 ### Impl `disable_clocks` for `Power`
 
- ```rust
-    pub fn disable_clocks(&mut self, mode: Options) {/* fields omitted */}
+```rust
+   pub fn disable_clocks(&mut self, mode: Options) {/* fields omitted */}
 
- ```
+```
 
- This is the function for disabling the clock system of your choice.
- It would create a new element of the structure power
- which would be used to control various clock gating features of the chip.
- All the clock features are implemented in this function using match cases.
- Please specify the type of power reduction mode to be used as the mode,
- use the standard keywords.
+This is the function for disabling the clock system of your choice.
+It would create a new element of the structure power
+which would be used to control various clock gating features of the chip.
+All the clock features are implemented in this function using match cases.
+Please specify the type of power reduction mode to be used as the mode,
+use the standard keywords.
 
  ### Usage:
 
- ```rust
-    use rustduino::hal::power;
-    power::disable_clocks(Options::/*mode*/);
-    // here mode is from the given enum list.
- ```
+```rust
+   use rustduino::hal::power;
+   power::disable_clocks(Options::/*mode*/);
+   // here mode is from the given enum list.
+```
 
 ### Impl `enable_clocks` for `Power`
 
- ```rust
-    pub fn enable_clocks(&mut self, mode: Options) {/* fields omitted */}
- ```
+```rust
+   pub fn enable_clocks(&mut self, mode: Options) {/* fields omitted */}
+```
 
- This is the function for enabling the clock system of your choice.
+This is the function for enabling the clock system of your choice.
 
  ### Usage:
 
- ```rust
-    power::disable_clocks(Options::/*mode*/);
- ```
+```rust
+   power::disable_clocks(Options::/*mode*/);
+```
