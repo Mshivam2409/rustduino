@@ -1,32 +1,37 @@
 ---
 id: power
 slug: /power
-title: Power Modes
+title: Power Modes Fine Adjustments
 ---
 
 *Let's adjust the star rating*
 
 ---
 
+We can adjust specific settings in the power consumption of the AVR chip without depending upon the standard modes provided by the AVR corporation inbuilt as various sleep modes.The library also has various implementations to control those specific features and allow or dis-allow the functioning of different Peripherals (like USART) which could be attached to the micro-controller.
+
 ## Enum Description
 
 ```rust
-   pub enum Options {/*fields omitted */}  // "Options" corresponds to "Peripherals" enum in atmega328p code
+   pub enum Peripherals {/*fields omitted */}  
 ```
-The `Options` correspond to real world as shown -
+The `Peripherals` correspond to real world as shown -
 * `TWI`    :  *Power Reduction TWI*
+* `ADC`    :  *Power Reduction ADC*
+* `SPI`    :  *Power Reduction Serial Peripheral Interface*
 * `TIMER2` :  *Power Reduction Timer/Counter2*
 * `TIMER0` :  *Power Reduction Timer/Counter0*
 * `TIMER1` :  *Power Reduction Timer/Counter1*
-* `SPI`    :  *Power Reduction Serial Peripheral Interface*
-* `USART0` :  *Power Reduction USART0*
-* `ADC`    :  *Power Reduction ADC*
-* `TIMER5` :  *Power Reduction Timer/Counter5*
-* `TIMER4` :  *Power Reduction Timer/Counter4*
 * `TIMER3` :  *Power Reduction Timer/Counter3*
+* `TIMER4` :  *Power Reduction Timer/Counter4*
+* `TIMER5` :  *Power Reduction Timer/Counter5*
+* `USART0` :  *Power Reduction USART0*
 * `USART3` :  *Power Reduction USART3*
 * `USART2` :  *Power Reduction USART2*
 * `USART1` :  *Power Reduction USART1*
+
+**Note that USART1,USART2,USART3,TIMER3,TIMER4 and TIMER5 are not applicable for ATMEGA328P**
+
 
 ## Struct Definitions
 
@@ -35,7 +40,7 @@ The `Options` correspond to real world as shown -
 ```
 Contains registers to control the functioning of clocks in the chip.
 It would be used to control the power modes of the chip as mentioned
-in the enum `Options` above.
+in the enum `Peripherals` above.
 
 * `PRR` – Power Reduction Register contains control bits for power control through clock gating.
 
@@ -53,7 +58,7 @@ in the enum `Options` above.
 ### Impl `disable_clocks` for `Power`
 
 ```rust
-   pub fn disable_clocks(&mut self, mode: Options) {/* fields omitted */}
+   pub fn disable_clocks(&mut self, mode: Peripherals) {/* fields omitted */}
 
 ```
 
@@ -68,14 +73,14 @@ use the standard keywords.
 
 ```rust
    use rustduino::hal::power;
-   power::disable_clocks(Options::/*mode*/);
+   power::disable_clocks(Peripherals::/*mode*/);
    // here mode is from the given enum list.
 ```
 
 ### Impl `enable_clocks` for `Power`
 
 ```rust
-   pub fn enable_clocks(&mut self, mode: Options) {/* fields omitted */}
+   pub fn enable_clocks(&mut self, mode: Peripherals) {/* fields omitted */}
 ```
 
 This is the function for enabling the clock system of your choice.
@@ -83,5 +88,5 @@ This is the function for enabling the clock system of your choice.
  ### Usage:
 
 ```rust
-   power::disable_clocks(Options::/*mode*/);
+   power::disable_clocks(Peripherals::/*mode*/);
 ```

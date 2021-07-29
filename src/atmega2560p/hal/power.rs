@@ -36,7 +36,7 @@ use core::ptr::{read_volatile, write_volatile};
 ///  `USART2 :  Power Reduction USART2`
 ///  `USART1 :  Power Reduction USART1`
 #[derive(Clone, Copy)]
-pub enum Options {
+pub enum Peripherals {
     TWI,
     TIMER2,
     TIMER0,
@@ -79,86 +79,86 @@ impl Power {
     /// For more details please refer to the lines before the enum `Options`.
     /// # Arguments
     /// * `mode` - a `Options` object, to set the power mode to disable clocks in a specific defined mode.
-    pub fn disable_clocks(&mut self, mode: Options) {
+    pub fn disable_clocks(&mut self, mode: Peripherals) {
         let mut prr;
         match mode {
-            Options::TWI
-            | Options::TIMER2
-            | Options::TIMER0
-            | Options::TIMER1
-            | Options::SPI
-            | Options::USART0
-            | Options::ADC => {
+            Peripherals::TWI
+            | Peripherals::TIMER2
+            | Peripherals::TIMER0
+            | Peripherals::TIMER1
+            | Peripherals::SPI
+            | Peripherals::USART0
+            | Peripherals::ADC => {
                 prr = unsafe { read_volatile(&mut self.prr0) };
             }
 
-            Options::TIMER5
-            | Options::TIMER4
-            | Options::TIMER3
-            | Options::USART3
-            | Options::USART2
-            | Options::USART1 => {
+            Peripherals::TIMER5
+            | Peripherals::TIMER4
+            | Peripherals::TIMER3
+            | Peripherals::USART3
+            | Peripherals::USART2
+            | Peripherals::USART1 => {
                 prr = unsafe { read_volatile(&mut self.prr1) };
             }
         }
         match mode {
-            Options::TWI => {
+            Peripherals::TWI => {
                 prr = prr | 0x80;
             }
-            Options::TIMER2 => {
+            Peripherals::TIMER2 => {
                 prr = prr | 0x40;
             }
-            Options::TIMER0 => {
+            Peripherals::TIMER0 => {
                 prr = prr | 0x20;
             }
-            Options::TIMER1 => {
+            Peripherals::TIMER1 => {
                 prr = prr | 0x08;
             }
-            Options::SPI => {
+            Peripherals::SPI => {
                 prr = prr | 0x04;
             }
-            Options::USART0 => {
+            Peripherals::USART0 => {
                 prr = prr | 0x02;
             }
-            Options::ADC => {
+            Peripherals::ADC => {
                 prr = prr | 0x01;
             }
-            Options::TIMER5 => {
+            Peripherals::TIMER5 => {
                 prr = prr | 0x20;
             }
-            Options::TIMER4 => {
+            Peripherals::TIMER4 => {
                 prr = prr | 0x10;
             }
-            Options::TIMER3 => {
+            Peripherals::TIMER3 => {
                 prr = prr | 0x08;
             }
-            Options::USART3 => {
+            Peripherals::USART3 => {
                 prr = prr | 0x04;
             }
-            Options::USART2 => {
+            Peripherals::USART2 => {
                 prr = prr | 0x02;
             }
-            Options::USART1 => {
+            Peripherals::USART1 => {
                 prr = prr | 0x01;
             }
         }
         match mode {
-            Options::TWI
-            | Options::TIMER2
-            | Options::TIMER0
-            | Options::TIMER1
-            | Options::SPI
-            | Options::USART0
-            | Options::ADC => unsafe {
+            Peripherals::TWI
+            | Peripherals::TIMER2
+            | Peripherals::TIMER0
+            | Peripherals::TIMER1
+            | Peripherals::SPI
+            | Peripherals::USART0
+            | Peripherals::ADC => unsafe {
                 write_volatile(&mut self.prr0, prr);
             },
 
-            Options::TIMER5
-            | Options::TIMER4
-            | Options::TIMER3
-            | Options::USART3
-            | Options::USART2
-            | Options::USART1 => unsafe {
+            Peripherals::TIMER5
+            | Peripherals::TIMER4
+            | Peripherals::TIMER3
+            | Peripherals::USART3
+            | Peripherals::USART2
+            | Peripherals::USART1 => unsafe {
                 write_volatile(&mut self.prr1, prr);
             },
         }
@@ -174,86 +174,86 @@ impl Power {
     /// For more details please refer to the comment lines before the enum `Options`.
     /// # Arguments
     /// * `mode` - a `Options` object, to set the power mode to enable clocks in a specific defined mode.
-    pub fn enable_clocks(&mut self, mode: Options) {
+    pub fn enable_clocks(&mut self, mode: Peripherals) {
         let mut prr;
         match mode {
-            Options::TWI
-            | Options::TIMER2
-            | Options::TIMER0
-            | Options::TIMER1
-            | Options::SPI
-            | Options::USART0
-            | Options::ADC => {
+            Peripherals::TWI
+            | Peripherals::TIMER2
+            | Peripherals::TIMER0
+            | Peripherals::TIMER1
+            | Peripherals::SPI
+            | Peripherals::USART0
+            | Peripherals::ADC => {
                 prr = unsafe { read_volatile(&mut self.prr0) };
             }
 
-            Options::TIMER5
-            | Options::TIMER4
-            | Options::TIMER3
-            | Options::USART3
-            | Options::USART2
-            | Options::USART1 => {
+            Peripherals::TIMER5
+            | Peripherals::TIMER4
+            | Peripherals::TIMER3
+            | Peripherals::USART3
+            | Peripherals::USART2
+            | Peripherals::USART1 => {
                 prr = unsafe { read_volatile(&mut self.prr1) };
             }
         }
         match mode {
-            Options::TWI => {
+            Peripherals::TWI => {
                 prr = prr & 0x7F;
             }
-            Options::TIMER2 => {
+            Peripherals::TIMER2 => {
                 prr = prr & 0xBF;
             }
-            Options::TIMER0 => {
+            Peripherals::TIMER0 => {
                 prr = prr & 0xDF;
             }
-            Options::TIMER1 => {
+            Peripherals::TIMER1 => {
                 prr = prr & 0xF7;
             }
-            Options::SPI => {
+            Peripherals::SPI => {
                 prr = prr & 0xFB;
             }
-            Options::USART0 => {
+            Peripherals::USART0 => {
                 prr = prr & 0xFD;
             }
-            Options::ADC => {
+            Peripherals::ADC => {
                 prr = prr & 0xFE;
             }
-            Options::TIMER5 => {
+            Peripherals::TIMER5 => {
                 prr = prr & 0xDF;
             }
-            Options::TIMER4 => {
+            Peripherals::TIMER4 => {
                 prr = prr & 0xEF;
             }
-            Options::TIMER3 => {
+            Peripherals::TIMER3 => {
                 prr = prr & 0xF7;
             }
-            Options::USART3 => {
+            Peripherals::USART3 => {
                 prr = prr & 0xFB;
             }
-            Options::USART2 => {
+            Peripherals::USART2 => {
                 prr = prr & 0xFD;
             }
-            Options::USART1 => {
+            Peripherals::USART1 => {
                 prr = prr & 0xFE;
             }
         }
         match mode {
-            Options::TWI
-            | Options::TIMER2
-            | Options::TIMER0
-            | Options::TIMER1
-            | Options::SPI
-            | Options::USART0
-            | Options::ADC => unsafe {
+            Peripherals::TWI
+            | Peripherals::TIMER2
+            | Peripherals::TIMER0
+            | Peripherals::TIMER1
+            | Peripherals::SPI
+            | Peripherals::USART0
+            | Peripherals::ADC => unsafe {
                 write_volatile(&mut self.prr0, prr);
             },
 
-            Options::TIMER5
-            | Options::TIMER4
-            | Options::TIMER3
-            | Options::USART3
-            | Options::USART2
-            | Options::USART1 => unsafe {
+            Peripherals::TIMER5
+            | Peripherals::TIMER4
+            | Peripherals::TIMER3
+            | Peripherals::USART3
+            | Peripherals::USART2
+            | Peripherals::USART1 => unsafe {
                 write_volatile(&mut self.prr1, prr);
             },
         }

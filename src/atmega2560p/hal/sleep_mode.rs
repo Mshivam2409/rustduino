@@ -29,7 +29,7 @@ use core::ptr::{read_volatile, write_volatile};
 /// `SBY   : Standby`      
 /// `ESBY  : Extended Standby`
 #[derive(Clone, Copy)]
-pub enum Options {
+pub enum SleepMode {
     IDLE,
     ADC,
     PD,
@@ -77,26 +77,26 @@ impl Sleep {
     /// comment given above the enum `Options` in the code.
     /// # Arguments
     /// * `mode` - a `Options` object, which defines the mode in which sleep mode is to be initiated.
-    pub fn select_mode(&mut self, mode: Options) {
+    pub fn select_mode(&mut self, mode: SleepMode) {
         self.enable(); // Enable the Sleep mode
         let mut smcr = 0x0F;
         match mode {
-            Options::IDLE => {
+            SleepMode::IDLE => {
                 smcr = smcr & 0xF1;
             }
-            Options::ADC => {
+            SleepMode::ADC => {
                 smcr = smcr & 0xF3;
             }
-            Options::PD => {
+            SleepMode::PD => {
                 smcr = smcr & 0xF5;
             }
-            Options::PS => {
+            SleepMode::PS => {
                 smcr = smcr & 0xF7;
             }
-            Options::SBY => {
+            SleepMode::SBY => {
                 smcr = smcr & 0xFD;
             }
-            Options::ESBY => {
+            SleepMode::ESBY => {
                 smcr = smcr & 0xFF;
             }
         }

@@ -1,8 +1,10 @@
 ---
 id: sleep_mode
 slug: /sleep_mode
-title: Sleep
+title: Power Modes Global Adjustments
 ---
+
+*Let's it rest for sometime*
 
 ---
 
@@ -11,7 +13,7 @@ Power consumption is a critical issue for a device running continuously for a lo
 # Enum Description
 
 ```rust
-pub enum SleepMode {/*fields ommited*/}
+    pub enum SleepMode {/*fields ommited*/}
 ```
 
 Contains the following Power Modes:
@@ -26,7 +28,7 @@ Contains the following Power Modes:
 ## Struct Definitions
 
 ```rust
- pub struct Sleep {/*feilds ommited*/}
+    pub struct Sleep {/*feilds ommited*/}
 ```
 
 Struct containing registers to control sleep modes namely :
