@@ -89,7 +89,7 @@ module.exports = {
         'guides/writing_string',
         'guides/analog_io',
 	      'guides/temp_sensor',
-        'guides/position',
+        'guides/motion',
         'guides/generate_analog',
         'guides/generate_mpu'
       ]
