@@ -17,7 +17,7 @@ interface, SPI serial port, a 6-channel 10-bit A/D converter (8-channels in TQFP
 and QFN/MLF packages), programmable watchdog timer with internal oscillator, and
 five software selectable power saving modes.
 
-**Arduino Uno** is a microcontroller board based on the **ATmega328P**(datasheet). It
+**Arduino Uno** is a microcontroller board based on the **ATmega328P** (datasheet). It
 has 14 digital input/output pins (of which 6 can be used as PWM outputs), 6
 analog inputs, a 16 MHz ceramic resonator, a USB connection, a power jack, an
 ICSP header and a reset button.

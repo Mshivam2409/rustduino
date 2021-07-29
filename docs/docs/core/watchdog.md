@@ -48,24 +48,24 @@ More about these registers and Watchdog timer can be found at Section 10.9 of AT
 
 ## Trait Implementations
 
-### Impl `new` for `Watchdog`
+### Impl `new` for `WatchDog`
 
 ```rust
-pub unsafe fn new() -> &'static mut Watchdog
+pub unsafe fn new() -> &'static mut WatchDog
 ```
 
 #### Usage:
 
 ```rust
-use rustduino::hal::watchdog;
-let mut wdt = watchdog::new();
+use rustduino::hal::WatchDog;
+let mut wdt = WatchDog::new();
 
 // Here wdt is the pointer to the struct Watchdog.
 ```
 
 Return a struct pointer containing register definition of the watchdog timer.
 
-### Impl `disable` for `Watchdog`
+### Impl `disable` for `WatchDog`
 
 ```rust
 pub fn disable(&mut self)
@@ -74,12 +74,12 @@ pub fn disable(&mut self)
 #### Usage:
 
 ```rust
-use rustduino::hal::watchdog;
+use rustduino::hal::WatchDog;
 
-let mut wdt = watchdog::new(); 	// creating pointer to the struct Watchdog.
+let mut wdt = WatchDog::new(); 	// creating pointer to the struct Watchdog.
 wdt.disable();					// disabling the watchdog timer.
 OR
-watchdog::disable(watchdog::new());
+WatchDog::disable(WatchDog::new());
 ```
 
 Disables the watchdog timer by performing the following sequence of operations:
@@ -87,4 +87,4 @@ Disables the watchdog timer by performing the following sequence of operations:
 - _Disabling interrupts globally._
 - _Resetting Watchdog timer_
 - _Disabling watchdog timer_
-- _Restoing the previous interrupts state_
+- _Restoring the previous interrupts state_
