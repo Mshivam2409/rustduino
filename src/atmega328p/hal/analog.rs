@@ -301,10 +301,10 @@ impl DigitalPin {
         let pin1 = self.pinno;
         match pin1 {
             5 | 6 => {
-                let pow = Power::new();
-                pow.prr.update(|ctrl| {
-                    ctrl.set_bit(5, false);
-                });
+                unsafe {
+                    let pow = Power::new();
+                    write_volatile(&mut pow.prr, pow.prr & (247));
+                }
                 let timer = Timer8::new(TimerNo8::Timer0);
                 timer.tccra.update(|ctrl| {
                     ctrl.set_bits(0..2, 0b11);
@@ -326,10 +326,10 @@ impl DigitalPin {
                 }
             }
             11 | 3 => {
-                let pow = Power::new();
-                pow.prr.update(|ctrl| {
-                    ctrl.set_bit(6, false);
-                });
+                unsafe {
+                    let pow = Power::new();
+                    write_volatile(&mut pow.prr, pow.prr & (247));
+                }
                 let timer = Timer8::new(TimerNo8::Timer2);
                 timer.tccra.update(|ctrl| {
                     ctrl.set_bits(0..2, 0b01);
@@ -351,10 +351,10 @@ impl DigitalPin {
                 }
             }
             9 | 10 => {
-                let pow = Power::new();
-                pow.prr.update(|ctrl| {
-                    ctrl.set_bit(3, false);
-                });
+                unsafe {
+                    let pow = Power::new();
+                    write_volatile(&mut pow.prr, pow.prr & (247));
+                }
                 let timer = Timer16::new(TimerNo16::Timer1);
                 timer.tccra.update(|ctrl| {
                     ctrl.set_bits(0..2, 0b01);
