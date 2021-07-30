@@ -55,8 +55,10 @@ impl Servo {
     /// It is used to set the Servo Motor according to the value given by the user.
     /// The value given will decide the RPM of motor.
     /// # Arguments
-    /// * `value` - a u8, defining for the functioning of servo motor.
+    /// * `value` - a u8, the new position of servo motor (in degrees).
     pub fn write(&mut self, value: u8) {
-        self.servo.digital[self.pinno].write(value);
+        a = 255.0 / 180.0;
+        value = value % 360;
+        self.servo.digital[self.pinno].write(a * value);
     }
 }
