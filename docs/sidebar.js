@@ -51,7 +51,6 @@ module.exports = {
         'core/sleep_mode',
         'core/power',
         'core/port',
-        'core/shift'
       ]
     },
     {
@@ -71,8 +70,15 @@ module.exports = {
         'sensors/index_sensors',
         'sensors/aht10',
         'sensors/mpu6050',
-        'sensors/display',
         'sensors/servo'
+      ]
+    },
+    {
+      type: 'category',
+      label: 'AVR Tools',
+      items: [
+        'tools/shift',
+        'tools/display'
       ]
     },
     {
@@ -100,6 +106,5 @@ module.exports = {
       label: 'Contributors',
       id: 'contributors'
     }
-    
   ]
 }
