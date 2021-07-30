@@ -1,7 +1,8 @@
 [package]
 name = "rustduino"
-version = "0.1.1"
+version = "0.2.0"
 description="A generic HAL implementation for Arduino Boards in Rust"
+homepage="https://rustduino.shivammalhotra.dev"
 authors = [
     "Akshit Verma <akshitv18@gmail.com>",
     "Aniket Sharma <sharmaa20@iitk.ac.in>",
@@ -27,11 +28,10 @@ exclude = [
     ".travis.yml",
     ".circleci/**"
 ]
-
 license="AGPL-3.0-only"
 
 [package.metadata.docs.rs]
-
+all-features = true
 
 [features]
 com = []
@@ -41,7 +41,6 @@ atmega328p=[]
 atmega2560p=[]
 random = ["math","sensors","com"]
 doc=[]
-# default=["atmega2560p","com","sensors","math","random","doc","atmega328p"]
 
 [dependencies]
 const_env--value = "0.1"
