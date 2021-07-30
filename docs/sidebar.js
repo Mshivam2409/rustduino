@@ -71,7 +71,8 @@ module.exports = {
         'sensors/index_sensors',
         'sensors/aht10',
         'sensors/mpu6050',
-        'sensors/display'
+        'sensors/display',
+        'sensors/servo'
       ]
     },
     {

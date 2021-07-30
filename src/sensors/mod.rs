@@ -17,7 +17,9 @@
 mod aht10;
 mod display;
 mod mpu6050;
+mod servo;
 
 pub use aht10::*;
 pub use display::*;
 pub use mpu6050::*;
+pub use servo::*;

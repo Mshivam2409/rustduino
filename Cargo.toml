@@ -41,7 +41,7 @@ atmega328p=[]
 atmega2560p=[]
 random = ["math","sensors","com"]
 doc=[]
-# default=["atmega2560p","com","sensors","math","random","doc","atmega328p"]
+# default=["atmega2560p","com","sensors","math","random","doc"]
 
 [dependencies]
 const_env--value = "0.1"
