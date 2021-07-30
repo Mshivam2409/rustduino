@@ -57,8 +57,8 @@ impl Servo {
     /// # Arguments
     /// * `value` - a u8, the new position of servo motor (in degrees).
     pub fn write(&mut self, value: u8) {
-        a = 255.0 / 180.0;
-        value = value % 360;
-        self.servo.digital[self.pinno].write(a * value);
+        let a: f32 = 255.0 / 180.0;
+        let val: u32 = (value as u32) % 360;
+        self.servo.digital[self.pinno].write((a * val as f32) as u8);
     }
 }
