@@ -9,3 +9,4 @@ The library currently supports the following Mathematical Implementations:
 - [Data Type Mapping](map.md)
 - [Analog Number Generator](random.md)
 - [MPU Number Generator](random.md)
+- [MicroMath](micromath.md)

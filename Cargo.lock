@@ -66,7 +66,7 @@ dependencies = [
 
 [[package]]
 name = "rustduino"
-version = "0.2.0"
+version = "0.2.2"
 dependencies = [
  "bit_field",
  "cfg-if",
