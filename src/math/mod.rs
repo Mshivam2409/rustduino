@@ -22,6 +22,9 @@ pub use micromath::*;
 cfg_if::cfg_if! {
     if #[cfg(feature = "random")] {
         mod random;
+
+        /// For more information
+        /// `<https://gist.github.com/bloc97/b55f684d17edd8f50df8e918cbc00f94>`
         pub use random::*;
     }
 }
