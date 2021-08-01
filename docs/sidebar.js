@@ -19,12 +19,7 @@ module.exports = {
     {
       type: 'category',
       label: 'Rust',
-      items: [
-        'rust/index_rust',
-        'rust/rust', 
-        'rust/why-rust', 
-        'rust/unsafe'
-      ]
+      items: ['rust/index_rust', 'rust/rust', 'rust/why-rust', 'rust/unsafe']
     },
     {
       type: 'category',
@@ -47,21 +42,21 @@ module.exports = {
       items: [
         'core/index_core',
         'core/interrupts',
-        'core/watchdog',    
+        'core/watchdog',
         'core/sleep_mode',
         'core/power',
-        'core/port',
+        'core/port'
       ]
     },
     {
-      type:'category',
-      label:'Communication',
-      items:['com/index_com','com/i2c', 'com/usart']
+      type: 'category',
+      label: 'Communication',
+      items: ['com/index_com', 'com/i2c', 'com/usart']
     },
     {
       type: 'category',
       label: 'I/O Features',
-      items: ['analog/index','analog/analog', 'analog/digital']
+      items: ['analog/index', 'analog/analog', 'analog/digital']
     },
     {
       type: 'category',
@@ -76,15 +71,12 @@ module.exports = {
     {
       type: 'category',
       label: 'AVR Tools',
-      items: [
-        'tools/shift',
-        'tools/display'
-      ]
+      items: ['tools/shift', 'tools/display']
     },
     {
       type: 'category',
       label: 'Math Library',
-      items: ['math/index_math','math/map','math/random']
+      items: ['math/index_math', 'math/map', 'math/random', 'math/micromath']
     },
     {
       type: 'category',
@@ -95,7 +87,7 @@ module.exports = {
         'guides/print',
         'guides/writing_string',
         'guides/analog_io',
-	      'guides/temp_sensor',
+        'guides/temp_sensor',
         'guides/motion',
         'guides/generate_analog',
         'guides/generate_mpu'
